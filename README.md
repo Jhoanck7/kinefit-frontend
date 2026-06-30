@@ -34,3 +34,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+src/
+├── app/
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── sections/
+│   └── ui/
+├── lib/
+│   ├── api/
+│   │   └── apiClient.ts      # Instancia base con fetch (Configuración global)
+│   ├── services/             # ← AQUÍ VIVEN TUS SERVICIOS DE NEGOCIO
+│   │   ├── appointment.service.ts  # Lógica para hablar con tu API de .NET (Citas)
+│   │   └── sanity.service.ts       # Lógica para hablar con Sanity (Blog/Contenido)
+│   ├── store/
+│   │   └── useBookingStore.ts# Zustand
+│   └── metadata.ts
+└── types/
+    └── index.ts              # Tus interfaces de TypeScript

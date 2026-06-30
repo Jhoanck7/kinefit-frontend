@@ -1,0 +1,10 @@
+services:
+
+  kinefit-frontend:
+    image: jhoanck7/kinefit-frontend:latest
+    container_name: kinefit-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - kinefit-network
