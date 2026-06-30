@@ -43,3 +43,46 @@ export interface Service {
   durationMinutes: number;
   price: number;
 }
+
+export interface Usuario {
+  id: string;
+  name: string;
+  email: string;
+  role: string; // ej: "Paciente" o "Kinesiologo"
+}
+
+export interface AuthResponse {
+  token: string;
+  user: Usuario;
+}
+
+export interface SanityServiceItem {
+  id: number;
+  nombre: string;
+  description?: string;
+  price: string;
+  duration: string;
+  features?: string[];
+}
+
+export interface SanityTeamMemberItem {
+  nombre: string;
+  cargo: string;
+  email: string;
+  imageUrl: string;
+  specialty?: string;
+}
+
+export interface SanityTestimonialItem {
+  nombre: string;
+  cargo: string;
+  content: string;
+  rating?: number;
+}
+
+export interface SanityGalleryItem {
+  title: string;
+  description: string;
+  imageUrl: string;
+  features?: string[];
+}
