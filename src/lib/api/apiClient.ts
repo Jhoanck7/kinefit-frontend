@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5147/api';
+//SACAR CUANDO SE SUBA A PROD
 
 class ApiClient {
   private baseUrl: string;
