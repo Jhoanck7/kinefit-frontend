@@ -37,8 +37,8 @@ export const NAV_LINKS = [
 
 // 3. Hero Section Copy
 export const HERO_COPY = {
-  tagline: "Centro",
-  brandName: "Kinésico y Masoterapia",
+  tagline: "Centro de kinesiología,",
+  brandName: "rehabilitación y masoterapia",
   description: "En KineFit Chile combinamos rehabilitación kinésica avanzada y entrenamiento funcional de alto nivel. Diseñamos un camino a tu medida para sanar lesiones, recuperar movilidad y potenciar tu rendimiento físico.",
   ctaText: "Nuestros especialistas",
   ctaLink: "#team",
@@ -136,21 +136,21 @@ export const CLINIC_TEAM = [
     name: "Constanza Maldonado V.",
     role: "Kinesióloga",
     specialty: "Terapia Manual Ortopédica e Infiltraciones Clínicas",
-    image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=600&q=80",
-    email: "francisco.silva@kinefit.cl"
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+    email: "constanza.maldonado@kinefit.cl"
   },
   {
     name: "Diego Exequiel B.",
     role: "Gerente",
     specialty: "",
     image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=600&q=80",
-    email: "francisco.silva@kinefit.cl"
+    email: "Diego.exequiel@kinefit.cl"
   },
   {
     name: "Valeria Araneda T.",
     role: "Kinesióloga",
     specialty: "Kinesiología Deportiva",
-    image: "https://images.unsplash.com/photo-1594824813573-246434de83fb?auto=format&fit=crop&w=600&q=80",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
     email: "valentina.araneda@kinefit.cl"
   },
   {
