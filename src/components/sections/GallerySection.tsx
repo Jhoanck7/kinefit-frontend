@@ -109,10 +109,7 @@ export default function GallerySection({ initialSlides }: GallerySectionProps) {
                   </div>
                 </div>
 
-                {/* Index Counter */}
-                <div className="text-xs font-bold bg-black/40 border border-white/10 rounded-full px-4 py-2 self-start md:self-auto backdrop-blur-md">
-                  {index + 1} / {displaySlides.length}
-                </div>
+                
               </div>
             </div>
           ))}
