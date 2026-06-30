@@ -39,9 +39,9 @@ export const NAV_LINKS = [
 export const HERO_COPY = {
   tagline: "Centro",
   brandName: "Kinésico y Masoterapia",
-  description: "En Kinefit combinamos rehabilitación kinésica avanzada y entrenamiento funcional de alto nivel. Diseñamos un camino a tu medida para sanar lesiones, recuperar movilidad y potenciar tu rendimiento físico.",
+  description: "En KineFit Chile combinamos rehabilitación kinésica avanzada y entrenamiento funcional de alto nivel. Diseñamos un camino a tu medida para sanar lesiones, recuperar movilidad y potenciar tu rendimiento físico.",
   ctaText: "Nuestros especialistas",
-  ctaLink: "#services",
+  ctaLink: "#team",
   bullets: [
     'Atención Personalizada',
     'Horarios Flexibles',

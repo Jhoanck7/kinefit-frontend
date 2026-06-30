@@ -21,13 +21,15 @@ export default async function Home() {
     <main>
       <HeroSection />
       <AboutSection />
-      <Suspense fallback={<div className="py-20 text-center text-slate-500">Cargando Especialidades...</div>}>
+      {/* <Suspense fallback={<div className="py-20 text-center text-slate-500">Cargando Especialidades...</div>}>
         <ServicesSection initialServices={sanityServices} />
-      </Suspense>
-      <GallerySection initialSlides={sanityGallery} />
-      <ProcessSection />
+      </Suspense> */}
       <TeamSection initialTeam={sanityTeam} />
       <TestimonialsSection initialTestimonials={sanityTestimonials} />
+      <ProcessSection />
+      <GallerySection initialSlides={sanityGallery} />
+     
+    
     </main>
   );
 }

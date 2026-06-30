@@ -67,10 +67,8 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Right CTA & Connectivity status (Desktop) */}
           <div className="hidden md:flex items-center gap-4">
-            {/* Status Indicator */}
-            <div className="flex items-center gap-2 bg-slate-100/80 border border-slate-200/50 rounded-full px-3 py-1.5 shadow-xs">
+            {/* <div className="flex items-center gap-2 bg-slate-100/80 border border-slate-200/50 rounded-full px-3 py-1.5 shadow-xs">
               <span className={`w-2.5 h-2.5 rounded-full ${
                 backendConnected === true 
                   ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' 
@@ -85,14 +83,14 @@ export default function Navbar() {
                   ? 'API Offline' 
                   : 'Comprobando...'}
               </span>
-            </div>
+            </div> */}
 
-            <a
+            {/* <a
               href="#booking"
               className="rounded-full bg-brand-primary hover:bg-brand-primary-hover text-white px-5 py-2.5 text-sm font-semibold shadow-md shadow-brand-primary/20 hover:shadow-brand-primary/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
             >
               Iniciar sesión 
-            </a>
+            </a> */}
           </div>
 
           {/* Mobile Menu & Connectivity Status */}
