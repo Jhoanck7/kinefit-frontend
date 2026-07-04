@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { BOOKING_SERVICES, CLINIC_SERVICES_FEATURES } from '@/lib/constants';
+import { generarEnlaceWhatsApp } from '@/lib/utils/whatsapp';
+import { useBookingStore } from '@/lib/store/useBookingStore';
 
 interface SanityService {
   id: number;
@@ -17,6 +19,40 @@ interface ServicesSectionProps {
 }
 
 export default function ServicesSection({ initialServices }: ServicesSectionProps) {
+  const { setSelectedService } = useBookingStore();
+// Si hay servicios de Sanity, los usamos. Si no, usamos las constantes locales.
+  const displayServices = initialServices && initialServices.length > 0 
+    ? initialServices : BOOKING_SERVICES.map((s, idx) => ({
+        id: idx + 1,
+        nombre: s.name,
+        description: idx === 0 
+          ? "Rehabilitación integral de patologías musculoesqueléticas, contracturas y dolores crónicos empleando terapia física." 
+          : idx === 1 
+          ? "Entrenamiento adaptado a tus condiciones físicas e historial clínico, ideal para ganar fuerza y resistencia de forma segura." 
+          : "Servicio enfocado en deportistas de alto nivel y recreativos para el tratamiento ágil de esguinces, desgarros y tendinopatías.",
+        price: s.price,
+        duration: s.duration,
+        features: CLINIC_SERVICES_FEATURES[idx] || []
+      }));
+
+  // MANEJADOR CORREGIDO: Guarda el servicio actual y abre WhatsApp
+  const handleSelectService = (e: React.MouseEvent, service: SanityService) => {
+    e.preventDefault(); // Evita el salto de página del enlace '#'
+
+    // 1. Guardamos el servicio seleccionado en el store global de Zustand
+  
+    setSelectedService(service.id, service.nombre);
+  
+
+    // 2. Generamos el enlace dinámico pasando el nombre del servicio en limpio
+    // Como es directo de la tarjeta, le pasamos una fecha genérica o un mensaje de solicitud
+    const urlWhatsApp = generarEnlaceWhatsApp(service.nombre, "a convenir");
+
+    // 3. Abrimos WhatsApp de inmediato en una nueva pestaña (seguro para celulares)
+    window.open(urlWhatsApp, '_blank', 'noopener,noreferrer');
+  };
+
+  
   // SVG Icons for each service
   const serviceIcons = [
     // Icon 1: Clinical (Spine/Body care)
@@ -37,21 +73,7 @@ export default function ServicesSection({ initialServices }: ServicesSectionProp
     </svg>
   ];
 
-  // Si hay servicios de Sanity, los usamos. Si no, usamos las constantes locales.
-  const displayServices = initialServices && initialServices.length > 0 
-    ? initialServices 
-    : BOOKING_SERVICES.map((s, idx) => ({
-        id: idx + 1,
-        nombre: s.name,
-        description: idx === 0 
-          ? "Rehabilitación integral de patologías musculoesqueléticas, contracturas y dolores crónicos empleando terapia física." 
-          : idx === 1 
-          ? "Entrenamiento adaptado a tus condiciones físicas e historial clínico, ideal para ganar fuerza y resistencia de forma segura." 
-          : "Servicio enfocado en deportistas de alto nivel y recreativos para el tratamiento ágil de esguinces, desgarros y tendinopatías.",
-        price: s.price,
-        duration: s.duration,
-        features: CLINIC_SERVICES_FEATURES[idx] || []
-      }));
+
 
   return (
     <section id="services" className="py-24 bg-white border-b border-slate-200/60 text-slate-900">
@@ -111,15 +133,17 @@ export default function ServicesSection({ initialServices }: ServicesSectionProp
               {/* Price & Booking Link */}
               <div className="mt-4 border-t border-slate-200/60 pt-6 flex flex-col gap-4">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Arancel por Sesión</span>
+                  {/* <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Arancel por Sesión</span> */}
                   <div className="flex flex-col items-end">
                     <span className="text-2xl font-bold tracking-tight text-brand-secondary">{service.price}</span>
-                    <span className="text-[10px] text-slate-400 mt-0.5">Duración: {service.duration}</span>
+                    {/* <span className="text-[10px] text-slate-400 mt-0.5">Duración: {service.duration}</span> */}
                   </div>
                 </div>
                 
                 <a
-                  href="#booking"
+  
+                  href="#"
+                  onClick={(e) => handleSelectService(e, service)}
                   className="w-full text-center py-3 bg-slate-200/50 hover:bg-brand-primary hover:text-white text-slate-700 font-bold rounded-xl text-xs uppercase tracking-wider transition-all duration-300 mt-2"
                 >
                   Agendar Evaluación

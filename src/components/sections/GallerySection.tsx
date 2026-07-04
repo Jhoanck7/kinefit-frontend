@@ -57,7 +57,7 @@ export default function GallerySection({ initialSlides }: GallerySectionProps) {
             Instalaciones y Servicios de Primer Nivel
           </p>
           <p className="text-slate-500 mt-4 text-base sm:text-lg">
-            Explora nuestra clínica diseñada con altos estándares para asegurar una rehabilitación integral y un entrenamiento óptimo.
+            Explora nuestra clínica diseñada con altos estándares para asegurar una rehabilitación integral y un entrenamiento óptimo, con equipamiento nuevo, duradero y confortable, ideal para personas en rehabilitación o deportistas de alto nivel.
           </p>
         </div>
 

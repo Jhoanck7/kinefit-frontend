@@ -9,18 +9,18 @@ export const CLINIC_INFO = {
   name: "KineFitChile",
   tagline: "Centro de Kinesiología y Masoterapia",
   email: "contacto@kinefit.cl",
-  phone: "+ 569 62072672",
+  phone: "+ 56 9 6207 2672",
   phoneRaw: "+56962072672", // for wa.me / tel links
   address: "Pje. Maximiliano Poblete 596, Antofagasta",
   hours: {
-    weekday: "Lunes a Viernes: 08:00 - 20:00 hrs.",
-    saturday: "Sábados: 09:00 - 14:00 hrs.",
+    weekday: "Lunes a Viernes: 09:00 - 21:00 hrs.",
+    saturday: "Sábados: 10:00 - 20:00 hrs.",
     weekdaySummary: "Lunes a Viernes:\n08:00 - 20:00 hrs.",
-    saturdaySummary: "Sábados:\n09:00 - 14:00 hrs."
+    saturdaySummary: "Sábados:\n09:00 - 20:00 hrs."
   },
   socials: {
     instagram: "https://instagram.com",
-    facebook: "https://facebook.com",
+    facebook: "https://www.facebook.com/profile.php?id=61591559489444&sk=directory_links",
     whatsapp: "https://wa.me/56962072672"
   }
 };
@@ -29,10 +29,10 @@ export const CLINIC_INFO = {
 // 
 export const NAV_LINKS = [
   { name: 'Servicios', href: '#services' },
-  { name: 'Instalaciones', href: '#instalaciones' },
-  { name: 'Proceso', href: '#process' },
   { name: 'Equipo', href: '#team' },
-  { name: 'Testimonios', href: '#testimonials' }
+  { name: 'Testimonios', href: '#testimonials' },
+  { name: 'Proceso', href: '#process' },
+  { name: 'Instalaciones', href: '#instalaciones' },
 ];
 
 // 3. Hero Section Copy
@@ -40,19 +40,21 @@ export const HERO_COPY = {
   tagline: "Centro de kinesiología,",
   brandName: "rehabilitación y masoterapia",
   description: "En KineFit Chile combinamos rehabilitación kinésica avanzada y entrenamiento funcional de alto nivel. Diseñamos un camino a tu medida para sanar lesiones, recuperar movilidad y potenciar tu rendimiento físico.",
-  ctaText: "Nuestros especialistas",
-  ctaLink: "#team",
+  ctaText: "Agendar Ahora",
+  ctaLink: "#services",
   bullets: [
     'Atención Personalizada',
-    'Horarios Flexibles',
+    'Seguimiento caso a caso',
     'Pacientes Satisfechos',
+    'Profesionales certificados'
+
   ]
 };
 
 // 4. Booking Flow Options (Services & Time Slots)
 export const BOOKING_SERVICES = [
-  { id: '1', name: 'Kinesiología Clínica', price: '$35.000', duration: '60 min', priceNumeric: 35000 },
-  { id: '2', name: 'Masoterapia', price: '$30.000', duration: '50 min', priceNumeric: 30000 },
+  { id: '1', name: 'Kinesiología Clínica', price: '', duration: '', priceNumeric: 0 },
+  { id: '2', name: 'Masoterapia', price: '', duration: '', priceNumeric: 0 },
 ];
 
 export const BOOKING_TIME_SLOTS = [
@@ -72,12 +74,6 @@ export const CAROUSEL_SLIDES = [
     description: "Espacio equipado con tecnología de resistencia avanzada y herramientas de entrenamiento funcional para readaptación física.",
     image: "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?auto=format&fit=crop&w=1600&q=80",
     features: ["Poleas cónicas", "Plataformas de inercia", "Zonas de peso libre"]
-  },
-  {
-    title: "Boxes de Terapia Manual Privados",
-    description: "Ambientes climatizados y confortables diseñados para terapias manuales ortopédicas, punción seca y evaluaciones personalizadas.",
-    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1600&q=80",
-    features: ["Camillas eléctricas", "Privacidad acústica", "Equipos de electroterapia"]
   },
   {
     title: "Área de Entrenamiento Funcional y Cardio",
@@ -125,51 +121,52 @@ export const CLINIC_PROCESS_STEPS = [
   },
   {
     num: "04",
-    title: "Alta y Mantenimiento",
+    title: "Alta y/o Reforzamiento",
     description: "Evaluamos tu mejoría final, realizamos el alta clínica y te entregamos pautas domiciliarias de ejercicios preventivos para evitar cualquier reincidencia."
   }
 ];
 
 // 8. Clinic Medical and Coaching Staff
 export const CLINIC_TEAM = [
-  {
-    name: "Constanza Maldonado V.",
-    role: "Kinesióloga",
-    specialty: "Terapia Manual Ortopédica e Infiltraciones Clínicas",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
-    email: "constanza.maldonado@kinefit.cl"
-  },
-  {
-    name: "Diego Exequiel B.",
-    role: "Gerente",
-    specialty: "",
-    image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=600&q=80",
-    email: "Diego.exequiel@kinefit.cl"
+    {
+    name: "Franchesca Astudillo C.",
+    role: "Masoterapeuta",
+    specialty: "Masoterapeuta, con 3 años de experiencia en masoterapia en sus diversas metodologías.",
+    image: "/Franchesca.jpg",
+    email: "franchesca@kinefitchile.com"
   },
   {
     name: "Valeria Araneda T.",
-    role: "Kinesióloga",
-    specialty: "Kinesiología Deportiva",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
-    email: "valentina.araneda@kinefit.cl"
+    role: "Kinesiólogo",
+    specialty: "Profecional con 4 años de experiencia en kinesiología, rehabilitación y masoterapia",
+    image: "/Valeria.jpg",
+    email: "valeria@kinefitchile.com"
   },
   {
-    name: "Franchesca Astudillo C.",
-    role: "Masoterapeuta",
-    specialty: "Masoterapia",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
-    email: "nicolas.pardo@kinefit.cl"
-  }
+    name: "Constanza Maldonado V.",
+    role: "Kinesiólogo",
+    specialty: "Profecional con 2 años de experiencia en kinesiología, rehabilitación y masoterapia",
+    image: "/Constanza.jpg",
+    email: "constanza@kinefitchile.com"
+  },
+  
+  { 
+    name: "Diego Exequiel B.",
+    role: "Gerente",
+    specialty: "Administrador Público con 4 años de experiencia en gestión de equipos y organizaciones del mundo público, privado y grupos intermedios.",
+    image: "/Diego.jpg",
+    email: "contacto@kinefitchile.com"
+  },
 ];
 
 
 // 9. Verified Patient Testimonials
 export const CLINIC_TESTIMONIALS = [
   {
-    quote: "La rehabilitación deportiva de Kinefit me permitió volver a competir en tiempo récord tras mi desgarro. El gimnasio está súper bien equipado y la dedicación es del 100%.",
-    author: "Carlos Mendoza",
-    role: "Corredor de Trail running",
-    initials: "CM",
+    quote: "La rehabilitación deportiva de Kinefit me permitió volver a competir en mi deporte tras mi lesión de poleas. El gimnasio está súper bien equipado y la dedicación es del 100%.",
+    author: "Francisco Jofre ",
+    role: "Escalador",
+    initials: "FJ",
     color: "bg-blue-100 text-brand-primary"
   },
   {
@@ -180,10 +177,10 @@ export const CLINIC_TESTIMONIALS = [
     color: "bg-emerald-100 text-emerald-600"
   },
   {
-    quote: "El gimnasio clínico de Kinefit es increíble. Los entrenamientos funcionales están totalmente adaptados a mis lesiones pasadas, permitiéndome ganar fuerza sin miedo a lesionarme.",
-    author: "Roberto Muñoz",
-    role: "Emprendedor",
-    initials: "RM",
+    quote: "La infrastructura es increíble en tema de masoterapia, con tecnología adecuecuada en cuanto a masoterapia, pude volver a mis actividades con con menos estrés.",
+    author: "Maximiliano Ramirez",
+    role: "Desarrollador Web",
+    initials: "MR",
     color: "bg-indigo-100 text-indigo-600"
   }
 ];
