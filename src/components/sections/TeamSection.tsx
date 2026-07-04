@@ -33,10 +33,10 @@ export default function TeamSection({ initialTeam }: TeamSectionProps) {
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-20">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
-            El Equipo
+            Nuestro Equipo
           </h2>
           <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Nuestros Profesionales Médicos
+            Equipo de a Surcusal Matriz
           </p>
           <p className="text-slate-500 mt-4 text-base sm:text-lg">
             Contamos con profesionales altamente capacitados y en constante perfeccionamiento para brindarte el mejor cuidado clínico.

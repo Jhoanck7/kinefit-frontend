@@ -7,7 +7,7 @@ export default function AboutSection() {
         <div className="mx-auto max-w-3xl lg:text-center">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">Quiénes Somos</h2>
           <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Un enfoque integral para tu cuerpo
+            Un Enfoque Integral para tu Cuerpo
           </p>
           <p className="text-slate-500 mt-4 text-base sm:text-lg">
             Nuestro equipo de kinesiólogos y entrenadores certificados trabaja de manera personalizada para diagnosticar, tratar y prevenir lesiones, guiándote paso a paso en tu proceso de recuperación y fortalecimiento físico.
