@@ -120,7 +120,7 @@ export default function BookingCard() {
         <div className="flex flex-col gap-6 animate-fade-in">
           <div className="text-left">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">Paso 1 de 4</h3>
-            <p className="text-slate-800 text-base font-bold">Selecciona una Especialidad</p>
+            <p className="text-slate-800 text-base font-bold">Selecciona un servicio</p>
           </div>
           
           <div className="flex flex-col gap-3">

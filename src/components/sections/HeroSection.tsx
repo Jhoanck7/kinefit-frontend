@@ -66,72 +66,7 @@ export default function HeroSection() {
           
           {/* Lado Derecho */}
           <div className="lg:col-span-6 relative w-full">
-            {/* Floating abstract dashboard element */}
-            <div className="absolute -top-6 -left-6 w-24 h-24 bg-brand-primary/5 rounded-full blur-xl" />
             
-            <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-brand-border p-8 sm:p-10 md:p-12 shadow-xl shadow-slate-100/80 relative overflow-hidden flex flex-col sm:flex-row gap-10 items-stretch">
-              {/* Abstract medical scan glow overlay */}
-              <div className="absolute right-0 bottom-0 w-32 h-32 bg-brand-primary/5 rounded-full blur-3xl pointer-events-none" />
-              
-              {/* Interactive Booking Card (Left half of card) */}
-              <div className="flex-[1.3] border-b sm:border-b-0 sm:border-r border-brand-border/60 pb-8 sm:pb-0 sm:pr-8">
-                <BookingCard />
-              </div>
-              
-              {/* Reactive Stepper (Right half of card) */}
-              <div className="flex-1 flex flex-col justify-between py-2 min-h-[380px]">
-                {[
-                  { step: 1, title: 'Elige Servicio', desc: 'Especialidades' },
-                  { step: 2, title: 'Especialista', desc: 'Terapeutas clínicos' },
-                  { step: 3, title: 'Fecha y Hora', desc: 'Horarios disponibles' },
-                  { step: 4, title: 'Confirma Cita', desc: 'Datos personales' }
-                ].map((item, index, arr) => {
-                  const isComplete = currentStep > item.step;
-                  const isActive = currentStep === item.step;
-
-                  return (
-                    <div key={item.step} className="flex gap-3 relative items-start group">
-                      {/* Connector line */}
-                      {index < arr.length - 1 && (
-                        <div
-                          className={`absolute left-3.5 top-7 bottom-0 w-0.5 -ml-[1px] bg-brand-border ${
-                            isComplete ? 'bg-brand-primary' : ''
-                          }`}
-                          style={{ height: 'calc(100% + 12px)' }}
-                        />
-                      )}
-                      
-                      {/* Circle icon */}
-                      <div
-                        className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold border z-10 transition-all ${
-                          isComplete
-                            ? 'bg-brand-primary border-brand-primary-hover text-white shadow-md shadow-brand-primary/20'
-                            : isActive
-                            ? 'bg-white border-brand-primary text-brand-primary shadow-md shadow-brand-primary/10 animate-pulse'
-                            : 'bg-slate-50 border-brand-border text-brand-muted'
-                        }`}
-                      >
-                        {isComplete ? '✓' : item.step}
-                      </div>
-                      
-                      {/* Text labels */}
-                      <div>
-                        <h4
-                          className={`text-xs font-semibold transition-colors ${
-                            isComplete || isActive
-                              ? 'text-slate-900'
-                              : 'text-brand-muted'
-                          }`}
-                        >
-                          {item.title}
-                        </h4>
-                        <p className="text-[10px] text-slate-500 mt-0.5">{item.desc}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
           </div>
           
         </div>
