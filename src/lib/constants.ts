@@ -8,20 +8,21 @@
 export const CLINIC_INFO = {
   name: "KineFitChile",
   tagline: "Centro de Kinesiología y Masoterapia",
-  email: "contacto@kinefit.cl",
+  email: "contacto@kinefitchile.com",
   phone: "+ 56 9 6207 2672",
   phoneRaw: "+56962072672", // for wa.me / tel links
   address: "Pje. Maximiliano Poblete 596, Antofagasta",
   hours: {
     weekday: "Lunes a Viernes: 09:00 - 21:00 hrs.",
     saturday: "Sábados: 10:00 - 20:00 hrs.",
-    weekdaySummary: "Lunes a Viernes:\n08:00 - 20:00 hrs.",
-    saturdaySummary: "Sábados:\n09:00 - 20:00 hrs."
+    weekdaySummary: "Lunes a Viernes:\n09:00 a 14:00 / 15:00 a 21:00 hrs.",
+    saturdaySummary: "Sábados y Domingo :\n10:00 a 14:00 / 15:00 a 21:00 hrs."
   },
   socials: {
-    instagram: "https://instagram.com",
+    instagram: "https://www.instagram.com/kinefit.chile",
     facebook: "https://www.facebook.com/profile.php?id=61591559489444&sk=directory_links",
-    whatsapp: "https://wa.me/56962072672"
+    whatsapp: "https://wa.me/56962072672",
+    tiktok: "https://www.tiktok.com/@kinefitchile?_r=1&_t=ZS-97lIyj0Yjvs"
   }
 };
 
@@ -138,7 +139,7 @@ export const CLINIC_TEAM = [
   {
     name: "Valeria Araneda T.",
     role: "Kinesiólogo",
-    specialty: "Profecional con 4 años de experiencia en kinesiología, rehabilitación y masoterapia",
+    specialty: "Profesional con 5 años de experiencia en Kinesiología y rehabilitación, y actualmente 10 años de experiencia en masoterapia",
     image: "/Valeria.jpg",
     email: "valeria@kinefitchile.com"
   },
