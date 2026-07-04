@@ -1,12 +1,30 @@
 "use client";
 
+import React from 'react';
 import { CLINIC_PROCESS_STEPS } from '@/lib/constants';
 
 const STEPS = CLINIC_PROCESS_STEPS;
 
 export default function ProcessSection() {
   return (
-    <section id="process" className="py-24 bg-slate-50 border-b border-slate-200/60 text-slate-900">
+    <section id="process" className="py-24 bg-gradient-to-b from-slate-50 via-blue-50/10 to-slate-50 border-b border-slate-200/60 text-slate-900 relative overflow-hidden">
+      
+      {/* Background soft glow decoration */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-blue-500/5 rounded-full filter blur-[150px] pointer-events-none -z-20" />
+
+      {/* CSS Animation for the overlay dashed line */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes pathFlow {
+          to {
+            stroke-dashoffset: -30;
+          }
+        }
+        .animate-path-flow {
+          stroke-dasharray: 10 12;
+          animation: pathFlow 2s linear infinite;
+        }
+      `}} />
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -18,24 +36,58 @@ export default function ProcessSection() {
             ¿Cómo Trabajamos Contigo?
           </p>
           <p className="text-slate-500 mt-4 text-base sm:text-lg">
-            Te acompañamos paso a paso con un plan ordenado y supervisado para garantizar resultados duraderos y seguros.
+            Te acompañamos paso a paso con un plan ordenado y supervisado para garantizar resultados duraderos y seguros. A continuación te indicamos el paso a paso de los procesos realizados en nuestros pacientes.
           </p>
         </div>
 
         {/* Steps Process Grid */}
         <div className="relative">
-          {/* Connector Line (Desktop) */}
-          <div className="absolute top-1/2 left-4 right-4 h-0.5 bg-slate-200 -translate-y-1/2 hidden lg:block -z-10" />
+          
+          {/* 1. Very Thick Wavy Solid Blue Path (Desktop: lg) */}
+          <div className="absolute top-0 left-16 right-16 h-36 pointer-events-none hidden lg:block -z-10">
+            <svg width="100%" height="100%" viewBox="0 0 1000 150" fill="none" preserveAspectRatio="none" className="overflow-visible">
+              {/* Thick Blur Glow (Solid Blue) */}
+              <path
+                d="M 10,75 C 250,-20 250,170 500,75 C 750,-20 750,170 990,75"
+                stroke="#0C5DC5"
+                strokeWidth="28"
+                strokeLinecap="round"
+                className="opacity-15 filter blur-[12px]"
+              />
+              
+              {/* Very Thick Solid Core Line (Solid Blue) */}
+              <path
+                d="M 10,75 C 250,-20 250,170 500,75 C 750,-20 750,170 990,75"
+                stroke="#0C5DC5"
+                strokeWidth="14"
+                strokeLinecap="round"
+                className="opacity-90"
+              />
+              
+              {/* Animated overlay dash line (Solid White for flow effect) */}
+              <path
+                d="M 10,75 C 250,-20 250,170 500,75 C 750,-20 750,170 990,75"
+                stroke="#ffffff"
+                strokeWidth="3"
+                strokeLinecap="round"
+                className="animate-path-flow opacity-60"
+              />
+            </svg>
+          </div>
 
+          {/* 2. Vertical Solid Blue Path (Mobile/Tablet: md) */}
+          <div className="absolute left-[35px] top-6 bottom-6 w-3 bg-brand-primary rounded-full hidden md:block lg:hidden -z-10 opacity-30" />
+
+          {/* Steps Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {STEPS.map((step) => (
               <div 
                 key={step.num}
-                className="group bg-white rounded-3xl border border-slate-200/60 p-8 shadow-xs hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+                className="group bg-white rounded-3xl border border-slate-200/60 p-8 shadow-sm hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   {/* Step number badge */}
-                  <div className="w-14 h-14 rounded-2xl bg-brand-primary-glow flex items-center justify-center mb-6 font-black text-2xl text-brand-primary group-hover:scale-110 group-hover:bg-brand-primary group-hover:text-white transition-all duration-300">
+                  <div className="w-14 h-14 rounded-2xl bg-brand-primary-glow flex items-center justify-center mb-6 font-black text-2xl text-brand-primary group-hover:scale-110 group-hover:bg-brand-primary group-hover:text-white transition-all duration-300 shadow-sm">
                     {step.num}
                   </div>
 
