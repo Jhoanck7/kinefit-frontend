@@ -6,6 +6,7 @@ import GallerySection from "@/components/sections/GallerySection";
 import ProcessSection from "@/components/sections/ProcessSection";
 import TeamSection from "@/components/sections/TeamSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
+import LocationSection from "@/components/sections/LocationSection";
 import { sanityService } from "@/lib/services/sanity.service";
 
 export default async function Home() {
@@ -28,6 +29,7 @@ export default async function Home() {
       <TestimonialsSection initialTestimonials={sanityTestimonials} />
       <ProcessSection />
       <GallerySection initialSlides={sanityGallery} />
+      <LocationSection />
     </main>
   );
 }

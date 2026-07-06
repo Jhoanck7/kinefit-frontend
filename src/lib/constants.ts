@@ -34,6 +34,7 @@ export const NAV_LINKS = [
   { name: 'Testimonios', href: '#testimonials' },
   { name: 'Proceso', href: '#process' },
   { name: 'Instalaciones', href: '#instalaciones' },
+  { name: 'Ubicación', href: '#location' },
 ];
 
 // 3. Hero Section Copy
@@ -146,7 +147,7 @@ export const CLINIC_TEAM = [
   {
     name: "Constanza Maldonado V.",
     role: "Kinesiólogo",
-    specialty: "Profecional con 2 años de experiencia en kinesiología, rehabilitación y masoterapia",
+    specialty: "Profesional con 2 años de experiencia en kinesiología de rehabilitación, traumatológica, dolor crónico, geriátrica, respiratoria y masoterapia",
     image: "/Constanza.jpg",
     email: "constanza@kinefitchile.com"
   },
