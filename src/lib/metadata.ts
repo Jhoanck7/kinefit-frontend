@@ -6,8 +6,13 @@ export const defaultMetadata: Metadata = {
     template: '%s | Kinefit'
   },
   description: 'Centro de rehabilitación kinésica y masoterapia.',
-  keywords: ['kinesiología', 'masoterapia', 'rehabilitación', 'kinefit', 'kinesiólogo', 'terapia física'],
+  keywords: ['kinesiología', 'masoterapia', 'rehabilitación', 'kinefit', 'kinefitchile','KineFitChile', 'kinesiólogo', 'terapia física'],
   authors: [{ name: 'Kinefit' }],
+  icons: {
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
   creator: 'Kinefit',
   publisher: 'Kinefit',
   robots: {
