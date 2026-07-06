@@ -23,8 +23,8 @@ export default async function Home() {
       <HeroSection />
       <AboutSection />
       <Suspense fallback={<div className="py-20 text-center text-slate-500">Cargando Especialidades...</div>}>
-        <ServicesSection initialServices={sanityServices} />
-      </Suspense>
+        {/* <ServicesSection initialServices={sanityServices} /> */}
+      </Suspense>               
       <TeamSection initialTeam={sanityTeam} />
       <TestimonialsSection initialTestimonials={sanityTestimonials} />
       <ProcessSection />

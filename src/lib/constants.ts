@@ -29,7 +29,6 @@ export const CLINIC_INFO = {
 // 2. Navigation Link Items
 // 
 export const NAV_LINKS = [
-  { name: 'Servicios', href: '#services' },
   { name: 'Equipo', href: '#team' },
   { name: 'Testimonios', href: '#testimonials' },
   { name: 'Proceso', href: '#process' },
@@ -41,9 +40,9 @@ export const NAV_LINKS = [
 export const HERO_COPY = {
   tagline: "Centro de kinesiología,",
   brandName: "rehabilitación y masoterapia",
-  description: "En KineFit Chile combinamos rehabilitación kinésica avanzada y entrenamiento funcional de alto nivel. Diseñamos un camino a tu medida para sanar lesiones, recuperar movilidad y potenciar tu rendimiento físico.",
-  ctaText: "Agendar Ahora",
-  ctaLink: "#services",
+  description: "En KineFit Chile combinamos rehabilitación kinésica avanzada y entrenamiento funcional de alto nivel. Diseñamos un plan de tratamiento a tu medida para sanar lesiones, recuperar movilidad y potenciar tu rendimiento físico.",
+  ctaText: "VER Y AGENDAR SERVICIOS AHORA",
+  ctaLink: "https://kinesiologofisioterapeutadediegoexequielbarreravenegas.site.agendapro.com/cl",
   bullets: [
     'Atención Personalizada',
     'Seguimiento caso a caso',
@@ -133,14 +132,14 @@ export const CLINIC_TEAM = [
     {
     name: "Franchesca Astudillo C.",
     role: "Masoterapeuta",
-    specialty: "Masoterapeuta con 3 años de experiencia en masoterapia en sus diversas metodologías.",
+    specialty: "Masoterapeuta con 3 años de experiencia en diversas técnicas de masoterapia, enfocada en la recuperación muscular, el alivio del dolor y el bienestar físico",
     image: "/Franchesca.jpg",
     email: "franchesca@kinefitchile.com"
   },
   {
     name: "Valeria Araneda T.",
     role: "Kinesióloga",
-    specialty: "Profesional con 5 años de experiencia en Kinesiología y rehabilitación, y actualmente 10 años de experiencia en masoterapia.",
+    specialty: "Profesional con 5 años de experiencia en Kinesiología y rehabilitación, además de 10 años de experiencia en masoterapia.",
     image: "/Valeria.jpg",
     email: "valeria@kinefitchile.com"
   },
@@ -165,21 +164,21 @@ export const CLINIC_TEAM = [
 // 9. Verified Patient Testimonials
 export const CLINIC_TESTIMONIALS = [
   {
-    quote: "La rehabilitación deportiva de Kinefit me permitió volver a competir en mi deporte tras mi lesión de poleas. El gimnasio está súper bien equipado y la dedicación es del 100%.",
+    quote: "La rehabilitación deportiva de Kinefit me permitió volver a competir en mi deporte tras mi lesión de poleas. El gimnasio está súper bien equipado y la dedicación del equipo fue excelente",
     author: "Francisco Jofré",
     role: "Escalador",
     initials: "FJ",
     color: "bg-blue-100 text-brand-primary"
   },
   {
-    quote: "Llegué con un dolor lumbar crónico insoportable que limitaba mi trabajo. Gracias a la terapia manual y al plan de ejercicios clínicos hoy puedo hacer mi vida totalmente libre de dolor.",
+    quote: "Llegué con un dolor lumbar crónico insoportable que limitaba mi trabajo. Gracias a la terapia manual y al plan de ejercicios clínicos hoy puedo realizar mis actividades cotidianas sin dolor.",
     author: "Andrea Valenzuela",
     role: "Ingeniera Civil",
     initials: "AV",
     color: "bg-emerald-100 text-emerald-600"
   },
   {
-    quote: "La infraestructura es increíble en temas de masoterapia. Con tecnología adecuada, pude volver a mis actividades con menos estrés.",
+    quote: "La infraestructura para masoterapia es excelente. Gracias al equipamiento y al tratamiento recibido, pude volver a mis actividades con mucho menos estrés y molestias musculares.",
     author: "Maximiliano Ramírez",
     role: "Desarrollador Web",
     initials: "MR",
