@@ -42,7 +42,7 @@ export const HERO_COPY = {
   brandName: "rehabilitación y masoterapia",
   description: "En KineFit Chile combinamos rehabilitación kinésica avanzada y entrenamiento funcional de alto nivel. Diseñamos un plan de tratamiento a tu medida para sanar lesiones, recuperar movilidad y potenciar tu rendimiento físico.",
   ctaText: "VER Y AGENDAR SERVICIOS AHORA",
-  ctaLink: "https://kinesiologofisioterapeutadediegoexequielbarreravenegas.site.agendapro.com/cl",
+  ctaLink: "https://kinefitchile.site.agendapro.com/cl",
   bullets: [
     'Atención Personalizada',
     'Seguimiento caso a caso',

@@ -65,7 +65,12 @@ export default function GallerySection({ initialSlides }: GallerySectionProps) {
       <div className="relative w-full group/carousel">
         <style>{`
           .gallery-track {
-            --slide-width: 80vw;
+            --slide-width: 85vw;
+          }
+          @media (min-width: 768px) {
+            .gallery-track {
+              --slide-width: 75vw;
+            }
           }
           @media (min-width: 1024px) {
             .gallery-track {
@@ -94,14 +99,14 @@ export default function GallerySection({ initialSlides }: GallerySectionProps) {
                     if (isPrev) prevSlide();
                     if (isNext) nextSlide();
                   }}
-                  className={`w-[80vw] lg:w-[62vw] shrink-0 px-4 transition-all duration-700 ease-out select-none ${
+                  className={`w-[85vw] md:w-[75vw] lg:w-[62vw] shrink-0 px-3 md:px-4 transition-all duration-700 ease-out select-none ${
                     isActive 
                       ? "opacity-100 scale-100 z-20 cursor-default" 
                       : "opacity-40 scale-[0.92] blur-[0.5px] z-10 cursor-pointer hover:opacity-60"
                   }`}
                 >
                   {/* Card Container */}
-                  <div className="relative rounded-3xl overflow-hidden shadow-xl bg-slate-900 aspect-[16/10] md:aspect-[21/9] w-full">
+                  <div className="relative rounded-3xl overflow-hidden shadow-xl bg-slate-900 h-[320px] sm:h-[380px] md:h-auto md:aspect-[21/9] w-full">
                     {/* Image */}
                     <div className="relative w-full h-full">
                       <Image

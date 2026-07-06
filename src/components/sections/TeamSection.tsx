@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { CLINIC_TEAM } from '@/lib/constants';
 
@@ -38,6 +38,25 @@ export default function TeamSection({ initialTeam }: TeamSectionProps) {
     }
   };
 
+  // Desplazamiento automático cada 5 segundos
+  useEffect(() => {
+    const handleAutoScroll = () => {
+      if (scrollRef.current) {
+        const { scrollLeft, clientWidth, scrollWidth } = scrollRef.current;
+        // Si estamos al final o muy cerca, volver al inicio
+        if (scrollLeft + clientWidth >= scrollWidth - 24) {
+          scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          // Desplazar un bloque completo visible
+          scrollRef.current.scrollBy({ left: clientWidth, behavior: 'smooth' });
+        }
+      }
+    };
+
+    const timer = setInterval(handleAutoScroll, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <section id="team" className="py-24 bg-white border-b border-slate-200/60 text-slate-900 overflow-hidden w-full">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -61,13 +80,13 @@ export default function TeamSection({ initialTeam }: TeamSectionProps) {
           {/* Flex Scroll Container */}
           <div 
             ref={scrollRef}
-            className="flex gap-8 overflow-x-auto scroll-smooth snap-x snap-mandatory py-4 px-1 scrollbar-none"
+            className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory py-4 px-4 scrollbar-none scroll-pl-4"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {displayTeam.map((member) => (
               <div 
                 key={member.name}
-                className="w-full md:w-[calc(50%-16px)] lg:w-[calc(33.333%-21.33px)] shrink-0 snap-start snap-always"
+                className="w-[82%] sm:w-[46%] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 snap-start snap-always"
               >
                 {/* Card Container - Manteniendo formato original */}
                 <div className="group/card flex flex-col items-center text-center bg-slate-50 border border-slate-200/60 rounded-3xl p-8 hover:bg-white hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100 hover:-translate-y-1 transition-all duration-300 h-full">
