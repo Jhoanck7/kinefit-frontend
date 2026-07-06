@@ -16,7 +16,7 @@ export const CLINIC_INFO = {
     weekday: "Lunes a Viernes: 09:00 - 21:00 hrs.",
     saturday: "Sábados: 10:00 - 20:00 hrs.",
     weekdaySummary: "Lunes a Viernes:\n09:00 a 14:00 / 15:00 a 21:00 hrs.",
-    saturdaySummary: "Sábados y Domingo :\n10:00 a 14:00 / 15:00 a 21:00 hrs."
+    saturdaySummary: "Sábados y Domingos:\n10:00 a 14:00 / 15:00 a 21:00 hrs."
   },
   socials: {
     instagram: "https://www.instagram.com/kinefit.chile",
@@ -133,21 +133,21 @@ export const CLINIC_TEAM = [
     {
     name: "Franchesca Astudillo C.",
     role: "Masoterapeuta",
-    specialty: "Masoterapeuta, con 3 años de experiencia en masoterapia en sus diversas metodologías.",
+    specialty: "Masoterapeuta con 3 años de experiencia en masoterapia en sus diversas metodologías.",
     image: "/Franchesca.jpg",
     email: "franchesca@kinefitchile.com"
   },
   {
     name: "Valeria Araneda T.",
-    role: "Kinesiólogo",
-    specialty: "Profesional con 5 años de experiencia en Kinesiología y rehabilitación, y actualmente 10 años de experiencia en masoterapia",
+    role: "Kinesióloga",
+    specialty: "Profesional con 5 años de experiencia en Kinesiología y rehabilitación, y actualmente 10 años de experiencia en masoterapia.",
     image: "/Valeria.jpg",
     email: "valeria@kinefitchile.com"
   },
   {
     name: "Constanza Maldonado V.",
-    role: "Kinesiólogo",
-    specialty: "Profesional con 2 años de experiencia en kinesiología de rehabilitación, traumatológica, dolor crónico, geriátrica, respiratoria y masoterapia",
+    role: "Kinesióloga",
+    specialty: "Profesional con 2 años de experiencia en kinesiología de rehabilitación, traumatológica, dolor crónico, geriátrica, respiratoria y masoterapia.",
     image: "/Constanza.jpg",
     email: "constanza@kinefitchile.com"
   },
@@ -166,7 +166,7 @@ export const CLINIC_TEAM = [
 export const CLINIC_TESTIMONIALS = [
   {
     quote: "La rehabilitación deportiva de Kinefit me permitió volver a competir en mi deporte tras mi lesión de poleas. El gimnasio está súper bien equipado y la dedicación es del 100%.",
-    author: "Francisco Jofre ",
+    author: "Francisco Jofré",
     role: "Escalador",
     initials: "FJ",
     color: "bg-blue-100 text-brand-primary"
@@ -179,8 +179,8 @@ export const CLINIC_TESTIMONIALS = [
     color: "bg-emerald-100 text-emerald-600"
   },
   {
-    quote: "La infrastructura es increíble en tema de masoterapia, con tecnología adecuecuada en cuanto a masoterapia, pude volver a mis actividades con con menos estrés.",
-    author: "Maximiliano Ramirez",
+    quote: "La infraestructura es increíble en temas de masoterapia. Con tecnología adecuada, pude volver a mis actividades con menos estrés.",
+    author: "Maximiliano Ramírez",
     role: "Desarrollador Web",
     initials: "MR",
     color: "bg-indigo-100 text-indigo-600"

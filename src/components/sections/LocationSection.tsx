@@ -45,7 +45,7 @@ export default function LocationSection() {
               </div>
 
               {/* Contact Card */}
-              <div className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200/50">
+              {/* <div className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200/50">
                 <div className="w-10 h-10 rounded-xl bg-brand-primary-glow flex items-center justify-center text-brand-primary shrink-0">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -56,7 +56,7 @@ export default function LocationSection() {
                   <p className="text-xs text-brand-muted leading-relaxed mb-1">Teléfono: {CLINIC_INFO.phone}</p>
                   <p className="text-xs text-brand-muted leading-relaxed">Email: {CLINIC_INFO.email}</p>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* External buttons */}
@@ -80,19 +80,28 @@ export default function LocationSection() {
             </div>
           </div>
 
-          {/* Right Column: Google Maps Iframe Container */}
-          <div className="lg:col-span-7 w-full h-[350px] sm:h-[450px] rounded-3xl overflow-hidden border border-slate-200 shadow-xl shadow-slate-100/50 bg-slate-50 relative group">
-            <iframe
-              src={mapUrl}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Google Maps Kinefit"
-              className="w-full h-full grayscale-[10%] contrast-[110%] group-hover:grayscale-0 transition-all duration-500"
-            />
+          {/* Right Column: Google Maps Iframe Container with Decorative Background */}
+          <div className="lg:col-span-7 relative w-full h-[350px] sm:h-[450px] group">
+            {/* 1. Technical Dots Pattern Background (Projects beyond borders) */}
+            <div className="absolute -inset-6 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] bg-[size:20px_20px] opacity-60 -z-20 rounded-[40px] pointer-events-none" />
+            
+            {/* 2. Soft Glowing Gradient Backdrop (Vibrant Brand Colors Aura) */}
+            <div className="absolute -inset-2 bg-gradient-to-tr from-brand-primary/20 via-indigo-500/20 to-purple-500/10 rounded-[36px] blur-xl opacity-80 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-500 -z-10 pointer-events-none" />
+            
+            {/* 3. The actual Card container holding the Map IFrame */}
+            <div className="w-full h-full rounded-3xl overflow-hidden border border-slate-200 shadow-2xl bg-white relative">
+              <iframe
+                src={mapUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Google Maps Kinefit"
+                className="w-full h-full grayscale-[10%] contrast-[105%] group-hover:grayscale-0 transition-all duration-700"
+              />
+            </div>
           </div>
 
         </div>

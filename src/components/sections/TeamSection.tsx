@@ -36,7 +36,7 @@ export default function TeamSection({ initialTeam }: TeamSectionProps) {
             Nuestro Equipo
           </h2>
           <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Equipo de a Surcusal Matriz
+            Equipo de la Sucursal Matriz
           </p>
           <p className="text-slate-500 mt-4 text-base sm:text-lg">
             Contamos con profesionales altamente capacitados y en constante perfeccionamiento para brindarte el mejor cuidado clínico.
