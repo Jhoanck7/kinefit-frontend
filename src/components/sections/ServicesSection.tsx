@@ -28,7 +28,7 @@ export default function ServicesSection({ initialServices }: ServicesSectionProp
         description: idx === 0 
           ? "Rehabilitación integral de patologías musculoesqueléticas, contracturas y dolores crónicos empleando terapia física." 
           : idx === 1 
-          ? "Entrenamiento adaptado a tus condiciones físicas e historial clínico, ideal para ganar fuerza y resistencia de forma segura." 
+          ? "Tratamientos de masoterapia orientados a aliviar el dolor, disminuir la tensión muscular, favorecer la recuperación física y mejorar el bienestar general mediante técnicas manuales especializadas." 
           : "Servicio enfocado en deportistas de alto nivel y recreativos para el tratamiento ágil de esguinces, desgarros y tendinopatías.",
         price: s.price,
         duration: s.duration,
