@@ -39,7 +39,7 @@ export default function LocationSection() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900 mb-1">Dirección</h4>
+                  <h3 className="text-sm font-bold text-slate-900 mb-1">Dirección</h3>
                   <p className="text-xs text-brand-muted leading-relaxed">{CLINIC_INFO.address}</p>
                 </div>
               </div>

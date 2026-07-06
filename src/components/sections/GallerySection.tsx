@@ -173,7 +173,7 @@ export default function GallerySection({ initialSlides }: GallerySectionProps) {
             <button
               key={index}
               onClick={() => setCurrent(index)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+              className={`relative w-2.5 h-2.5 rounded-full transition-all duration-300 before:absolute before:-inset-2.5 before:content-[''] ${
                 index === current
                   ? "bg-brand-primary w-6"
                   : "bg-slate-300 hover:bg-slate-400"
