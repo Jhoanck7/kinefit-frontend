@@ -11,7 +11,7 @@ export const defaultMetadata: Metadata = {
   icons: {
     icon: '/icon.svg',
     shortcut: '/icon.svg',
-    apple: '/icon.svg',
+    apple: '/apple-touch-icon.png',
   },
   creator: 'Kinefit',
   publisher: 'Kinefit',
