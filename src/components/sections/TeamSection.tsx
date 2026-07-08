@@ -32,22 +32,18 @@ export default function TeamSection({ initialTeam }: TeamSectionProps) {
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const cardWidth = scrollRef.current.clientWidth;
-      // Desplazar el ancho completo visible del contenedor
       const scrollAmount = direction === 'left' ? -cardWidth : cardWidth;
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
-  // Desplazamiento automático cada 5 segundos
   useEffect(() => {
     const handleAutoScroll = () => {
       if (scrollRef.current) {
         const { scrollLeft, clientWidth, scrollWidth } = scrollRef.current;
-        // Si estamos al final o muy cerca, volver al inicio
         if (scrollLeft + clientWidth >= scrollWidth - 24) {
           scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
-          // Desplazar un bloque completo visible
           scrollRef.current.scrollBy({ left: clientWidth, behavior: 'smooth' });
         }
       }
@@ -86,43 +82,52 @@ export default function TeamSection({ initialTeam }: TeamSectionProps) {
             {displayTeam.map((member) => (
               <div 
                 key={member.name}
-                className="w-[82%] sm:w-[46%] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 snap-start snap-always"
+                className="w-[85%] sm:w-[48%] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 snap-start snap-always"
               >
-                {/* Card Container - Manteniendo formato original */}
-                <div className="group/card flex flex-col items-center text-center bg-slate-50 border border-slate-200/60 rounded-3xl p-8 hover:bg-white hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100 hover:-translate-y-1 transition-all duration-300 h-full">
-                  {/* Photo Frame */}
-                  <div className="relative w-44 h-44 rounded-full overflow-hidden mb-6 border-4 border-white shadow-md group-hover/card:scale-105 transition-transform duration-300">
-                    <Image
-                      src={member.image}
-                      alt={member.name}
-                      fill
-                      className="object-cover object-center filter grayscale contrast-110 group-hover/card:grayscale-0 transition-all duration-500"
-                      sizes="176px"
-                    />
-                  </div>
-
-                  {/* Text Info */}
-                  <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover/card:text-brand-primary transition-colors">
-                    {member.name}
-                  </h3>
-                  <span className="text-xs font-semibold text-brand-primary uppercase tracking-wider mb-3 block">
-                    {member.role}
-                  </span>
-                  <p className="text-xs text-slate-500 leading-relaxed max-w-xs mb-6 px-2 min-h-[32px]">
-                    {member.specialty}
-                  </p>
-
-                  {/* Contact Email Link */}
-                  <a 
-                    href={`mailto:${member.email}`}
-                    className="inline-flex items-center gap-2 text-xs font-semibold text-brand-muted hover:text-brand-primary transition-colors border border-slate-200 hover:border-brand-primary/30 rounded-full px-4 py-2 bg-white shadow-xs mt-auto"
-                  >
-                    <svg className="w-4 h-4 text-slate-400 group-hover/card:text-brand-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 00-2 2z" />
-                    </svg>
-                    <span>{member.email}</span>
-                  </a>
+                {/* Card Container */}
+                <div className="group/card flex flex-col items-center justify-between text-center bg-slate-50 border border-slate-200/60 rounded-3xl p-6 sm:p-8 hover:bg-white hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100 hover:-translate-y-1 transition-all duration-300 w-full min-h-[440px] h-full">
+                  
+                {/* Bloque superior */}
+                <div className="block w-full">
+              
+                {/* Photo Frame  */}
+                <div className="relative w-[168px] h-[168px] min-w-[168px] max-w-[168px] min-h-[168px] max-h-[168px] shrink-0 mx-auto rounded-full overflow-hidden mb-6 border-4 border-white shadow-md group-hover/card:scale-101 transition-transform duration-300">
+                  <Image   
+                    src={member.image}
+                    alt={member.name}
+                    width={168} 
+                    height={168}
+                    priority
+                    className="w-full h-full object-cover object-center scale-[1.7_1.2]  contrast-110 group-hover/card:grayscale-0 transition-all duration-500 rounded-full"
+                  />
                 </div>
+
+                {/* Text Info */}
+                <h3 className="text-lg font-bold text-slate-900 mb-1 group-hover/card:text-brand-primary transition-colors">
+                  {member.name}
+                </h3>
+                <span className="text-xs font-semibold text-brand-primary uppercase tracking-wider mb-3 block">
+                  {member.role}
+                </span>
+                <p className="text-xs text-slate-500 leading-relaxed max-w-xs mb-6 px-2 min-h-[32px]">
+                  {member.specialty}
+                </p>
+              </div>
+
+              {/* Contact Email Link */}
+              <div className="w-full flex justify-center mt-auto">
+                <a 
+                  href={`mailto:${member.email}`}
+                  className="inline-flex items-center gap-2 text-xs font-semibold text-brand-muted hover:text-brand-primary transition-colors border border-slate-200 hover:border-brand-primary/30 rounded-full px-4 py-2 bg-white shadow-xs"
+                >
+                  <svg className="w-4 h-4 text-slate-400 group-hover/card:text-brand-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 00-2 2z" />
+                  </svg>
+                  <span>{member.email}</span>
+                </a>
+              </div>
+
+            </div>
               </div>
             ))}
           </div>
