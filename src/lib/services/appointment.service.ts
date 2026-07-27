@@ -1,24 +1,30 @@
 import { apiClient } from '@/lib/api/apiClient';
-import { Appointment, CreateAppointmentDto } from '@/types';
+import { 
+  BackendService, 
+  BackendSpecialist, 
+  BackendTimeSlot, 
+  CreateCitaDto, 
+  CitaResponseData 
+} from '@/types';
 
 export const appointmentService = {
-  async getAll(): Promise<Appointment[]> {
-    return apiClient.get<Appointment[]>('/appointments');
+  async getServices(soloActivos = true): Promise<{ data: BackendService[] }> {
+    return apiClient.get<{ data: BackendService[] }>(`/servicios?soloActivos=${soloActivos}`);
   },
 
-  async getById(id: string): Promise<Appointment> {
-    return apiClient.get<Appointment>(`/appointments/${id}`);
+  async getEspecialistas(servicioId?: number, soloActivos = true): Promise<{ data: BackendSpecialist[] }> {
+    const queryParams = new URLSearchParams();
+    if (servicioId) queryParams.append('servicioId', servicioId.toString());
+    queryParams.append('soloActivos', soloActivos.toString());
+
+    return apiClient.get<{ data: BackendSpecialist[] }>(`/especialistas?${queryParams.toString()}`);
   },
 
-  async create(appointmentData: CreateAppointmentDto): Promise<Appointment> {
-    return apiClient.post<Appointment>('/appointments', appointmentData);
+  async getBloques(especialistaId: number, fecha: string): Promise<{ data: BackendTimeSlot[] }> {
+    return apiClient.get<{ data: BackendTimeSlot[] }>(`/bloques?especialistaId=${especialistaId}&fecha=${fecha}`);
   },
 
-  async cancel(id: string): Promise<void> {
-    return apiClient.delete<void>(`/appointments/${id}`);
-  },
-
-  async getAvailableSlots(date: string): Promise<string[]> {
-    return apiClient.get<string[]>(`/appointments/slots?date=${date}`);
+  async crearCita(dto: CreateCitaDto, token: string): Promise<{ data: CitaResponseData }> {
+    return apiClient.post<{ data: CitaResponseData }>('/citas', dto, undefined, token);
   }
 };

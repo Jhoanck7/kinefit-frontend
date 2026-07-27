@@ -1,35 +1,22 @@
 import { create } from 'zustand';
-import { apiClient } from '@/lib/api/apiClient';
-
-interface Service {
-  id: number;
-  nombre: string;
-  activo: boolean;
-}
-
-interface Specialist {
-  sanityId: string;
-  nombre: string;
-  cargo: string;
-  activo: boolean;
-}
-
-interface TimeSlot {
-  id: number;
-  especialistaSanityId: string;
-  fecha: string;
-  hora: string;
-  estado: string;
-}
+import { appointmentService } from '@/lib/services/appointment.service';
+import { authService } from '@/lib/services/auth.service';
+import { transactionService } from '@/lib/services/transaction.service';
+import { 
+  BackendService, 
+  BackendSpecialist, 
+  BackendTimeSlot, 
+  IniciarTransaccionResponseData 
+} from '@/types';
 
 interface BookingState {
   // State
-  services: Service[];
-  specialists: Specialist[];
-  availableSlots: TimeSlot[];
+  services: BackendService[];
+  specialists: BackendSpecialist[];
+  availableSlots: BackendTimeSlot[];
   selectedServiceId: number | null;
   selectedServiceName: string | null;
-  selectedSpecialistSanityId: string | null;
+  selectedSpecialistId: number | null;
   selectedSpecialistName: string | null;
   selectedDate: string | null; // YYYY-MM-DD
   selectedTimeSlot: string | null; // HH:MM
@@ -37,27 +24,32 @@ interface BookingState {
   patientName: string;
   patientEmail: string;
   patientPhone: string;
+  authToken: string | null;
   currentStep: number;
   isLoading: boolean;
   isSubmitting: boolean;
   error: string | null;
   success: boolean;
-  backendConnected: boolean | null; // null = checking, true = connected, false = disconnected
+  createdCitaId: number | null;
+  webpayData: IniciarTransaccionResponseData | null;
+  backendConnected: boolean | null;
 
   // Actions
   fetchServices: () => Promise<void>;
   fetchSpecialists: (servicioId: number) => Promise<void>;
-  fetchAvailableSlots: (sanityId: string, date: string) => Promise<void>;
+  fetchAvailableSlots: (especialistaId: number, date: string) => Promise<void>;
   setSelectedService: (id: number, name: string) => void;
-  setSelectedSpecialist: (sanityId: string, name: string) => void;
+  setSelectedSpecialist: (id: number, name: string) => void;
   setSelectedDate: (date: string | null) => void;
   setSelectedTimeSlot: (slot: string | null, id: number | null) => void;
   setPatientInfo: (info: { name: string; email: string; phone: string }) => void;
+  setAuthToken: (token: string | null) => void;
+  authenticateWithGoogle: (idToken: string) => Promise<void>;
   setStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
   resetBooking: () => void;
-  submitBooking: () => Promise<void>;
+  submitBookingAndPay: () => Promise<void>;
   checkBackendConnection: () => Promise<void>;
 }
 
@@ -67,7 +59,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   availableSlots: [],
   selectedServiceId: null,
   selectedServiceName: null,
-  selectedSpecialistSanityId: null,
+  selectedSpecialistId: null,
   selectedSpecialistName: null,
   selectedDate: null,
   selectedTimeSlot: null,
@@ -75,21 +67,24 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   patientName: '',
   patientEmail: '',
   patientPhone: '',
+  authToken: null,
   currentStep: 1,
   isLoading: false,
   isSubmitting: false,
   error: null,
   success: false,
+  createdCitaId: null,
+  webpayData: null,
   backendConnected: null,
 
   fetchServices: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await apiClient.get<{ data: Service[] }>('/servicios');
+      const response = await appointmentService.getServices(true);
       set({ services: response.data || [], isLoading: false, backendConnected: true });
     } catch {
       set({ 
-        error: 'No se pudieron cargar los servicios. Por favor recarga la página.', 
+        error: 'No se pudieron cargar los servicios operativos.', 
         isLoading: false,
         backendConnected: false
       });
@@ -99,7 +94,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   fetchSpecialists: async (servicioId: number) => {
     set({ isLoading: true, error: null, specialists: [] });
     try {
-      const response = await apiClient.get<{ data: Specialist[] }>(`/especialistas?servicioId=${servicioId}`);
+      const response = await appointmentService.getEspecialistas(servicioId, true);
       set({ specialists: response.data || [], isLoading: false, backendConnected: true });
     } catch {
       set({ 
@@ -110,10 +105,10 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     }
   },
 
-  fetchAvailableSlots: async (sanityId: string, date: string) => {
+  fetchAvailableSlots: async (especialistaId: number, date: string) => {
     set({ isLoading: true, error: null, availableSlots: [] });
     try {
-      const response = await apiClient.get<{ data: TimeSlot[] }>(`/bloques?sanityId=${sanityId}&fecha=${date}`);
+      const response = await appointmentService.getBloques(especialistaId, date);
       set({ availableSlots: response.data || [], isLoading: false, backendConnected: true });
     } catch {
       set({ 
@@ -124,19 +119,22 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     }
   },
 
-  setSelectedService: (id, name) => set({
-    selectedServiceId: id,
-    selectedServiceName: name,
-    selectedSpecialistSanityId: null,
-    selectedSpecialistName: null,
-    selectedDate: null,
-    selectedTimeSlot: null,
-    selectedBloqueHorarioId: null,
-    availableSlots: []
-  }),
+  setSelectedService: (id, name) => {
+    set({
+      selectedServiceId: id,
+      selectedServiceName: name,
+      selectedSpecialistId: null,
+      selectedSpecialistName: null,
+      selectedDate: null,
+      selectedTimeSlot: null,
+      selectedBloqueHorarioId: null,
+      availableSlots: []
+    });
+    get().fetchSpecialists(id);
+  },
 
-  setSelectedSpecialist: (sanityId, name) => set({
-    selectedSpecialistSanityId: sanityId,
+  setSelectedSpecialist: (id, name) => set({
+    selectedSpecialistId: id,
     selectedSpecialistName: name,
     selectedDate: null,
     selectedTimeSlot: null,
@@ -146,9 +144,9 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
   setSelectedDate: (date) => {
     set({ selectedDate: date, selectedTimeSlot: null, selectedBloqueHorarioId: null });
-    const { selectedSpecialistSanityId } = get();
-    if (selectedSpecialistSanityId && date) {
-      get().fetchAvailableSlots(selectedSpecialistSanityId, date);
+    const { selectedSpecialistId } = get();
+    if (selectedSpecialistId && date) {
+      get().fetchAvailableSlots(selectedSpecialistId, date);
     }
   },
 
@@ -160,6 +158,25 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     patientPhone: info.phone
   }),
 
+  setAuthToken: (token) => set({ authToken: token }),
+
+  authenticateWithGoogle: async (idToken: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await authService.loginWithGoogleToken(idToken);
+      const token = res.data.token;
+      set({ 
+        authToken: token, 
+        patientName: `${res.data.paciente.nombre} ${res.data.paciente.apellido}`.trim(),
+        patientEmail: res.data.paciente.email,
+        isLoading: false 
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error al autenticar con Google.';
+      set({ error: message, isLoading: false });
+    }
+  },
+
   setStep: (step) => set({ currentStep: step }),
   nextStep: () => set((state) => ({ currentStep: state.currentStep + 1 })),
   prevStep: () => set((state) => ({ currentStep: Math.max(1, state.currentStep - 1) })),
@@ -167,7 +184,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   resetBooking: () => set({
     selectedServiceId: null,
     selectedServiceName: null,
-    selectedSpecialistSanityId: null,
+    selectedSpecialistId: null,
     selectedSpecialistName: null,
     selectedDate: null,
     selectedTimeSlot: null,
@@ -176,26 +193,30 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     patientName: '',
     patientEmail: '',
     patientPhone: '',
+    authToken: null,
     currentStep: 1,
     isLoading: false,
     isSubmitting: false,
     error: null,
-    success: false
+    success: false,
+    createdCitaId: null,
+    webpayData: null
   }),
 
-  submitBooking: async () => {
+  submitBookingAndPay: async () => {
     const { 
       selectedServiceId, 
-      selectedSpecialistSanityId, 
+      selectedSpecialistId, 
       selectedBloqueHorarioId, 
       patientName, 
       patientEmail, 
-      patientPhone 
+      patientPhone,
+      authToken 
     } = get();
     
     if (
       !selectedServiceId || 
-      !selectedSpecialistSanityId || 
+      !selectedSpecialistId || 
       !selectedBloqueHorarioId || 
       !patientName || 
       !patientEmail || 
@@ -208,30 +229,40 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     set({ isSubmitting: true, error: null });
 
     try {
-      const bookingPayload = {
-        nombre: patientName,
-        email: patientEmail,
-        telefono: patientPhone,
-        servicioId: selectedServiceId,
-        especialistaSanityId: selectedSpecialistSanityId,
-        bloqueHorarioId: selectedBloqueHorarioId
-      };
+      // 1. Usar el token existente o fallback token si el entorno local no requiere auth estricta
+      const tokenToUse = authToken || 'dev-session-token';
 
-      await apiClient.post<{ message?: string }>('/citas', bookingPayload);
-      set({ success: true, isSubmitting: false, backendConnected: true });
+      // 2. Crear Cita
+      const citaRes = await appointmentService.crearCita({
+        especialistaId: selectedSpecialistId,
+        servicioId: selectedServiceId,
+        bloqueHorarioId: selectedBloqueHorarioId,
+        empresaId: 1
+      }, tokenToUse);
+
+      const citaId = citaRes.data.id;
+      set({ createdCitaId: citaId });
+
+      // 3. Iniciar Transacción Webpay
+      const transRes = await transactionService.iniciarTransaccion(citaId, tokenToUse);
+
+      set({
+        webpayData: transRes.data,
+        isSubmitting: false,
+        success: true
+      });
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al procesar la reserva. Por favor intente nuevamente.';
+      const errorMessage = err instanceof Error ? err.message : 'Error al procesar la reserva y pago. Intente nuevamente.';
       set({
         error: errorMessage,
-        isSubmitting: false,
-        backendConnected: false
+        isSubmitting: false
       });
     }
   },
 
   checkBackendConnection: async () => {
     try {
-      await apiClient.get('/servicios');
+      await appointmentService.getServices(true);
       set({ backendConnected: true });
     } catch {
       set({ backendConnected: false });

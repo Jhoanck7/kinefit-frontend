@@ -1,3 +1,103 @@
+// API Error Contract
+export interface ApiErrorResponse {
+  status: number;
+  error: string;
+  message: string;
+  timestamp: string;
+}
+
+// Service Controller
+export interface BackendService {
+  id: number;
+  nombre: string;
+  activo: boolean;
+}
+
+// Specialist Controller
+export interface BackendSpecialist {
+  id: number;
+  nombre: string;
+  cargo: string;
+  servicio: {
+    id: number;
+    nombre: string;
+  };
+  activo: boolean;
+  fechasDisponibles?: string[];
+}
+
+// TimeSlot / BloqueHorario Controller
+export interface BackendTimeSlot {
+  id: number;
+  horaInicio: string;
+  horaFin: string;
+  estado: 'Disponible' | 'Ocupado' | 'Bloqueado';
+}
+
+// Auth Controller
+export interface AuthPatient {
+  id: number;
+  nombre: string;
+  apellido: string;
+  email: string;
+  perfilCompleto: boolean;
+}
+
+export interface AuthGoogleResponse {
+  data: {
+    token: string;
+    expiraEn: string;
+    paciente: AuthPatient;
+  };
+  message: string;
+}
+
+// Cita Controller
+export interface CreateCitaDto {
+  especialistaId: number;
+  servicioId: number;
+  bloqueHorarioId: number;
+  empresaId?: number;
+}
+
+export interface CitaResponseData {
+  id: number;
+  pacienteId: number;
+  especialistaId: number;
+  servicioId: number;
+  bloqueHorarioId: number;
+  estado: string;
+  origen: string;
+  createdAt: string;
+}
+
+// Transaccion Controller
+export interface IniciarTransaccionResponseData {
+  transaccionId: number;
+  token: string;
+  urlRedireccion: string;
+  expiraEn: string;
+}
+
+export interface ConfirmarTransaccionResponseData {
+  resultado: 'Aprobado' | 'Rechazado';
+  cita: {
+    id: number;
+    estado: string;
+    especialista: string;
+    servicio: string;
+    fecha: string;
+    hora: string;
+  };
+  transaccion: {
+    id: number;
+    buyOrder: string;
+    monto: number;
+    estado: string;
+  };
+}
+
+// Existing Legacy/CMS Interfaces (Maintained for backwards compatibility)
 export interface Appointment {
   id: string;
   serviceId: string;
@@ -11,7 +111,7 @@ export interface Appointment {
   createdAt: string;
 }
 
-export interface CreateAppointmentDto {
+export interface CreateAppointmentDtoLegacy {
   serviceId: string;
   date: string;
   timeSlot: string;
@@ -48,7 +148,7 @@ export interface Usuario {
   id: string;
   name: string;
   email: string;
-  role: string; // ej: "Paciente" o "Kinesiologo"
+  role: string;
 }
 
 export interface AuthResponse {

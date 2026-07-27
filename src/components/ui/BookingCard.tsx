@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useBookingStore } from '@/lib/store/useBookingStore';
 
 export default function BookingCard() {
@@ -10,7 +10,7 @@ export default function BookingCard() {
     availableSlots,
     selectedServiceId,
     selectedServiceName,
-    selectedSpecialistSanityId,
+    selectedSpecialistId,
     selectedSpecialistName,
     selectedDate,
     selectedTimeSlot,
@@ -23,6 +23,7 @@ export default function BookingCard() {
     isSubmitting,
     error,
     success,
+    webpayData,
     fetchServices,
     setSelectedService,
     setSelectedSpecialist,
@@ -32,8 +33,10 @@ export default function BookingCard() {
     nextStep,
     prevStep,
     resetBooking,
-    submitBooking
+    submitBookingAndPay
   } = useBookingStore();
+
+  const webpayFormRef = useRef<HTMLFormElement>(null);
 
   // Obtener fecha de mañana para el min del input
   const tomorrowStr = React.useMemo(() => {
@@ -47,13 +50,20 @@ export default function BookingCard() {
     fetchServices();
   }, [fetchServices]);
 
+  // Si se genera el token de Webpay, podemos auto-enviar el formulario a Transbank
+  useEffect(() => {
+    if (webpayData && webpayFormRef.current) {
+      webpayFormRef.current.submit();
+    }
+  }, [webpayData]);
+
   const handleServiceSelect = (id: number, name: string) => {
     setSelectedService(id, name);
     nextStep();
   };
 
-  const handleSpecialistSelect = (sanityId: string, name: string) => {
-    setSelectedSpecialist(sanityId, name);
+  const handleSpecialistSelect = (id: number, name: string) => {
+    setSelectedSpecialist(id, name);
     nextStep();
   };
 
@@ -61,9 +71,8 @@ export default function BookingCard() {
     setSelectedDate(e.target.value);
   };
 
-  const handleTimeSelect = (slotHora: string, slotId: number) => {
-    // La hora viene en formato HH:mm:ss, la limpiamos a HH:mm
-    const timeCleaned = slotHora.substring(0, 5);
+  const handleTimeSelect = (horaInicio: string, slotId: number) => {
+    const timeCleaned = horaInicio.substring(0, 5);
     setSelectedTimeSlot(timeCleaned, slotId);
   };
 
@@ -78,19 +87,44 @@ export default function BookingCard() {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (patientName && patientEmail && patientPhone) {
-      await submitBooking();
+      await submitBookingAndPay();
     }
   };
 
-  if (success) {
+  if (success && webpayData) {
+    return (
+      <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 animate-fade-in">
+        <div className="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-brand-primary text-3xl mb-4 shadow-lg shadow-blue-500/10">
+          💳
+        </div>
+        <h3 className="text-lg font-bold text-slate-900 mb-2">Redirigiendo a Webpay...</h3>
+        <p className="text-xs text-brand-muted max-w-[300px] mb-6 leading-relaxed">
+          Tu reserva para <span className="text-slate-900 font-semibold">{selectedServiceName}</span> con <span className="text-slate-900 font-semibold">{selectedSpecialistName}</span> el <span className="text-slate-900 font-semibold">{selectedDate}</span> a las <span className="text-slate-900 font-semibold">{selectedTimeSlot} hrs</span> ha sido registrada.
+        </p>
+
+        {/* Dynamic Form to Post token_ws to Webpay */}
+        <form ref={webpayFormRef} action={webpayData.urlRedireccion} method="POST">
+          <input type="hidden" name="token_ws" value={webpayData.token} />
+          <button
+            type="submit"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
+          >
+            Pagar con Webpay ($10.000 CLP)
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  if (success && !webpayData) {
     return (
       <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 animate-fade-in">
         <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-3xl mb-6 shadow-lg shadow-emerald-500/10">
           ✓
         </div>
-        <h3 className="text-lg font-bold text-slate-900 mb-2">¡Cita Reservada con Éxito!</h3>
+        <h3 className="text-lg font-bold text-slate-900 mb-2">¡Cita Registrada Exitosamente!</h3>
         <p className="text-xs text-brand-muted max-w-[280px] mb-6 leading-relaxed">
-          Tu reserva para <span className="text-slate-900 font-semibold">{selectedServiceName}</span> con <span className="text-slate-900 font-semibold">{selectedSpecialistName}</span> el <span className="text-slate-900 font-semibold">{selectedDate}</span> a las <span className="text-slate-900 font-semibold">{selectedTimeSlot} hrs</span> ha sido confirmada en el sistema.
+          Tu reserva para <span className="text-slate-900 font-semibold">{selectedServiceName}</span> el <span className="text-slate-900 font-semibold">{selectedDate}</span> a las <span className="text-slate-900 font-semibold">{selectedTimeSlot} hrs</span> ha sido registrada en el sistema.
         </p>
         <button
           onClick={resetBooking}
@@ -136,7 +170,7 @@ export default function BookingCard() {
               >
                 <div>
                   <h4 className="text-sm font-bold text-slate-900">{service.nombre}</h4>
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Servicio Activo</span>
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Servicio Operativo</span>
                 </div>
                 <svg className="w-5 h-5 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -162,10 +196,10 @@ export default function BookingCard() {
           <div className="flex flex-col gap-3">
             {specialists.filter(sp => sp.activo).map((sp) => (
               <button
-                key={sp.sanityId}
-                onClick={() => handleSpecialistSelect(sp.sanityId, sp.nombre)}
+                key={sp.id}
+                onClick={() => handleSpecialistSelect(sp.id, sp.nombre)}
                 className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-2xl border text-left transition-all ${
-                  selectedSpecialistSanityId === sp.sanityId
+                  selectedSpecialistId === sp.id
                     ? 'border-brand-primary bg-brand-primary/10 shadow-md shadow-brand-primary/10'
                     : 'border-brand-border bg-white hover:border-brand-primary/50 hover:bg-slate-50'
                 }`}
@@ -181,14 +215,14 @@ export default function BookingCard() {
             ))}
 
             {specialists.filter(sp => sp.activo).length === 0 && !isLoading && (
-              <p className="text-xs text-brand-muted text-center py-8">No hay profesionales disponibles para esta especialidad.</p>
+              <p className="text-xs text-brand-muted text-center py-8">No hay profesionales disponibles para este servicio.</p>
             )}
           </div>
 
           <div className="flex justify-between items-center mt-6 border-t border-brand-border/30 pt-4">
             <button
               onClick={prevStep}
-              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider"
+              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
             >
               Atrás
             </button>
@@ -223,14 +257,14 @@ export default function BookingCard() {
                   {availableSlots.map((slot) => (
                     <button
                       key={slot.id}
-                      onClick={() => handleTimeSelect(slot.hora, slot.id)}
-                      className={`p-3 text-xs font-bold rounded-xl border text-center transition-all ${
+                      onClick={() => handleTimeSelect(slot.horaInicio, slot.id)}
+                      className={`p-3 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
                         selectedBloqueHorarioId === slot.id
                           ? 'border-brand-primary bg-brand-primary text-white shadow-md shadow-brand-primary/20'
                           : 'border-brand-border bg-white text-slate-700 hover:border-brand-primary hover:bg-slate-50'
                       }`}
                     >
-                      {slot.hora.substring(0, 5)}
+                      {slot.horaInicio.substring(0, 5)}
                     </button>
                   ))}
 
@@ -245,7 +279,7 @@ export default function BookingCard() {
           <div className="flex justify-between items-center mt-6 border-t border-brand-border/30 pt-4">
             <button
               onClick={prevStep}
-              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider"
+              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
             >
               Atrás
             </button>
@@ -264,12 +298,12 @@ export default function BookingCard() {
         </div>
       )}
 
-      {/* Step 4: Patient Info / Submit */}
+      {/* Step 4: Patient Info / Submit & Pay */}
       {currentStep === 4 && (
         <form onSubmit={handleFormSubmit} className="flex flex-col gap-6 animate-fade-in">
           <div className="text-left">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">Paso 4 de 4</h3>
-            <p className="text-slate-800 text-base font-bold">Datos de Contacto</p>
+            <p className="text-slate-800 text-base font-bold">Datos del Paciente</p>
           </div>
           
           <div className="flex flex-col gap-4">
@@ -278,7 +312,7 @@ export default function BookingCard() {
               <input
                 type="text"
                 required
-                placeholder="Juan Pérez"
+                placeholder="María González"
                 value={patientName}
                 onChange={(e) => handlePatientInfoChange('name', e.target.value)}
                 className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
@@ -290,7 +324,7 @@ export default function BookingCard() {
               <input
                 type="email"
                 required
-                placeholder="juan.perez@email.com"
+                placeholder="maria@email.com"
                 value={patientEmail}
                 onChange={(e) => handlePatientInfoChange('email', e.target.value)}
                 className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
@@ -316,7 +350,7 @@ export default function BookingCard() {
             <button
               type="button"
               onClick={prevStep}
-              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider"
+              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
             >
               Atrás
             </button>
@@ -325,11 +359,11 @@ export default function BookingCard() {
               disabled={isSubmitting || !patientName || !patientEmail || !patientPhone}
               className={`rounded-xl px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
                 !isSubmitting && patientName && patientEmail && patientPhone
-                  ? 'bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer'
+                  ? 'bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer shadow-md'
                   : 'bg-slate-100 text-slate-400 cursor-not-allowed'
               }`}
             >
-              {isSubmitting ? 'Procesando...' : 'Confirmar Reserva'}
+              {isSubmitting ? 'Procesando Cita...' : 'Reservar y Pagar'}
             </button>
           </div>
         </form>
