@@ -1,0 +1,1234 @@
+DOCUMENTO DE REQUERIMIENTOS
+Panel Administrativo — KineFit Chile
+Campo
+Detalle
+Proyecto
+Desarrollo de Sitio Web y Plataforma de Gestión — KineFit Chile
+Módulo
+Panel Administrativo (Hito 3)
+Versión
+1.1
+Fecha
+25 de julio de 2026
+Estado
+Para revisión
+Autor
+Maximiliano Bezares Leyton
+Perspectiva
+Rol Especialista
+Base
+HDU Transaccionales v3, análisis de referencia AgendaPro y prototipo validado en Stitch/Figma
+Actualización 1.1
+Incorpora el capítulo 13 con los cambios, confirmaciones y nuevos requerimientos surgidos en la última reunión de avance con el cliente.
+
+
+Índice
+1. Introducción	3
+1.1 Propósito	3
+1.2 Alcance	3
+1.3 Convenciones del documento	3
+2. Consideraciones generales	3
+2.1 Roles y usuarios	3
+2.2 Estructura global del panel	3
+2.3 Identidad visual	4
+2.4 Horario de atención del centro	4
+2.5 Catálogo de estados de la cita	5
+2.6 Origen de la cita	5
+3. Sección Agenda	6
+3.1 Vista general de la agenda	6
+3.2 Representación de las citas y los bloques	6
+3.3 Detalle de la cita	6
+3.4 Acciones sobre la cita	7
+4. Sección Nueva Reserva	8
+4.1 Comportamiento general del asistente	8
+4.2 Paso 1 — Horario	8
+4.3 Paso 2 — Paciente	8
+4.3.1 Registro de paciente nuevo	9
+4.4 Paso 3 — Servicio	9
+4.5 Paso 4 — Notas y resumen	10
+4.6 Reglas de negocio del agendamiento manual	10
+5. Sección Pacientes	12
+5.1 Listado de pacientes	12
+5.2 Alta y mantención de pacientes	12
+5.3 Perfil individual del paciente	12
+6. Sección Fichas Clínicas	14
+6.1 Listado de fichas	14
+6.2 Creación de una ficha — Paso 1: Reserva asociada	14
+6.3 Creación de una ficha — Paso 2: Contenido	14
+6.4 Consulta, edición y exportación de la ficha	15
+7. Submódulo Formatos de Ficha	16
+7.1 Listado de formatos	16
+7.2 Constructor de formatos	16
+7.3 Reglas sobre formatos en uso	16
+8. Funcionalidades requeridas no abarcadas por el prototipo	18
+8.1 Autenticación y autorización del personal	18
+8.2 Bloqueos de agenda y excepciones	18
+8.3 Horario de atención personal	19
+8.4 Auditoría	19
+8.5 Notificaciones	19
+9. Requerimientos no funcionales	20
+10. Observaciones detectadas en el prototipo	20
+11. Trazabilidad con las historias de usuario	22
+12. Decisiones pendientes	22
+13. Cambios generales — última reunión con el cliente	24
+13.1 Reordenamiento del flujo de reserva web	24
+13.2 Horarios de atención confirmados	24
+13.3 Confirmación del horario de colación	25
+13.4 Criterio de similitud con la plataforma de referencia	25
+13.5 Plan de validación del prototipo	25
+13.6 Identidad visual del panel	25
+13.7 Definiciones confirmadas sin cambio	25
+13.8 Materias fuera del alcance de este documento	26
+13.9 Decisiones pendientes incorporadas	26
+
+1. Introducción
+1.1 Propósito
+Este documento especifica los requerimientos funcionales del Panel Administrativo de KineFit Chile, la herramienta interna de trabajo diario del personal del centro. Consolida las definiciones acordadas durante la construcción y validación del prototipo, y las complementa con las funcionalidades necesarias que el prototipo no alcanzó a cubrir.
+Sustituye y precisa lo descrito de forma general en las historias de usuario del Hito 3, sin reemplazarlas: cada requerimiento mantiene su trazabilidad a la HDU de origen (ver capítulo 11).
+1.2 Alcance
+El panel especificado abarca cuatro secciones operativas: Agenda, Nueva reserva, Pacientes y Fichas clínicas, más el submódulo de Formatos de ficha. Se especifica desde el punto de vista del rol Especialista.
+Quedan fuera del alcance de este documento:
+El panel del rol Administrador (vista consolidada de todas las agendas, gestión de personal).
+Los reportes operativos (REP-001), por corresponder exclusivamente al rol Administrador.
+La gestión de contenido institucional, que se realiza en Sanity Studio y no en este panel.
+El sitio público y el flujo de reserva del paciente, especificados en el Hito 2.
+1.3 Convenciones del documento
+Cada requerimiento se identifica con un código de la forma RF-XXX-NNN, donde XXX corresponde al módulo. La columna «En prototipo» indica si el requerimiento fue representado visualmente en el prototipo validado:
+Valor
+Significado
+Sí
+El requerimiento está representado en el prototipo y fue validado visualmente.
+No
+El requerimiento es necesario para la operación pero no fue prototipado. Requiere diseño previo a la implementación.
+Parcial
+El punto de entrada existe en el prototipo, pero el comportamiento completo no fue representado.
+
+
+2. Consideraciones generales
+2.1 Roles y usuarios
+El sistema contempla dos roles de personal, además del rol Paciente definido en el Hito 2:
+Rol
+Alcance
+Administrador
+Diego Exequiel. Acceso a la totalidad de las agendas, citas y configuración del centro. Fuera del alcance de este documento.
+Especialista
+Franchesca Astudillo (Masoterapeuta), Valeria Araneda (Kinesióloga) y Constanza Maldonado (Kinesióloga). Acceso restringido a su propia agenda y a los recursos que le corresponden.
+
+
+Cada integrante debe contar con credenciales individuales. No se admiten cuentas compartidas. Toda acción de escritura debe quedar registrada en la auditoría con la identidad individual de quien la ejecutó.
+2.2 Estructura global del panel
+ID
+Requerimiento
+En prototipo
+RF-GEN-001
+El panel debe presentar una barra lateral fija con el logotipo de KineFit, el rótulo «Panel Administrativo» y los accesos a Agenda, Nueva reserva, Pacientes, Fichas clínicas y Cerrar Sesión.
+Sí
+RF-GEN-002
+El ítem correspondiente a la sección activa debe destacarse visualmente respecto de los demás.
+Sí
+RF-GEN-003
+El panel debe presentar un encabezado superior con el título de la sección activa, el nombre del usuario con sesión iniciada, y accesos a notificaciones y ajustes.
+Sí
+RF-GEN-004
+Todas las vistas del panel deben compartir el mismo sistema de componentes: tipografía, botones, campos, tarjetas, badges, radios de borde y espaciados.
+Parcial
+RF-GEN-005
+La totalidad de la interfaz debe presentarse en español de Chile.
+Sí
+RF-GEN-006
+El RUT debe presentarse y validarse en formato chileno con dígito verificador, admitiendo el dígito K.
+Sí
+RF-GEN-007
+Los números telefónicos deben presentarse en formato nacional con prefijo +56 9.
+Sí
+RF-GEN-008
+El panel debe ser responsivo, con prioridad de uso en escritorio.
+No
+
+
+2.3 Identidad visual
+Elemento
+Definición
+Color primario
+Azul profundo Pantone 2767 (#13294B). Aplicado a barra lateral, botones primarios, encabezados y acentos.
+Fondo
+Claro (blanco o gris muy claro), con texto oscuro de alto contraste.
+Tipografía
+Arial / Helvetica (sans-serif).
+Implementación
+Los colores deben definirse como variables CSS para mantener coherencia con el sitio público.
+Estilo
+Minimalista, limpio y de carácter clínico-profesional, priorizando la densidad de información legible por sobre el impacto visual. En su mayoria el estilo debe estar calcado de los colores del frontend de la página oficial
+
+
+2.4 Horario de atención del centro
+Días
+Tramos de atención
+Lunes a Viernes
+09:00 – 14:00 y 15:00 – 21:00
+Sábado y Domingo
+10:00 – 14:00 y 15:00 – 21:00
+
+
+ID
+Requerimiento
+En prototipo
+RF-GEN-010
+La agenda debe organizarse en bloques de 30 minutos consecutivos (09:00–09:30, 09:30–10:00, y así sucesivamente).
+Sí
+RF-GEN-011
+La franja 14:00 – 15:00 no forma parte de la grilla de atención y no debe generarse como bloque en ningún día.
+No
+RF-GEN-012
+Los bloques efectivamente disponibles para un especialista se determinan por la intersección entre el horario del centro, su plantilla de horario personal y las excepciones de agenda vigentes.
+Parcial
+
+Observación: el prototipo representa la interrupción del mediodía como un bloqueo denominado «Colación» en el tramo 13:00 – 14:00, y muestra los bloques 14:00 y 14:30 como parte de la grilla. Esto no corresponde al horario definido, donde el centro cierra entre 14:00 y 15:00. Debe corregirse en la implementación: el tramo 14:00 – 15:00 simplemente no existe como bloque, y «Colación» —de mantenerse— corresponde a un bloqueo personal del especialista dentro del horario de atención, no al cierre del centro.
+2.5 Catálogo de estados de la cita
+Estado
+Significado
+Origen aplicable
+Pendiente de pago
+Cita web con transacción de Webpay en curso. No modificable manualmente. Expira automáticamente al vencer la sesión de pago.
+Web
+Por confirmar
+Cita creada manualmente por el personal que aún no ha sido ratificada. Requiere acción explícita del especialista.
+Manual
+Confirmada
+Cita agendada en firme, cuya hora de atención aún no ha ocurrido.
+Web y Manual
+Atendida
+Cita ya realizada con asistencia efectiva del paciente.
+Web y Manual
+No asistida
+Cita cuya hora transcurrió sin que el paciente se presentara.
+Web y Manual
+Cancelada
+Cita anulada por el personal o por el paciente.
+Web y Manual
+Expirada
+Cita web cuya sesión de pago venció sin completarse. El bloque se libera automáticamente.
+Web
+
+
+Observación: el prototipo rotula como «Pendiente» tanto la cita web con pago en curso como la cita manual sin ratificar, pese a que su comportamiento es opuesto —la primera no es modificable y expira sola; la segunda requiere acción del especialista y no expira. Se propone diferenciarlas con las denominaciones «Pendiente de pago» y «Por confirmar». Requiere validación del cliente.
+2.6 Origen de la cita
+ID
+Requerimiento
+En prototipo
+RF-GEN-020
+Toda cita debe registrar su origen: Web (autoagendada por el paciente con pago de anticipo) o Manual (creada por el personal desde el panel).
+Sí
+RF-GEN-021
+El origen debe ser visible en la agenda mediante un distintivo, y en el detalle de la cita como dato explícito.
+Sí
+RF-GEN-022
+El origen debe estar disponible como criterio de trazabilidad y de reportería.
+No
+
+
+3. Sección Agenda
+Pantalla de entrada del panel. Presenta la jornada del especialista con sesión iniciada y concentra la gestión operativa de sus citas.
+3.1 Vista general de la agenda
+ID
+Requerimiento
+En prototipo
+RF-AGD-001
+La agenda debe mostrar exclusivamente las citas del especialista con sesión iniciada, identificando la vista con su nombre y cargo. No debe exponer agendas de otros especialistas.
+Sí
+RF-AGD-002
+La agenda debe permitir navegar entre días mediante controles de día anterior y día siguiente, y un acceso directo al día actual.
+Sí
+RF-AGD-003
+El día visualizado debe presentarse en formato extenso en español, indicando día de la semana, día, mes y año.
+Sí
+RF-AGD-004
+La agenda debe permitir saltar a una fecha específica mediante un selector de calendario. (REQ en duda)
+No
+RF-AGD-005
+El eje vertical debe presentar los bloques de 30 minutos correspondientes al horario de atención del día visualizado.
+Sí
+RF-AGD-006
+La agenda debe ofrecer un filtro por estado de cita.
+Parcial
+RF-AGD-007
+La agenda debe presentar un acceso directo a la creación de una nueva reserva manual.
+Sí
+RF-AGD-008
+La agenda debe presentar una leyenda de los colores utilizados para los distintos estados de cita.
+Sí
+
+
+3.2 Representación de las citas y los bloques
+ID
+Requerimiento
+En prototipo
+RF-AGD-010
+Cada cita debe representarse como un bloque individual de 30 minutos, sin fusión visual entre bloques consecutivos.
+Sí
+RF-AGD-011
+Cada cita debe mostrar el nombre del paciente, el rango horario del bloque y su estado.
+Sí
+RF-AGD-012
+Cada cita debe mostrar un distintivo de origen (Web o Manual).
+Sí
+RF-AGD-013
+El estado de la cita debe codificarse por color de forma consistente en todo el panel.
+Sí
+RF-AGD-014
+Los bloques bloqueados manualmente deben distinguirse visualmente y mostrar la etiqueta del motivo del bloqueo.
+Sí
+RF-AGD-015
+Los bloques fuera del horario de atención del especialista deben presentarse atenuados y no ser seleccionables.
+No
+RF-AGD-016
+Los bloques disponibles deben ser seleccionables para iniciar una reserva manual con el bloque preseleccionado.
+No
+
+
+3.3 Detalle de la cita
+Se abre al seleccionar una cita en la agenda. Consolida toda la información asociada y concentra las acciones de gestión.
+ID
+Requerimiento
+En prototipo
+RF-AGD-020
+El detalle debe identificar la cita con el nombre del paciente, el día y el rango horario en el encabezado.
+Sí
+RF-AGD-021
+El detalle debe mostrar el identificador único de la cita y su fecha y hora de creación.
+Sí
+RF-AGD-022
+El detalle debe mostrar los datos del paciente: nombre completo, RUT, teléfono, correo electrónico y convenio institucional cuando corresponda.
+Sí
+RF-AGD-023
+El detalle debe mostrar los datos de la atención: servicio, especialista, origen y estado actual.
+Sí
+RF-AGD-024
+En citas de origen Web, el detalle debe destacar el anticipo pagado mediante Webpay, indicando el monto abonado.
+Sí
+RF-AGD-025
+En citas de origen Web, el detalle debe exponer el identificador de la transacción de Webpay para efectos de conciliación.
+No
+RF-AGD-026
+En citas de origen Manual, el detalle no debe presentar información de anticipo ni de pasarela de pago.
+Sí
+RF-AGD-027
+El detalle debe mostrar la nota para el paciente y la nota interna cuando existan, diferenciadas visualmente.
+No
+RF-AGD-028
+El detalle debe mostrar el historial de auditoría de la cita: cambios de estado, responsable, fecha y motivo.
+No
+
+
+3.4 Acciones sobre la cita
+ID
+Requerimiento
+En prototipo
+RF-AGD-030
+Sobre una cita Confirmada, el sistema debe permitir marcarla como Atendida.
+Sí
+RF-AGD-031
+Sobre una cita Confirmada, el sistema debe permitir marcarla como No asistida.
+Sí
+RF-AGD-032
+Sobre una cita Por confirmar (origen Manual), el sistema debe permitir confirmarla, pasándola a estado Confirmada.
+Sí
+RF-AGD-033
+El sistema debe permitir cancelar una cita, solicitando obligatoriamente un motivo.
+Parcial
+RF-AGD-034
+Al cancelar una cita con anticipo pagado, el sistema debe advertir explícitamente que existe un pago de $10.000 CLP asociado y que debe verificarse la devolución al paciente.
+No
+RF-AGD-035
+Al cancelar una cita, el bloque horario debe volver a estado Disponible.
+No
+RF-AGD-036
+Las citas en estado Pendiente de pago no deben ser modificables manualmente. Las acciones deben presentarse deshabilitadas con la explicación correspondiente.
+No
+RF-AGD-037
+Las citas en estado Cancelada, Expirada o Atendida deben presentarse en modo de solo lectura.
+No
+RF-AGD-038
+Toda transición de estado debe registrarse en la auditoría con la identidad individual del responsable, la fecha y el motivo.
+No
+
+Decisión pendiente: debe confirmarse con el cliente si el especialista puede cancelar por sí mismo una cita con pago asociado, o si esa acción queda reservada al administrador (HDU AGE-003).
+
+4. Sección Nueva Reserva
+Asistente para que el personal agende una cita directamente desde el panel, sin que el paciente pase por el flujo de pago web. Atiende los casos de pacientes que contactan por WhatsApp, por teléfono o que llegan al local sin cita.
+4.1 Comportamiento general del asistente
+ID
+Requerimiento
+En prototipo
+RF-NRV-001
+La creación de una reserva manual debe estructurarse como un asistente de cuatro pasos: Horario, Paciente, Servicio, y Notas y Resumen.
+Sí
+RF-NRV-002
+El asistente debe presentar un indicador de progreso permanente que señale el paso activo y los pasos ya completados.
+Sí
+RF-NRV-003
+El asistente debe presentar un panel de resumen persistente que se complete progresivamente con fecha, horario, paciente y servicio, indicando «Por definir» en los datos aún no seleccionados.
+Sí
+RF-NRV-004
+Cada paso debe ofrecer las acciones de cancelar la reserva, volver al paso anterior y avanzar al siguiente.
+Sí
+RF-NRV-005
+La acción de avanzar debe permanecer deshabilitada mientras el paso activo no cuente con una selección válida.
+Parcial
+RF-NRV-006
+El asistente no debe solicitar la selección del especialista: la reserva se crea siempre en la agenda del especialista con sesión iniciada.
+Sí
+RF-NRV-007
+El asistente no debe contemplar ningún paso, campo ni referencia al anticipo de $10.000 CLP ni a la pasarela de pago.
+Sí
+RF-NRV-008
+La acción de cancelar la reserva debe solicitar confirmación antes de descartar el avance.
+No
+
+
+4.2 Paso 1 — Horario
+ID
+Requerimiento
+En prototipo
+RF-NRV-010
+El paso debe presentar un calendario mensual navegable para la selección de la fecha de atención.
+Sí
+RF-NRV-011
+El calendario debe deshabilitar las fechas pasadas.
+Sí
+RF-NRV-012
+Seleccionada la fecha, el sistema debe presentar los bloques de 30 minutos de ese día, agrupados en los tramos de mañana y tarde.
+Sí
+RF-NRV-013
+El sistema debe ofrecer únicamente los bloques agendables: disponibles, dentro del horario del especialista y sin bloqueo vigente.
+Parcial
+RF-NRV-014
+Los bloques no agendables deben distinguirse visualmente e indicar su causa (ocupado, bloqueado o fuera de horario).
+Parcial
+RF-NRV-015
+El bloque seleccionado debe destacarse de forma inequívoca y reflejarse de inmediato en el panel de resumen.
+Sí
+RF-NRV-016
+Si el asistente se inicia desde un bloque de la agenda, la fecha y el bloque deben venir preseleccionados.
+No
+
+
+4.3 Paso 2 — Paciente
+ID
+Requerimiento
+En prototipo
+RF-NRV-020
+El paso debe presentar un buscador de pacientes existentes por RUT o por nombre.
+Sí
+RF-NRV-021
+Los resultados de búsqueda deben mostrar el nombre completo y el RUT de cada coincidencia.
+Sí
+RF-NRV-022
+La selección de un paciente debe reflejarse de inmediato en el panel de resumen.
+Sí
+RF-NRV-023
+El paso debe ofrecer de forma permanente la alternativa de registrar un paciente nuevo, sin condicionarla al resultado de la búsqueda.
+Sí
+RF-NRV-024
+Seleccionado un paciente existente, el sistema debe presentar una tarjeta de confirmación en solo lectura con sus datos y la opción de cambiar la selección.
+No
+RF-NRV-025
+Si la búsqueda no arroja coincidencias, el sistema debe informarlo explícitamente y orientar hacia el registro de un paciente nuevo.
+No
+
+
+4.3.1 Registro de paciente nuevo
+Funcionalidad no abarcada por el prototipo. El punto de entrada existe, pero el formulario no fue diseñado. Es requisito para operar, dado que buena parte de los pacientes atendidos manualmente no tendrán cuenta previa en el sistema.
+ID
+Requerimiento
+En prototipo
+RF-NRV-030
+El sistema debe permitir registrar un paciente nuevo durante el flujo de reserva, sin abandonar el asistente.
+No
+RF-NRV-031
+El formulario debe solicitar como campos obligatorios: nombre, apellido, RUT, correo electrónico y teléfono.
+No
+RF-NRV-032
+El formulario debe incluir el convenio institucional como campo opcional, presentado exclusivamente como lista desplegable alimentada desde la base de datos. No se admite texto libre.
+No
+RF-NRV-033
+El RUT debe validarse con su dígito verificador y verificarse su unicidad. Si ya existe un paciente con ese RUT, el sistema debe advertirlo y ofrecer seleccionarlo en lugar de duplicarlo.
+No
+RF-NRV-034
+El correo electrónico y el teléfono deben validarse en formato antes de permitir el registro.
+No
+RF-NRV-035
+Los errores de validación deben presentarse junto al campo afectado, con un mensaje explícito de la causa.
+No
+RF-NRV-036
+El sistema no debe permitir avanzar mientras existan campos obligatorios vacíos o con formato inválido.
+No
+RF-NRV-037
+El paciente registrado por esta vía debe quedar disponible en la base de pacientes y ser reutilizable en reservas posteriores.
+No
+RF-NRV-038
+Cuando un paciente registrado manualmente inicie sesión con Google posteriormente, el sistema debe vincular ambos registros por RUT sin duplicarlo.
+No
+
+
+4.4 Paso 3 — Servicio
+ID
+Requerimiento
+En prototipo
+RF-NRV-040
+El paso debe presentar los servicios activos del centro como opciones de selección única.
+Sí
+RF-NRV-041
+La selección debe reflejarse de inmediato en el panel de resumen.
+Sí
+RF-NRV-042
+El paso no debe presentar duración del servicio ni cálculo de bloques a ocupar.
+Sí
+RF-NRV-043
+El listado de servicios debe alimentarse desde la base de datos, respetando el estado activo de cada uno.
+No
+RF-NRV-044
+El sistema debe ofrecer únicamente los servicios que el especialista con sesión iniciada se encuentra habilitado para prestar.
+No
+
+Observación: durante el MVP los servicios operativos son Masoterapia y Kinesiología. El orden de presentación definido por el cliente para el sitio público es Masoterapia, Kinesiología, Kinesiología Deportiva y Entrenamiento Funcional; el prototipo presenta Kinesiología en primer lugar, lo que debe unificarse. La activación de servicios adicionales depende de la resolución sanitaria pendiente.
+4.5 Paso 4 — Notas y resumen
+ID
+Requerimiento
+En prototipo
+RF-NRV-050
+El paso debe permitir registrar una nota dirigida al paciente, visible para él en su confirmación.
+Sí
+RF-NRV-051
+El paso debe permitir registrar una nota interna, visible únicamente para el personal del centro.
+Sí
+RF-NRV-052
+Ambas notas deben ser opcionales y estar diferenciadas visualmente, indicando de forma explícita su alcance de visibilidad.
+Sí
+RF-NRV-053
+El paso debe presentar una revisión final con el paciente, el servicio, la fecha y el horario seleccionados.
+Sí
+RF-NRV-054
+La revisión final debe permitir volver a cualquier paso anterior para corregir un dato.
+No
+RF-NRV-055
+La acción final debe rotularse de forma inequívoca como confirmación de la reserva, y no como avance de paso.
+No
+RF-NRV-056
+Confirmada la reserva, el sistema debe presentar una pantalla de éxito con el resumen de la cita creada y accesos para volver a la agenda o registrar otra cita.
+No
+
+Observación: en el prototipo el botón del último paso conserva el rótulo «Continuar», heredado de los pasos anteriores. Debe corregirse a «Confirmar reserva».
+4.6 Reglas de negocio del agendamiento manual
+ID
+Requerimiento
+En prototipo
+RF-NRV-060
+La cita creada debe registrarse con origen Manual.
+Sí
+RF-NRV-061
+La cita manual no exige el anticipo de $10.000 CLP ni genera transacción de Webpay.
+Sí
+RF-NRV-062
+La cita manual debe nacer en estado Por confirmar y requerir ratificación explícita del especialista.
+Sí
+RF-NRV-063
+Al confirmarse la reserva, el bloque horario debe pasar a estado Ocupado en la misma operación transaccional que crea la cita. Si cualquier paso falla, debe revertirse íntegramente.
+No
+RF-NRV-064
+El agendamiento manual debe respetar las mismas reglas de disponibilidad que el flujo web: no debe permitir agendar sobre un bloque ocupado o bloqueado, ni fuera del horario del especialista, ni sobre una excepción de agenda vigente.
+No
+RF-NRV-065
+Un especialista solo puede agendar en su propia agenda.
+Sí
+RF-NRV-066
+Toda cita creada manualmente debe quedar registrada en la auditoría con la identidad de quien la creó.
+No
+
+Decisión pendiente: debe definirse con el cliente cómo se registra el pago de una cita agendada manualmente —pagada en el local, pendiente de cobro o exenta—. El prototipo no contempla este registro por indicación expresa; de confirmarse su necesidad, corresponde incorporarlo como campo del paso 4 o del detalle de la cita.
+
+5. Sección Pacientes
+Base de pacientes del centro. Permite consultar el universo de pacientes registrados y acceder al perfil consolidado de cada uno.
+5.1 Listado de pacientes
+ID
+Requerimiento
+En prototipo
+RF-PAC-001
+La sección debe presentar un listado tabular de los pacientes registrados.
+Sí
+RF-PAC-002
+La tabla debe exponer las columnas: nombre, apellido, RUT, correo electrónico, teléfono y convenio institucional.
+Sí
+RF-PAC-003
+El convenio debe presentarse como distintivo visual, y mostrarse un indicador neutro cuando el paciente no tenga convenio asociado.
+Sí
+RF-PAC-004
+La sección debe ofrecer un buscador único que opere indistintamente sobre RUT, nombre o correo electrónico.
+Sí
+RF-PAC-005
+La sección debe mostrar el total de pacientes registrados.
+Sí
+RF-PAC-006
+Cada fila debe ser seleccionable y conducir al perfil individual del paciente.
+Parcial
+RF-PAC-007
+El listado debe paginarse, indicando el rango visualizado sobre el total.
+No
+RF-PAC-008
+La sección no debe incorporar filtros de segmentación comercial (género, fecha de cumpleaños, campañas), por encontrarse fuera del núcleo operativo del centro.
+Sí
+
+
+5.2 Alta y mantención de pacientes
+Funcionalidad no abarcada por el prototipo. El registro de pacientes solo fue contemplado como paso intermedio del asistente de reserva, lo que resulta insuficiente para la operación.
+ID
+Requerimiento
+En prototipo
+RF-PAC-010
+La sección debe permitir registrar un paciente nuevo directamente, sin necesidad de iniciar una reserva.
+No
+RF-PAC-011
+El formulario de alta debe aplicar los mismos campos y validaciones definidos en RF-NRV-031 a RF-NRV-036.
+No
+RF-PAC-012
+El sistema debe permitir corregir los datos de contacto de un paciente (teléfono, correo y convenio), dejando registro en la auditoría.
+No
+RF-PAC-013
+El RUT no debe ser editable una vez creado el paciente, por constituir su identificador clínico.
+No
+RF-PAC-014
+El sistema no debe permitir la eliminación de pacientes con citas o fichas asociadas. De requerirse, debe implementarse como desactivación lógica.
+No
+
+
+5.3 Perfil individual del paciente
+Funcionalidad no abarcada por el prototipo. Constituye el destino natural del listado y es la vista de consulta previa a la atención.
+ID
+Requerimiento
+En prototipo
+RF-PAC-020
+El perfil debe presentar en su cabecera el nombre completo, RUT, teléfono, correo electrónico y convenio del paciente.
+No
+RF-PAC-021
+El perfil debe presentar contadores de actividad del paciente: citas atendidas, canceladas y no asistidas.
+No
+RF-PAC-022
+El perfil debe presentar el historial completo de citas del paciente en orden cronológico, indicando fecha, horario, servicio, especialista, estado y origen.
+No
+RF-PAC-023
+El perfil debe ofrecer acceso directo a las fichas clínicas del paciente, respetando la regla de visibilidad vigente.
+No
+RF-PAC-024
+El perfil debe ofrecer un acceso directo para agendar una nueva cita al paciente consultado.
+No
+RF-PAC-025
+El acceso al perfil debe respetar la autorización por rol.
+No
+
+Observación sobre los convenios: el prototipo presenta valores como «Isapre Colmena» y «Fonasa Tramos C y D», que corresponden a previsión de salud y no a convenios institucionales. La definición acordada con el cliente contempla el convenio como acuerdo con empresas o sindicatos, con semilla única «Sindicato N°3 Minera Escondida». Debe aclararse con el cliente si el campo mantiene su definición original o si se requiere adicionalmente un campo de previsión de salud.
+
+6. Sección Fichas Clínicas
+Registro clínico privado del centro. Cada ficha documenta una atención concreta y se vincula obligatoriamente a una reserva existente. Un paciente acumula un historial de fichas a lo largo de sus atenciones.
+6.1 Listado de fichas
+ID
+Requerimiento
+En prototipo
+RF-FIC-001
+La sección debe presentar un listado tabular de las fichas clínicas registradas.
+Sí
+RF-FIC-002
+La tabla debe exponer las columnas: paciente, RUT, tipo de ficha, fecha de atención, reserva asociada y profesional que la registró.
+Sí
+RF-FIC-003
+El tipo de ficha debe presentarse como distintivo visual diferenciado por tipo.
+Sí
+RF-FIC-004
+La reserva asociada debe identificarse por su fecha y rango horario.
+Sí
+RF-FIC-005
+La sección debe ofrecer un buscador por nombre de paciente o RUT.
+Sí
+RF-FIC-006
+La sección debe mostrar el total de fichas registradas y paginar el listado.
+Sí
+RF-FIC-007
+La sección debe ofrecer accesos directos a la creación de una ficha nueva y a la gestión de formatos de ficha.
+Sí
+RF-FIC-008
+Cada fila debe ser seleccionable y conducir a la ficha completa.
+Parcial
+RF-FIC-009
+El listado debe permitir filtrar por tipo de ficha y por rango de fechas de atención.
+No
+
+
+6.2 Creación de una ficha — Paso 1: Reserva asociada
+ID
+Requerimiento
+En prototipo
+RF-FIC-010
+La creación de una ficha debe estructurarse como un asistente de dos pasos: selección de la reserva y completado de la ficha.
+Sí
+RF-FIC-011
+El primer paso debe permitir buscar al paciente por nombre o RUT.
+Sí
+RF-FIC-012
+Identificado el paciente, el sistema debe listar sus reservas, indicando fecha, rango horario, servicio y especialista de cada una.
+Sí
+RF-FIC-013
+Cada reserva del listado debe indicar si ya cuenta con ficha asociada o si aún no la tiene.
+Sí
+RF-FIC-014
+Toda ficha debe quedar asociada a una reserva existente. No debe ser posible crear una ficha sin reserva.
+Sí
+RF-FIC-015
+Una reserva admite una única ficha clínica. El sistema debe impedir la creación de una segunda ficha sobre la misma reserva.
+No
+RF-FIC-016
+El asistente debe presentar un panel de resumen persistente con el paciente, la reserva y el tipo de ficha seleccionados.
+Sí
+RF-FIC-017
+El sistema debe permitir crear una ficha desde el detalle de una cita en la agenda, con la reserva ya preseleccionada.
+No
+
+
+6.3 Creación de una ficha — Paso 2: Contenido
+ID
+Requerimiento
+En prototipo
+RF-FIC-020
+El segundo paso debe permitir seleccionar el tipo de ficha entre los formatos definidos por el centro.
+Sí
+RF-FIC-021
+Los campos de la ficha deben presentarse agrupados en secciones, con posibilidad de colapsar cada una.
+Sí
+RF-FIC-022
+Los campos deben respetar el tipo de dato definido en su formato, rechazando valores que no correspondan.
+Sí
+RF-FIC-023
+Los campos definidos como obligatorios en el formato deben señalizarse y su ausencia debe impedir el guardado.
+No
+RF-FIC-024
+La ficha debe registrar automáticamente la fecha y hora de creación y la identidad del profesional que la generó.
+No
+RF-FIC-025
+El sistema debe permitir adjuntar documentos de respaldo en formato PDF e imagen, tanto a la ficha como a la atención.
+No
+RF-FIC-026
+Los archivos adjuntos deben almacenarse fuera de la base de datos, manteniendo únicamente su metadata en PostgreSQL.
+No
+RF-FIC-027
+La descarga de un adjunto debe exigir autenticación y autorización. No deben existir URL públicas ni predecibles.
+No
+RF-FIC-028
+La vista debe advertir de forma visible que el contenido es privado y no visible para el paciente.
+No
+
+Pendiente bloqueante: la estructura definitiva de campos de la ficha clínica debe ser definida por la especialista Valeria Araneda. Los campos presentes en el prototipo —edad, estatura, peso, enfermedades de base, descripción, antecedentes relevantes y observaciones de la sesión— son provisorios y no constituyen especificación final.
+6.4 Consulta, edición y exportación de la ficha
+Funcionalidad no abarcada por el prototipo. Corresponde a la vista de la ficha ya guardada, que es el destino del listado de la sección 6.1.
+ID
+Requerimiento
+En prototipo
+RF-FIC-030
+El sistema debe presentar la ficha guardada con la totalidad de sus campos y su contenido registrado.
+No
+RF-FIC-031
+La ficha debe mostrar la reserva a la que está asociada, el profesional que la registró y la fecha de registro.
+No
+RF-FIC-032
+La ficha debe presentar el historial de fichas anteriores del mismo paciente en orden cronológico, con acceso a cada una.
+No
+RF-FIC-033
+El sistema debe permitir editar una ficha existente, dejando registro en la auditoría con la identidad del profesional y la fecha.
+No
+RF-FIC-034
+El sistema debe permitir exportar la ficha a PDF, incorporando la identidad visual de KineFit y los datos identificatorios del paciente.
+No
+RF-FIC-035
+El contenido de la ficha jamás debe ser visible para el paciente ni expuesto en endpoints públicos.
+No
+RF-FIC-036
+Toda mutación sobre fichas y adjuntos debe quedar registrada en la auditoría con identidad individual.
+No
+
+Pendiente bloqueante de autorización: debe definirse con el cliente si cada especialista accede únicamente a las fichas de las atenciones que ella realizó, o a la totalidad de las fichas del centro. El prototipo asume visibilidad total, supuesto que debe validarse antes de implementar la autorización.
+
+7. Submódulo Formatos de Ficha
+Permite definir la estructura de campos que tendrá cada tipo de ficha clínica. Se accede desde la sección Fichas clínicas.
+Alcance sujeto a confirmación: la existencia de un constructor visual de formatos no ha sido confirmada por el cliente. La alternativa es implementar formatos fijos definidos en código. Este submódulo se incorporó al prototipo con el propósito explícito de obtener esa definición del cliente y de las especialistas. Su implementación representa un incremento de alcance considerable respecto de la alternativa fija.
+7.1 Listado de formatos
+ID
+Requerimiento
+En prototipo
+RF-FMT-001
+La vista debe listar los formatos de ficha definidos en el centro.
+Sí
+RF-FMT-002
+Cada formato debe mostrar su nombre, la cantidad de secciones y campos que lo componen, y la fecha de su última modificación.
+Sí
+RF-FMT-003
+Los formatos que tengan fichas creadas a partir de ellos deben señalizarse como en uso.
+Sí
+RF-FMT-004
+La vista debe ofrecer un retorno explícito a la sección Fichas clínicas.
+Sí
+RF-FMT-005
+La vista debe ofrecer la creación de un formato nuevo.
+Sí
+RF-FMT-006
+Cada formato debe ofrecer las acciones de editar y duplicar.
+No
+
+
+7.2 Constructor de formatos
+ID
+Requerimiento
+En prototipo
+RF-FMT-010
+El constructor debe permitir asignar un nombre al formato.
+Sí
+RF-FMT-011
+El constructor debe permitir agregar secciones, asignarles nombre y eliminarlas.
+Sí
+RF-FMT-012
+El constructor debe permitir agregar campos dentro de cada sección, asignarles nombre y eliminarlos.
+Sí
+RF-FMT-013
+Cada campo debe permitir definir su tipo de dato entre: texto corto, texto largo, numérico, fecha y selección.
+Sí
+RF-FMT-014
+Cada campo debe permitir marcarse como obligatorio.
+Sí
+RF-FMT-015
+El constructor debe permitir reordenar secciones y campos.
+Parcial
+RF-FMT-016
+El constructor debe presentar una vista previa en tiempo real de cómo se verá la ficha al completarla.
+Sí
+RF-FMT-017
+Los campos de tipo selección deben permitir definir sus opciones.
+No
+RF-FMT-018
+El constructor debe ofrecer las acciones de guardar el formato y de cancelar los cambios.
+No
+RF-FMT-019
+El sistema no debe permitir guardar un formato sin nombre, sin secciones o con secciones vacías.
+No
+
+
+7.3 Reglas sobre formatos en uso
+ID
+Requerimiento
+En prototipo
+RF-FMT-020
+La modificación de un formato con fichas ya creadas no debe alterar el contenido de esas fichas históricas.
+No
+RF-FMT-021
+El sistema debe advertir al usuario antes de modificar un formato en uso, informando la cantidad de fichas afectadas.
+No
+RF-FMT-022
+El sistema no debe permitir eliminar un formato con fichas asociadas. De requerirse, debe implementarse como desactivación.
+No
+RF-FMT-023
+Las fichas históricas deben conservar la estructura del formato vigente al momento de su creación.
+No
+
+Consideración técnica: el requerimiento RF-FMT-023 implica versionar los formatos o almacenar la estructura junto con cada ficha. Es la principal fuente de complejidad de este submódulo y la razón por la cual conviene resolver primero si el cliente requiere formatos configurables o si acepta formatos fijos.
+
+8. Funcionalidades requeridas no abarcadas por el prototipo
+Las funcionalidades descritas en este capítulo no corresponden a ninguna de las cuatro secciones prototipadas, pero son necesarias para la operación del panel y están comprometidas en las historias de usuario del Hito 3.
+8.1 Autenticación y autorización del personal
+ID
+Requerimiento
+En prototipo
+RF-AUT-001
+El sistema debe presentar una pantalla de acceso para el personal, sin registro público.
+No
+RF-AUT-002
+Cada integrante del personal debe contar con credenciales individuales. No se admiten cuentas compartidas.
+No
+RF-AUT-003
+El sistema debe soportar los roles Administrador y Especialista, adicionales al rol Paciente.
+No
+RF-AUT-004
+El backend debe aplicar autorización por rol en cada endpoint protegido. Un especialista solo accede a sus propios recursos; el administrador accede a la totalidad.
+No
+RF-AUT-005
+Los accesos cruzados entre especialistas y los intentos de acceso de un paciente a recursos del personal deben rechazarse.
+No
+RF-AUT-006
+Las sesiones deben tener expiración definida, rechazándose las operaciones sobre sesiones vencidas.
+No
+RF-AUT-007
+La autenticación por API Key del Hito 1 queda obsoleta para el personal.
+No
+
+Decisión pendiente: debe definirse con el cliente el mecanismo de autenticación del personal —credenciales locales creadas por el administrador o cuenta de Google personal—, considerando que el equipo no dispondrá de correos empresariales durante el primer mes de operación.
+8.2 Bloqueos de agenda y excepciones
+Cubre la operación diaria de cierre de franjas: colaciones, feriados, emergencias y reducciones de agenda. El prototipo representa el resultado visual de un bloqueo en la agenda, pero no la funcionalidad que permite crearlo.
+ID
+Requerimiento
+En prototipo
+RF-BLQ-001
+El sistema debe permitir bloquear franjas horarias de la agenda, indicando un motivo o etiqueta.
+No
+RF-BLQ-002
+Cada bloqueo debe definir fecha y hora de inicio, y fecha y hora de término.
+No
+RF-BLQ-003
+El sistema debe permitir bloqueos recurrentes (por ejemplo, colación diaria o un día no laborable semanal).
+No
+RF-BLQ-004
+Un especialista solo puede registrar bloqueos sobre su propia agenda.
+No
+RF-BLQ-005
+Los bloques afectados por un bloqueo no deben ofrecerse como disponibles ni en el panel ni en el sitio público, con independencia de la plantilla de horario del especialista.
+No
+RF-BLQ-006
+Si el período a bloquear contiene citas confirmadas, el sistema debe listarlas y advertir al usuario antes de aplicar el cambio, recordando los pagos asociados.
+No
+RF-BLQ-007
+El sistema debe permitir consultar, editar y eliminar los bloqueos vigentes.
+No
+RF-BLQ-008
+La creación, modificación y eliminación de bloqueos debe registrarse en la auditoría con la identidad de quien la ejecutó.
+No
+
+8.3 Horario de atención personal
+ID
+Requerimiento
+En prototipo
+RF-HOR-001
+Cada especialista debe contar con una plantilla de horario propia, independiente de la de sus pares, con los días y rangos en que atiende.
+No
+RF-HOR-002
+La plantilla debe poder definirse por día de la semana, admitiendo más de un rango por día.
+No
+RF-HOR-003
+Los bloques ofrecidos al público deben generarse a partir de la plantilla vigente del especialista, y no de un horario único del centro.
+No
+RF-HOR-004
+La modificación de una plantilla debe afectar la generación de bloques futuros sin alterar los bloques con citas ya confirmadas.
+No
+RF-HOR-005
+Si la modificación deja fuera de rango bloques futuros con citas confirmadas, el sistema debe listarlas y advertirlo antes de aplicar el cambio.
+No
+RF-HOR-006
+La plantilla debe respetar como límite máximo el horario de atención del centro definido en el punto 2.4.
+No
+
+Decisión pendiente: debe confirmarse con el cliente si el especialista edita su plantilla directamente o si toda modificación pasa por el administrador. Asimismo, los horarios reales y definitivos de las tres especialistas siguen sin ser entregados.
+8.4 Auditoría
+ID
+Requerimiento
+En prototipo
+RF-AUD-001
+Toda acción de escritura ejecutada por el personal debe registrarse en la auditoría con la identidad individual de su autor.
+No
+RF-AUD-002
+La auditoría debe registrar, como mínimo: entidad afectada, acción, estado anterior, estado nuevo, responsable, fecha y hora, y motivo cuando corresponda.
+No
+RF-AUD-003
+El sistema debe permitir consultar la traza de auditoría de una cita desde su detalle.
+No
+RF-AUD-004
+El valor genérico «Admin» utilizado en el Hito 1 debe reemplazarse por la identidad individual del usuario.
+No
+
+8.5 Notificaciones
+ID
+Requerimiento
+En prototipo
+RF-NOT-001
+El sistema debe notificar al paciente la confirmación de su cita.
+No
+RF-NOT-002
+La nota dirigida al paciente registrada en la reserva debe incorporarse a la comunicación de confirmación.
+No
+RF-NOT-003
+El sistema debe notificar al paciente cuando el personal modifique el estado de su cita.
+No
+
+Decisión pendiente: el canal de notificación —correo electrónico, WhatsApp o ambos— no ha sido formalizado por el cliente. La implementación mediante WhatsApp requiere infraestructura de WhatsApp Business API, con costo asociado que debe ser evaluado por separado.
+
+9. Requerimientos no funcionales
+ID
+Requerimiento
+En prototipo
+RNF-001
+El panel debe operar sobre navegadores modernos de escritorio, con diseño responsivo que permita su uso en tablet.
+Parcial
+RNF-002
+Toda la información clínica y de contacto de los pacientes debe transmitirse sobre canal cifrado.
+No
+RNF-003
+El acceso a cualquier recurso del panel debe exigir sesión autenticada y autorización por rol verificada en el servidor.
+No
+RNF-004
+Las validaciones de negocio deben aplicarse en el servidor. El cliente no debe ser la única barrera de validación.
+No
+RNF-005
+Las operaciones que involucren cita y bloque horario deben ejecutarse de forma atómica, con reversión completa ante cualquier fallo.
+No
+RNF-006
+El sistema debe impedir el agendamiento duplicado sobre un mismo bloque ante concurrencia de usuarios.
+No
+RNF-007
+Los mensajes de error presentados al usuario deben ser explícitos respecto de la causa y de la acción correctiva.
+Parcial
+RNF-008
+La interfaz debe mantener consistencia visual y de comportamiento entre todas sus vistas.
+Parcial
+
+
+10. Observaciones detectadas en el prototipo
+Diferencias entre el prototipo y las definiciones acordadas, identificadas durante su revisión. No comprometen la validación funcional, pero deben corregirse en la implementación.
+N°
+Vista
+Observación
+1
+Agenda / Nueva reserva
+La interrupción del mediodía se representa como «Colación» entre 13:00 y 14:00, y los bloques 14:00 y 14:30 aparecen en la grilla. El horario definido establece el cierre entre 14:00 y 15:00.
+2
+Agenda
+La leyenda de estados no incluye Atendida ni Cancelada, definidos en el catálogo del punto 2.5.
+3
+Detalle de cita
+El correo mostrado no corresponde al paciente identificado, y el cargo del especialista figura como «Especialista Senior» en lugar de su cargo real.
+4
+Detalle de cita
+Ambos detalles muestran el servicio «Kinesiología» con la glosa «Tratamiento Lumbar», que no corresponde a un campo definido en el modelo.
+5
+Nueva reserva paso 3
+El orden de los servicios presenta Kinesiología antes que Masoterapia, invirtiendo el orden definido por el cliente.
+6
+Nueva reserva paso 4
+El botón final conserva el rótulo «Continuar» en lugar de una acción de confirmación.
+7
+Pacientes
+Los convenios de ejemplo incluyen previsiones de salud (Isapre, Fonasa), ajenas a la definición de convenio institucional.
+8
+Ficha paso 2 / Formatos
+La barra lateral y el encabezado difieren del resto del panel, y se incorpora un ítem «Configuración» inexistente en las demás vistas.
+9
+Ficha paso 2
+El ítem activo de la barra lateral señala «Nueva reserva» encontrándose en la sección Fichas clínicas.
+10
+Formatos (listado)
+Los rótulos del enlace de retorno y del botón de creación presentan caracteres duplicados.
+11
+Transversal
+Las fechas de ejemplo son inconsistentes entre vistas (2023, 2024 y julio de 2026 coexisten).
+
+
+11. Trazabilidad con las historias de usuario
+HDU
+Nombre
+Requerimientos asociados
+AUT-002
+Acceso individual del personal al sistema
+RF-AUT-001 a RF-AUT-007
+AGE-003
+Gestión del estado de las reservas por rol
+RF-AGD-001 a RF-AGD-038
+AGE-004
+Personalización del horario de atención
+RF-HOR-001 a RF-HOR-006
+AGE-005
+Excepciones de agenda por feriados y emergencias
+RF-BLQ-001 a RF-BLQ-008
+AGE-006
+Agendamiento manual de pacientes por el personal
+RF-NRV-001 a RF-NRV-066
+FIC-001
+Creación de la ficha clínica del paciente
+RF-FIC-010 a RF-FIC-028
+FIC-002
+Registro de sesiones clínicas y documentos adjuntos
+RF-FIC-025 a RF-FIC-036, RF-FMT-001 a RF-FMT-023
+PAC-001
+Perfil consolidado y base de pacientes
+RF-PAC-001 a RF-PAC-025
+CON-001
+Identificación de convenio institucional
+RF-NRV-032, RF-PAC-002, RF-PAC-003
+REP-001
+Reportes operativos básicos
+Fuera del alcance de este documento (rol Administrador)
+
+
+12. Decisiones pendientes
+Definiciones que deben resolverse con el cliente antes de implementar los requerimientos asociados.
+La decisión N° 8 de este capítulo y la observación N° 1 del capítulo 10 fueron resueltas por el cliente en la última reunión de avance. Su resolución se detalla en el capítulo 13.
+N°
+Decisión pendiente
+Requerimientos afectados
+1
+Estructura definitiva de campos de la ficha clínica, a definir por la especialista Valeria Araneda.
+RF-FIC-020 a RF-FIC-024 (bloqueante)
+2
+Regla de visibilidad de fichas entre especialistas: ¿solo las propias o todas las del centro?
+RF-FIC-035, RF-AUT-004 (bloqueante)
+3
+¿Puede el especialista cancelar por sí mismo una cita con pago asociado?
+RF-AGD-033, RF-AGD-034
+4
+¿Cómo se registra el pago de una cita agendada manualmente?
+RF-NRV-061
+5
+¿Se requiere constructor visual de formatos o bastan formatos fijos definidos en código?
+Capítulo 7 completo
+6
+¿KineFit requiere más de un tipo de ficha clínica?
+RF-FIC-020, RF-FMT-001
+7
+Mecanismo de autenticación del personal: credenciales locales o cuenta de Google.
+RF-AUT-001, RF-AUT-002
+8
+Horarios reales y definitivos de las tres especialistas.
+RF-HOR-001, RF-HOR-006
+9
+¿El especialista edita su propia plantilla de horario o lo hace el administrador?
+RF-HOR-001 a RF-HOR-005
+10
+Canal de notificación al paciente: correo, WhatsApp o ambos.
+RF-NOT-001 a RF-NOT-003
+11
+Definición del campo convenio: ¿convenio institucional, previsión de salud, o ambos?
+RF-NRV-032, RF-PAC-002
+12
+¿Debe existir un flujo de creación de ficha desde el detalle de la cita en la agenda?
+RF-FIC-017
+13
+Servicios activos para agendamiento real, considerando la resolución sanitaria pendiente.
+RF-NRV-043, RF-NRV-044
+
+
+13. Cambios generales — última reunión con el cliente
+Este capítulo consolida los cambios, confirmaciones y nuevos requerimientos surgidos en la última reunión de avance sostenida con el cliente, en la que se presentó el flujo de reserva web operativo y el estado del prototipo del panel administrativo.
+Se presenta como capítulo independiente para preservar la trazabilidad de lo acordado. Los requerimientos aquí incorporados se integran al cuerpo del documento en su próxima versión.
+13.1 Reordenamiento del flujo de reserva web
+El cliente solicitó modificar el orden de los pasos del flujo de reserva del paciente, quedando de la siguiente forma:
+Orden anterior
+Orden solicitado
+1. Servicio
+1. Servicio
+2. Especialista
+2. Fecha
+3. Fecha
+3. Horario
+4. Horario
+4. Especialista
+
+
+Fundamento entregado por el cliente: las tres especialistas no cubren la misma franja horaria, por lo que ofrecer primero el especialista permite que el paciente seleccione a una profesional que no atiende en el horario que desea. Invirtiendo el orden, el sistema ofrece únicamente las profesionales efectivamente disponibles en el bloque elegido.
+Alcance: este cambio corresponde al flujo público del Hito 2 y no forma parte del panel administrativo. Se documenta aquí por su impacto directo sobre el panel: la resolución de qué especialista atiende en un bloque determinado exige que las plantillas de horario por especialista (capítulo 8.3) estén implementadas. En consecuencia, los requerimientos RF-HOR-001 a RF-HOR-006, originalmente asignados al Hito 3, pasan a ser prerrequisito del flujo web del Hito 2 y deben adelantarse en la planificación.
+13.2 Horarios de atención confirmados
+El cliente entregó los horarios reales de las tres especialistas, resolviendo la decisión pendiente N° 8 del capítulo 12:
+Especialista
+Horario informado
+Observación
+Franchesca Astudillo
+Jornada completa
+Cubre la totalidad del horario de atención del centro.
+Constanza Maldonado
+09:00 a 17:00
+La última atención finaliza a las 18:00.
+Valeria Araneda
+18:00 a 21:00
+Reemplaza la referencia previa de jornada de mañana.
+
+
+Estos horarios contradicen la referencia registrada en las HDU v3, donde Valeria figuraba con jornada de mañana entre 08:00 y 14:00 en carácter tentativo. Prevalece lo informado por el cliente en esta reunión. El documento de historias de usuario debe actualizarse en consecuencia.
+El cliente indicó adicionalmente que, por el momento, solo dos especialistas pueden atender de forma simultánea. Los horarios informados son consistentes con esa restricción, dado que sus jornadas se superponen de a dos.
+ID
+Requerimiento
+En prototipo
+RF-HOR-007
+Las plantillas de horario iniciales deben cargarse con los horarios confirmados por el cliente para cada especialista.
+No
+RF-HOR-008
+El sistema debe registrar la restricción de atención simultánea máxima vigente en el centro, y no ofrecer bloques que la excedan.
+No
+
+Requiere confirmación: debe aclararse con el cliente si la restricción de dos atenciones simultáneas responde a la disponibilidad de boxes del local o a la disponibilidad de personal, dado que ello determina si corresponde modelarla como recurso físico o como regla de agenda.
+13.3 Confirmación del horario de colación
+El cliente confirmó de forma expresa que el centro contempla una hora de colación entre las 14:00 y las 15:00, destinada a alimentación, aseo y preparación de los boxes.
+Esta confirmación resuelve la observación N° 1 del capítulo 10 y valida el requerimiento RF-GEN-011: el tramo 14:00 – 15:00 no constituye un bloqueo del especialista sino el cierre del centro, y no debe generarse como bloque en ningún día. El prototipo representa esta interrupción entre las 13:00 y las 14:00, lo que debe corregirse en la implementación.
+13.4 Criterio de similitud con la plataforma de referencia
+El cliente entregó una directriz explícita de diseño: mientras mayor sea la similitud del panel con AgendaPro, mayor será la facilidad de adopción por parte de las especialistas, quienes se encuentran siendo capacitadas en esa plataforma.
+Esta directriz tensiona las propuestas de recorte funcional documentadas previamente, elaboradas bajo el criterio de acotar el alcance a lo estrictamente necesario para el centro. Debe resolverse con el cliente el equilibrio entre paridad funcional con la plataforma de referencia y contención del alcance, considerando que la paridad completa excede el marco del proyecto.
+El cliente destacó adicionalmente una funcionalidad no contemplada hasta ahora: la posibilidad de visualizar la agenda por box, además de por profesional.
+ID
+Requerimiento
+En prototipo
+RF-AGD-040
+La agenda debe permitir alternar la visualización entre organización por profesional y organización por box de atención.
+No
+RF-AGD-041
+El sistema debe registrar los boxes de atención del centro y permitir asociar cada cita al box en que se realizará.
+No
+
+Requiere definición: la cantidad de boxes del centro, su identificación y si la asignación de box es manual o automática no han sido especificadas. Estos requerimientos no pueden dimensionarse hasta contar con esa información.
+13.5 Plan de validación del prototipo
+El cliente solicitó postergar la validación del prototipo con las especialistas por un plazo aproximado de dos a tres semanas, en atención a que el equipo clínico se encuentra saturado con las capacitaciones de la plataforma de referencia y con la operación diaria del centro.
+Se mantiene el mecanismo de validación propuesto: exportación del prototipo a PDF, distribución a las especialistas y recolección de retroalimentación mediante formulario, evitando la coordinación de reuniones adicionales.
+El cliente reiteró que la prioridad de revisión debe centrarse en lo funcional y no en lo estético, señalando que el refinamiento visual corresponde a una etapa posterior.
+13.6 Identidad visual del panel
+El cliente observó que el logotipo de KineFit pierde contraste sobre el fondo azul de la barra lateral del panel, e indicó que debe resaltarse mediante un fondo blanco (circular o rectangular) o mediante una versión del logotipo en color blanco.
+ID
+Requerimiento
+En prototipo
+RF-GEN-009
+El logotipo de KineFit debe presentarse en la barra lateral con contraste suficiente respecto del fondo azul institucional, mediante fondo claro o versión monocroma clara del logotipo.
+No
+
+13.7 Definiciones confirmadas sin cambio
+Materia
+Confirmación del cliente
+Autenticación del paciente
+Se confirma Google como única vía de autenticación. Se descarta implementar cuentas locales con correo y contraseña, por considerarse menos eficiente y de menor uso real.
+Credenciales de Google OAuth
+El cliente acepta la migración a una cuenta institucional de KineFit y se compromete a facilitar el acceso y a aprobar las verificaciones que Google solicite durante la configuración.
+Certificación de Webpay
+Se acuerda postergar el proceso de certificación con Transbank hasta después del período de exámenes del equipo. El cliente dispone de cuenta empresa y participará del trámite.
+Convenios institucionales
+Se mantiene el campo como lista desplegable alimentada desde la base de datos. El cliente confirmó la existencia de las empresas con convenio a cargar.
+Prioridad de trabajo
+El cliente relevó la urgencia del sistema de agendamiento y priorizó de forma expresa el sitio informativo, en atención al período académico del equipo.
+
+
+13.8 Materias fuera del alcance de este documento
+La reunión abordó materias que no corresponden al panel administrativo y que se registran aquí únicamente para efectos de trazabilidad. Su tratamiento corresponde a otros documentos del proyecto.
+Materia
+Detalle
+Infraestructura de hosting
+Se informó la contratación de un servidor privado virtual a nombre del desarrollador de frontend, en reemplazo del plan Vercel Pro. Constituye una modificación respecto de lo establecido en el acta de requerimientos y sus credenciales deben migrarse a la empresa. Requiere formalización con el cliente.
+Sitio informativo
+El cliente entregó observaciones sobre imágenes en dispositivos móviles, botón flotante de contacto, ícono de la pestaña del navegador, integración con aplicaciones de mapas y redirección temporal del agendamiento. Se compromete a entregar un listado ordenado de observaciones.
+Lenguaje comercial del sitio
+El cliente advirtió sobre la necesidad de revisar el lenguaje publicitario para no atribuir al centro servicios que no presta ni calificaciones profesionales con las que no cuenta, por implicancias legales.
+Material fotográfico
+El cliente informó que dispondrá de fotografías propias del local, en reemplazo del material referencial actualmente utilizado.
+
+
+13.9 Decisiones pendientes incorporadas
+N°
+Decisión pendiente
+Requerimientos afectados
+14
+¿La restricción de dos atenciones simultáneas responde a disponibilidad de boxes o de personal?
+RF-HOR-008, RF-AGD-041
+15
+Cantidad, identificación y criterio de asignación de los boxes de atención.
+RF-AGD-040, RF-AGD-041
+16
+Equilibrio entre paridad funcional con la plataforma de referencia y contención del alcance del proyecto.
+Propuestas de recorte documentadas
+17
+Formalización del cambio de proveedor de hosting respecto del acta de requerimientos.
+Fuera del alcance de este documento
+
+
+Fin del documento.
