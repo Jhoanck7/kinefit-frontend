@@ -7,6 +7,7 @@ import { HERO_COPY } from '@/lib/constants';
 
 export default function HeroSection() {
   const currentStep = useBookingStore((state) => state.currentStep);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center text-slate-900 pt-24 pb-16 overflow-hidden">
       {/* Background Gradients */}
@@ -45,8 +46,8 @@ export default function HeroSection() {
             
             {/* Botón CTA */}
             <a
-              href={HERO_COPY.ctaLink}
-              className="inline-block bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-xl px-8 py-4 shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 text-center uppercase tracking-wider text-sm"
+              href="#agendamiento"
+              className="inline-block bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-xl px-8 py-4 shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 text-center uppercase tracking-wider text-sm cursor-pointer"
             >
               {HERO_COPY.ctaText}
             </a>
@@ -64,9 +65,48 @@ export default function HeroSection() {
             </div>
           </div>
           
-          {/* Lado Derecho */}
-          <div className="lg:col-span-6 relative w-full">
-            
+          {/* Lado Derecho - Módulo de Agendamiento */}
+          <div id="agendamiento" className="lg:col-span-6 relative w-full">
+            <div className="relative rounded-3xl border border-slate-200/80 bg-white/90 backdrop-blur-md p-6 sm:p-8 shadow-2xl shadow-slate-200/50 flex flex-col sm:flex-row gap-6 sm:gap-8 items-stretch">
+              
+              {/* Stepper lateral indicativo */}
+              <div className="flex sm:flex-col justify-between sm:justify-center gap-2 sm:gap-6 border-b sm:border-b-0 sm:border-r border-slate-200/60 pb-4 sm:pb-0 sm:pr-6 shrink-0">
+                {[
+                  { step: 1, label: 'Servicio' },
+                  { step: 2, label: 'Especialista' },
+                  { step: 3, label: 'Horario' },
+                  { step: 4, label: 'Reserva' },
+                ].map((s) => {
+                  const isActive = currentStep === s.step;
+                  const isCompleted = currentStep > s.step;
+
+                  return (
+                    <div key={s.step} className="flex items-center gap-3">
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                          isCompleted
+                            ? 'bg-emerald-500 text-white shadow-xs'
+                            : isActive
+                            ? 'bg-brand-primary text-white ring-4 ring-brand-primary/20 shadow-md'
+                            : 'bg-slate-100 text-slate-400 border border-slate-200'
+                        }`}
+                      >
+                        {isCompleted ? '✓' : s.step}
+                      </div>
+                      <span className={`text-xs font-semibold hidden sm:inline transition-colors ${
+                        isActive ? 'text-slate-900' : isCompleted ? 'text-emerald-600' : 'text-slate-400'
+                      }`}>
+                        {s.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Módulo de Formulario de Agendamiento */}
+              <BookingCard />
+
+            </div>
           </div>
           
         </div>

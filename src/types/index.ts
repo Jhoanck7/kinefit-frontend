@@ -16,6 +16,7 @@ export interface BackendService {
 // Specialist Controller
 export interface BackendSpecialist {
   id: number;
+  sanityId?: string;
   nombre: string;
   cargo: string;
   servicio: {
@@ -31,7 +32,10 @@ export interface BackendTimeSlot {
   id: number;
   horaInicio: string;
   horaFin: string;
-  estado: 'Disponible' | 'Ocupado' | 'Bloqueado';
+  estado: 'Disponible' | 'Ocupado' | 'Bloqueado' | string;
+  hora?: string;
+  especialistaSanityId?: string;
+  fecha?: string;
 }
 
 // Auth Controller
@@ -41,6 +45,8 @@ export interface AuthPatient {
   apellido: string;
   email: string;
   perfilCompleto: boolean;
+  rut?: string;
+  telefono?: string;
 }
 
 export interface AuthGoogleResponse {
@@ -57,31 +63,32 @@ export interface CreateCitaDto {
   especialistaId: number;
   servicioId: number;
   bloqueHorarioId: number;
-  empresaId?: number;
+  empresaId?: number | null;
+  notaPaciente?: string | null;
 }
 
 export interface CitaResponseData {
-  id: number;
-  pacienteId: number;
-  especialistaId: number;
-  servicioId: number;
-  bloqueHorarioId: number;
-  estado: string;
-  origen: string;
-  createdAt: string;
+  id?: number;
+  citaId?: number;
+  pacienteId?: number;
+  especialistaId?: number;
+  servicioId?: number;
+  bloqueHorarioId?: number;
+  estado?: string;
+  createdAt?: string;
 }
 
 // Transaccion Controller
 export interface IniciarTransaccionResponseData {
-  transaccionId: number;
+  transaccionId?: number;
   token: string;
   urlRedireccion: string;
-  expiraEn: string;
+  expiraEn?: string;
 }
 
 export interface ConfirmarTransaccionResponseData {
   resultado: 'Aprobado' | 'Rechazado';
-  cita: {
+  cita?: {
     id: number;
     estado: string;
     especialista: string;
@@ -89,7 +96,7 @@ export interface ConfirmarTransaccionResponseData {
     fecha: string;
     hora: string;
   };
-  transaccion: {
+  transaccion?: {
     id: number;
     buyOrder: string;
     monto: number;
@@ -97,7 +104,7 @@ export interface ConfirmarTransaccionResponseData {
   };
 }
 
-// Existing Legacy/CMS Interfaces (Maintained for backwards compatibility)
+// Legacy CMS Interfaces
 export interface Appointment {
   id: string;
   serviceId: string;
@@ -123,15 +130,8 @@ export interface CreateAppointmentDtoLegacy {
 export interface BlogPost {
   _id: string;
   title: string;
-  slug: {
-    current: string;
-  };
-  mainImage?: {
-    asset: {
-      _ref: string;
-      _type: string;
-    };
-  };
+  slug: { current: string };
+  mainImage?: { asset: { _ref: string; _type: string } };
   publishedAt: string;
   body: unknown[];
 }

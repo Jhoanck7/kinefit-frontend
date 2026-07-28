@@ -3,8 +3,7 @@ import {
   BackendService, 
   BackendSpecialist, 
   BackendTimeSlot, 
-  CreateCitaDto, 
-  CitaResponseData 
+  CreateCitaDto 
 } from '@/types';
 
 export const appointmentService = {
@@ -24,7 +23,7 @@ export const appointmentService = {
     return apiClient.get<{ data: BackendTimeSlot[] }>(`/bloques?especialistaId=${especialistaId}&fecha=${fecha}`);
   },
 
-  async crearCita(dto: CreateCitaDto, token: string): Promise<{ data: CitaResponseData }> {
-    return apiClient.post<{ data: CitaResponseData }>('/citas', dto, undefined, token);
+  async crearCita(dto: CreateCitaDto, token?: string): Promise<{ data: { citaId: number } }> {
+    return apiClient.post<{ data: { citaId: number } }>('/citas', dto, undefined, token);
   }
 };

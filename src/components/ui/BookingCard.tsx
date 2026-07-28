@@ -8,12 +8,12 @@ export default function BookingCard() {
     services,
     specialists,
     availableSlots,
+    availableDates,
     selectedServiceId,
     selectedServiceName,
     selectedSpecialistId,
     selectedSpecialistName,
     selectedDate,
-    selectedTimeSlot,
     selectedBloqueHorarioId,
     patientName,
     patientEmail,
@@ -38,19 +38,14 @@ export default function BookingCard() {
 
   const webpayFormRef = useRef<HTMLFormElement>(null);
 
-  // Obtener fecha de mañana para el min del input
-  const tomorrowStr = React.useMemo(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().split('T')[0];
+  const todayStr = React.useMemo(() => {
+    return new Date().toISOString().split('T')[0];
   }, []);
 
-  // Cargar servicios al iniciar
   useEffect(() => {
     fetchServices();
   }, [fetchServices]);
 
-  // Si se genera el token de Webpay, podemos auto-enviar el formulario a Transbank
   useEffect(() => {
     if (webpayData && webpayFormRef.current) {
       webpayFormRef.current.submit();
@@ -62,18 +57,17 @@ export default function BookingCard() {
     nextStep();
   };
 
-  const handleSpecialistSelect = (id: number, name: string) => {
-    setSelectedSpecialist(id, name);
+  const handleSpecialistSelect = (id: number, name: string, fechas?: string[]) => {
+    setSelectedSpecialist(id, name, fechas);
     nextStep();
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setSelectedDate(e.target.value);
   };
 
   const handleTimeSelect = (horaInicio: string, slotId: number) => {
-    const timeCleaned = horaInicio.substring(0, 5);
-    setSelectedTimeSlot(timeCleaned, slotId);
+    setSelectedTimeSlot(horaInicio, slotId);
   };
 
   const handlePatientInfoChange = (field: 'name' | 'email' | 'phone', value: string) => {
@@ -99,10 +93,9 @@ export default function BookingCard() {
         </div>
         <h3 className="text-lg font-bold text-slate-900 mb-2">Redirigiendo a Webpay...</h3>
         <p className="text-xs text-brand-muted max-w-[300px] mb-6 leading-relaxed">
-          Tu reserva para <span className="text-slate-900 font-semibold">{selectedServiceName}</span> con <span className="text-slate-900 font-semibold">{selectedSpecialistName}</span> el <span className="text-slate-900 font-semibold">{selectedDate}</span> a las <span className="text-slate-900 font-semibold">{selectedTimeSlot} hrs</span> ha sido registrada.
+          Tu reserva para <span className="text-slate-900 font-semibold">{selectedServiceName}</span> con <span className="text-slate-900 font-semibold">{selectedSpecialistName}</span> el <span className="text-slate-900 font-semibold">{selectedDate}</span> ha sido registrada.
         </p>
 
-        {/* Dynamic Form to Post token_ws to Webpay */}
         <form ref={webpayFormRef} action={webpayData.urlRedireccion} method="POST">
           <input type="hidden" name="token_ws" value={webpayData.token} />
           <button
@@ -124,11 +117,11 @@ export default function BookingCard() {
         </div>
         <h3 className="text-lg font-bold text-slate-900 mb-2">¡Cita Registrada Exitosamente!</h3>
         <p className="text-xs text-brand-muted max-w-[280px] mb-6 leading-relaxed">
-          Tu reserva para <span className="text-slate-900 font-semibold">{selectedServiceName}</span> el <span className="text-slate-900 font-semibold">{selectedDate}</span> a las <span className="text-slate-900 font-semibold">{selectedTimeSlot} hrs</span> ha sido registrada en el sistema.
+          Tu reserva para <span className="text-slate-900 font-semibold">{selectedServiceName}</span> el <span className="text-slate-900 font-semibold">{selectedDate}</span> ha sido registrada en el sistema.
         </p>
         <button
           onClick={resetBooking}
-          className="bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider"
+          className="bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer"
         >
           Reservar otra cita
         </button>
@@ -139,7 +132,6 @@ export default function BookingCard() {
   return (
     <div className="flex-1 flex flex-col min-h-[400px] justify-between p-2">
       
-      {/* Loader General */}
       {isLoading && (
         <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex items-center justify-center z-50 rounded-3xl">
           <div className="flex flex-col items-center gap-3">
@@ -162,7 +154,7 @@ export default function BookingCard() {
               <button
                 key={service.id}
                 onClick={() => handleServiceSelect(service.id, service.nombre)}
-                className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-2xl border text-left transition-all ${
+                className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer ${
                   selectedServiceId === service.id
                     ? 'border-brand-primary bg-brand-primary/10 shadow-md shadow-brand-primary/10'
                     : 'border-brand-border bg-white hover:border-brand-primary/50 hover:bg-slate-50'
@@ -197,8 +189,8 @@ export default function BookingCard() {
             {specialists.filter(sp => sp.activo).map((sp) => (
               <button
                 key={sp.id}
-                onClick={() => handleSpecialistSelect(sp.id, sp.nombre)}
-                className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-2xl border text-left transition-all ${
+                onClick={() => handleSpecialistSelect(sp.id, sp.nombre, sp.fechasDisponibles)}
+                className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer ${
                   selectedSpecialistId === sp.id
                     ? 'border-brand-primary bg-brand-primary/10 shadow-md shadow-brand-primary/10'
                     : 'border-brand-border bg-white hover:border-brand-primary/50 hover:bg-slate-50'
@@ -240,36 +232,52 @@ export default function BookingCard() {
           
           <div className="flex flex-col gap-4">
             <div>
-              <label className="block text-xs text-brand-muted mb-1.5 font-medium">1. Elige una Fecha</label>
-              <input
-                type="date"
-                value={selectedDate || ''}
-                onChange={handleDateChange}
-                min={tomorrowStr}
-                className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors"
-              />
+              <label className="block text-xs text-brand-muted mb-1.5 font-medium">1. Elige una Fecha disponible</label>
+              {availableDates && availableDates.length > 0 ? (
+                <select
+                  value={selectedDate || ''}
+                  onChange={handleDateChange}
+                  className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors cursor-pointer"
+                >
+                  <option value="">-- Selecciona una fecha --</option>
+                  {availableDates.map((f) => (
+                    <option key={f} value={f}>{f}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="date"
+                  value={selectedDate || ''}
+                  onChange={handleDateChange}
+                  min={todayStr}
+                  className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors"
+                />
+              )}
             </div>
 
             {selectedDate && (
               <div>
-                <label className="block text-xs text-brand-muted mb-2 font-medium">2. Selecciona una Hora disponible</label>
-                <div className="grid grid-cols-3 gap-2.5 max-h-[160px] overflow-y-auto pr-1">
-                  {availableSlots.map((slot) => (
-                    <button
-                      key={slot.id}
-                      onClick={() => handleTimeSelect(slot.horaInicio, slot.id)}
-                      className={`p-3 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
-                        selectedBloqueHorarioId === slot.id
-                          ? 'border-brand-primary bg-brand-primary text-white shadow-md shadow-brand-primary/20'
-                          : 'border-brand-border bg-white text-slate-700 hover:border-brand-primary hover:bg-slate-50'
-                      }`}
-                    >
-                      {slot.horaInicio.substring(0, 5)}
-                    </button>
-                  ))}
+                <label className="block text-xs text-brand-muted mb-2 font-medium">2. Selecciona una Franja Horaria</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[180px] overflow-y-auto pr-1">
+                  {availableSlots.map((slot) => {
+                    const displayHora = `${slot.horaInicio} - ${slot.horaFin}`;
+                    return (
+                      <button
+                        key={slot.id}
+                        onClick={() => handleTimeSelect(slot.horaInicio, slot.id)}
+                        className={`p-3 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
+                          selectedBloqueHorarioId === slot.id
+                            ? 'border-brand-primary bg-brand-primary text-white shadow-md shadow-brand-primary/20'
+                            : 'border-brand-border bg-white text-slate-700 hover:border-brand-primary hover:bg-slate-50'
+                        }`}
+                      >
+                        {displayHora}
+                      </button>
+                    );
+                  })}
 
                   {availableSlots.length === 0 && !isLoading && (
-                    <p className="text-[11px] text-rose-500 font-medium col-span-3 text-center py-4">No hay bloques disponibles para esta fecha.</p>
+                    <p className="text-[11px] text-rose-500 font-medium col-span-3 text-center py-4">No hay franjas disponibles ese día.</p>
                   )}
                 </div>
               </div>
