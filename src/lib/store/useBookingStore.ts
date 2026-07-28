@@ -296,7 +296,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         const mockWebpay: IniciarTransaccionResponseData = {
           transaccionId: Math.floor(Math.random() * 9000) + 1000,
           token: 'mock-webpay-token-demo',
-          urlRedireccion: `/pago/confirmar?token_ws=mock-webpay-token-demo`,
+          urlRedireccion: `/pago/webpay?token_ws=mock-webpay-token-demo`,
           expiraEn: new Date(Date.now() + 15 * 60 * 1000).toISOString()
         };
 

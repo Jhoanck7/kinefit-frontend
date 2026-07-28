@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useBookingStore } from '@/lib/store/useBookingStore';
 
 export default function BookingCard() {
+  const router = useRouter();
   const {
     services,
     specialists,
@@ -46,11 +48,15 @@ export default function BookingCard() {
     fetchServices();
   }, [fetchServices]);
 
+  // Manejar redirección a Webpay
   useEffect(() => {
-    if (webpayData && webpayFormRef.current) {
-      webpayFormRef.current.submit();
+    if (webpayData) {
+      if (webpayData.urlRedireccion.startsWith('/')) {
+        // Redirigir a la interfaz interactiva de Webpay
+        router.push(webpayData.urlRedireccion);
+      }
     }
-  }, [webpayData]);
+  }, [webpayData, router]);
 
   const handleServiceSelect = (id: number, name: string) => {
     setSelectedService(id, name);
@@ -88,23 +94,32 @@ export default function BookingCard() {
   if (success && webpayData) {
     return (
       <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 animate-fade-in">
-        <div className="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-brand-primary text-3xl mb-4 shadow-lg shadow-blue-500/10">
+        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-600 text-3xl mb-4 shadow-lg shadow-red-500/10">
           💳
         </div>
-        <h3 className="text-lg font-bold text-slate-900 mb-2">Redirigiendo a Webpay...</h3>
+        <h3 className="text-lg font-bold text-slate-900 mb-2">Transbank Webpay Plus</h3>
         <p className="text-xs text-brand-muted max-w-[300px] mb-6 leading-relaxed">
-          Tu reserva para <span className="text-slate-900 font-semibold">{selectedServiceName}</span> con <span className="text-slate-900 font-semibold">{selectedSpecialistName}</span> el <span className="text-slate-900 font-semibold">{selectedDate}</span> ha sido registrada.
+          Reserva lista para <span className="text-slate-900 font-semibold">{selectedServiceName}</span> con <span className="text-slate-900 font-semibold">{selectedSpecialistName}</span> el <span className="text-slate-900 font-semibold">{selectedDate}</span>. Haz clic abajo para ingresar a la pasarela de pago.
         </p>
 
-        <form ref={webpayFormRef} action={webpayData.urlRedireccion} method="POST">
-          <input type="hidden" name="token_ws" value={webpayData.token} />
+        {webpayData.urlRedireccion.startsWith('http') ? (
+          <form ref={webpayFormRef} action={webpayData.urlRedireccion} method="POST">
+            <input type="hidden" name="token_ws" value={webpayData.token} />
+            <button
+              type="submit"
+              className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
+            >
+              Ir a Webpay Plus ($10.000 CLP)
+            </button>
+          </form>
+        ) : (
           <button
-            type="submit"
-            className="bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
+            onClick={() => router.push(webpayData.urlRedireccion)}
+            className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
           >
-            Pagar con Webpay ($10.000 CLP)
+            Abrir Pasarela Webpay Plus ($10.000 CLP)
           </button>
-        </form>
+        )}
       </div>
     );
   }
