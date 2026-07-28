@@ -57,8 +57,8 @@ export default function PerfilPacientePage() {
               {paciente.nombre} {paciente.apellido}
             </h2>
             <p className="text-sm text-brand-muted">RUT: {paciente.rut}</p>
-            <p className="mt-2 text-sm text-brand-muted">📞 {paciente.telefono}</p>
-            <p className="text-sm text-brand-muted">✉ {paciente.correo}</p>
+            <p className="mt-2 text-sm text-brand-muted">{paciente.telefono}</p>
+            <p className="text-sm text-brand-muted">{paciente.correo}</p>
             <p className="mt-2 text-sm text-brand-muted">
               Convenio: {paciente.convenio?.nombre ?? "—"}
             </p>

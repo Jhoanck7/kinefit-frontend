@@ -39,13 +39,15 @@ export function Sidebar() {
       aria-label="Navegación del panel"
       className="flex w-[20%] min-w-[240px] max-w-[300px] flex-col bg-panel-sidebar text-white"
     >
-      <div className="flex flex-col items-center gap-3 px-6 pt-10 pb-8">
-        <div className="rounded-2xl bg-white p-3">
-          <Image src="/Kinefit color.png" alt="Kinefit" width={120} height={40} className="h-8 w-auto" priority />
-        </div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-blue-100">
-          Panel Administrativo
-        </p>
+      <div className="flex items-center justify-center px-3 pt-6 pb-4 w-full">
+        <Image
+          src="/Kinefit Negro ver.png"
+          alt="Kinefit Logo"
+          width={280}
+          height={100}
+          className="h-20 w-full object-contain brightness-0 invert"
+          priority
+        />
       </div>
 
       <ul className="flex-1 px-3 space-y-1">

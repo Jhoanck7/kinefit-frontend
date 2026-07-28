@@ -36,8 +36,7 @@ export default function BloqueosPage() {
       </div>
       <h2 className="mb-1 text-lg font-bold text-panel-sidebar">Bloqueos de agenda</h2>
       <p className="mb-6 text-sm text-brand-muted">
-        Franjas bloqueadas por {usuario.nombre}. En esta sesión del prototipo solo se consultan — no se crean ni
-        editan.
+        Franjas bloqueadas por {usuario.nombre}.
       </p>
 
       <Card className="p-0 overflow-hidden">

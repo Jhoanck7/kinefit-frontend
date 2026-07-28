@@ -176,7 +176,11 @@ function BloquesChip({
             }`}
           >
             {formatearRangoHorario(bloque.inicio, bloque.termino)}
-            {seleccionado && <span aria-hidden>✓</span>}
+            {seleccionado && (
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            )}
           </button>
         );
       })}

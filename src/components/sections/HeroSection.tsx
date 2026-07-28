@@ -55,8 +55,10 @@ export default function HeroSection() {
             <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-12 w-full max-w-lg border-t border-brand-border pt-8">
               {HERO_COPY.bullets.map((bullet) => (
                 <div key={bullet} className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 text-xs font-bold">
-                    ✓
+                  <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
                   </div>
                   <span className="text-sm font-medium text-brand-muted">{bullet}</span>
                 </div>

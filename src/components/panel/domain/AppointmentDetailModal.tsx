@@ -78,11 +78,6 @@ export function AppointmentDetailModal({
         <div className="p-10 text-center text-sm text-brand-muted">Cargando…</div>
       ) : confirmacion ? (
         <div className="p-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-            <svg className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
-          </div>
           <h2 className="text-lg font-semibold text-panel-sidebar">{confirmacion.titulo}</h2>
           <p className="mt-2 text-sm text-brand-muted">{confirmacion.descripcion}</p>
           <p className="mt-3 text-xs italic text-brand-muted">
@@ -136,7 +131,7 @@ function DetalleCita({
           aria-label="Cerrar"
           className="rounded-full p-1.5 text-brand-muted hover:bg-panel-fondo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar"
         >
-          ✕
+          &times;
         </button>
       </div>
 
@@ -163,8 +158,8 @@ function DetalleCita({
             {cita.paciente.nombre} {cita.paciente.apellido}
           </p>
           <p className="text-sm text-brand-muted">RUT: {cita.paciente.rut}</p>
-          <p className="mt-2 text-sm text-brand-muted">📞 {cita.paciente.telefono}</p>
-          <p className="text-sm text-brand-muted">✉ {cita.paciente.correo}</p>
+          <p className="mt-2 text-sm text-brand-muted">{cita.paciente.telefono}</p>
+          <p className="text-sm text-brand-muted">{cita.paciente.correo}</p>
           {cita.paciente.convenio && (
             <p className="mt-2 text-sm text-brand-muted">Convenio: {cita.paciente.convenio.nombre}</p>
           )}
@@ -195,7 +190,7 @@ function DetalleCita({
           )}
           {cita.notas.interna && (
             <div className="rounded-lg bg-panel-seleccion p-3">
-              <p className="flex items-center gap-1 text-xs font-semibold text-panel-sidebar">🔒 Nota interna</p>
+              <p className="flex items-center gap-1 text-xs font-semibold text-panel-sidebar">Nota interna</p>
               <p className="text-sm text-panel-sidebar">{cita.notas.interna}</p>
             </div>
           )}

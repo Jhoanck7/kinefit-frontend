@@ -47,7 +47,7 @@ export default function NuevaReservaResumenPage() {
             <div>
               <div className="mb-1.5 flex items-center gap-2">
                 <span className="text-sm font-medium text-panel-sidebar">Nota para el paciente</span>
-                <InfoBadge icono={<span aria-hidden>👁</span>}>El paciente la verá en su confirmación</InfoBadge>
+                <InfoBadge>El paciente la verá en su confirmación</InfoBadge>
               </div>
               <TextAreaField
                 etiqueta=""
@@ -60,7 +60,7 @@ export default function NuevaReservaResumenPage() {
             <div>
               <div className="mb-1.5 flex items-center gap-2">
                 <span className="text-sm font-medium text-panel-sidebar">Nota interna</span>
-                <InvertedBadge icono={<span aria-hidden>🔒</span>}>Visible solo para el personal de KineFit</InvertedBadge>
+                <InvertedBadge>Visible solo para el personal de KineFit</InvertedBadge>
               </div>
               <TextAreaField
                 etiqueta=""

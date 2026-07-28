@@ -164,11 +164,6 @@ export default function ConstructorFormatoPage() {
         </div>
       )}
 
-      <div className="mb-4 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-3 text-sm text-amber-800">
-        Este submódulo está sujeto a confirmación del cliente: podría reemplazarse por formatos fijos definidos en
-        código.
-      </div>
-
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[65fr_35fr]">
         <div className="space-y-4">
           <Card>
@@ -214,9 +209,9 @@ export default function ConstructorFormatoPage() {
                   type="button"
                   onClick={() => setSeccionAEliminar(seccion.id)}
                   aria-label="Eliminar sección"
-                  className="text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded"
+                  className="text-xs font-semibold text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded"
                 >
-                  🗑
+                  Eliminar
                 </button>
               </div>
 
@@ -273,7 +268,7 @@ export default function ConstructorFormatoPage() {
                         aria-label="Quitar campo"
                         className="text-brand-muted hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded"
                       >
-                        ✕
+                        &times;
                       </button>
                     </div>
 
@@ -302,7 +297,7 @@ export default function ConstructorFormatoPage() {
                               aria-label="Quitar opción"
                               className="text-brand-muted hover:text-red-600"
                             >
-                              ✕
+                              &times;
                             </button>
                           </div>
                         ))}
@@ -336,7 +331,7 @@ export default function ConstructorFormatoPage() {
             onClick={() => setSecciones((prev) => [...prev, seccionNueva()])}
             className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-border py-4 text-panel-sidebar hover:border-panel-sidebar/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar"
           >
-            <span aria-hidden>⊕</span> Agregar sección
+            + Agregar sección
           </button>
 
           <div className="flex justify-end gap-3 border-t border-brand-border pt-6">
@@ -352,7 +347,6 @@ export default function ConstructorFormatoPage() {
         <div className="rounded-2xl border border-brand-border overflow-hidden h-fit sticky top-6">
           <div className="flex items-center justify-between bg-panel-sidebar px-4 py-3 text-white">
             <span className="font-semibold">Vista Previa</span>
-            <span aria-hidden>👁</span>
           </div>
           <div className="space-y-5 bg-white p-4">
             <p className="text-lg font-bold text-panel-sidebar">{nombreFormato || "Sin nombre"}</p>

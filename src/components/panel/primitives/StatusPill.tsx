@@ -28,7 +28,6 @@ export function StatusPill({ etiqueta, colorRol, conTrama, className = "" }: Sta
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wide ${clases.fondo} ${clases.texto} ${conTrama ? "bg-[repeating-linear-gradient(135deg,transparent,transparent_4px,rgba(0,0,0,0.06)_4px,rgba(0,0,0,0.06)_8px)]" : ""} ${className}`}
     >
-      <span className={`h-2 w-2 rounded-full ${clases.punto}`} aria-hidden />
       {etiqueta}
     </span>
   );

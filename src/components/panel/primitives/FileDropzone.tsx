@@ -56,7 +56,7 @@ export function FileDropzone({
                 aria-label={`Quitar ${nombre}`}
                 className="text-brand-muted hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded"
               >
-                ✕
+                &times;
               </button>
             </li>
           ))}

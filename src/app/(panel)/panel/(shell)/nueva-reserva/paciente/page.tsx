@@ -64,8 +64,8 @@ export default function NuevaReservaPacientePage() {
               {pacienteConfirmado && (
                 <>
                   <p className="text-sm text-brand-muted">RUT: {pacienteConfirmado.rut}</p>
-                  <p className="mt-1 text-sm text-brand-muted">📞 {pacienteConfirmado.telefono}</p>
-                  <p className="text-sm text-brand-muted">✉ {pacienteConfirmado.correo}</p>
+                  <p className="mt-1 text-sm text-brand-muted">{pacienteConfirmado.telefono}</p>
+                  <p className="text-sm text-brand-muted">{pacienteConfirmado.correo}</p>
                   <p className="mt-1 text-sm text-brand-muted">Convenio: {pacienteConfirmado.convenio?.nombre ?? "—"}</p>
                 </>
               )}

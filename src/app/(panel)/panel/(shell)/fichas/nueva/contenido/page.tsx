@@ -72,7 +72,7 @@ export default function NuevaFichaContenidoPage() {
 
       <Card>
         <div className="mb-4 flex items-center gap-2 rounded-lg bg-panel-seleccion p-3 text-xs text-panel-sidebar">
-          🔒 Contenido privado. No visible para el paciente.
+          Contenido privado. No visible para el paciente.
         </div>
 
         <h2 className="mb-4 text-lg font-bold text-panel-sidebar">Completa la ficha clínica</h2>
@@ -144,7 +144,7 @@ export default function NuevaFichaContenidoPage() {
           }
           avanzar={
             <Button variante="primario" disabled={!formato} onClick={alGuardar}>
-              💾 Guardar ficha
+              Guardar ficha
             </Button>
           }
         />

@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
-import { TestDataNotice } from "../primitives/TestDataNotice";
 
 /**
  * Marco canónico de dos zonas (Parte A.1): barra lateral fija a la
@@ -15,7 +14,6 @@ export function PanelShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen w-full">
       <Sidebar />
       <div className="flex flex-1 flex-col">
-        <TestDataNotice />
         <Header />
         <main className="flex-1 overflow-y-auto bg-panel-fondo p-8">{children}</main>
       </div>

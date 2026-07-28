@@ -53,7 +53,7 @@ export default function FichaGuardadaPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="flex items-center gap-2 rounded-lg bg-panel-seleccion p-3 text-xs text-panel-sidebar">
-        🔒 Contenido privado. No visible para el paciente.
+        Contenido privado. No visible para el paciente.
       </div>
 
       <Card>

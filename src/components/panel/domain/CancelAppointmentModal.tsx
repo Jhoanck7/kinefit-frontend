@@ -45,11 +45,6 @@ export function CancelAppointmentModal({
     <Modal abierto={abierto} onCerrar={onVolver} ancho="max-w-md">
       {confirmada ? (
         <div className="p-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-            <svg className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
-          </div>
           <h2 className="text-lg font-semibold text-panel-sidebar">Cita cancelada</h2>
           <p className="mt-2 text-sm text-brand-muted">
             El bloque horario vuelve a estar disponible.

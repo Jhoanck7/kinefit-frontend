@@ -41,11 +41,6 @@ export default function FormatosListadoPage() {
         </Button>
       </div>
 
-      <div className="mb-4 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-3 text-sm text-amber-800">
-        Este submódulo está sujeto a confirmación del cliente: podría reemplazarse por formatos fijos definidos en
-        código.
-      </div>
-
       <div className="space-y-3">
         {formatos.map((formato) => {
           const totalCampos = formato.secciones.reduce((acc, s) => acc + s.campos.length, 0);
@@ -58,16 +53,13 @@ export default function FormatosListadoPage() {
                     {formato.fichasCreadas > 0 && <UsageBadge>En uso · {formato.fichasCreadas} fichas</UsageBadge>}
                   </div>
                   <p className="mt-1 text-sm text-brand-muted">
-                    📋 {formato.secciones.length} secciones · {totalCampos} campos · 🕒 Modificado{" "}
+                    {formato.secciones.length} secciones · {totalCampos} campos · Modificado{" "}
                     {formatearFechaExtensa(formato.modificadoEn)}
                   </p>
                 </div>
                 <div className="flex gap-2">
                   <Button variante="secundario" onClick={() => router.push(`/panel/fichas/formatos/nuevo?editar=${formato.id}`)}>
                     Editar
-                  </Button>
-                  <Button variante="secundario" onClick={() => router.push("/panel/fichas/formatos/nuevo?duplicar=1")}>
-                    Duplicar
                   </Button>
                 </div>
               </div>

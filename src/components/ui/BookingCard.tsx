@@ -85,8 +85,10 @@ export default function BookingCard() {
   if (success) {
     return (
       <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 animate-fade-in">
-        <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-3xl mb-6 shadow-lg shadow-emerald-500/10">
-          ✓
+        <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-6 shadow-lg shadow-emerald-500/10">
+          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
         </div>
         <h3 className="text-lg font-bold text-slate-900 mb-2">¡Cita Reservada con Éxito!</h3>
         <p className="text-xs text-brand-muted max-w-[280px] mb-6 leading-relaxed">
