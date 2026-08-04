@@ -4,6 +4,22 @@ import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useBookingStore } from '@/lib/store/useBookingStore';
 
+const parseDateInfo = (dateStr: string) => {
+  if (!dateStr || !dateStr.includes('-')) {
+    return { dayName: '', dayNumber: '', monthName: '', formattedFull: dateStr };
+  }
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const d = new Date(year, month - 1, day);
+  const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  return {
+    dayName: dayNames[d.getDay()] || '',
+    dayNumber: day,
+    monthName: monthNames[d.getMonth()] || '',
+    formattedFull: `${dayNames[d.getDay()] || ''}, ${day} ${monthNames[d.getMonth()] || ''}`
+  };
+};
+
 export default function BookingCard() {
   const router = useRouter();
   const {
@@ -117,8 +133,8 @@ export default function BookingCard() {
     nextStep();
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setSelectedDate(e.target.value);
+  const handleDateChange = (dateStr: string) => {
+    setSelectedDate(dateStr);
   };
 
   const handleTimeSelect = (horaInicio: string, slotId: number) => {
@@ -192,10 +208,8 @@ export default function BookingCard() {
   if (success && !webpayData) {
     return (
       <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 animate-fade-in">
-        <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-6 shadow-lg shadow-emerald-500/10">
-          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
+        <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-3xl mb-6 shadow-lg shadow-emerald-500/10">
+          ✓
         </div>
         <h3 className="text-lg font-bold text-slate-900 mb-2">¡Cita Registrada Exitosamente!</h3>
         <p className="text-xs text-brand-muted max-w-[280px] mb-6 leading-relaxed">
@@ -312,45 +326,87 @@ export default function BookingCard() {
             <p className="text-slate-800 text-base font-bold">Fecha y Horario</p>
           </div>
           
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-5">
+            {/* Custom Interactive Date Selector */}
             <div>
-              <label className="block text-xs text-brand-muted mb-1.5 font-medium">1. Elige una Fecha disponible</label>
+              <div className="flex justify-between items-center mb-2.5">
+                <label className="text-xs text-slate-700 font-semibold flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  1. Selecciona la Fecha
+                </label>
+                {selectedDate && (
+                  <span className="text-[11px] font-bold text-brand-primary bg-brand-primary/10 px-2.5 py-0.5 rounded-full border border-brand-primary/20">
+                    {parseDateInfo(selectedDate).formattedFull}
+                  </span>
+                )}
+              </div>
+
               {availableDates && availableDates.length > 0 ? (
-                <select
-                  value={selectedDate || ''}
-                  onChange={handleDateChange}
-                  className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors cursor-pointer"
-                >
-                  <option value="">-- Selecciona una fecha --</option>
-                  {availableDates.map((f) => (
-                    <option key={f} value={f}>{f}</option>
-                  ))}
-                </select>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {availableDates.map((dateStr) => {
+                    const info = parseDateInfo(dateStr);
+                    const isSelected = selectedDate === dateStr;
+                    return (
+                      <button
+                        key={dateStr}
+                        type="button"
+                        onClick={() => handleDateChange(dateStr)}
+                        className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-gradient-to-br from-brand-primary to-emerald-600 text-white border-brand-primary shadow-lg shadow-brand-primary/25 scale-[1.02]'
+                            : 'bg-slate-50 border-slate-200/80 text-slate-700 hover:bg-white hover:border-brand-primary/40 hover:shadow-sm'
+                        }`}
+                      >
+                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>
+                          {info.dayName}
+                        </span>
+                        <span className="text-lg font-extrabold my-0.5 leading-none">
+                          {info.dayNumber}
+                        </span>
+                        <span className={`text-[10px] font-semibold uppercase ${isSelected ? 'text-white/90' : 'text-slate-500'}`}>
+                          {info.monthName}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               ) : (
-                <input
-                  type="date"
-                  value={selectedDate || ''}
-                  onChange={handleDateChange}
-                  min={todayStr}
-                  className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors"
-                />
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={selectedDate || ''}
+                    onChange={(e) => handleDateChange(e.target.value)}
+                    min={todayStr}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-sm font-semibold text-slate-900 focus:outline-none focus:border-brand-primary focus:bg-white transition-all cursor-pointer"
+                  />
+                </div>
               )}
             </div>
 
+            {/* Time Slot Selection */}
             {selectedDate && (
-              <div>
-                <label className="block text-xs text-brand-muted mb-2 font-medium">2. Selecciona una Franja Horaria</label>
+              <div className="animate-fade-in">
+                <label className="block text-xs text-slate-700 font-semibold mb-2.5 flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  2. Selecciona la Franja Horaria
+                </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[180px] overflow-y-auto pr-1">
                   {availableSlots.map((slot) => {
                     const displayHora = `${slot.horaInicio} - ${slot.horaFin}`;
+                    const isSelected = selectedBloqueHorarioId === slot.id;
                     return (
                       <button
                         key={slot.id}
+                        type="button"
                         onClick={() => handleTimeSelect(slot.horaInicio, slot.id)}
                         className={`p-3 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
-                          selectedBloqueHorarioId === slot.id
+                          isSelected
                             ? 'border-brand-primary bg-brand-primary text-white shadow-md shadow-brand-primary/20'
-                            : 'border-brand-border bg-white text-slate-700 hover:border-brand-primary hover:bg-slate-50'
+                            : 'border-slate-200/80 bg-white text-slate-700 hover:border-brand-primary hover:bg-slate-50'
                         }`}
                       >
                         {displayHora}
@@ -378,7 +434,7 @@ export default function BookingCard() {
               disabled={!selectedDate || !selectedBloqueHorarioId}
               className={`rounded-xl px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
                 selectedDate && selectedBloqueHorarioId
-                  ? 'bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer'
+                  ? 'bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer shadow-md'
                   : 'bg-slate-100 text-slate-400 cursor-not-allowed'
               }`}
             >
@@ -443,7 +499,7 @@ export default function BookingCard() {
             </div>
 
             <div>
-              <label className="block text-xs text-brand-muted mb-1.5 font-medium">RUT del Paciente (ej: 11111111-1)</label>
+              <label className="block text-xs text-brand-muted mb-1.5 font-medium">RUT del Paciente (ej: 11111111-1 o 12345678-5)</label>
               <input
                 type="text"
                 required
