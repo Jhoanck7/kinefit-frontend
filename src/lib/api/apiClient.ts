@@ -30,8 +30,12 @@ class ApiClient {
     const response = await fetch(url, { ...options, headers });
 
     if (!response.ok) {
-      const errorJson = await response.json().catch(() => ({ message: 'Un error inesperado ha ocurrido' }));
-      const errorMessage = errorJson.message || errorJson.error || `HTTP error! status: ${response.status}`;
+      if (response.status === 401) {
+        throw new Error('Debes iniciar sesión con tu cuenta de Google para agendar y confirmar la reserva.');
+      }
+
+      const errorJson = await response.json().catch(() => ({ message: null }));
+      const errorMessage = errorJson?.message || errorJson?.error || `Error en el servidor backend (Código HTTP ${response.status})`;
       throw new Error(errorMessage);
     }
 

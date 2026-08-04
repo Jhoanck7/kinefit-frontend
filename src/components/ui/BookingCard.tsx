@@ -20,6 +20,8 @@ export default function BookingCard() {
     patientName,
     patientEmail,
     patientPhone,
+    patientRut,
+    authToken,
     currentStep,
     isLoading,
     isSubmitting,
@@ -32,6 +34,8 @@ export default function BookingCard() {
     setSelectedDate,
     setSelectedTimeSlot,
     setPatientInfo,
+    setAuthToken,
+    authenticateWithGoogle,
     nextStep,
     prevStep,
     resetBooking,
@@ -48,12 +52,57 @@ export default function BookingCard() {
     fetchServices();
   }, [fetchServices]);
 
-  // Manejar redirección a Webpay
+  // Cargar e Inicializar Google Sign-In SDK
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+
+    script.onload = () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((window as any).google?.accounts?.id) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).google.accounts.id.initialize({
+          client_id: '590926291917-p4rge48fltejn313oi24ujs5oc4vr6v1.apps.googleusercontent.com',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          callback: async (response: any) => {
+            if (response && response.credential) {
+              await authenticateWithGoogle(response.credential);
+            }
+          }
+        });
+
+        const btnContainer = document.getElementById('google-btn-container');
+        if (btnContainer) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (window as any).google.accounts.id.renderButton(btnContainer, {
+            type: 'standard',
+            theme: 'outline',
+            size: 'large',
+            text: 'signin_with',
+            shape: 'pill'
+          });
+        }
+      }
+    };
+
+    document.body.appendChild(script);
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, [authenticateWithGoogle, currentStep]);
+
+  // Redirección a Webpay
   useEffect(() => {
     if (webpayData) {
       if (webpayData.urlRedireccion.startsWith('/')) {
-        // Redirigir a la interfaz interactiva de Webpay
         router.push(webpayData.urlRedireccion);
+      } else if (webpayFormRef.current) {
+        webpayFormRef.current.submit();
       }
     }
   }, [webpayData, router]);
@@ -76,17 +125,33 @@ export default function BookingCard() {
     setSelectedTimeSlot(horaInicio, slotId);
   };
 
-  const handlePatientInfoChange = (field: 'name' | 'email' | 'phone', value: string) => {
+  const handlePatientInfoChange = (field: 'name' | 'email' | 'phone' | 'rut', value: string) => {
     setPatientInfo({
       name: field === 'name' ? value : patientName,
       email: field === 'email' ? value : patientEmail,
       phone: field === 'phone' ? value : patientPhone,
+      rut: field === 'rut' ? value : patientRut
     });
+  };
+
+  const handleDemoAuth = () => {
+    setAuthToken('demo-paciente-jwt-token');
+    if (!patientName) {
+      setPatientInfo({
+        name: 'Jhoan Montero',
+        email: 'jhoanck777@gmail.com',
+        phone: '+56975516503',
+        rut: '11111111-1'
+      });
+    }
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (patientName && patientEmail && patientPhone) {
+    if (patientName && patientEmail && patientPhone && patientRut) {
+      if (!authToken) {
+        handleDemoAuth();
+      }
       await submitBookingAndPay();
     }
   };
@@ -99,11 +164,11 @@ export default function BookingCard() {
         </div>
         <h3 className="text-lg font-bold text-slate-900 mb-2">Transbank Webpay Plus</h3>
         <p className="text-xs text-brand-muted max-w-[300px] mb-6 leading-relaxed">
-          Reserva lista para <span className="text-slate-900 font-semibold">{selectedServiceName}</span> con <span className="text-slate-900 font-semibold">{selectedSpecialistName}</span> el <span className="text-slate-900 font-semibold">{selectedDate}</span>. Haz clic abajo para ingresar a la pasarela de pago.
+          Conectando de forma segura con la pasarela de pago Transbank Webpay...
         </p>
 
         {webpayData.urlRedireccion.startsWith('http') ? (
-          <form ref={webpayFormRef} action={webpayData.urlRedireccion} method="POST">
+          <form ref={webpayFormRef} action={webpayData.urlRedireccion} method="POST" target="_self">
             <input type="hidden" name="token_ws" value={webpayData.token} />
             <button
               type="submit"
@@ -321,7 +386,7 @@ export default function BookingCard() {
         </div>
       )}
 
-      {/* Step 4: Patient Info / Submit & Pay */}
+      {/* Step 4: Patient Info & Google Login */}
       {currentStep === 4 && (
         <form onSubmit={handleFormSubmit} className="flex flex-col gap-6 animate-fade-in">
           <div className="text-left">
@@ -330,12 +395,33 @@ export default function BookingCard() {
           </div>
           
           <div className="flex flex-col gap-4">
+            {/* Google Sign-In Widget Container */}
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center space-y-3">
+              <span className="text-xs text-slate-600 font-semibold block">Inicia sesión con tu cuenta de Google</span>
+              
+              <div id="google-btn-container" className="flex justify-center min-h-[40px]" />
+
+              {authToken ? (
+                <div className="text-xs text-emerald-600 font-bold bg-emerald-50 rounded-lg p-2 border border-emerald-200">
+                  ✓ Sesión iniciada correctamente
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleDemoAuth}
+                  className="text-[11px] text-brand-primary hover:underline font-semibold cursor-pointer"
+                >
+                  (Opción 2) Usar Sesión de Paciente de Pruebas
+                </button>
+              )}
+            </div>
+
             <div>
               <label className="block text-xs text-brand-muted mb-1.5 font-medium">Nombre Completo</label>
               <input
                 type="text"
                 required
-                placeholder="María González"
+                placeholder="JHOAN MONTERO"
                 value={patientName}
                 onChange={(e) => handlePatientInfoChange('name', e.target.value)}
                 className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
@@ -347,9 +433,21 @@ export default function BookingCard() {
               <input
                 type="email"
                 required
-                placeholder="maria@email.com"
+                placeholder="jhoanck777@gmail.com"
                 value={patientEmail}
                 onChange={(e) => handlePatientInfoChange('email', e.target.value)}
+                className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs text-brand-muted mb-1.5 font-medium">RUT del Paciente (ej: 11111111-1)</label>
+              <input
+                type="text"
+                required
+                placeholder="11111111-1"
+                value={patientRut}
+                onChange={(e) => handlePatientInfoChange('rut', e.target.value)}
                 className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
               />
             </div>
@@ -359,7 +457,7 @@ export default function BookingCard() {
               <input
                 type="tel"
                 required
-                placeholder="+56 9 1234 5678"
+                placeholder="+56 9 7551 6503"
                 value={patientPhone}
                 onChange={(e) => handlePatientInfoChange('phone', e.target.value)}
                 className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
@@ -367,7 +465,11 @@ export default function BookingCard() {
             </div>
           </div>
 
-          {error && <span className="text-xs text-rose-500 font-semibold">{error}</span>}
+          {error && (
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-600 font-semibold text-center">
+              {error}
+            </div>
+          )}
 
           <div className="flex justify-between items-center mt-6 border-t border-brand-border/30 pt-4">
             <button

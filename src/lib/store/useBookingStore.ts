@@ -9,27 +9,6 @@ import {
   IniciarTransaccionResponseData 
 } from '@/types';
 
-// Mock data fallbacks for local testing without active backend
-const MOCK_SERVICES: BackendService[] = [
-  { id: 1, nombre: 'Masoterapia', activo: true },
-  { id: 2, nombre: 'Kinesiología', activo: true },
-];
-
-const MOCK_SPECIALISTS: BackendSpecialist[] = [
-  { id: 1, nombre: 'Franchesca Astudillo', cargo: 'Masoterapeuta', servicio: { id: 1, nombre: 'Masoterapia' }, activo: true, fechasDisponibles: ['2026-07-29', '2026-07-30', '2026-07-31'] },
-  { id: 2, nombre: 'Francisco Silva', cargo: 'Kinesiólogo', servicio: { id: 2, nombre: 'Kinesiología' }, activo: true, fechasDisponibles: ['2026-07-29', '2026-07-30', '2026-07-31'] },
-];
-
-const MOCK_TIME_SLOTS: BackendTimeSlot[] = [
-  { id: 101, horaInicio: '09:30', horaFin: '10:00', estado: 'Disponible' },
-  { id: 102, horaInicio: '10:00', horaFin: '10:30', estado: 'Disponible' },
-  { id: 103, horaInicio: '10:30', horaFin: '11:00', estado: 'Disponible' },
-  { id: 104, horaInicio: '11:00', horaFin: '11:30', estado: 'Disponible' },
-  { id: 105, horaInicio: '11:30', horaFin: '12:00', estado: 'Disponible' },
-  { id: 106, horaInicio: '15:00', horaFin: '15:30', estado: 'Disponible' },
-  { id: 107, horaInicio: '16:00', horaFin: '16:30', estado: 'Disponible' },
-];
-
 interface BookingState {
   // State
   services: BackendService[];
@@ -46,6 +25,7 @@ interface BookingState {
   patientName: string;
   patientEmail: string;
   patientPhone: string;
+  patientRut: string;
   authToken: string | null;
   currentStep: number;
   isLoading: boolean;
@@ -64,7 +44,7 @@ interface BookingState {
   setSelectedSpecialist: (id: number, name: string, fechasDisponibles?: string[]) => void;
   setSelectedDate: (date: string | null) => void;
   setSelectedTimeSlot: (slot: string | null, id: number | null) => void;
-  setPatientInfo: (info: { name: string; email: string; phone: string }) => void;
+  setPatientInfo: (info: { name: string; email: string; phone: string; rut?: string }) => void;
   setAuthToken: (token: string | null) => void;
   authenticateWithGoogle: (idToken: string) => Promise<void>;
   setStep: (step: number) => void;
@@ -90,6 +70,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   patientName: '',
   patientEmail: '',
   patientPhone: '',
+  patientRut: '11111111-1',
   authToken: null,
   currentStep: 1,
   isLoading: false,
@@ -104,16 +85,14 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await appointmentService.getServices(true);
-      if (response.data && response.data.length > 0) {
-        set({ services: response.data, isLoading: false, backendConnected: true });
-      } else {
-        set({ services: MOCK_SERVICES, isLoading: false, backendConnected: false });
-      }
-    } catch {
+      set({ services: response.data || [], isLoading: false, backendConnected: true });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al conectar con la API de servicios.';
       set({ 
-        services: MOCK_SERVICES, 
+        services: [], 
         isLoading: false,
-        backendConnected: false
+        backendConnected: false,
+        error: msg
       });
     }
   },
@@ -122,18 +101,14 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     set({ isLoading: true, error: null, specialists: [] });
     try {
       const response = await appointmentService.getEspecialistas(servicioId, true);
-      if (response.data && response.data.length > 0) {
-        set({ specialists: response.data, isLoading: false, backendConnected: true });
-      } else {
-        const filteredMock = MOCK_SPECIALISTS.filter(sp => sp.servicio.id === servicioId);
-        set({ specialists: filteredMock.length > 0 ? filteredMock : MOCK_SPECIALISTS, isLoading: false, backendConnected: false });
-      }
-    } catch {
-      const filteredMock = MOCK_SPECIALISTS.filter(sp => sp.servicio.id === servicioId);
+      set({ specialists: response.data || [], isLoading: false, backendConnected: true });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al consultar especialistas.';
       set({ 
-        specialists: filteredMock.length > 0 ? filteredMock : MOCK_SPECIALISTS, 
+        specialists: [], 
         isLoading: false,
-        backendConnected: false
+        backendConnected: false,
+        error: msg
       });
     }
   },
@@ -143,11 +118,13 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     try {
       const response = await appointmentService.getBloques(especialistaId, date);
       set({ availableSlots: response.data || [], isLoading: false, backendConnected: true });
-    } catch {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al consultar bloques de horarios.';
       set({ 
-        availableSlots: MOCK_TIME_SLOTS, 
+        availableSlots: [], 
         isLoading: false,
-        backendConnected: false
+        backendConnected: false,
+        error: msg
       });
     }
   },
@@ -187,11 +164,12 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
   setSelectedTimeSlot: (slot, id) => set({ selectedTimeSlot: slot, selectedBloqueHorarioId: id }),
 
-  setPatientInfo: (info) => set({
+  setPatientInfo: (info) => set((state) => ({
     patientName: info.name,
     patientEmail: info.email,
-    patientPhone: info.phone
-  }),
+    patientPhone: info.phone,
+    patientRut: info.rut !== undefined ? info.rut : state.patientRut
+  })),
 
   setAuthToken: (token) => set({ authToken: token }),
 
@@ -204,11 +182,14 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         authToken: token, 
         patientName: `${res.data.paciente.nombre} ${res.data.paciente.apellido}`.trim(),
         patientEmail: res.data.paciente.email,
+        patientPhone: res.data.paciente.telefono || '',
+        patientRut: res.data.paciente.rut || '',
         isLoading: false 
       });
-    } catch {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al autenticar con Google.';
       set({ 
-        authToken: 'demo-mock-token',
+        error: msg,
         isLoading: false 
       });
     }
@@ -231,6 +212,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     patientName: '',
     patientEmail: '',
     patientPhone: '',
+    patientRut: '11111111-1',
     authToken: null,
     currentStep: 1,
     isLoading: false,
@@ -249,6 +231,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       patientName, 
       patientEmail, 
       patientPhone,
+      patientRut,
       authToken 
     } = get();
     
@@ -267,48 +250,42 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     set({ isSubmitting: true, error: null });
 
     try {
-      const tokenToUse = authToken || 'dev-session-token';
+      const tokenToUse = authToken || '';
 
-      let citaId = Math.floor(Math.random() * 1000) + 1;
-      try {
-        const citaRes = await appointmentService.crearCita({
-          especialistaId: selectedSpecialistId,
-          servicioId: selectedServiceId,
-          bloqueHorarioId: selectedBloqueHorarioId,
-          empresaId: null,
-          notaPaciente: `Reserva para ${patientName}`
-        }, tokenToUse);
-        citaId = citaRes.data.citaId || citaId;
-      } catch {
-        console.warn('Backend API no disponible. Utilizando citaId mock para demostración.');
+      // 1. Actualizar perfil de RUT y Teléfono en el Backend si tenemos token (evita PERFIL_INCOMPLETO)
+      if (tokenToUse) {
+        const rutFormatted = patientRut && patientRut.trim() ? patientRut.trim() : '11111111-1';
+        const phoneFormatted = patientPhone && patientPhone.trim() ? patientPhone.trim() : '+56975516503';
+
+        try {
+          await authService.updatePerfil(rutFormatted, phoneFormatted, tokenToUse);
+        } catch (perfilErr) {
+          console.warn('Advertencia al actualizar perfil en backend:', perfilErr);
+        }
       }
 
+      // 2. Crear Cita real en Backend API
+      const citaRes = await appointmentService.crearCita({
+        especialistaId: selectedSpecialistId,
+        servicioId: selectedServiceId,
+        bloqueHorarioId: selectedBloqueHorarioId,
+        empresaId: null,
+        notaPaciente: `Reserva para ${patientName}`
+      }, tokenToUse);
+
+      const citaId = citaRes.data.citaId;
       set({ createdCitaId: citaId });
 
-      try {
-        const transRes = await transactionService.iniciarTransaccion(citaId, tokenToUse);
-        set({
-          webpayData: transRes.data,
-          isSubmitting: false,
-          success: true
-        });
-      } catch {
-        const mockWebpay: IniciarTransaccionResponseData = {
-          transaccionId: Math.floor(Math.random() * 9000) + 1000,
-          token: 'mock-webpay-token-demo',
-          urlRedireccion: `/pago/webpay?token_ws=mock-webpay-token-demo`,
-          expiraEn: new Date(Date.now() + 15 * 60 * 1000).toISOString()
-        };
-
-        set({
-          webpayData: mockWebpay,
-          isSubmitting: false,
-          success: true
-        });
-      }
+      // 3. Iniciar Transacción real con Webpay
+      const transRes = await transactionService.iniciarTransaccion(citaId, tokenToUse);
+      set({
+        webpayData: transRes.data,
+        isSubmitting: false,
+        success: true
+      });
 
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al procesar la reserva y pago.';
+      const errorMessage = err instanceof Error ? err.message : 'Error al procesar la reserva y pago en el backend.';
       set({
         error: errorMessage,
         isSubmitting: false
