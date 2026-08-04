@@ -6,17 +6,20 @@ import { useBookingStore } from '@/lib/store/useBookingStore';
 
 const parseDateInfo = (dateStr: string) => {
   if (!dateStr || !dateStr.includes('-')) {
-    return { dayName: '', dayNumber: '', monthName: '', formattedFull: dateStr };
+    return { dayName: '', dayNumber: '', monthName: '', formattedFull: dateStr, formattedShort: dateStr };
   }
   const [year, month, day] = dateStr.split('-').map(Number);
   const d = new Date(year, month - 1, day);
   const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  const dayName = dayNames[d.getDay()] || '';
+  const monthName = monthNames[d.getMonth()] || '';
   return {
-    dayName: dayNames[d.getDay()] || '',
+    dayName,
     dayNumber: day,
-    monthName: monthNames[d.getMonth()] || '',
-    formattedFull: `${dayNames[d.getDay()] || ''}, ${day} ${monthNames[d.getMonth()] || ''}`
+    monthName,
+    formattedFull: `${dayName}, ${day} ${monthName}`,
+    formattedShort: `${dayName} ${day} ${monthName}`
   };
 };
 
@@ -30,7 +33,6 @@ export default function BookingCard() {
     selectedServiceId,
     selectedServiceName,
     selectedSpecialistId,
-    selectedSpecialistName,
     selectedDate,
     selectedBloqueHorarioId,
     patientName,
@@ -327,9 +329,9 @@ export default function BookingCard() {
           </div>
           
           <div className="flex flex-col gap-5">
-            {/* Custom Interactive Date Selector */}
+            {/* Unified Date Selector */}
             <div>
-              <div className="flex justify-between items-center mb-2.5">
+              <div className="flex justify-between items-center mb-2">
                 <label className="text-xs text-slate-700 font-semibold flex items-center gap-1.5">
                   <svg className="w-4 h-4 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -344,7 +346,7 @@ export default function BookingCard() {
               </div>
 
               {availableDates && availableDates.length > 0 ? (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[160px] overflow-y-auto pr-1">
                   {availableDates.map((dateStr) => {
                     const info = parseDateInfo(dateStr);
                     const isSelected = selectedDate === dateStr;
@@ -353,21 +355,13 @@ export default function BookingCard() {
                         key={dateStr}
                         type="button"
                         onClick={() => handleDateChange(dateStr)}
-                        className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all cursor-pointer ${
+                        className={`p-3 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-gradient-to-br from-brand-primary to-emerald-600 text-white border-brand-primary shadow-lg shadow-brand-primary/25 scale-[1.02]'
-                            : 'bg-slate-50 border-slate-200/80 text-slate-700 hover:bg-white hover:border-brand-primary/40 hover:shadow-sm'
+                            ? 'border-brand-primary bg-brand-primary text-white shadow-md shadow-brand-primary/20'
+                            : 'border-slate-200/80 bg-white text-slate-700 hover:border-brand-primary hover:bg-slate-50'
                         }`}
                       >
-                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>
-                          {info.dayName}
-                        </span>
-                        <span className="text-lg font-extrabold my-0.5 leading-none">
-                          {info.dayNumber}
-                        </span>
-                        <span className={`text-[10px] font-semibold uppercase ${isSelected ? 'text-white/90' : 'text-slate-500'}`}>
-                          {info.monthName}
-                        </span>
+                        {info.formattedShort}
                       </button>
                     );
                   })}
@@ -379,7 +373,7 @@ export default function BookingCard() {
                     value={selectedDate || ''}
                     onChange={(e) => handleDateChange(e.target.value)}
                     min={todayStr}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-sm font-semibold text-slate-900 focus:outline-none focus:border-brand-primary focus:bg-white transition-all cursor-pointer"
+                    className="w-full bg-white border border-slate-200/80 rounded-xl p-3 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand-primary transition-all cursor-pointer"
                   />
                 </div>
               )}
@@ -388,13 +382,13 @@ export default function BookingCard() {
             {/* Time Slot Selection */}
             {selectedDate && (
               <div className="animate-fade-in">
-                <label className="block text-xs text-slate-700 font-semibold mb-2.5 flex items-center gap-1.5">
+                <label className="block text-xs text-slate-700 font-semibold mb-2 flex items-center gap-1.5">
                   <svg className="w-4 h-4 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   2. Selecciona la Franja Horaria
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[180px] overflow-y-auto pr-1">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[160px] overflow-y-auto pr-1">
                   {availableSlots.map((slot) => {
                     const displayHora = `${slot.horaInicio} - ${slot.horaFin}`;
                     const isSelected = selectedBloqueHorarioId === slot.id;
