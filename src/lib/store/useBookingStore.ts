@@ -252,16 +252,19 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     try {
       const tokenToUse = authToken || '';
 
-      // 1. Actualizar perfil de RUT y Teléfono en el Backend si tenemos token (evita PERFIL_INCOMPLETO)
-      if (tokenToUse) {
-        const rutFormatted = patientRut && patientRut.trim() ? patientRut.trim() : '11111111-1';
-        const phoneFormatted = patientPhone && patientPhone.trim() ? patientPhone.trim() : '+56975516503';
+      if (!tokenToUse) {
+        throw new Error('Debes iniciar sesión con Google para agendar tu reserva.');
+      }
 
-        try {
-          await authService.updatePerfil(rutFormatted, phoneFormatted, tokenToUse);
-        } catch (perfilErr) {
-          console.warn('Advertencia al actualizar perfil en backend:', perfilErr);
-        }
+      // 1. Actualizar perfil de RUT y Teléfono en el Backend
+      const rutFormatted = patientRut && patientRut.trim() ? patientRut.trim() : '11111111-1';
+      const phoneFormatted = patientPhone && patientPhone.trim() ? patientPhone.trim() : '+56975516503';
+
+      try {
+        await authService.updatePerfil(rutFormatted, phoneFormatted, tokenToUse);
+      } catch (perfilErr: unknown) {
+        const perfilMsg = perfilErr instanceof Error ? perfilErr.message : 'Error al actualizar el perfil en el backend.';
+        throw new Error(`Error en perfil: ${perfilMsg}. Comprueba que tu RUT sea válido (ej: 11111111-1 o 12345678-5).`);
       }
 
       // 2. Crear Cita real en Backend API
