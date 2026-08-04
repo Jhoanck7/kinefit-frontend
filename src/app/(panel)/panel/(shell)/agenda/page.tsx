@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useHoyPanel } from "@/lib/panel/reloj";
 import { usePanelSessionStore, USUARIO_SESION_PANEL } from "@/lib/store/usePanelSessionStore";
@@ -16,42 +16,40 @@ import { Legend } from "@/components/panel/domain/Legend";
 import { AppointmentDetailModal } from "@/components/panel/domain/AppointmentDetailModal";
 import { CancelAppointmentModal } from "@/components/panel/domain/CancelAppointmentModal";
 
-export default function AgendaPage() {
+function AgendaContent() {
   const hoy = useHoyPanel();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const usuario = usePanelSessionStore((s) => s.usuario) ?? USUARIO_SESION_PANEL;
 
-  const [dia, setDia] = useState<Date | null>(null);
+  const [dia, setDia] = useState<Date | null>(hoy);
   const [citas, setCitas] = useState<CitaResuelta[]>([]);
   const [bloqueos, setBloqueos] = useState<BloqueoResuelto[]>([]);
 
-  useEffect(() => {
-    if (hoy && dia === null) setDia(hoy);
-  }, [hoy, dia]);
+  const diaEfectivo = dia ?? hoy;
 
   useEffect(() => {
-    if (!dia || !hoy) return;
+    if (!diaEfectivo || !hoy) return;
     const especialistaId = usuario.especialistaId ?? "esp-franchesca";
-    getAgendaDia(especialistaId, dia, hoy).then((resultado) => {
+    getAgendaDia(especialistaId, diaEfectivo, hoy).then((resultado) => {
       setCitas(resultado.citas);
       setBloqueos(resultado.bloqueos);
     });
-  }, [dia, hoy, usuario.especialistaId]);
+  }, [diaEfectivo, hoy, usuario.especialistaId]);
 
-  if (!hoy || !dia) {
+  if (!hoy || !diaEfectivo) {
     return <div className="h-full" aria-hidden />;
   }
 
-  const esHoy = fechaISO(dia) === fechaISO(hoy);
-  const rejilla = generarRejillaDia(diaSemanaId(dia) as 0 | 1 | 2 | 3 | 4 | 5 | 6);
+  const esHoy = fechaISO(diaEfectivo) === fechaISO(hoy);
+  const rejilla = generarRejillaDia(diaSemanaId(diaEfectivo) as 0 | 1 | 2 | 3 | 4 | 5 | 6);
   const horaActual = esHoy
     ? `${hoy.getHours().toString().padStart(2, "0")}:${hoy.getMinutes().toString().padStart(2, "0")}`
     : null;
 
   function irADia(offset: number) {
-    const nuevo = new Date(dia!);
+    const nuevo = new Date(diaEfectivo!);
     nuevo.setDate(nuevo.getDate() + offset);
     setDia(nuevo);
   }
@@ -102,7 +100,7 @@ export default function AgendaPage() {
               ›
             </button>
           </div>
-          <p className="font-bold text-panel-sidebar">{formatearFechaExtensa(dia)}</p>
+          <p className="font-bold text-panel-sidebar">{formatearFechaExtensa(diaEfectivo)}</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -120,7 +118,7 @@ export default function AgendaPage() {
             Horarios
           </button>
           <OutOfScopeInlineLink etiqueta="Filtros" />
-          <Button variante="primario" onClick={() => router.push(`/panel/nueva-reserva/horario?fecha=${fechaISO(dia)}`)}>
+          <Button variante="primario" onClick={() => router.push(`/panel/nueva-reserva/horario?fecha=${fechaISO(diaEfectivo)}`)}>
             + Nueva reserva
           </Button>
         </div>
@@ -142,7 +140,7 @@ export default function AgendaPage() {
             horaActual={horaActual}
             onSeleccionarCita={(id) => abrirParametros({ cita: id })}
             onSeleccionarBloqueVacio={(hora) =>
-              router.push(`/panel/nueva-reserva/horario?fecha=${fechaISO(dia)}&hora=${hora}`)
+              router.push(`/panel/nueva-reserva/horario?fecha=${fechaISO(diaEfectivo)}&hora=${hora}`)
             }
           />
         )}
@@ -165,5 +163,13 @@ export default function AgendaPage() {
         onConfirmado={() => abrirParametros({ cita: undefined, cancelar: undefined })}
       />
     </div>
+  );
+}
+
+export default function AgendaPage() {
+  return (
+    <Suspense fallback={<div className="h-full" aria-hidden />}>
+      <AgendaContent />
+    </Suspense>
   );
 }

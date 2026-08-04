@@ -32,17 +32,16 @@ export function CancelAppointmentModal({
     getCita(citaId, hoy).then((resultado) => setCita(resultado ?? null));
   }, [citaId, hoy, abierto]);
 
-  useEffect(() => {
-    if (!abierto) {
-      setMotivo("");
-      setConfirmada(false);
-    }
-  }, [abierto]);
+  const handleCerrar = () => {
+    setMotivo("");
+    setConfirmada(false);
+    onVolver();
+  };
 
   const tienePagoAsociado = cita?.origen === "web" && cita.montoAnticipo !== undefined;
 
   return (
-    <Modal abierto={abierto} onCerrar={onVolver} ancho="max-w-md">
+    <Modal abierto={abierto} onCerrar={handleCerrar} ancho="max-w-md">
       {confirmada ? (
         <div className="p-8 text-center">
           <h2 className="text-lg font-semibold text-panel-sidebar">Cita cancelada</h2>
@@ -84,7 +83,7 @@ export function CancelAppointmentModal({
           <p className="mt-3 text-xs text-brand-muted">El bloque horario volverá a estar disponible.</p>
 
           <div className="mt-6 flex justify-end gap-3">
-            <Button variante="secundario" onClick={onVolver}>
+            <Button variante="secundario" onClick={handleCerrar}>
               Volver
             </Button>
             <Button variante="peligro" disabled={!motivo.trim()} onClick={() => setConfirmada(true)}>

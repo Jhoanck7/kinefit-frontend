@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useHoyPanel } from "@/lib/panel/reloj";
 import { getFormato } from "@/lib/panel/data/formatos";
 import { TipoCampoFormato } from "@/lib/panel/domain/tipos";
 import { Card } from "@/components/panel/primitives/Card";
 import { Button } from "@/components/panel/primitives/Button";
-import { TextField, SelectField } from "@/components/panel/primitives/CamposFormulario";
+import { TextField } from "@/components/panel/primitives/CamposFormulario";
 import { SwitchField } from "@/components/panel/primitives/CamposFormulario";
 import { Modal } from "@/components/panel/primitives/Modal";
 import { SimulatedActionNotice } from "@/components/panel/primitives/SimulatedActionNotice";
@@ -56,7 +56,7 @@ function mover<T>(lista: T[], indice: number, direccion: -1 | 1): T[] {
   return copia;
 }
 
-export default function ConstructorFormatoPage() {
+function ConstructorFormatoContent() {
   const router = useRouter();
   const [nombreFormato, setNombreFormato] = useState("Ficha de Masoterapia");
   const [secciones, setSecciones] = useState<SeccionBorrador[]>([seccionNueva()]);
@@ -407,5 +407,13 @@ export default function ConstructorFormatoPage() {
         descripcion="El formato quedó disponible para usarse al crear nuevas fichas."
       />
     </div>
+  );
+}
+
+export default function ConstructorFormatoPage() {
+  return (
+    <Suspense fallback={<div className="h-full" aria-hidden />}>
+      <ConstructorFormatoContent />
+    </Suspense>
   );
 }

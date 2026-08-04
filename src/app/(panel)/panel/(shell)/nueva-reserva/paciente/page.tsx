@@ -23,12 +23,16 @@ export default function NuevaReservaPacientePage() {
   const [buscado, setBuscado] = useState(false);
   const [pacienteConfirmado, setPacienteConfirmado] = useState<PacienteResuelto | null>(null);
 
-  useEffect(() => {
-    if (!busqueda.trim()) {
+  const handleBusquedaChange = (val: string) => {
+    setBusqueda(val);
+    if (!val.trim()) {
       setResultados([]);
       setBuscado(false);
-      return;
     }
+  };
+
+  useEffect(() => {
+    if (!busqueda.trim()) return;
     buscarPacientes(busqueda).then((r) => {
       setResultados(r);
       setBuscado(true);
@@ -85,7 +89,7 @@ export default function NuevaReservaPacientePage() {
               <SearchInput
                 placeholder="Buscar por nombre o RUT..."
                 value={busqueda}
-                onChange={setBusqueda}
+                onChange={handleBusquedaChange}
                 ayuda="Buscar por nombre o RUT…"
               />
 

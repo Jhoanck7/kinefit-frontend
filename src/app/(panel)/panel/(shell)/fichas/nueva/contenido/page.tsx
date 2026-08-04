@@ -27,7 +27,7 @@ const OPCIONES_FORMATO = [
 export default function NuevaFichaContenidoPage() {
   const router = useRouter();
   const hoy = useHoyPanel();
-  const { pacienteId, pacienteNombre, citaId, formatoId, contenido, adjuntos, setFormato, setCampo, agregarAdjunto, quitarAdjunto, reiniciar } =
+  const { pacienteNombre, citaId, formatoId, contenido, adjuntos, setFormato, setCampo, agregarAdjunto, quitarAdjunto, reiniciar } =
     useNuevaFichaStore();
 
   const [cita, setCita] = useState<CitaResuelta | null>(null);
@@ -45,7 +45,6 @@ export default function NuevaFichaContenidoPage() {
 
   useEffect(() => {
     if (!hoy || !formatoId) {
-      setFormatoResuelto(null);
       return;
     }
     getFormato(formatoId, hoy).then((resultado) => setFormatoResuelto(resultado ?? null));

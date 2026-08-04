@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useHoyPanel } from "@/lib/panel/reloj";
 import { usePanelSessionStore, USUARIO_SESION_PANEL } from "@/lib/store/usePanelSessionStore";
@@ -8,7 +8,7 @@ import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
 import { getAgendaDia } from "@/lib/panel/data/citas";
 import { getPaciente } from "@/lib/panel/data/pacientes";
 import { generarRejillaDia } from "@/lib/panel/domain/horario";
-import { diaSemanaId, fechaISO, formatearFechaExtensa, formatearRangoHorario } from "@/lib/panel/domain/formato";
+import { diaSemanaId, formatearFechaExtensa, formatearRangoHorario } from "@/lib/panel/domain/formato";
 import { Card } from "@/components/panel/primitives/Card";
 import { Button } from "@/components/panel/primitives/Button";
 import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
@@ -20,19 +20,20 @@ const PASOS = [{ etiqueta: "Horario" }, { etiqueta: "Paciente" }, { etiqueta: "S
 
 type EstadoBloque = "libre" | "ocupado" | "bloqueado";
 
-export default function NuevaReservaHorarioPage() {
+function NuevaReservaHorarioContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const hoy = useHoyPanel();
   const usuario = usePanelSessionStore((s) => s.usuario) ?? USUARIO_SESION_PANEL;
   const { fecha, hora, pacienteNombre, setHorario, setPaciente } = useNuevaReservaStore();
 
-  const [mesVisible, setMesVisible] = useState<Date | null>(null);
+  const [mesVisibleState, setMesVisible] = useState<Date | null>(null);
+  const mesVisible = mesVisibleState ?? (hoy ? new Date(hoy.getFullYear(), hoy.getMonth(), 1) : null);
+
   const [bloques, setBloques] = useState<{ inicio: string; termino: string; estado: EstadoBloque; motivo?: string }[]>([]);
 
   useEffect(() => {
     if (!hoy) return;
-    if (mesVisible === null) setMesVisible(new Date(hoy.getFullYear(), hoy.getMonth(), 1));
 
     const fechaParam = searchParams.get("fecha");
     const horaParam = searchParams.get("hora");
@@ -52,7 +53,6 @@ export default function NuevaReservaHorarioPage() {
 
   useEffect(() => {
     if (!fecha || !hoy) {
-      setBloques([]);
       return;
     }
     const especialistaId = usuario.especialistaId ?? "esp-franchesca";
@@ -185,5 +185,13 @@ function BloquesChip({
         );
       })}
     </div>
+  );
+}
+
+export default function NuevaReservaHorarioPage() {
+  return (
+    <Suspense fallback={<div className="h-full" aria-hidden />}>
+      <NuevaReservaHorarioContent />
+    </Suspense>
   );
 }

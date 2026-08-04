@@ -31,7 +31,6 @@ export default function NuevaFichaReservaPage() {
 
   useEffect(() => {
     if (!pacienteId || !hoy) {
-      setReservas([]);
       return;
     }
     reservasDelPaciente(pacienteId, hoy).then(async (citas) => {

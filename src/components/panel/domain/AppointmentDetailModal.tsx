@@ -45,11 +45,7 @@ export function AppointmentDetailModal({
   const [confirmacion, setConfirmacion] = useState<{ titulo: string; descripcion: string } | null>(null);
 
   useEffect(() => {
-    if (!citaId) {
-      setCita(null);
-      setConfirmacion(null);
-      return;
-    }
+    if (!citaId) return;
     let cancelado = false;
     getCita(citaId, hoy).then((resultado) => {
       if (!cancelado) setCita(resultado ?? null);
@@ -60,6 +56,7 @@ export function AppointmentDetailModal({
   }, [citaId, hoy]);
 
   function alCerrar() {
+    setCita(null);
     setConfirmacion(null);
     onCerrar();
   }
