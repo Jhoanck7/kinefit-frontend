@@ -22,6 +22,19 @@
   --color-brand-primary-hover: #1b73e3;     /* Azul hover */
   --color-brand-primary-glow: rgba(12, 93, 197, 0.08); /* Resplandor sutil */
   --color-brand-muted: #334155;              /* Gris slate oscuro para alta legibilidad (neutral) */
+
+  /*
+   * Tokens del Panel Administrativo — derivados del azul de marca (D-1).
+   * Precomputados como literales a partir de --color-brand-primary
+   * (mezcla con negro/blanco en srgb); `color-mix()` referenciando la
+   * variable de marca no se resolvía de forma fiable dentro de este
+   * bloque `@theme inline`. Si `--color-brand-primary` cambia, estos
+   * cuatro valores deben recalcularse a partir de él.
+   */
+  --color-panel-sidebar: #07336c;          /* brand-primary mezclado 55% con negro */
+  --color-panel-sidebar-activo: #052651;   /* panel-sidebar mezclado 75% con negro */
+  --color-panel-seleccion: #e7eff9;        /* brand-primary mezclado 10% con blanco */
+  --color-panel-fondo: #fafcfe;            /* brand-primary mezclado 2% con blanco */
 }
 
 body {
