@@ -10,37 +10,30 @@
   --color-primary-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --color-primary: #059669;          /* Un verde esmeralda ideal para salud/bienestar */ 
-  --color-card: #f9fafb;             /* Un gris extremadamente sutil para tus tarjetas */
-  --color-muted: #6b7280;
+  --color-primary: #0c5dc5;          /* Azul de marca puro */ 
+  --color-card: #f8fafc;             /* Gris plano neutro para tarjetas */
+  --color-muted: #475569;
   --radius-global: 12px;
   
-  /* Variables globales de marca para modificar fondos, acentos y textos a la vez */
-  --color-brand-bg: #ffffff;                 /* Fondo claro base (blanco) */
-  --color-brand-border: #e2e8f0;             /* Bordes claros (slate-200) */
-  --color-brand-primary: #0c5dc5;           /* Azul principal (primary) */
-  --color-brand-primary-hover: #1b73e3;     /* Azul hover */
-  --color-brand-primary-glow: rgba(12, 93, 197, 0.08); /* Resplandor sutil */
-  --color-brand-muted: #334155;              /* Gris slate oscuro para alta legibilidad (neutral) */
+  /* Variables globales de marca de diseño plano (Flat Design - Departamento) */
+  --color-brand-bg: #ffffff;                 /* Fondo blanco puro */
+  --color-brand-border: #cbd5e1;             /* Bordes nítidos sólidos (slate-300) */
+  --color-brand-primary: #0c5dc5;           /* Azul plano principal */
+  --color-brand-primary-hover: #094798;     /* Azul oscuro sólido hover */
+  --color-brand-muted: #334155;              /* Texto oscuro de alta legibilidad */
 
-  /*
-   * Tokens del Panel Administrativo — derivados del azul de marca (D-1).
-   * Precomputados como literales a partir de --color-brand-primary
-   * (mezcla con negro/blanco en srgb); `color-mix()` referenciando la
-   * variable de marca no se resolvía de forma fiable dentro de este
-   * bloque `@theme inline`. Si `--color-brand-primary` cambia, estos
-   * cuatro valores deben recalcularse a partir de él.
-   */
-  --color-panel-sidebar: #07336c;          /* brand-primary mezclado 55% con negro */
-  --color-panel-sidebar-activo: #052651;   /* panel-sidebar mezclado 75% con negro */
-  --color-panel-seleccion: #e7eff9;        /* brand-primary mezclado 10% con blanco */
-  --color-panel-fondo: #fafcfe;            /* brand-primary mezclado 2% con blanco */
+  /* Tokens del Panel Administrativo Plano */
+  --color-panel-sidebar: #07336c;          
+  --color-panel-sidebar-activo: #052651;   
+  --color-panel-seleccion: #e2e8f0;        
+  --color-panel-fondo: #f8fafc;            
 }
 
 body {
   background-color: var(--color-brand-bg);
   color: var(--color-primary-foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 html {
