@@ -112,13 +112,6 @@ export default function AgendaPage() {
           >
             Bloqueos
           </button>
-          <button
-            type="button"
-            onClick={() => router.push("/panel/horarios")}
-            className="text-sm text-panel-sidebar underline underline-offset-2"
-          >
-            Horarios
-          </button>
           <OutOfScopeInlineLink etiqueta="Filtros" />
           <Button variante="primario" onClick={() => router.push(`/panel/nueva-reserva/horario?fecha=${fechaISO(dia)}`)}>
             + Nueva reserva

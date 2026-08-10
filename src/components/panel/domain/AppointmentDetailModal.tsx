@@ -136,7 +136,7 @@ function DetalleCita({
       </div>
 
       {pagoCompletado && (
-        <div className="mx-6 mt-6 rounded-xl border-l-4 border-emerald-500 bg-emerald-50 p-4">
+        <div className="mx-6 mt-6 rounded-xl bg-emerald-50 p-4">
           <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-emerald-700">
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />

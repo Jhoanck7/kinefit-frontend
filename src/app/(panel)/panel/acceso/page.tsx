@@ -27,7 +27,14 @@ export default function AccesoPage() {
     <div className="flex min-h-screen items-center justify-center bg-panel-fondo px-4">
       <div className="w-full max-w-sm rounded-2xl border border-brand-border bg-white p-8">
         <div className="flex flex-col items-center gap-3 mb-8">
-          <Image src="/Kinefit color.png" alt="Kinefit" width={140} height={48} className="h-10 w-auto" priority />
+          <Image
+            src="/Kinefit Negro ver.png"
+            alt="Kinefit Logo"
+            width={280}
+            height={100}
+            className="h-20 w-full object-contain"
+            priority
+          />
           <p className="text-xs font-semibold uppercase tracking-wider text-brand-muted">
             Panel Administrativo
           </p>

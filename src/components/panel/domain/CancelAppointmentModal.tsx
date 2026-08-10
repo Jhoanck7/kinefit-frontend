@@ -65,7 +65,7 @@ export function CancelAppointmentModal({
           </p>
 
           {tienePagoAsociado && (
-            <div className="mt-4 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-3 text-sm text-amber-800">
+            <div className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
               Esta cita tiene un anticipo de <strong>$10.000 CLP</strong> pagado vía Webpay. Debe
               verificarse la devolución correspondiente al paciente.
             </div>

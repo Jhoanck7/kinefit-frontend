@@ -72,7 +72,7 @@ export default function RegistrarPacientePage() {
             onChange={(e) => alCambiarRut(e.target.value)}
           />
           {pacienteExistente && (
-            <div className="rounded-lg border-l-4 border-amber-500 bg-amber-50 p-3 text-sm text-amber-800">
+            <div className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
               Ya existe un paciente registrado con este RUT: <strong>{pacienteExistente.nombre}</strong>.{" "}
               <button
                 type="button"

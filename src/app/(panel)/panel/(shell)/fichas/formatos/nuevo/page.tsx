@@ -158,7 +158,7 @@ export default function ConstructorFormatoPage() {
       </div>
 
       {idEditado && fichasDelFormatoEditado > 0 && (
-        <div className="mb-4 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-3 text-sm text-amber-800">
+        <div className="mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
           Este formato tiene <strong>{fichasDelFormatoEditado} ficha(s)</strong> ya creadas. Los cambios no
           alterarán esas fichas históricas: conservan la estructura vigente al momento de su creación.
         </div>
