@@ -67,6 +67,7 @@ export function TimeGrid({
   horaActual,
   onSeleccionarCita,
   onSeleccionarBloqueVacio,
+  ocultarHoras = false,
 }: {
   rejilla: { inicio: string; termino: string }[];
   citas: CitaResuelta[];
@@ -75,25 +76,28 @@ export function TimeGrid({
   horaActual: string | null;
   onSeleccionarCita: (citaId: string) => void;
   onSeleccionarBloqueVacio: (hora: string) => void;
+  ocultarHoras?: boolean;
 }) {
   const filas = construirFilas(rejilla, citas, bloqueos);
   const lineaHoraActual = horaActual ? offsetHoraActual(rejilla, horaActual) : null;
 
   return (
-    <div className="flex">
-      <div className="w-16 shrink-0">
-        {rejilla.map((bloque) => (
-          <div
-            key={bloque.inicio}
-            style={{ height: ALTURA_FILA_PX }}
-            className="flex items-start justify-end border-b border-brand-border/60 pr-2 pt-1 text-[11px] text-brand-muted"
-          >
-            {bloque.inicio}
-          </div>
-        ))}
-      </div>
+    <div className="flex w-full">
+      {!ocultarHoras && (
+        <div className="w-14 shrink-0">
+          {rejilla.map((bloque) => (
+            <div
+              key={bloque.inicio}
+              style={{ height: ALTURA_FILA_PX }}
+              className="flex items-start justify-end border-b border-brand-border/60 pr-2 pt-1 text-[11px] text-brand-muted font-medium"
+            >
+              {bloque.inicio}
+            </div>
+          ))}
+        </div>
+      )}
 
-      <div className="relative flex-1 border-l border-brand-border">
+      <div className={`relative flex-1 ${!ocultarHoras ? "border-l border-brand-border" : ""}`}>
         {filas.map((item) => (
           <div
             key={item.inicio}
@@ -104,7 +108,7 @@ export function TimeGrid({
               <AppointmentCard cita={item.cita} onClick={() => onSeleccionarCita(item.cita.id)} />
             )}
             {item.tipo === "bloqueo" && (
-              <div className="flex h-full w-full items-center justify-center bg-slate-700 text-sm font-bold text-white">
+              <div className="flex h-full w-full items-center justify-center bg-slate-700 text-xs font-bold text-white p-1 text-center">
                 {item.bloqueo.motivo}
               </div>
             )}
@@ -121,7 +125,7 @@ export function TimeGrid({
 
         {lineaHoraActual !== null && (
           <div
-            className="pointer-events-none absolute left-0 right-0 border-t-2 border-red-500"
+            className="pointer-events-none absolute left-0 right-0 border-t-2 border-red-500 z-10"
             style={{ top: lineaHoraActual }}
             aria-hidden
           >

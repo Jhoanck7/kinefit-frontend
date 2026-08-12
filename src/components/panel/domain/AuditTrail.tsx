@@ -3,7 +3,7 @@ import { definicionEstado } from "@/lib/panel/domain/estados";
 import { formatearFechaHora } from "@/lib/panel/domain/formato";
 import { CollapsibleSection } from "../primitives/CollapsibleSection";
 
-/** Traza de auditoría plegable al pie del detalle de cita (M-8, RF-AGD-028). */
+/** Traza de auditoría plegable al pie del detalle de cita */
 export function AuditTrail({ historial }: { historial: CambioEstadoResuelto[] }) {
   return (
     <CollapsibleSection titulo="Historial de la cita" abiertaPorDefecto={false}>

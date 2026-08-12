@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useHoyPanel } from "@/lib/panel/reloj";
 import { listFichas, FichaResuelta } from "@/lib/panel/data/fichas";
 import { listFormatos, FormatoResuelto } from "@/lib/panel/data/formatos";
 import { formatearFechaCorta, formatearRangoHorario } from "@/lib/panel/domain/formato";
 import { Button } from "@/components/panel/primitives/Button";
-import { SearchInput, SelectField } from "@/components/panel/primitives/CamposFormulario";
+import { Card } from "@/components/panel/primitives/Card";
+import { SearchInput } from "@/components/panel/primitives/CamposFormulario";
 import { NeutralBadge } from "@/components/panel/primitives/Badge";
 import { EmptyState } from "@/components/panel/primitives/EmptyState";
 import { Table, FilaTabla, CeldaChevron, Paginacion } from "@/components/panel/primitives/Table";
+import { FichaDetalleModal } from "@/components/panel/domain/FichaDetalleModal";
 
 const TAMANO_PAGINA = 8;
 
@@ -23,9 +25,12 @@ const COLUMNAS = [
   { titulo: "Registrada por" },
 ];
 
-export default function FichasPage() {
+function FichasContenido() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const hoy = useHoyPanel();
+
   const [busqueda, setBusqueda] = useState("");
   const [tipo, setTipo] = useState("");
   const [desde, setDesde] = useState("");
@@ -33,6 +38,8 @@ export default function FichasPage() {
   const [fichas, setFichas] = useState<FichaResuelta[] | null>(null);
   const [formatos, setFormatos] = useState<FormatoResuelto[]>([]);
   const [pagina, setPagina] = useState(1);
+
+  const fichaModalId = searchParams.get("ficha");
 
   useEffect(() => {
     if (!hoy) return;
@@ -52,6 +59,16 @@ export default function FichasPage() {
     });
   }, [hoy, busqueda, tipo, desde, hasta]);
 
+  function abrirParametros(params: Record<string, string | undefined>) {
+    const actuales = new URLSearchParams(searchParams.toString());
+    Object.entries(params).forEach(([clave, valor]) => {
+      if (valor === undefined) actuales.delete(clave);
+      else actuales.set(clave, valor);
+    });
+    const query = actuales.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  }
+
   if (!hoy || fichas === null) return <div aria-hidden />;
 
   const total = fichas.length;
@@ -59,50 +76,68 @@ export default function FichasPage() {
   const visibles = fichas.slice(inicio, inicio + TAMANO_PAGINA);
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <div className="max-w-md flex-1 min-w-[220px]">
-          <SearchInput placeholder="Buscar por paciente o RUT..." value={busqueda} onChange={setBusqueda} />
-        </div>
-        <div className="w-48">
-          <SelectField etiqueta="Tipo de ficha" value={tipo} onChange={(e) => setTipo(e.target.value)}>
-            <option value="">Todos los tipos</option>
-            {formatos.map((f) => (
-              <option key={f.id} value={f.nombre}>
-                {f.nombre}
-              </option>
-            ))}
-          </SelectField>
-        </div>
-        <div className="flex items-end gap-2">
-          <label className="block text-sm">
-            <span className="mb-1.5 block font-medium text-panel-sidebar">Desde</span>
+    <div className="mx-auto max-w-6xl space-y-6">
+      {/* Barra de Filtros en Card idéntica a la sección de Ventas */}
+      <Card>
+        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-panel-sidebar">
+          {/* Buscador de Paciente / RUT */}
+          <div className="w-64 min-w-[200px]">
+            <SearchInput
+              placeholder="Buscar por paciente o RUT..."
+              value={busqueda}
+              onChange={setBusqueda}
+            />
+          </div>
+
+          {/* Filtro Tipo de Ficha */}
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold text-brand-muted text-sm">Tipo:</span>
+            <select
+              value={tipo}
+              onChange={(e) => setTipo(e.target.value)}
+              className="rounded-lg border border-brand-border bg-panel-fondo px-3 py-2 text-sm font-medium text-panel-sidebar transition-colors focus:border-panel-sidebar focus:bg-white focus:outline-none"
+            >
+              <option value="">Todos los tipos</option>
+              {formatos.map((f) => (
+                <option key={f.id} value={f.nombre}>
+                  {f.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Filtro Rango de Fechas (Desde / Hasta) */}
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold text-brand-muted text-sm">Desde:</span>
             <input
               type="date"
               value={desde}
               onChange={(e) => setDesde(e.target.value)}
-              className="rounded-lg border border-brand-border bg-white px-3 py-2.5 text-sm text-panel-sidebar focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar"
+              className="rounded-lg border border-brand-border bg-panel-fondo px-3 py-2 text-sm font-medium text-panel-sidebar transition-colors focus:border-panel-sidebar focus:bg-white focus:outline-none cursor-pointer"
             />
-          </label>
-          <label className="block text-sm">
-            <span className="mb-1.5 block font-medium text-panel-sidebar">Hasta</span>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold text-brand-muted text-sm">Hasta:</span>
             <input
               type="date"
               value={hasta}
               onChange={(e) => setHasta(e.target.value)}
-              className="rounded-lg border border-brand-border bg-white px-3 py-2.5 text-sm text-panel-sidebar focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar"
+              className="rounded-lg border border-brand-border bg-panel-fondo px-3 py-2 text-sm font-medium text-panel-sidebar transition-colors focus:border-panel-sidebar focus:bg-white focus:outline-none cursor-pointer"
             />
-          </label>
+          </div>
+
+          {/* Botones de Acción */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variante="secundario" className="px-4 py-2 text-sm" onClick={() => router.push("/panel/fichas/formatos")}>
+              Formatos de ficha
+            </Button>
+            <Button variante="primario" className="px-4 py-2 text-sm" onClick={() => router.push("/panel/fichas/nueva/reserva")}>
+              Nueva ficha
+            </Button>
+          </div>
         </div>
-        <div className="ml-auto flex gap-3">
-          <Button variante="secundario" onClick={() => router.push("/panel/fichas/formatos")}>
-            Formatos de ficha
-          </Button>
-          <Button variante="primario" onClick={() => router.push("/panel/fichas/nueva/reserva")}>
-            + Nueva ficha
-          </Button>
-        </div>
-      </div>
+      </Card>
 
       <Table
         columnas={COLUMNAS}
@@ -122,7 +157,7 @@ export default function FichasPage() {
         }
       >
         {visibles.map((ficha) => (
-          <FilaTabla key={ficha.id} onClick={() => router.push(`/panel/fichas/${ficha.id}`)}>
+          <FilaTabla key={ficha.id} onClick={() => abrirParametros({ ficha: ficha.id })}>
             <td className="px-4 py-3 font-medium text-panel-sidebar">
               {ficha.paciente.nombre} {ficha.paciente.apellido}
             </td>
@@ -132,7 +167,7 @@ export default function FichasPage() {
             </td>
             <td className="px-4 py-3 text-brand-muted">{formatearFechaCorta(ficha.cita.fecha)}</td>
             <td className="px-4 py-3 text-brand-muted">
-              {formatearFechaCorta(ficha.cita.fecha)} · {formatearRangoHorario(ficha.cita.horaInicio, ficha.cita.horaTermino)}
+              {formatearFechaCorta(ficha.cita.fecha)} | {formatearRangoHorario(ficha.cita.horaInicio, ficha.cita.horaTermino)}
             </td>
             <td className="px-4 py-3 text-brand-muted">{ficha.registradaPor}</td>
             <CeldaChevron />
@@ -146,6 +181,21 @@ export default function FichasPage() {
           descripcion="Ninguna ficha coincide con la búsqueda o el filtro seleccionado."
         />
       )}
+
+      <FichaDetalleModal
+        fichaId={fichaModalId}
+        hoy={hoy}
+        onCerrar={() => abrirParametros({ ficha: undefined })}
+        onSeleccionarFicha={(id) => abrirParametros({ ficha: id })}
+      />
     </div>
+  );
+}
+
+export default function FichasPage() {
+  return (
+    <Suspense fallback={<div aria-hidden />}>
+      <FichasContenido />
+    </Suspense>
   );
 }

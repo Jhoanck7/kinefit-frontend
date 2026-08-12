@@ -12,11 +12,28 @@ import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
 import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
 import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
 
-const PASOS = [{ etiqueta: "Horario" }, { etiqueta: "Paciente" }, { etiqueta: "Servicio" }, { etiqueta: "Notas y resumen" }];
+const PASOS = [
+  { etiqueta: "Servicio" },
+  { etiqueta: "Horario" },
+  { etiqueta: "Especialista" },
+  { etiqueta: "Paciente" },
+  { etiqueta: "Notas y resumen" },
+];
+
+const NOMBRE_SERVICIO: Record<string, string> = {
+  embarazadas: "Embarazadas",
+  masajes_pareja: "Masajes en pareja",
+  masajes: "Masajes (masoterapia)",
+  masajes_premium: "Masajes Premium",
+  masajes_reductivos: "Masajes Reductivos",
+  voucher_regalo: "Voucher para Regalo",
+  kinesiologia: "Kinesiología",
+};
 
 export default function NuevaReservaPacientePage() {
   const router = useRouter();
-  const { fecha, hora, pacienteId, pacienteNombre, setPaciente } = useNuevaReservaStore();
+  const { fecha, hora, pacienteId, pacienteNombre, especialistaNombre, servicio, setPaciente } =
+    useNuevaReservaStore();
 
   const [busqueda, setBusqueda] = useState("");
   const [resultados, setResultados] = useState<PacienteResuelto[]>([]);
@@ -51,7 +68,7 @@ export default function NuevaReservaPacientePage() {
   return (
     <div className="mx-auto max-w-5xl">
       <div className="mb-8">
-        <StepIndicator pasos={PASOS} pasoActivo={2} />
+        <StepIndicator pasos={PASOS} pasoActivo={4} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
@@ -130,7 +147,7 @@ export default function NuevaReservaPacientePage() {
                 className="w-full"
                 onClick={() => router.push("/panel/pacientes/nuevo?retorno=/panel/nueva-reserva/paciente")}
               >
-                + Registrar paciente nuevo
+                Registrar paciente nuevo
               </Button>
             </>
           )}
@@ -146,12 +163,12 @@ export default function NuevaReservaPacientePage() {
               </button>
             }
             volver={
-              <Button variante="secundario" onClick={() => router.push("/panel/nueva-reserva/horario")}>
+              <Button variante="secundario" onClick={() => router.push("/panel/nueva-reserva/especialista")}>
                 Volver
               </Button>
             }
             avanzar={
-              <Button variante="primario" disabled={!pacienteId} onClick={() => router.push("/panel/nueva-reserva/servicio")}>
+              <Button variante="primario" disabled={!pacienteId} onClick={() => router.push("/panel/nueva-reserva/resumen")}>
                 Continuar
               </Button>
             }
@@ -160,10 +177,11 @@ export default function NuevaReservaPacientePage() {
 
         <SummaryPanel
           filas={[
+            { etiqueta: "Servicio", valor: servicio ? (NOMBRE_SERVICIO[servicio] ?? servicio) : undefined },
             { etiqueta: "Fecha", valor: fecha ? formatearFechaExtensa(fecha) : undefined },
             { etiqueta: "Horario", valor: hora || undefined },
+            { etiqueta: "Especialista", valor: especialistaNombre || undefined },
             { etiqueta: "Paciente", valor: pacienteNombre || undefined },
-            { etiqueta: "Servicio", valor: undefined },
           ]}
         />
       </div>

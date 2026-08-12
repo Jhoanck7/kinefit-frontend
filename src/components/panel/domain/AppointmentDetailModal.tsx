@@ -104,26 +104,18 @@ function DetalleCita({
   onAccion: (idAccion: IdAccionCita) => void;
 }) {
   const definicion = definicionEstado(cita.estado);
-  const pagoCompletado = cita.origen === "web" && cita.montoAnticipo !== undefined;
 
   return (
-    <div>
+    <div className="text-sm text-panel-sidebar">
+      {/* Encabezado Formal (Ficha de Cita) */}
       <div className="flex items-start justify-between gap-4 border-b border-brand-border p-6">
-        <div className="flex items-start gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-panel-sidebar text-white">
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.75h-.152c-3.196 0-6.1-1.248-8.25-3.286z" />
-            </svg>
-          </span>
-          <div>
-            <h2 className="text-lg font-bold text-panel-sidebar">
-              {cita.paciente.nombre} {cita.paciente.apellido} — {formatearFechaExtensa(cita.fecha)},{" "}
-              {formatearRangoHorario(cita.horaInicio, cita.horaTermino)}
-            </h2>
-            <p className="text-xs text-brand-muted">
-              Cita {cita.id} • Creada el {formatearFechaHora(cita.creadaEn)}
-            </p>
-          </div>
+        <div>
+          <h2 className="text-lg font-bold text-panel-sidebar">
+            Detalle de Reserva #{cita.id}
+          </h2>
+          <p className="text-xs text-brand-muted mt-0.5">
+            Creada el {formatearFechaHora(cita.creadaEn)}
+          </p>
         </div>
         <button
           type="button"
@@ -135,82 +127,149 @@ function DetalleCita({
         </button>
       </div>
 
-      {pagoCompletado && (
-        <div className="mx-6 mt-6 rounded-xl bg-emerald-50 p-4">
-          <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-emerald-700">
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
-            Anticipo vía Webpay
+      <div className="p-6 space-y-6">
+        {/* SECCIÓN 1: DATOS DEL PACIENTE */}
+        <div className="space-y-2">
+          <p className="border-b border-brand-border pb-1.5 text-xs font-bold uppercase tracking-wider text-brand-muted">
+            Datos del Paciente
           </p>
-          <p className="mt-2 text-[11px] uppercase tracking-wide text-brand-muted">Monto abonado</p>
-          <p className="text-xl font-bold text-panel-sidebar">${cita.montoAnticipo?.toLocaleString("es-CL")} CLP</p>
-          <p className="mt-1 text-xs text-brand-muted">Transacción {cita.webpayTransaccionId}</p>
+          <div className="space-y-1 text-sm pt-1">
+            <div className="flex justify-between items-center">
+              <span className="text-brand-muted font-medium">Nombre:</span>
+              <span className="font-bold text-panel-sidebar">
+                {cita.paciente.nombre} {cita.paciente.apellido}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-brand-muted font-medium">RUT:</span>
+              <span className="font-semibold text-panel-sidebar">{cita.paciente.rut}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-brand-muted font-medium">Contacto:</span>
+              <span className="font-medium text-panel-sidebar">
+                {cita.paciente.telefono} | {cita.paciente.correo}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-brand-muted font-medium">Convenio:</span>
+              <span className="font-semibold text-panel-sidebar">
+                {cita.paciente.convenio ? cita.paciente.convenio.nombre : "Particular"}
+              </span>
+            </div>
+          </div>
         </div>
-      )}
 
-      <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2">
-        <div>
-          <p className="mb-3 border-b border-brand-border pb-1 text-xs font-semibold uppercase tracking-wider text-brand-muted">
-            Datos paciente
+        {/* SECCIÓN 2: DETALLES DE LA ATENCIÓN */}
+        <div className="space-y-2">
+          <p className="border-b border-brand-border pb-1.5 text-xs font-bold uppercase tracking-wider text-brand-muted">
+            Detalles de la Atención
           </p>
-          <p className="font-bold text-panel-sidebar">
-            {cita.paciente.nombre} {cita.paciente.apellido}
-          </p>
-          <p className="text-sm text-brand-muted">RUT: {cita.paciente.rut}</p>
-          <p className="mt-2 text-sm text-brand-muted">{cita.paciente.telefono}</p>
-          <p className="text-sm text-brand-muted">{cita.paciente.correo}</p>
-          {cita.paciente.convenio && (
-            <p className="mt-2 text-sm text-brand-muted">Convenio: {cita.paciente.convenio.nombre}</p>
-          )}
+          <div className="space-y-2 text-sm pt-1">
+            <div className="flex justify-between items-center">
+              <span className="text-brand-muted font-medium">Servicio:</span>
+              <span className="font-semibold text-panel-sidebar capitalize">{cita.servicio}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-brand-muted font-medium">Atiende:</span>
+              <span className="font-semibold text-panel-sidebar">
+                {cita.especialista.nombre} ({cita.especialista.cargo})
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-brand-muted font-medium">Bloque:</span>
+              <span className="font-semibold text-panel-sidebar">
+                {formatearFechaExtensa(cita.fecha)} | {formatearRangoHorario(cita.horaInicio, cita.horaTermino)}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-brand-muted font-medium">Origen:</span>
+              <OriginBadge origen={cita.origen} />
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-brand-muted font-medium">Estado:</span>
+              <StatusPill etiqueta={definicion.etiqueta} colorRol={definicion.colorRol} conTrama={definicion.conTrama} />
+            </div>
+          </div>
         </div>
-        <div>
-          <p className="mb-3 border-b border-brand-border pb-1 text-xs font-semibold uppercase tracking-wider text-brand-muted">
-            Detalles cita
+
+        {/* SECCIÓN 3: INFORMACIÓN DE PAGO */}
+        <div className="space-y-2">
+          <p className="border-b border-brand-border pb-1.5 text-xs font-bold uppercase tracking-wider text-brand-muted">
+            Información de Pago
           </p>
-          <p className="font-bold text-panel-sidebar capitalize">{cita.servicio}</p>
-          <p className="mt-2 font-bold text-panel-sidebar">{cita.especialista.nombre}</p>
-          <p className="text-sm text-brand-muted">{cita.especialista.cargo}</p>
-          <div className="mt-3 flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-sm text-brand-muted">
-              Origen: <OriginBadge origen={cita.origen} />
-            </span>
-            <StatusPill etiqueta={definicion.etiqueta} colorRol={definicion.colorRol} conTrama={definicion.conTrama} />
+          <div className="space-y-1 text-sm pt-1">
+            <div className="flex justify-between items-center">
+              <span className="text-brand-muted font-medium">Anticipo:</span>
+              <span className="font-bold text-panel-sidebar">
+                {cita.montoAnticipo !== undefined
+                  ? `$${cita.montoAnticipo.toLocaleString("es-CL")} CLP (Vía Webpay)`
+                  : "Sin anticipo / Pago presencial"}
+              </span>
+            </div>
+            {cita.webpayTransaccionId && (
+              <div className="flex justify-between items-center">
+                <span className="text-brand-muted font-medium">Transacción:</span>
+                <span className="font-semibold text-panel-sidebar">{cita.webpayTransaccionId}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* NOTAS PACIENTE E INTERNAS (SI EXISTEN) */}
+        {(cita.notas?.paciente || cita.notas?.interna) && (
+          <div className="space-y-2">
+            <p className="border-b border-brand-border pb-1.5 text-xs font-bold uppercase tracking-wider text-brand-muted">
+              Notas Registradas
+            </p>
+            <div className="space-y-2 text-sm pt-1">
+              {cita.notas.paciente && (
+                <div className="rounded-lg border border-brand-border p-3">
+                  <span className="text-xs font-semibold text-brand-muted block">Nota para el paciente:</span>
+                  <span className="text-sm text-panel-sidebar">{cita.notas.paciente}</span>
+                </div>
+              )}
+              {cita.notas.interna && (
+                <div className="rounded-lg bg-panel-fondo border border-brand-border p-3">
+                  <span className="text-xs font-semibold text-panel-sidebar block">Nota interna del personal:</span>
+                  <span className="text-sm text-panel-sidebar">{cita.notas.interna}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* SECCIÓN 4: HISTORIAL Y TRAZABILIDAD */}
+        <div className="space-y-2">
+          <p className="border-b border-brand-border pb-1.5 text-xs font-bold uppercase tracking-wider text-brand-muted">
+            Historial y Trazabilidad
+          </p>
+          <div className="space-y-1.5 text-sm pt-1">
+            {cita.historial.map((item, idx) => (
+              <div key={idx} className="flex justify-between items-center">
+                <span className="text-brand-muted font-medium">
+                  {formatearFechaHora(item.fecha)}:
+                </span>
+                <span className="font-semibold text-panel-sidebar">
+                  {item.estado.charAt(0).toUpperCase() + item.estado.slice(1)} por {item.responsable}
+                  {item.motivo ? ` (${item.motivo})` : ""}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {(cita.notas?.paciente || cita.notas?.interna) && (
-        <div className="space-y-3 px-6 pb-2">
-          {cita.notas.paciente && (
-            <div className="rounded-lg border border-brand-border p-3">
-              <p className="text-xs font-semibold text-brand-muted">Nota para el paciente</p>
-              <p className="text-sm text-panel-sidebar">{cita.notas.paciente}</p>
-            </div>
-          )}
-          {cita.notas.interna && (
-            <div className="rounded-lg bg-panel-seleccion p-3">
-              <p className="flex items-center gap-1 text-xs font-semibold text-panel-sidebar">Nota interna</p>
-              <p className="text-sm text-panel-sidebar">{cita.notas.interna}</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="px-6 pb-6 pt-2">
-        <AuditTrail historial={cita.historial} />
-      </div>
-
+      {/* Botones de acción del pie */}
       <div className="border-t border-brand-border p-6">
         {definicion.acciones.length === 0 ? (
-          <p className="text-sm text-brand-muted">{definicion.explicacionSinAcciones}</p>
+          <p className="text-sm text-brand-muted text-center">{definicion.explicacionSinAcciones}</p>
         ) : (
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3 justify-end">
             {definicion.acciones.map((accion) => (
               <Button
                 key={accion.id}
                 variante={accion.estilo}
-                className="flex-1"
+                className="flex-1 sm:flex-initial px-4 py-2 text-sm"
                 onClick={() => onAccion(accion.id)}
               >
                 {accion.etiqueta}

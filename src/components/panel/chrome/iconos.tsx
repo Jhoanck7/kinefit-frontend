@@ -1,4 +1,4 @@
-/** Un solo set de iconos de navegación para todo el panel (A.2). */
+/** Un solo set de iconos de navegación para todo el panel */
 
 export function IconoAgenda({ className = "h-5 w-5" }: { className?: string }) {
   return (
@@ -80,3 +80,28 @@ export function IconoEngranaje({ className = "h-5 w-5" }: { className?: string }
     </svg>
   );
 }
+
+export function IconoVentas({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5A1.5 1.5 0 0121 6v9a1.5 1.5 0 01-1.5 1.5H3.75A1.5 1.5 0 012 15V6a1.5 1.5 0 011.75-1.5zM12 12.75a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z"
+      />
+    </svg>
+  );
+}
+
+export function IconoReportes({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
+      />
+    </svg>
+  );
+}
+

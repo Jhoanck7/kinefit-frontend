@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useHoyPanel } from "@/lib/panel/reloj";
 import { getFormato } from "@/lib/panel/data/formatos";
@@ -56,7 +56,7 @@ function mover<T>(lista: T[], indice: number, direccion: -1 | 1): T[] {
   return copia;
 }
 
-export default function ConstructorFormatoPage() {
+function ConstructorFormatoContenido() {
   const router = useRouter();
   const [nombreFormato, setNombreFormato] = useState("Ficha de Masoterapia");
   const [secciones, setSecciones] = useState<SeccionBorrador[]>([seccionNueva()]);
@@ -407,5 +407,13 @@ export default function ConstructorFormatoPage() {
         descripcion="El formato quedó disponible para usarse al crear nuevas fichas."
       />
     </div>
+  );
+}
+
+export default function ConstructorFormatoPage() {
+  return (
+    <Suspense fallback={<div className="h-full" aria-hidden />}>
+      <ConstructorFormatoContenido />
+    </Suspense>
   );
 }

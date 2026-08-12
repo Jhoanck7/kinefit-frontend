@@ -9,8 +9,14 @@ import { StatusPill } from "@/components/panel/primitives/StatusPill";
 import { definicionEstado } from "@/lib/panel/domain/estados";
 
 const NOMBRE_SERVICIO: Record<string, string> = {
-  masoterapia: "Masoterapia",
+  embarazadas: "Embarazadas",
+  masajes_pareja: "Masajes en pareja",
+  masajes: "Masajes (masoterapia)",
+  masajes_premium: "Masajes Premium",
+  masajes_reductivos: "Masajes Reductivos",
+  voucher_regalo: "Voucher para Regalo",
   kinesiologia: "Kinesiología",
+  masoterapia: "Masoterapia",
 };
 
 export default function NuevaReservaListoPage() {
@@ -44,22 +50,17 @@ export default function NuevaReservaListoPage() {
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center">
-      <div className="max-w-lg text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100">
-          <svg className="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-        </div>
+      <div className="max-w-lg text-center space-y-4">
         <h2 className="text-xl font-bold text-panel-sidebar">Cita registrada correctamente</h2>
 
-        <div className="mx-auto mt-6 flex flex-wrap items-center justify-center gap-2 rounded-full border border-brand-border bg-white px-5 py-3 text-sm">
+        <div className="mx-auto flex flex-wrap items-center justify-center gap-2 rounded-full border border-brand-border bg-white px-5 py-3 text-sm">
           <span className="font-bold text-panel-sidebar">{pacienteNombre}</span>
-          <span className="text-brand-muted">·</span>
-          <span className="text-brand-muted">{NOMBRE_SERVICIO[servicio]}</span>
-          <span className="text-brand-muted">·</span>
-          <span className="text-brand-muted">{formatearFechaExtensa(fecha)}</span>
-          <span className="text-brand-muted">·</span>
-          <span className="text-brand-muted">{formatearRangoHorario(hora, horaTermino)}</span>
+          <span className="text-brand-muted">|</span>
+          <span className="text-brand-muted font-medium">{NOMBRE_SERVICIO[servicio] ?? servicio}</span>
+          <span className="text-brand-muted">|</span>
+          <span className="text-brand-muted font-medium">{formatearFechaExtensa(fecha)}</span>
+          <span className="text-brand-muted">|</span>
+          <span className="text-brand-muted font-medium">{formatearRangoHorario(hora, horaTermino)}</span>
         </div>
 
         <div className="mt-4 flex flex-col items-center gap-2">

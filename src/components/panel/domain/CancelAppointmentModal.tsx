@@ -7,8 +7,7 @@ import { Button } from "../primitives/Button";
 import { TextAreaField } from "../primitives/CamposFormulario";
 
 /**
- * Modal de cancelación (E.3, W-5): advierte del anticipo cuando corresponde
- * y exige motivo. Se monta sobre el detalle (DD-9).
+ * Modal de cancelación
  */
 export function CancelAppointmentModal({
   citaId,

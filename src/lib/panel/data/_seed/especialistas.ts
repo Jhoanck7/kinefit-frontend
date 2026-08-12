@@ -1,27 +1,49 @@
 import { Especialista, PlantillaHorarioEspecialista } from "../../domain/tipos";
 
 /**
- * DATOS DE PRUEBA — desechables. Ninguna vista importa de aquí directamente:
- * solo la capa de acceso (src/lib/panel/data/*.ts).
+ * DATOS DE PRUEBA — Hito 4 Catálogo de Servicios.
  */
 export const ESPECIALISTAS: Especialista[] = [
   {
     id: "esp-franchesca",
     nombre: "Franchesca Astudillo",
     cargo: "Masoterapeuta",
-    servicios: ["masoterapia"],
+    servicios: [
+      "embarazadas",
+      "masajes_pareja",
+      "masajes",
+      "masajes_premium",
+      "masajes_reductivos",
+      "voucher_regalo",
+    ],
   },
   {
     id: "esp-valeria",
     nombre: "Valeria Araneda",
     cargo: "Kinesióloga",
-    servicios: ["kinesiologia"],
+    servicios: [
+      "embarazadas",
+      "masajes_pareja",
+      "masajes",
+      "masajes_premium",
+      "masajes_reductivos",
+      "voucher_regalo",
+      "kinesiologia",
+    ],
   },
   {
     id: "esp-constanza",
     nombre: "Constanza Maldonado",
     cargo: "Kinesióloga",
-    servicios: ["kinesiologia"],
+    servicios: [
+      "embarazadas",
+      "masajes_pareja",
+      "masajes",
+      "masajes_premium",
+      "masajes_reductivos",
+      "voucher_regalo",
+      "kinesiologia",
+    ],
   },
 ];
 

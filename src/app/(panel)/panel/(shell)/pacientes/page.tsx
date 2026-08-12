@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useHoyPanel } from "@/lib/panel/reloj";
 import { listPacientes, PacienteResuelto } from "@/lib/panel/data/pacientes";
 import { Button } from "@/components/panel/primitives/Button";
 import { SearchInput } from "@/components/panel/primitives/CamposFormulario";
 import { NeutralBadge } from "@/components/panel/primitives/Badge";
 import { EmptyState } from "@/components/panel/primitives/EmptyState";
 import { Table, FilaTabla, CeldaChevron, Paginacion } from "@/components/panel/primitives/Table";
+import { PacienteDetalleModal } from "@/components/panel/domain/PacienteDetalleModal";
 
 const TAMANO_PAGINA = 8;
 
@@ -20,11 +22,17 @@ const COLUMNAS = [
   { titulo: "Convenio" },
 ];
 
-export default function PacientesPage() {
+function PacientesContenido() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const hoy = useHoyPanel();
+
   const [busqueda, setBusqueda] = useState("");
   const [pacientes, setPacientes] = useState<PacienteResuelto[] | null>(null);
   const [pagina, setPagina] = useState(1);
+
+  const pacienteModalId = searchParams.get("paciente");
 
   useEffect(() => {
     listPacientes(busqueda).then((resultado) => {
@@ -33,7 +41,17 @@ export default function PacientesPage() {
     });
   }, [busqueda]);
 
-  if (pacientes === null) {
+  function abrirParametros(params: Record<string, string | undefined>) {
+    const actuales = new URLSearchParams(searchParams.toString());
+    Object.entries(params).forEach(([clave, valor]) => {
+      if (valor === undefined) actuales.delete(clave);
+      else actuales.set(clave, valor);
+    });
+    const query = actuales.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  }
+
+  if (pacientes === null || !hoy) {
     return <div aria-hidden />;
   }
 
@@ -52,7 +70,7 @@ export default function PacientesPage() {
           />
         </div>
         <Button variante="primario" onClick={() => router.push("/panel/pacientes/nuevo")}>
-          + Nuevo paciente
+          Nuevo paciente
         </Button>
       </div>
 
@@ -74,7 +92,7 @@ export default function PacientesPage() {
         }
       >
         {visibles.map((paciente) => (
-          <FilaTabla key={paciente.id} onClick={() => router.push(`/panel/pacientes/${paciente.id}`)}>
+          <FilaTabla key={paciente.id} onClick={() => abrirParametros({ paciente: paciente.id })}>
             <td className="px-4 py-3 font-medium text-panel-sidebar">
               {paciente.nombre}
               <span
@@ -105,6 +123,20 @@ export default function PacientesPage() {
           descripcion="Ningún paciente coincide con la búsqueda. Prueba con otro nombre, RUT o correo."
         />
       )}
+
+      <PacienteDetalleModal
+        pacienteId={pacienteModalId}
+        hoy={hoy}
+        onCerrar={() => abrirParametros({ paciente: undefined })}
+      />
     </div>
+  );
+}
+
+export default function PacientesPage() {
+  return (
+    <Suspense fallback={<div aria-hidden />}>
+      <PacientesContenido />
+    </Suspense>
   );
 }

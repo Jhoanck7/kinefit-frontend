@@ -13,7 +13,7 @@ const BORDE_ACENTO: Record<string, string> = {
   gris: "border-l-slate-500",
 };
 
-/** Tarjeta de cita de la rejilla (A.1, Parte A.5): ocupa una fila completa. */
+/** Tarjeta de cita */
 export function AppointmentCard({ cita, onClick }: { cita: CitaResuelta; onClick: () => void }) {
   const definicion = definicionEstado(cita.estado);
   const clasesTexto = CLASES_ROL_ESTADO[definicion.colorRol].texto;

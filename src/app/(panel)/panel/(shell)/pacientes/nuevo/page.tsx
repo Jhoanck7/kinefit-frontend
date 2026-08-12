@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { pacienteConRut, RUT_DEMO_YA_EXISTENTE } from "@/lib/panel/data/pacientes";
 import { listConvenios } from "@/lib/panel/data/convenios";
@@ -11,7 +11,7 @@ import { Button } from "@/components/panel/primitives/Button";
 import { TextField, SelectField } from "@/components/panel/primitives/CamposFormulario";
 import { SimulatedActionNotice } from "@/components/panel/primitives/SimulatedActionNotice";
 
-export default function RegistrarPacientePage() {
+function RegistrarPacienteContenido() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const retorno = searchParams.get("retorno");
@@ -113,5 +113,13 @@ export default function RegistrarPacientePage() {
         descripcion="El paciente quedó disponible en la base de pacientes."
       />
     </div>
+  );
+}
+
+export default function RegistrarPacientePage() {
+  return (
+    <Suspense fallback={<div aria-hidden />}>
+      <RegistrarPacienteContenido />
+    </Suspense>
   );
 }

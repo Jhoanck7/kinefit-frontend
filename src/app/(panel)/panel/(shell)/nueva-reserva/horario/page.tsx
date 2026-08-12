@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useHoyPanel } from "@/lib/panel/reloj";
 import { usePanelSessionStore, USUARIO_SESION_PANEL } from "@/lib/store/usePanelSessionStore";
@@ -14,18 +14,33 @@ import { Button } from "@/components/panel/primitives/Button";
 import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
 import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
 import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
-import { MonthCalendar } from "@/components/panel/domain/MonthCalendar";
 
-const PASOS = [{ etiqueta: "Horario" }, { etiqueta: "Paciente" }, { etiqueta: "Servicio" }, { etiqueta: "Notas y resumen" }];
+const PASOS = [
+  { etiqueta: "Servicio" },
+  { etiqueta: "Horario" },
+  { etiqueta: "Especialista" },
+  { etiqueta: "Paciente" },
+  { etiqueta: "Notas y resumen" },
+];
+
+const NOMBRE_SERVICIO: Record<string, string> = {
+  embarazadas: "Embarazadas",
+  masajes_pareja: "Masajes en pareja",
+  masajes: "Masajes (masoterapia)",
+  masajes_premium: "Masajes Premium",
+  masajes_reductivos: "Masajes Reductivos",
+  voucher_regalo: "Voucher para Regalo",
+  kinesiologia: "Kinesiología",
+};
 
 type EstadoBloque = "libre" | "ocupado" | "bloqueado";
 
-export default function NuevaReservaHorarioPage() {
+function NuevaReservaHorarioContenido() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const hoy = useHoyPanel();
   const usuario = usePanelSessionStore((s) => s.usuario) ?? USUARIO_SESION_PANEL;
-  const { fecha, hora, pacienteNombre, setHorario, setPaciente } = useNuevaReservaStore();
+  const { fecha, hora, pacienteNombre, especialistaNombre, servicio, setHorario, setPaciente } = useNuevaReservaStore();
 
   const [mesVisible, setMesVisible] = useState<Date | null>(null);
   const [bloques, setBloques] = useState<{ inicio: string; termino: string; estado: EstadoBloque; motivo?: string }[]>([]);
@@ -79,25 +94,38 @@ export default function NuevaReservaHorarioPage() {
   return (
     <div className="mx-auto max-w-5xl">
       <div className="mb-8">
-        <StepIndicator pasos={PASOS} pasoActivo={1} />
+        <StepIndicator pasos={PASOS} pasoActivo={2} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
         <Card>
           <h2 className="mb-4 text-lg font-bold text-panel-sidebar">¿Cuándo será la atención?</h2>
           <div className="grid grid-cols-1 gap-6 divide-y divide-brand-border sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-            <div className="sm:pr-6">
-              <MonthCalendar
-                mesVisible={mesVisible}
-                fechaSeleccionada={fecha}
-                hoy={hoy}
-                onSeleccionarFecha={(d) => setHorario(d, "")}
-                onCambiarMes={(delta) => setMesVisible(new Date(mesVisible.getFullYear(), mesVisible.getMonth() + delta, 1))}
+            <div className="sm:pr-6 space-y-3">
+              <label className="block text-xs font-bold uppercase tracking-wide text-brand-muted">
+                Seleccionar Fecha de Atención
+              </label>
+              <input
+                type="date"
+                value={fecha ? fechaISO(fecha) : ""}
+                min={fechaISO(hoy)}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const [y, m, d] = e.target.value.split("-").map(Number);
+                    setHorario(new Date(y, m - 1, d), "");
+                  }
+                }}
+                className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm font-bold text-panel-sidebar focus:border-panel-sidebar focus:outline-none cursor-pointer shadow-sm"
               />
+              {fecha && (
+                <p className="text-xs font-semibold text-panel-sidebar pt-2">
+                  Fecha seleccionada: {formatearFechaExtensa(fecha)}
+                </p>
+              )}
             </div>
             <div className="sm:pl-6">
               {!fecha ? (
-                <p className="text-sm text-brand-muted">Selecciona primero una fecha en el calendario.</p>
+                <p className="text-sm text-brand-muted">Selecciona primero una fecha para ver los horarios.</p>
               ) : (
                 <>
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-muted">Mañana</p>
@@ -120,11 +148,16 @@ export default function NuevaReservaHorarioPage() {
                 Cancelar reserva
               </button>
             }
+            volver={
+              <Button variante="secundario" onClick={() => router.push("/panel/nueva-reserva/servicio")}>
+                Volver
+              </Button>
+            }
             avanzar={
               <Button
                 variante="primario"
                 disabled={!fecha || !hora}
-                onClick={() => router.push("/panel/nueva-reserva/paciente")}
+                onClick={() => router.push("/panel/nueva-reserva/especialista")}
               >
                 Continuar
               </Button>
@@ -134,10 +167,11 @@ export default function NuevaReservaHorarioPage() {
 
         <SummaryPanel
           filas={[
+            { etiqueta: "Servicio", valor: servicio ? (NOMBRE_SERVICIO[servicio] ?? servicio) : undefined },
             { etiqueta: "Fecha", valor: fecha ? formatearFechaExtensa(fecha) : undefined },
             { etiqueta: "Horario", valor: hora || undefined },
+            { etiqueta: "Especialista", valor: especialistaNombre || undefined },
             { etiqueta: "Paciente", valor: pacienteNombre ?? undefined },
-            { etiqueta: "Servicio", valor: undefined },
           ]}
         />
       </div>
@@ -185,5 +219,13 @@ function BloquesChip({
         );
       })}
     </div>
+  );
+}
+
+export default function NuevaReservaHorarioPage() {
+  return (
+    <Suspense fallback={<div aria-hidden />}>
+      <NuevaReservaHorarioContenido />
+    </Suspense>
   );
 }

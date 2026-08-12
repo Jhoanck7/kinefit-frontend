@@ -2,8 +2,7 @@ import { CATALOGO_ESTADOS, ORDEN_ESTADOS } from "@/lib/panel/domain/estados";
 import { PuntoEstado } from "../primitives/StatusPill";
 
 /**
- * Leyenda generada recorriendo el catálogo (DD-5): no puede quedar
- * incompleta ni desactualizada. 7 estados + Bloqueado (A-3).
+ * Leyenda generada recorriendo el catálogo
  */
 export function Legend() {
   return (

@@ -10,6 +10,8 @@ import {
   IconoPacientes,
   IconoFichas,
   IconoCerrarSesion,
+  IconoVentas,
+  IconoReportes,
 } from "./iconos";
 
 const ITEMS_NAVEGACION = [
@@ -17,12 +19,12 @@ const ITEMS_NAVEGACION = [
   { href: "/panel/nueva-reserva/horario", etiqueta: "Nueva reserva", prefijos: ["/panel/nueva-reserva"], Icono: IconoNuevaReserva },
   { href: "/panel/pacientes", etiqueta: "Pacientes", prefijos: ["/panel/pacientes"], Icono: IconoPacientes },
   { href: "/panel/fichas", etiqueta: "Fichas clínicas", prefijos: ["/panel/fichas"], Icono: IconoFichas },
+  { href: "/panel/ventas", etiqueta: "Ventas", prefijos: ["/panel/ventas"], Icono: IconoVentas },
+  { href: "/panel/reportes", etiqueta: "Reportes", prefijos: ["/panel/reportes"], Icono: IconoReportes },
 ];
 
 /**
- * Barra lateral canónica (A.2). Ítem activo derivado siempre de la ruta:
- * es imposible que señale una sección distinta de la que está en pantalla
- * (NF2-3 cerrada por construcción).
+ * Barra lateral canónica
  */
 export function Sidebar() {
   const pathname = usePathname();
@@ -37,7 +39,7 @@ export function Sidebar() {
   return (
     <nav
       aria-label="Navegación del panel"
-      className="flex w-[20%] min-w-[240px] max-w-[300px] flex-col bg-panel-sidebar text-white"
+      className="sticky top-0 h-screen flex w-[20%] min-w-[240px] max-w-[300px] flex-col bg-panel-sidebar text-white shrink-0"
     >
       <div className="flex items-center justify-center px-3 pt-6 pb-4 w-full">
         <Image
@@ -58,11 +60,10 @@ export function Sidebar() {
               <Link
                 href={href}
                 aria-current={activo ? "page" : undefined}
-                className={`flex items-center gap-3 rounded-full px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
-                  activo
+                className={`flex items-center gap-3 rounded-full px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${activo
                     ? "bg-panel-sidebar-activo font-semibold text-white"
                     : "text-blue-100 hover:bg-white/10"
-                }`}
+                  }`}
               >
                 <Icono />
                 {etiqueta}

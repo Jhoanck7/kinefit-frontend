@@ -1,6 +1,14 @@
 export type Origen = "web" | "manual";
 
-export type Servicio = "masoterapia" | "kinesiologia";
+export type Servicio =
+  | "embarazadas"
+  | "masajes_pareja"
+  | "masajes"
+  | "masajes_premium"
+  | "masajes_reductivos"
+  | "voucher_regalo"
+  | "kinesiologia"
+  | "masoterapia";
 
 export type CodigoEstadoCita =
   | "pendiente_pago"
@@ -115,6 +123,7 @@ export interface Bloqueo {
   horaInicio: string;
   horaTermino: string;
   motivo: string;
+  activo?: boolean;
 }
 
 export type DiaSemanaId = 0 | 1 | 2 | 3 | 4 | 5 | 6;

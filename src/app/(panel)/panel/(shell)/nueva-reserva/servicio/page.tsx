@@ -9,46 +9,81 @@ import { Button } from "@/components/panel/primitives/Button";
 import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
 import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
 import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
-import { OptionSelector } from "@/components/panel/primitives/OptionSelector";
 
-const PASOS = [{ etiqueta: "Horario" }, { etiqueta: "Paciente" }, { etiqueta: "Servicio" }, { etiqueta: "Notas y resumen" }];
+const PASOS = [
+  { etiqueta: "Servicio" },
+  { etiqueta: "Horario" },
+  { etiqueta: "Especialista" },
+  { etiqueta: "Paciente" },
+  { etiqueta: "Notas y resumen" },
+];
 
-/** Masoterapia primero, luego Kinesiología (P3-1). */
-const OPCIONES = [
-  {
-    id: "masoterapia" as Servicio,
-    titulo: "Masoterapia",
-    icono: (
-      <svg className="h-6 w-6 text-panel-sidebar" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 4.5-4 8-8 11z" />
-      </svg>
-    ),
-  },
-  {
-    id: "kinesiologia" as Servicio,
-    titulo: "Kinesiología",
-    icono: (
-      <svg className="h-6 w-6 text-panel-sidebar" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a7.5 7.5 0 0115 0" />
-      </svg>
-    ),
-  },
+export interface OpcionServicio {
+  id: Servicio;
+  titulo: string;
+}
+
+/** Catálogo oficial de servicios Hito 4 */
+export const CATALAGO_SERVICIOS: OpcionServicio[] = [
+  { id: "embarazadas", titulo: "Embarazadas" },
+  { id: "masajes_pareja", titulo: "Masajes en pareja (masoterapia)" },
+  { id: "masajes", titulo: "Masajes (masoterapia)" },
+  { id: "masajes_premium", titulo: "Masajes Premium (masoterapia premium)" },
+  { id: "masajes_reductivos", titulo: "Masajes Reductivos" },
+  { id: "voucher_regalo", titulo: "Voucher para Regalo" },
+  { id: "kinesiologia", titulo: "Kinesiología" },
 ];
 
 export default function NuevaReservaServicioPage() {
   const router = useRouter();
-  const { fecha, hora, pacienteNombre, servicio, setServicio } = useNuevaReservaStore();
+  const { fecha, hora, pacienteNombre, especialistaNombre, servicio, setServicio } = useNuevaReservaStore();
 
   return (
     <div className="mx-auto max-w-5xl">
       <div className="mb-8">
-        <StepIndicator pasos={PASOS} pasoActivo={3} />
+        <StepIndicator pasos={PASOS} pasoActivo={1} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
         <Card>
-          <h2 className="mb-4 text-lg font-bold text-panel-sidebar">¿Qué servicio se realizará?</h2>
-          <OptionSelector opciones={OPCIONES} seleccionId={servicio} onSeleccionar={(id) => setServicio(id as Servicio)} />
+          <h2 className="mb-1 text-lg font-bold text-panel-sidebar">¿Qué servicio se realizará?</h2>
+          <p className="mb-4 text-xs font-medium text-brand-muted">
+            Selecciona una opción del catálogo de atención oficial.
+          </p>
+
+          <div className="grid grid-cols-1 gap-2.5">
+            {CATALAGO_SERVICIOS.map((item) => {
+              const seleccionado = servicio === item.id;
+
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => setServicio(item.id)}
+                  className={`flex items-center justify-between rounded-xl border px-4 py-3.5 transition-all cursor-pointer ${
+                    seleccionado
+                      ? "border-panel-sidebar bg-panel-seleccion shadow-sm"
+                      : "border-brand-border bg-white hover:border-panel-sidebar/40"
+                  }`}
+                >
+                  <p className="font-bold text-sm text-panel-sidebar">{item.titulo}</p>
+
+                  <div
+                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                      seleccionado
+                        ? "border-panel-sidebar bg-panel-sidebar text-white"
+                        : "border-brand-border bg-white"
+                    }`}
+                  >
+                    {seleccionado && (
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
           <BottomActionBar
             abandono={
@@ -60,13 +95,8 @@ export default function NuevaReservaServicioPage() {
                 Cancelar reserva
               </button>
             }
-            volver={
-              <Button variante="secundario" onClick={() => router.push("/panel/nueva-reserva/paciente")}>
-                Volver
-              </Button>
-            }
             avanzar={
-              <Button variante="primario" disabled={!servicio} onClick={() => router.push("/panel/nueva-reserva/resumen")}>
+              <Button variante="primario" disabled={!servicio} onClick={() => router.push("/panel/nueva-reserva/horario")}>
                 Continuar
               </Button>
             }
@@ -75,10 +105,11 @@ export default function NuevaReservaServicioPage() {
 
         <SummaryPanel
           filas={[
+            { etiqueta: "Servicio", valor: servicio ? CATALAGO_SERVICIOS.find((s) => s.id === servicio)?.titulo : undefined },
             { etiqueta: "Fecha", valor: fecha ? formatearFechaExtensa(fecha) : undefined },
             { etiqueta: "Horario", valor: hora || undefined },
+            { etiqueta: "Especialista", valor: especialistaNombre || undefined },
             { etiqueta: "Paciente", valor: pacienteNombre || undefined },
-            { etiqueta: "Servicio", valor: servicio ? OPCIONES.find((o) => o.id === servicio)?.titulo : undefined },
           ]}
         />
       </div>

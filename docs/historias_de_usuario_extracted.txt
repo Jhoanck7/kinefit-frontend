@@ -1,0 +1,396 @@
+Historias de Usuario Transaccionales v4:
+Fecha de actualización: 02/08/2026
+Motivo: Incorporación de los acuerdos de las dos reuniones sostenidas con el cliente después de la v3: la primera de presentación del flujo de reserva del paciente y del prototipo del panel administrativo, y la segunda de presentación del avance del prototipo y del flujo de reserva ya integrado en el sitio oficial. Reemplaza a: Historias de Usuario Transaccionales v3. Cambios de fondo de esta versión: el servicio pasa a ser el primer paso del flujo de reserva y su duración condiciona los bloques que se ofrecen; el catálogo de servicios se alinea con las categorías efectivamente publicadas en AgendaPro; Sanity queda fuera del proyecto y la gestión de contenido institucional pasa a una sección propia del panel administrativo; la agenda incorpora una vista con las tres especialistas; la ficha clínica pasa a asociarse a una atención concreta y deja de aplicar a masoterapia; y los reportes recuperan el módulo de ventas y comisiones que la v3 había recortado. Todo el trabajo aún no implementado se reasigna a Hito 4. Los PENDIENTE ya resueltos se conservan marcados como RESUELTO con su fecha y fuente, para preservar la trazabilidad de cada decisión. Las historias incorporadas en esta versión se identifican con la marca [NUEVA v4] en su nombre.
+HISTORIA DE USUARIO
+Id: AUT-001
+Usuario: Paciente
+Nombre Historia: Autenticación con Google dentro del Flujo de Reserva
+Prioridad en Negocio: Critica
+Riesgo de Desarrollo: Alto
+Hito asignado: Hito 2
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como paciente, quiero que la página me pida iniciar sesión con Google recién en el momento de reservar, después de haber elegido servicio, especialista y hora, para agendar de forma ágil sin crear ni recordar una contraseña, y sin que se me exija autenticarme solo por navegar el sitio.
+Validación:
+●       La autenticación es un paso intermedio del flujo de reserva, no una barrera de entrada al sitio. El paciente debe poder acceder a la página y avanzar por la selección de servicio, especialista, fecha y hora sin sesión iniciada. Recién al confirmar la reserva, antes de pasar al pago, el sistema debe mostrar el aviso de que para reservar es necesario iniciar sesión con Google.
+●       El orden del flujo es: seleccionar servicio → especialista → fecha y hora → aviso e inicio de sesión con Google → redirección al pago (AGE-002). No debe existir ningún requerimiento de autenticación anterior a la selección de la hora.
+●       El backend (.NET) debe validar el ID token de Google contra los servidores de Google y nunca confiar en datos de identidad enviados directamente por el frontend.
+●       Si el correo del token no corresponde a un paciente existente en PostgreSQL, el sistema debe crear el registro de paciente vinculado a esa identidad de Google.
+●       Si al autenticarse faltan datos obligatorios que Google no provee (RUT y teléfono; ver AGE-001), el sistema debe solicitarlos antes de continuar al pago. En reservas posteriores del mismo paciente, esos datos deben precargarse para no volver a pedirlos. (RESUELTO 04/07/2026 — reunión con el cliente: sí se solicitan. Google entrega el nombre y el correo; el RUT y el teléfono se piden en ese mismo paso, antes de continuar al pago.)
+●       Si el token es inválido, está expirado o la validación con Google falla, el sistema debe rechazar la operación con un mensaje claro, mantener el bloque horario sin ocupar y no registrar datos parciales.
+●       Las sesiones emitidas por el backend deben tener expiración definida; la operación de reserva debe rechazar sesiones vencidas.
+●       El paciente autenticado no obtiene ninguna funcionalidad adicional más allá de completar su reserva. No se contempla un área privada de paciente en este alcance; queda como posible extensión futura de mantenimiento, incierta por ahora.
+●   (RESUELTO 04/07/2026 — reunión con el cliente: el inicio de sesión del paciente será exclusivamente con Google. Se descarta la cuenta local de correo y contraseña por considerarse menos eficiente y de menor uso real.)
+●   (PENDIENTE: Confirmar con Diego el aviso de privacidad/consentimiento a mostrar al paciente al crear su cuenta, dado que sus datos quedarán persistidos.)
+HISTORIA DE USUARIO
+Id: AGE-001
+Usuario: Paciente
+Nombre Historia: Reservación de una Cita
+Prioridad en Negocio: Critica
+Riesgo de Desarrollo: Alto
+Hito asignado: Hito 2
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como paciente, quiero entrar a la página y comenzar directamente a reservar una cita, eligiendo primero el servicio, luego la fecha y el horario, y finalmente el especialista disponible en ese bloque, e iniciar sesión con Google e ingresar mis datos recién al momento de confirmar, para agendar de forma rápida sin trámites previos.
+Validación:
+●       La reserva es lo primero y más accesible del sitio: el paciente debe poder seleccionar servicio, especialista y hora sin sesión iniciada. La autenticación ocurre después, como paso intermedio antes del pago (ver AUT-001).
+●       (ACTUALIZADO 02/08/2026) El orden del flujo cambia y pasa a ser: servicio, fecha, horario y finalmente especialista. El motivo entregado por el cliente es doble: la duración del servicio condiciona qué bloques pueden ofrecerse, por lo que el servicio no puede elegirse después del horario; y las tres especialistas no cubren la misma franja, por lo que ofrecer primero al especialista permitiría elegir a una profesional que no atiende en el horario deseado. El sistema debe ofrecer, en el último paso, únicamente las especialistas efectivamente disponibles en el bloque escogido.
+●   (ACTUALIZADO 02/08/2026) El catálogo oficial es el publicado por el cliente en AgendaPro y se presenta con todas las categorías al mismo nivel, sin subcategorías: Embarazadas, Masajes en pareja (masoterapia), Masajes (masoterapia), Masajes Premium (masoterapia premium), Masajes Reductivos y Voucher para Regalo. Kinesiología debe existir en el catálogo pero permanece inhabilitada para agendamiento hasta que el centro obtenga la resolución sanitaria, estimada por el cliente en aproximadamente un mes. Quedan descartadas las categorías Kinesiología Deportiva, Entrenamiento Funcional y Kinesiología Clínica que figuraban en versiones anteriores. El parámetro ?soloActivos del backend sostiene esta distinción.
+●       El selector de fecha y hora debe mostrar única y exclusivamente los bloques horarios del especialista seleccionado que el backend identifique en estado Disponible en PostgreSQL, generados según el horario personalizado de ese especialista (ver AGE-004) y las excepciones de agenda vigentes (ver AGE-005).
+●       Los bloques deben visualizarse como rango horario y no como hora única. El cliente definió (retractándose de la definición previa de "una hora a una hora") que los bloques se generan cada 30 minutos a partir de las 09:00 (09:00–09:30, 09:30–10:00, etc.), mientras que los servicios duran 60 o 90 minutos y ocupan los bloques consecutivos correspondientes. Se mantiene la observación de que se espera al paciente un máximo de 15 minutos. (CONFIRMADO 02/08/2026 — el cliente reafirmó que la duración del servicio condiciona el horario: no puede ofrecerse un bloque de media hora para un masaje de una hora. PENDIENTE: definir cómo se representa visualmente en la agenda un servicio que abarca dos o tres bloques de 30 minutos, y si la rejilla admite iniciar una atención fuera de los múltiplos de 30.)
+●       Los datos personales del paciente (nombre, apellido, RUT, correo electrónico, teléfono) se completan en el momento de iniciar sesión (AUT-001): el correo y nombre provienen de Google, y los faltantes (RUT, teléfono) se solicitan en ese paso. Todos son obligatorios, confirmado por el cliente. El RUT debe validarse con su dígito verificador y ser único por paciente. (RESUELTO 04/07/2026 — reunión con el cliente: se autentica con Google y se solicitan en ese paso los datos que Google no entrega, RUT y teléfono, antes de pasar al pago.)
+●       El formulario debe incluir el campo opcional de convenio institucional como lista desplegable (ver CON-001).
+●       El sistema debe impedir la confirmación de la reserva si algún campo obligatorio está vacío o con formato inválido.
+●       Tras autenticarse (AUT-001), al confirmar la reserva el sistema debe insertar la cita en PostgreSQL en estado Pendiente, asociada al paciente ya identificado, quedando lista para el flujo de pago (AGE-002). La creación/identificación del paciente ocurre en el paso de autenticación, no dentro de la transacción de la cita.
+●       Inmediatamente después de confirmar la reserva para un bloque específico, el backend debe restringir ese bloque (estado Ocupado) para evitar agendamiento duplicado o colisiones en tiempo real. La operación bloque–cita debe mantener atomicidad transaccional.
+●       Si ocurre un error interno en el servidor al intentar registrar la reserva, el sistema debe notificar al paciente que intente nuevamente y el bloque horario debe permanecer Disponible en el sistema.
+●       Los servicios de la categoría Embarazadas exigen alta médica del paciente. El cliente fue explícito en que un masaje de embarazo sin alta médica constituye un riesgo clínico grave. (PENDIENTE: definir si el sistema debe solicitar o registrar el alta médica dentro del flujo de reserva, o si la verificación queda en manos del personal al momento de la atención.)
+●       La categoría Voucher para Regalo figura en el catálogo publicado, pero no corresponde a una atención con hora asignada. (PENDIENTE: definir con el cliente si se agenda como los demás servicios, si se vende sin bloque horario asociado, o si queda fuera del flujo de reserva en línea.)
+HISTORIA DE USUARIO
+Id: AGE-002
+Usuario: Paciente
+Nombre Historia: Transacción con Webpay
+Prioridad en Negocio: Crítico
+Riesgo de Desarrollo: Alto
+Hito asignado: Hito 2
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como paciente, quiero que inmediatamente después de iniciar sesión con Google (AUT-001) se me redirija de forma segura a la pasarela de Webpay para pagar el anticipo, cerrando el flujo de reserva sin pasos adicionales.
+Validación:
+●       Para agendar, a todo paciente se le cobra un anticipo de $10.000 CLP (para todos los servicios es el mismo monto)
+●       El valor del cobro debe validarse exclusivamente del lado del servidor (API .NET); el frontend nunca define el monto.
+●       Si Webpay experimenta una caída o error de conexión, el sistema debe mostrar un aviso claro en pantalla informando al paciente.
+●       La transacción de pago debe quedar vinculada a la cita del paciente autenticado.
+●       Apenas el paciente presione pagar y antes de redirigirlo a Webpay, la cita debe estar registrada en estado Pendiente y el bloque en Ocupado.
+●       Mientras la cita se mantenga en estado Pendiente (el paciente está con la pasarela abierta ingresando sus datos), ese bloque horario específico no debe mostrarse como disponible para ningún otro usuario en la web.
+●       Si la pasarela aprueba la transacción, la cita debe cambiar automáticamente al estado Confirmada, congelando el cupo de forma definitiva y activando el envío de los correos o avisos correspondientes.
+●       Si el paciente decide abortar o cancelar el proceso dentro de la pasarela de pago, el sitio debe devolverlo a la página de KineFit con un mensaje explicativo.
+●       Si el paciente aborta el proceso en Webpay o la tarjeta es rechazada por el banco o algún otro problema que interrumpa con el proceso de transacción, el sistema debe sacar la cita del estado Pendiente y liberar el bloque horario de inmediato, haciendo que vuelva a aparecer como Disponible para evitar que se pierda esa hora médica.
+●       Si el paciente abandona la pestaña de Webpay sin interactuar, al cumplirse el tiempo límite el sistema debe marcar la cita como Expirada y liberar el bloque automáticamente.
+●       Si la pasarela aprueba la transacción, la cita debe pasar al estado Confirmada de forma interna, garantizando que el cupo se congele incluso si el paciente cierra la ventana antes de ser redirigido de vuelta al sitio.
+●       Al retornar con un pago exitoso, el sistema debe mostrar una pantalla de confirmación limpia con el resumen de la cita obtenida (nombre del especialista, tipo de servicio, fecha y hora asignada).
+●   (RESUELTO 02/08/2026 — reunión de avance con el cliente: el canal de notificación al paciente es el correo electrónico. El cliente lo consideró suficiente y señaló que permite enviar tanto el aviso de cita generada como un recordatorio posterior. WhatsApp Business queda descartado por ahora debido a su costo, que se aplica a partir de los 100 mensajes mensuales, y se registra como posible extensión futura.)
+●       Al confirmarse la cita el sistema debe enviar al paciente un correo de confirmación y, además, un correo de recordatorio previo a la atención. (PENDIENTE: definir con el cliente la antelación del recordatorio; la plataforma de referencia ofrece enviarlo uno o dos días antes, a primera hora de la mañana, o tres horas antes.)
+●       (PENDIENTE: evaluar el servicio de envío de correo a utilizar y su costo. Quedó registrado como tarea del equipo de desarrollo en la reunión del 02/08/2026.)
+HISTORIA DE USUARIO
+Id: CON-001
+Usuario: Paciente
+Nombre Historia: Identificación de Convenio Institucional
+Prioridad en Negocio: Media
+Riesgo de Desarrollo: Bajo
+Hito asignado: Hito 2
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como paciente, quiero poder indicar de forma opcional la empresa o institución con convenio a la que pertenezco mediante una lista desplegable, para que el centro identifique mi convenio sin ambigüedades de escritura.
+Validación:
+●       El campo debe ser una lista desplegable (no texto libre), para evitar variantes de escritura de una misma empresa (motivo explícito del cliente).
+●       El campo es opcional; su ausencia no impide la reserva.
+●       La lista se alimenta desde la tabla empresa en PostgreSQL. Semilla inicial única: Sindicato Número 3 Minera Escondida.(RESUELTO: se mantiene como tabla en PostgreSQL y no como ENUM, porque el propio cliente informa nuevas empresas con convenio de forma periódica y un ENUM exigiría una migración de esquema en cada alta.)
+●       El backend debe rechazar valores que no existan en la tabla (no se aceptan empresas escritas por el usuario).
+●       Las nuevas empresas serán informadas por el cliente vía WhatsApp y cargadas al sistema. (RESUELTO 02/08/2026 — reunión de avance con el cliente: la administración de convenios pasa a ser parte de la sección de gestión del panel administrativo, junto con el resto del contenido que antes vivía en Sanity. Hasta que esa sección exista, la carga la realiza el equipo de desarrollo directamente en la base de datos.)
+HISTORIA DE USUARIO
+Id: AUT-002
+Usuario: Administrador
+Nombre Historia: Acceso Individual del Personal al Sistema
+Hito asignado: Hito 4
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Alto
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como integrante del personal de KineFit (Diego como administrador; Valeria, Franchesca y Constanza como especialistas), quiero contar con un acceso individual y autenticado al sistema, para gestionar de forma privada las funciones que corresponden a mi rol.
+Validación:
+●       El sistema debe soportar al menos dos roles de personal: Administrador (Diego) y Especialista (las tres profesionales), además del rol Paciente de AUT-001.
+●       Cada integrante debe tener credenciales individuales; no se permiten cuentas compartidas.
+●       El backend debe aplicar autorización por rol en cada endpoint protegido: un especialista solo accede a sus propios recursos (su agenda, sus citas, las fichas que le corresponden según FIC-002); el administrador accede a la totalidad.
+●       Un paciente autenticado no debe poder acceder a ningún recurso administrativo ni de especialista, y viceversa entre especialistas (accesos cruzados rechazados con 403).
+●       Toda acción de escritura del personal debe quedar registrada en la auditoría con la identidad individual de quien la ejecutó (reemplaza el valor genérico "Admin" actual).
+●       La autenticación por API Key del Hito 1 queda obsoleta para el personal y se reserva solo para usos internos residuales, si los hubiera.
+●   (PENDIENTE: definir con el cliente el mecanismo de autenticación del personal — credenciales locales creadas por el administrador frente a cuenta de Google personal — considerando que el equipo no dispondrá de correos empresariales durante el primer mes. Sigue abierto al 02/08/2026.)
+●   (PENDIENTE: Confirmar con Diego si el administrador podrá crear/desactivar los accesos del personal por sí mismo o si eso lo gestiona el equipo de desarrollo.)
+●       (ACTUALIZADO 02/08/2026) Con Sanity fuera del proyecto, el rol Administrador incorpora además la gestión del contenido institucional del sitio, especificada en ADM-001.
+HISTORIA DE USUARIO
+Id: AGE-003
+Usuario: Administrador / Especialista
+Nombre Historia: Gestión del Estado de las Reservas Por Rol
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Medio
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como administrador quiero visualizar y gestionar todas las citas del centro y como especialista quiero gestionar las citas de mi propia agenda, para mantener el control operativo de forma descentralizada, (el cliente indicó que lo ideal es que cada especialista gestione sus propias citas, con la posibilidad de ver las citas de las otras especialistas).
+Validación:
+●       (ACTUALIZADO 02/08/2026) La agenda debe ofrecer dos modos de visualización: uno individual, con la agenda de una sola especialista, y otro comparativo, con las tres especialistas en columnas paralelas en un mismo panel. El cliente indicó expresamente que esta información no es reservada, por lo que ambos modos están disponibles tanto para el administrador como para las especialistas. Esto sustituye la regla anterior según la cual la especialista veía única y exclusivamente sus propias citas.
+●       El administrador debe poder filtrar por especialista y rango de fechas; el especialista, por rango de fechas dentro de su agenda.
+●       El sistema debe permitir modificar manualmente el estado de una cita (ej. Confirmada a Cancelada). Al cancelar una cita Confirmada, el sistema debe advertir que existe un pago de $10.000 CLP asociado y que debe verificarse la devolución del monto.
+●       Todo cambio de estado debe quedar registrado en la auditoría con fecha, motivo y la identidad individual de quien lo realizó (ver AUT-002).
+●       Las citas en estado Pendiente (proceso de pago en curso) no deben ser modificables manualmente para evitar conflictos con la transacción de Webpay; expiran automáticamente según AGE-002. (RESUELTO: el cliente acepta la regla. Una cita con el pago en curso no es modificable manualmente y expira sola.)
+●       Cada registro debe desplegar los datos de contacto del paciente y el identificador de pago de Webpay asociado, si corresponde.
+●       El bloqueo manual de bloques horarios individuales se mantiene (estado Bloqueado); el cierre masivo por feriados/emergencias se especifica en AGE-005.
+●       (RESUELTO 02/08/2026 — reunión de avance con el cliente: sí. El paciente debe recibir un correo cuando el personal modifica el estado de su cita. El canal es el correo electrónico, ver NOT-001.)
+●       (PENDIENTE: Confirmar con Diego si el especialista puede cancelar citas propias por sí mismo o si la cancelación con pago asociado queda reservada al administrador.)
+●       La gestión de una cita sigue siendo privativa de su especialista y del administrador: la vista de las tres agendas es de consulta, y no habilita a una especialista a modificar las citas de otra. (PENDIENTE: confirmar con el cliente esta distinción entre ver y gestionar.)
+HISTORIA DE USUARIO
+Id: AGE-004
+Usuario: Especialista
+Nombre Historia: Personalización del Horario de Atención por Especialista
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Medio
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como especialista, quiero definir mi propio rango de horario de atención (ej. Valeria de 08:00 a 14:00) y poder modificarlo a lo largo del tiempo, para que los pacientes solo puedan agendar dentro de mi disponibilidad real.
+Validación:
+●       Cada especialista debe contar con una plantilla de horario propia (días y rangos de atención) almacenada en PostgreSQL, independiente de la de los demás.
+●       Los bloques horarios disponibles al público (AGE-001) deben generarse a partir de la plantilla vigente del especialista, no de un horario estándar único del centro. Esto reemplaza el supuesto de la v1 de "bloques estándar lunes a viernes 9:00–18:00".
+●       La modificación de una plantilla debe afectar la generación de bloques futuros sin alterar bloques con citas ya Confirmadas.
+●       Si la modificación de plantilla deja fuera de rango bloques futuros con citas Confirmadas, el sistema debe advertirlo antes de aplicar el cambio. (PENDIENTE: Definir con Diego la política — impedir el cambio, permitirlo con advertencia, o forzar gestión manual de esas citas.)
+●       (ACTUALIZADO 04/07/2026) Horarios confirmados por el cliente: Franchesca Astudillo, jornada completa, cubriendo la totalidad del horario del centro; Constanza Maldonado, de 09:00 a 17:00; Valeria Araneda, de 18:00 a 21:00. Estos horarios reemplazan la referencia previa que situaba a Valeria en jornada de mañana de 08:00 a 14:00. El cliente añadió que, por el momento, solo dos especialistas pueden atender de forma simultánea. (PENDIENTE: el horario de Constanza Maldonado se informó como de 09:00 a 17:00 pero indicando que su última atención termina a las 18:00; debe aclararse cuál de los dos datos es el correcto antes de cargar la plantilla.)(PENDIENTE: Diego debe confirmar los horarios reales y definitivos de Valeria, Constanza y Franchesca; reconoció no tener claridad aún.)
+●       (ACTUALIZADO 02/08/2026) Las plantillas de horario dejan de ser trabajo exclusivo del panel y pasan a ser prerrequisito del flujo de reserva público: el nuevo orden de AGE-001 exige resolver qué especialistas atienden en un bloque determinado, y esa resolución depende de la plantilla vigente de cada una.
+HISTORIA DE USUARIO
+Id: AGE-005
+Usuario: Administrador / Especialista
+Nombre Historia: Excepciones de Agenda por Feriados y Emergencias
+Prioridad en Negocio: Media
+Riesgo de Desarrollo: Medio
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como especialista, quiero cerrar o disminuir la disponibilidad de la agenda para fechas específicas (feriados, festivos, emergencias o catástrofes), para que el sistema no ofrezca horas en días u horarios en que el centro no atenderá.
+Validación:
+●       El especialista debe poder registrar excepciones de agenda por fecha o rango de fechas, con alcance global (todo el centro).
+●       Una excepción debe poder ser de cierre total del día o de reducción parcial del horario.
+●       Los bloques afectados por una excepción no deben mostrarse como Disponibles al público, sin importar la plantilla del especialista (la excepción tiene precedencia sobre AGE-004).
+●       Si al registrar una excepción existen citas Confirmadas dentro del período afectado, el sistema debe listarlas y advertir al administrador antes de aplicar el cambio, recordando los pagos asociados. (PENDIENTE: Definir con Diego el tratamiento de esas citas — cancelación con aviso de devolución, reagendamiento manual, u otro.)
+●       La creación, modificación y eliminación de excepciones debe quedar registrada en la auditoría con la identidad de quien la ejecutó.
+●       (ACTUALIZADO 02/08/2026) El panel debe ofrecer una sección propia para bloquear manualmente un conjunto de bloques horarios. El bloqueo debe reflejarse de inmediato tanto en la agenda del panel como en la disponibilidad ofrecida en el sitio oficial.
+●       Cada bloqueo admite un motivo opcional. Cuando el motivo esté presente, debe mostrarse también en el sitio público, de modo que el paciente entienda por qué esa franja no está disponible.
+●       El cierre del centro entre las 14:00 y las 15:00 no constituye un bloqueo de agenda: es una franja que no existe en la rejilla y que no debe generarse como bloque en ningún día. El cliente confirmó que corresponde a la hora de colación, aseo y preparación de los boxes.
+HISTORIA DE USUARIO
+Id: FIC-001
+Usuario: Especialista
+Nombre Historia: Creación de la Ficha Clínica de la Atención
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Alto
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como especialista, quiero crear la ficha clínica correspondiente a una atención concreta de un paciente, para llevar un registro profesional y privado de su tratamiento sesión a sesión.
+Validación:
+●       (REDEFINICIÓN 02/08/2026) La ficha se asocia a una reserva concreta, no al paciente en general. Un paciente acumula un historial de fichas a lo largo de sus atenciones. Esto sustituye el modelo de la v3, que contemplaba una ficha única por paciente identificada por RUT con sesiones internas numeradas.
+●       Una reserva admite una única ficha. El sistema debe impedir la creación de una segunda ficha sobre la misma reserva.
+●       No debe ser posible crear una ficha sin una reserva asociada.
+●       (REDEFINICIÓN 02/08/2026) La ficha clínica corresponde a los servicios de kinesiología. El cliente precisó que masoterapia es un servicio de bienestar y que lo que genera son recomendaciones, no una ficha clínica. (PENDIENTE: definir si las recomendaciones de masoterapia son un documento propio con su formato, o un tipo de ficha más dentro del mismo módulo.)
+●       La ficha clínica es obligatoria por ley para las atenciones de kinesiología, según indicó el cliente. Su implementación no es opcional aunque su urgencia sea menor mientras la resolución sanitaria siga pendiente.
+●       La ficha sólo puede ser creada por un usuario con rol Especialista o Administrador, nunca por el paciente. Indicación explícita del cliente.
+●       El sistema debe permitir buscar al paciente por nombre o RUT y, a continuación, listar sus reservas indicando cuáles ya tienen ficha asociada y cuáles no.
+●       El RUT debe validarse con su dígito verificador y ser único por paciente. Debe ser posible crear ficha para pacientes registrados manualmente por el personal, sin cuenta en el sistema. Cuando ese paciente inicie sesión con Google más adelante, el sistema debe vincular ambos registros por RUT sin duplicarlo.
+●       La ficha debe registrar automáticamente la fecha y hora de creación y la identidad del profesional que la generó.
+●       Los campos deben respetar el tipo de dato definido en su formato y rechazar valores que no correspondan. Los campos marcados como obligatorios deben señalizarse y su ausencia debe impedir el guardado.
+●       El contenido de la ficha es privado: jamás visible para pacientes ni expuesto en endpoints públicos.
+●       La creación y edición de fichas debe quedar registrada en auditoría con la identidad del profesional.
+●       (PENDIENTE — BLOQUEANTE DE DISEÑO: la estructura definitiva de campos de la ficha debe ser definida por la especialista Valeria Araneda. Los campos presentes en el prototipo son provisorios y no constituyen especificación final. La entidad no debe diseñarse en detalle hasta recibirla. Al 02/08/2026 sigue sin entregarse.)
+HISTORIA DE USUARIO
+Id: FIC-002
+Usuario: Especialista
+Nombre Historia: Consulta, Exportación y Documentos Adjuntos de la Ficha
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Alto
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como especialista, quiero consultar la ficha de una atención junto con el historial de fichas anteriores del mismo paciente, adjuntar documentos de respaldo y poder imprimirla o exportarla, para dar seguimiento al avance del tratamiento.
+Validación:
+●       (REDEFINICIÓN 02/08/2026) El seguimiento del tratamiento se obtiene del historial de fichas del paciente, cada una asociada a su atención. Se elimina el registro de sesiones numeradas dentro de una ficha única que contemplaba la v3.
+●       La ficha guardada debe mostrarse completa, con la reserva a la que está asociada, el profesional que la registró y la fecha de registro.
+●       La ficha debe presentar el historial de fichas anteriores del mismo paciente en orden cronológico, con acceso a cada una.
+●       El sistema debe permitir editar una ficha existente dejando registro en auditoría. El cliente precisó que lo editable es el formato de la ficha, no el contenido ya registrado de una ficha completada. (PENDIENTE: confirmar si la edición del contenido queda prohibida por completo o admitida con traza de auditoría.)
+●       (NUEVO 02/08/2026) El sistema debe ofrecer una acción de impresión que abra el documento en una pestaña aparte para descargarlo, según pidió expresamente el cliente.
+●       El sistema debe permitir exportar la ficha a PDF, con la identidad visual de KineFit y los datos identificatorios del paciente. (PENDIENTE: confirmar con el cliente y con Valeria Araneda qué contenido exacto debe incluir el PDF exportado.)
+●       El sistema debe permitir adjuntar documentos de respaldo en formato PDF e imagen. (PENDIENTE: confirmar el tamaño máximo por archivo y la cantidad de adjuntos admitidos.)
+●       Los archivos deben almacenarse fuera de la base de datos, manteniendo únicamente su metadata en PostgreSQL. Su descarga debe exigir autenticación y autorización; no deben existir URL públicas ni predecibles.
+●       La vista debe advertir de forma visible que el contenido es privado y no visible para el paciente.
+●       Toda mutación sobre fichas y adjuntos debe quedar registrada en auditoría con identidad individual.
+●       (PENDIENTE: definir con el cliente la regla de visibilidad entre especialistas: si cada una accede únicamente a las fichas de las atenciones que realizó, o a la totalidad de las del centro, por ahora se tomaran sin reglas de visibilidad, desde el supuesto mencionado por Diego de que no hay muchas restricciones actuales. Al 02/08/2026 sigue sin resolverse.)
+HISTORIA DE USUARIO
+Id: FIC-003
+Usuario: Especialista / Administrador
+Nombre Historia: Constructor de Formatos de Ficha
+Prioridad en Negocio: Media
+Riesgo de Desarrollo: Alto
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como integrante del personal, quiero definir la estructura de campos que tendrá cada tipo de ficha, para adaptar el registro clínico a lo que el centro necesita sin depender de los programadores.
+Validación:
+●       (Origen de la historia: el submódulo fue construido en el prototipo del panel con el propósito explícito de provocar la decisión del cliente sobre si es necesario)
+●       ALCANCE SUJETO A CONFIRMACIÓN: el cliente indicó que la funcionalidad es necesaria, pero derivó la decisión definitiva a las especialistas por considerar que ellas conocen mejor la operación. Si se opta por formatos fijos definidos en código, esta historia se descarta por completo y la funcionalidad clínica queda igualmente cubierta.
+●       El sistema debe permitir listar los formatos de ficha definidos, indicando su nombre, la cantidad de secciones y campos, la fecha de última modificación y si tienen fichas creadas a partir de él.
+●       El constructor debe permitir agregar secciones y, dentro de ellas, campos, asignándoles nombre y orden.
+●       Cada campo debe permitir definir su tipo de dato entre texto corto, texto largo, numérico, fecha y selección, y marcarse como obligatorio. Los campos de tipo selección deben permitir definir sus opciones.
+●       El constructor debe presentar una vista previa en tiempo real de cómo quedará la ficha al completarla.
+●       La modificación de un formato con fichas ya creadas no debe alterar el contenido ni la estructura de esas fichas históricas, que conservan el formato vigente al momento de su creación. Es la principal fuente de complejidad de esta historia.
+●       El sistema debe advertir antes de modificar un formato en uso, informando cuántas fichas se verían afectadas, y no debe permitir eliminar un formato con fichas asociadas.
+●       El cliente mencionó dos posibilidades adicionales observadas en la plataforma de referencia: subir un documento ya diseñado como formato, en lugar de construirlo campo por campo, y la firma digital del paciente sobre la ficha. (PENDIENTE: consultar ambas a las especialistas junto con la decisión principal.)
+HISTORIA DE USUARIO
+Id: ADM-001
+Usuario: Administrador
+Nombre Historia: Sección de Gestión de Contenido Institucional en el Panel
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Medio
+Hito asignado: Hito 1
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como administrador del centro KineFit, quiero editar desde una sección propia del panel administrativo el contenido de la página web, los especialistas del equipo y los servicios ofrecidos, para mantener toda la información actualizada sin depender de los programadores.
+Validación:
+●       (REDEFINICIÓN 02/08/2026) Sanity CMS queda completamente fuera del proyecto. La gestión de contenido institucional pasa a una sección propia del panel administrativo, con la misma funcionalidad que se tenía con Sanity. Debe realizarse la refactorización necesaria para eliminar toda dependencia del CMS externo, incluido el campo sanity_id que servía de puente con PostgreSQL y los mecanismos de sincronización asociados.
+●       El acceso a esta sección queda restringido al rol Administrador. Ningún otro rol, incluido el de Especialista, debe alcanzarla.
+●       La sección debe permitir editar el mensaje central del banner, la misión y la visión del centro, y los testimonios de pacientes.
+●       La sección debe permitir administrar el equipo: alta, edición y desactivación de especialistas, con su nombre, cargo, descripción breve y fotografía. La desactivación de un especialista debe impedir de inmediato nuevas reservas a su nombre; si tiene citas confirmadas o con pago en curso, el sistema debe advertirlo sin bloquear la operación.
+●       La sección debe permitir administrar el catálogo de servicios y su estado activo o inactivo, respetando el catálogo oficial definido en AGE-001.
+●       La sección debe permitir administrar el catálogo de convenios institucionales, según CON-001.
+●       La sección debe permitir actualizar los datos de contacto: correo empresarial, enlace de WhatsApp, URL de redes sociales y enlace del video de llegada al local.
+●       La sección debe permitir editar el mapa de procesos con sus etapas: Evaluación Inicial, Diseño del Plan, Sesiones de Terapia, y Alta o Reforzamiento. (PENDIENTE: consultar nuevamente con el cliente cómo desea que se muestre el mapa de procesos en la página.)
+●       PostgreSQL pasa a ser la única fuente de verdad para especialistas y servicios. Los endpoints GET /api/especialistas y GET /api/servicios devuelven los datos directamente desde la base, sin sincronización con ningún sistema externo.
+●       Toda modificación de contenido debe quedar registrada en auditoría con la identidad del administrador que la ejecutó.
+HISTORIA DE USUARIO
+Id: AGE-006
+Usuario: Administrador / Especialista
+Nombre Historia: Agendamiento Manual de Pacientes por el Personal
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Medio
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como integrante del personal, quiero agendar una cita para un paciente directamente desde el panel, sin que el paciente pase por el flujo de pago web, para atender a quienes contactan por WhatsApp, teléfono o llegan al local sin cita.
+Validación:
+●       (ACTUALIZADO 02/08/2026) El asistente de reserva manual se ordena en cuatro pasos: servicio, horario, paciente, y notas con resumen. El servicio va primero por el mismo motivo que en el flujo público: su duración condiciona qué bloques pueden ofrecerse. El cliente indicó que el formulario del personal y el del paciente deberían ser equivalentes en la práctica, y que la diferencia está en que el personal accede además a la ficha clínica, al historial del paciente y al historial de pagos.
+●       Debe poder buscar un paciente existente por RUT o nombre, o registrar uno nuevo en el momento con los datos obligatorios (nombre, apellido, RUT, correo, teléfono).
+●       La cita manual no exige el anticipo de $10.000 CLP por el flujo web.
+●       El sistema debe registrar el origen de cada cita (web autoagendada vs. manual del personal) para trazabilidad y reportes.
+●       El formulario de reserva manual debe permitir dos tipos de nota, según se observó en la referencia: una nota para el paciente (visible para él en su confirmación/reserva) y una nota interna visible únicamente para el personal del centro.
+●       El agendamiento manual debe respetar las mismas reglas de disponibilidad que el web: no permitir agendar sobre un bloque Ocupado o Bloqueado, ni fuera del horario del especialista (AGE-004) ni en una excepción de agenda (AGE-005).
+●       Un especialista solo puede agendar en su propia agenda; el administrador puede agendar en la de cualquiera. (RESUELTO 02/08/2026: se mantiene. Un especialista agenda en su propia agenda; el administrador puede agendar en la de cualquiera. La vista de las tres agendas de AGE-003 es de consulta y no altera esta regla.)
+●       Toda cita creada manualmente debe quedar registrada en auditoría con la identidad de quien la creó.
+●       (ACTUALIZADO 02/08/2026) El registro de un paciente nuevo desde el propio asistente queda confirmado como necesario: el cliente verificó que la plataforma de referencia también lo ofrece.
+HISTORIA DE USUARIO
+Id: AGE-007
+Usuario: Administrador / Especialista
+Nombre Historia: Registro del Origen de la Confirmación de la Cita
+Prioridad en Negocio: Media
+Riesgo de Desarrollo: Bajo
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como integrante del personal, quiero que quede registrado quién o qué confirmó la asistencia a una cita, para saber si la confirmó la propia profesional o si el paciente respondió por algún canal.
+Validación:
+●       Origen de la historia: observación del cliente en la reunión del 02/08/2026. El estado Confirmada no permitía distinguir quién había confirmado.
+●       Toda cita que pase a estado Confirmada debe registrar el origen de esa confirmación, con al menos tres valores: confirmada por la profesional de forma manual, confirmada por el paciente vía correo, y confirmada por el paciente vía WhatsApp.
+●       El origen de la confirmación debe ser visible en el detalle de la cita.
+●       En el estado actual del sistema la única vía operativa es la confirmación manual de la profesional, porque el paciente no dispone de ningún mecanismo para confirmar desde el sitio. El campo debe quedar modelado desde ahora para admitir los otros dos valores sin cambios posteriores.
+●       La confirmación por correo exige que el correo de aviso incluya un mecanismo de respuesta del paciente. (PENDIENTE: definir con el cliente si se implementa en esta etapa o queda para una posterior, junto con NOT-001.)
+●       La confirmación por WhatsApp queda supeditada a la contratación de WhatsApp Business, descartada por ahora por su costo.
+●       El registro del origen debe quedar en auditoría junto con la identidad de quien ejecutó el cambio de estado.
+HISTORIA DE USUARIO
+Id: PAC-001
+Usuario: Administrador / Especialista
+Nombre Historia: Perfil Consolidado y Base de Pacientes
+Prioridad en Negocio: Media
+Riesgo de Desarrollo: Medio
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como integrante del personal, quiero consultar un listado de pacientes y abrir el perfil individual de cada uno para ver de forma consolidada sus datos, su historial de citas y su ficha clínica, tomando como referencia la base de pacientes de AgendaPro pero acotada a lo que KineFit necesita.
+Validación:
+●       El sistema debe ofrecer un listado de pacientes en tabla con nombre, apellido, RUT, correo, teléfono y convenio, con buscador por RUT, nombre o email.
+●       El perfil individual debe consolidar: datos de contacto, historial de citas con su estado (asistida, cancelada, no asistida, etc.) y acceso a la ficha clínica del paciente (según la regla de visibilidad de FIC-002).
+●       Debe mostrar contadores básicos de actividad del paciente (ej. citas asistidas, canceladas, no asistidas), útiles para el especialista.
+●       El acceso a los perfiles debe respetar la autorización por rol (AUT-002) y la regla de visibilidad de fichas.
+HISTORIA DE USUARIO
+Id: REP-001
+Usuario: Administrador
+Nombre Historia: Reportes Operativos y de Reservas
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Medio
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como administrador, quiero una sección de reportes con el detalle de ventas y el análisis de las reservas del centro, para tomar decisiones sobre la operación y sobre el rendimiento de cada profesional.
+Validación:
+●       (AMPLIACIÓN 02/08/2026) El cliente pidió expresamente incorporar una quinta sección al panel, dedicada a reportes y análisis, de acceso exclusivo del rol Administrador. Señaló además que es la pieza que haría vendible la plataforma a otros centros.
+●       El sistema debe listar los movimientos de cobro de un período seleccionable, con el identificador de la venta, la fecha, el monto y el cliente, y permitir abrir el detalle de cada uno.
+●       Debe presentar contadores de resumen del período: total de ventas, pagos parciales y ventas eliminadas.
+●       Debe permitir filtrar por período, cliente, estado y método de pago, y exportar la información resultante.
+●       Debe permitir seleccionar un período y compararlo con el período anterior, mostrando la variación porcentual de cada indicador.
+●       Debe presentar los indicadores principales: reservas totales, porcentaje de ocupación de la agenda y tasa de inasistencias.
+●       Debe presentar la distribución de reservas por hora y por día de la semana, que permite identificar los días y horarios más movidos.
+●       Debe presentar el origen de las reservas, distinguiendo las creadas manualmente por el personal de las autoagendadas desde el sitio web, según el campo de origen definido en AGE-006.
+●       Debe presentar la distribución de reservas por estado y la evolución temporal de reservas e ingresos, con la recaudación estimada del período.
+●       Debe presentar los rankings de servicios más solicitados, profesionales con más atenciones y clientes más frecuentes, así como el número de clientes nuevos frente a recurrentes.
+●       Los reportes deben poder consultarse en vistas diaria, semanal y mensual, según pidió el cliente.
+●       El acceso a esta sección queda restringido al rol Administrador. El cliente fue explícito: es el único segmento del panel que le corresponde exclusivamente a él.
+HISTORIA DE USUARIO
+Id: VEN-001
+Usuario: Administrador / Especialista
+Nombre Historia: Registro de Ventas, Métodos de Pago y Terminales
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Alto
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como integrante del personal, quiero registrar el cobro de una atención indicando el método de pago y el terminal utilizado, y poder añadir productos o servicios no agendados, para que el sistema disponga de la información necesaria para calcular ingresos y comisiones.
+Validación:
+●       El sistema debe registrar, por cada cobro, el método de pago entre cuatro valores: efectivo, transferencia, débito y crédito.
+●       El sistema debe registrar el terminal de pago utilizado. El centro opera actualmente con dos: Tuu y el de la plataforma de referencia, ambos configurados con abono a un día.
+●       Cada terminal debe tener asociada su comisión, diferenciada según el método de pago, dado que el crédito cobra siempre un porcentaje mayor que el débito. Las comisiones se mantienen fijas hasta que la empresa del terminal las modifique.
+●       El cobro debe poder incluir ítems no agendados: propina, productos, o un servicio adicional prestado en el momento y no reservado previamente. El cliente relató un caso real de una paciente que pagó su atención junto con un masaje no agendado para su hija.
+●       El precio del servicio es fijo con independencia del método de pago. Lo único que varía es la comisión aplicada.
+●       El registro de ventas alimenta el reporte de ventas de REP-001 y el cálculo de comisiones de REP-002.
+Diego detalló en la reunión que imagina esta funcionalidad estructurada como una planilla de cálculo integrada en el panel administrativo, combinando un registro de cobros paso a paso con un panel de analíticas visuales.
+Estructura del Registro de Pagos (Tabla de cobro):
+Método de pago (Columna A): Selector con las 4 opciones disponibles (Efectivo, Transferencia, Débito, Crédito).
+Monto total (Columna B): El precio bruto cobrado por el servicio.
+IVA (Columna C): Desglose automático del 19% correspondiente al impuesto.
+Monto neto (Columna D): El valor líquido restante tras restar el impuesto.
+Máquina / Proveedor: Campo para indicar qué máquina se utilizó (Tuu, Mercado Pago, Banco Estado, Santander, etc.).
+Comisión de máquina (Campo automático/bloqueado): Fórmula automatizada que aplica la tarifa del proveedor según el método (débito o crédito) y la velocidad de abono elegida.
+Repartición final: Cálculo automático del monto exacto que le corresponde al profesional y a la clínica sobre el monto líquido final.
+●       (PENDIENTE: definir si el panel se integra con el terminal físico para enviarle el monto a cobrar. El cliente indicó que la integración sería deseable pero no es lo importante; lo esencial es el cálculo. El equipo cuenta con experiencia previa en integración de punto de venta con Transbank.)
+●       (PENDIENTE: obtener del cliente las tasas de comisión vigentes de sus dos terminales, por método de pago.)
+HISTORIA DE USUARIO
+Id: REP-002
+Usuario: Administrador
+Nombre Historia: Reporte de Comisiones y Reparto por Profesional
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Alto
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como administrador, quiero que el sistema calcule automáticamente cuánto corresponde a cada profesional y cuánto al centro por cada atención, descontando el impuesto y la comisión del terminal, para liquidar sin hacer el cálculo a mano.
+Validación:
+●       Requerimiento planteado por el cliente en la reunión del 02/08/2026, que lo identificó como la principal ventaja competitiva de la plataforma frente a la de referencia.
+●       El sistema debe permitir definir, por profesional, el porcentaje de reparto acordado entre ella y el centro.
+●       El cálculo del reparto debe aplicarse sobre el monto descontado el impuesto, y no sobre el monto bruto. El cliente señaló que la plataforma de referencia solo reparte sobre el bruto y que esa es precisamente la carencia que quiere resolver.
+●       Al reparto debe descontarse además la comisión del terminal, que depende del terminal utilizado y del método de pago, según VEN-001.
+●       El reporte debe mostrar, por período y por profesional, el monto total cobrado, el impuesto, la comisión del terminal y el reparto resultante para cada parte.
+●       (PENDIENTE: debe confirmarse con el cliente la fórmula exacta de descuento del impuesto antes de implementar nada, dado que el resultado determina cuánto se paga a cada profesional en cada atención. La fórmula no se transcribe en esta historia hasta que quede confirmada por escrito.)
+●       El acceso a este reporte queda restringido al rol Administrador.
+HISTORIA DE USUARIO
+Id: NOT-001
+Usuario: Paciente
+Nombre Historia: Notificaciones por Correo al Paciente
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Medio
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como paciente, quiero recibir por correo la confirmación de mi cita y un recordatorio antes de la atención, para no olvidar mi hora y tener a mano los datos de la reserva.
+Validación:
+●       Origen de la historia: el canal quedó resuelto en la reunión del 02/08/2026. Hasta entonces figuraba como PENDIENTE en AGE-002 y AGE-003.
+●       El canal de notificación es el correo electrónico. El cliente lo consideró suficiente y destacó que permite un volumen de envíos sin costo asociado.
+●       WhatsApp Business queda descartado por ahora. El cliente indicó que su costo se aplica a partir de los 100 mensajes mensuales y lo dejó como posible extensión futura de valor comercial.
+●       El sistema debe enviar un correo de confirmación cuando la cita queda confirmada, con el resumen de la atención: especialista, servicio, fecha y hora.
+●       El sistema debe enviar un correo de recordatorio antes de la atención. (PENDIENTE: definir la antelación con el cliente; la plataforma de referencia ofrece uno o dos días antes, a primera hora de la mañana, o tres horas antes.)
+●       El sistema debe notificar al paciente cuando el personal modifique el estado de su cita, según AGE-003.
+●       La nota dirigida al paciente registrada en la reserva manual debe incorporarse al correo de confirmación, según AGE-006.
+●       Las notificaciones aplican tanto a las citas autoagendadas desde el sitio como a las creadas manualmente por el personal.
+●       (PENDIENTE: seleccionar el servicio de envío de correo y evaluar su costo. Registrado como tarea del equipo de desarrollo en la reunión del 02/08/2026.)
+Historias de Usuario orientado al diseño:
+HISTORIA DE USUARIO
+Id: ADM-001
+Usuario: Paciente
+Nombre Historia:  Panel de Gestión de Contenido
+Prioridad en Negocio: Alta
+Riesgo de Desarrollo: Bajo
+Hito asignado: Hito 4
+Programador responsable: Maximiliano Bezares Leyton
+Descripción: Como usuario del sistema, quiero que el panel de gestión sea claro y consistente en su presentación, para poder operarlo a diario sin esfuerzo de aprendizaje.
+Validación:
+●   (ACTUALIZADO 02/08/2026) El sistema debe autenticar al administrador de manera segura y prohibir el acceso al panel de administración a cualquier otro usuario, sea externo o interno. Con Sanity fuera del proyecto, la autenticación es la propia del panel, definida en AUT-002.
+●   El panel debe permitir editar el mensaje central del banner.
+●   El administrador debe contar con campos de texto para ingresar y modificar la Misión y la Visión oficiales del centro.
+●   El sistema debe permitir añadir, editar o remover tarjetas de presentación de los integrantes, controlando de forma individual su Nombre, Cargo (ej. kinesiólogo, masoterapeuta), una descripción breve y su respectiva fotografía, actualizando en sistema los cambios dentro del sistema de reservas de citas.
+●   La eliminación o desactivación de un integrante del equipo desde la sección de gestión debe verse reflejada en el sistema de agendamiento, impidiendo que los pacientes puedan solicitar nuevas horas para ese especialista.
+●   El sistema debe habilitar una sección para gestionar las opiniones de los pacientes, para poder ingresar y modificar diferentes opiniones que se consideren adecuadas.
+●   El panel debe proveer campos específicos para actualizar el correo empresarial, el enlace directo al WhatsApp de atención, las URLs de redes sociales (Instagram) y el enlace del video referencial de llegada al local.
+●   El sistema debe permitir cambiar el contenido del mapa de procesos (PENDIENTE: Preguntar nuevamente a Diego como quiere mostrar el Mapa de procesos en la página)

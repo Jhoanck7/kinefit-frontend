@@ -7,6 +7,7 @@ import { CONVENIOS } from "./_seed/convenios";
 import { fechaDesdeOffset, fechaHoraDesdeOffset } from "./resolver";
 import { fechaISO } from "../domain/formato";
 import { PacienteResuelto } from "./pacientes";
+import { listBloqueosEspecialista } from "./bloqueos";
 
 export interface CambioEstadoResuelto {
   estado: Cita["estado"];
@@ -85,11 +86,10 @@ export async function getAgendaDia(
     .map((c) => resolverCita(c, hoy))
     .sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
 
-  const bloqueos = BLOQUEOS.filter(
-    (b) =>
-      b.especialistaId === especialistaId &&
-      fechaISO(fechaDesdeOffset(hoy, b.offsetDias)) === fechaObjetivo
-  ).map((b) => resolverBloqueo(b, hoy));
+  const todosBloqueos = await listBloqueosEspecialista(especialistaId, hoy);
+  const bloqueos = todosBloqueos.filter(
+    (b) => fechaISO(b.fecha) === fechaObjetivo && b.activo !== false
+  );
 
   return { citas, bloqueos };
 }
