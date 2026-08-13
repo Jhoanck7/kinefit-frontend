@@ -66,25 +66,27 @@ export default function NuevaReservaPacientePage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <div className="mb-8">
+    <div className="mx-auto max-w-5xl font-sans shadow-none">
+      <div className="mb-6">
         <StepIndicator pasos={PASOS} pasoActivo={4} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
-        <Card>
-          <h2 className="mb-4 text-lg font-bold text-panel-sidebar">¿Para quién es la cita?</h2>
+        <Card className="rounded-none border-slate-200 shadow-none p-6">
+          <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900 mb-4">
+            ¿Para quién es la cita?
+          </h2>
 
           {pacienteId ? (
-            <div className="rounded-xl border border-brand-border p-4">
-              <p className="font-bold text-panel-sidebar">{pacienteNombre}</p>
+            <div className="border border-slate-200 bg-slate-50/60 p-4 rounded-none space-y-1.5">
+              <p className="font-sans font-medium text-sm text-slate-900">{pacienteNombre}</p>
               {pacienteConfirmado && (
-                <>
-                  <p className="text-sm text-brand-muted">RUT: {pacienteConfirmado.rut}</p>
-                  <p className="mt-1 text-sm text-brand-muted">{pacienteConfirmado.telefono}</p>
-                  <p className="text-sm text-brand-muted">{pacienteConfirmado.correo}</p>
-                  <p className="mt-1 text-sm text-brand-muted">Convenio: {pacienteConfirmado.convenio?.nombre ?? "—"}</p>
-                </>
+                <div className="space-y-0.5 text-xs text-slate-600">
+                  <p>RUT: <span className="text-slate-900 font-medium">{pacienteConfirmado.rut}</span></p>
+                  <p>{pacienteConfirmado.telefono}</p>
+                  <p>{pacienteConfirmado.correo}</p>
+                  <p>Convenio: <span className="text-slate-900 font-medium">{pacienteConfirmado.convenio?.nombre ?? "Particular"}</span></p>
+                </div>
               )}
               <button
                 type="button"
@@ -92,7 +94,7 @@ export default function NuevaReservaPacientePage() {
                   setPaciente("", "");
                   setPacienteConfirmado(null);
                 }}
-                className="mt-3 text-sm text-panel-sidebar underline underline-offset-2"
+                className="pt-2 font-sans text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950 underline block"
               >
                 Cambiar paciente
               </button>
@@ -103,31 +105,30 @@ export default function NuevaReservaPacientePage() {
                 placeholder="Buscar por nombre o RUT..."
                 value={busqueda}
                 onChange={setBusqueda}
-                ayuda="Buscar por nombre o RUT…"
               />
 
               {buscado && (
                 <div className="mt-4">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-muted">
+                  <p className="mb-2 font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
                     Resultados de búsqueda
                   </p>
                   {resultados.length === 0 ? (
-                    <p className="text-sm text-brand-muted">
+                    <p className="font-sans text-xs text-slate-400">
                       No se encontraron pacientes que coincidan con la búsqueda. Puedes registrar uno nuevo.
                     </p>
                   ) : (
-                    <ul className="space-y-1">
+                    <ul className="divide-y divide-slate-200 border border-slate-200 rounded-none bg-white">
                       {resultados.map((paciente) => (
                         <li key={paciente.id}>
                           <button
                             type="button"
                             onClick={() => seleccionar(paciente)}
-                            className="flex w-full items-center justify-between rounded-lg border border-brand-border px-4 py-3 text-left text-sm hover:border-panel-sidebar/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar"
+                            className="flex w-full items-center justify-between px-4 py-2.5 text-left font-sans text-xs hover:bg-slate-50 focus-visible:outline-none"
                           >
-                            <span className="font-medium text-panel-sidebar">
+                            <span className="font-medium text-slate-900">
                               {paciente.nombre} {paciente.apellido}
                             </span>
-                            <span className="text-brand-muted">{paciente.rut} ›</span>
+                            <span className="text-slate-500">{paciente.rut} ›</span>
                           </button>
                         </li>
                       ))}
@@ -137,14 +138,14 @@ export default function NuevaReservaPacientePage() {
               )}
 
               <div className="my-4 flex items-center gap-3">
-                <div className="h-px flex-1 bg-brand-border" />
-                <span className="text-xs text-brand-muted">o</span>
-                <div className="h-px flex-1 bg-brand-border" />
+                <div className="h-[1px] flex-1 bg-slate-200" />
+                <span className="font-sans text-[11px] text-slate-400">o</span>
+                <div className="h-[1px] flex-1 bg-slate-200" />
               </div>
 
               <Button
                 variante="secundario"
-                className="w-full"
+                className="w-full text-xs"
                 onClick={() => router.push("/panel/pacientes/nuevo?retorno=/panel/nueva-reserva/paciente")}
               >
                 Registrar paciente nuevo
@@ -157,7 +158,7 @@ export default function NuevaReservaPacientePage() {
               <button
                 type="button"
                 onClick={() => router.push("/panel/agenda")}
-                className="text-sm text-panel-sidebar underline underline-offset-2"
+                className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
               >
                 Cancelar reserva
               </button>

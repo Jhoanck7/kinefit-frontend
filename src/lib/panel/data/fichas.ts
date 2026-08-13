@@ -1,6 +1,8 @@
 import { Ficha } from "../domain/tipos";
-import { PacienteResuelto } from "./pacientes";
+import { FICHAS } from "./_seed/fichas";
+import { PacienteResuelto, getPaciente } from "./pacientes";
 import { CitaResuelta, getCita } from "./citas";
+import { fechaDesdeOffset } from "./resolver";
 import { fichaService, FichaBackendDto } from "@/lib/services/ficha.service";
 
 export interface FichaResuelta extends Omit<Ficha, "pacienteId" | "citaId" | "creadaOffsetDias"> {
@@ -70,7 +72,49 @@ export interface FiltroFichas {
   hasta?: Date;
 }
 
+async function resolverFichaSeed(ficha: Ficha, hoy: Date): Promise<FichaResuelta> {
+  const { pacienteId, citaId, creadaOffsetDias, ...resto } = ficha;
+  const paciente = (await getPaciente(pacienteId)) || {
+    id: pacienteId,
+    nombre: "Paciente",
+    apellido: "",
+    rut: "12.345.678-9",
+    correo: "",
+    telefono: "",
+    origenRegistro: "manual",
+    creadoHaceDias: 0,
+  };
+
+  const cita = (await getCita(citaId, hoy)) || {
+    id: citaId,
+    servicio: "kinesiologia",
+    horaInicio: "10:00",
+    horaTermino: "10:45",
+    estado: "atendida",
+    origen: "manual",
+    fecha: hoy,
+    creadaEn: hoy,
+    paciente,
+    especialista: {
+      id: "esp-valeria",
+      nombre: "Valeria Araneda",
+      cargo: "Kinesióloga",
+      servicios: ["kinesiologia"],
+    },
+    historial: [],
+  };
+
+  return {
+    ...resto,
+    creadaEn: fechaDesdeOffset(hoy, creadaOffsetDias),
+    paciente,
+    cita,
+  };
+}
+
 export async function listFichas(_hoy?: Date, filtro: FiltroFichas = {}): Promise<FichaResuelta[]> {
+  const refHoy = _hoy ?? new Date();
+
   try {
     const res = await fichaService.getAll({
       busqueda: filtro.termino,
@@ -78,69 +122,69 @@ export async function listFichas(_hoy?: Date, filtro: FiltroFichas = {}): Promis
       fechaDesde: filtro.desde ? filtro.desde.toISOString().split("T")[0] : undefined,
       fechaHasta: filtro.hasta ? filtro.hasta.toISOString().split("T")[0] : undefined,
     });
-    if (res?.data && Array.isArray(res.data)) {
+    if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
       return res.data.map(mapBackendDtoToResuelta);
     }
   } catch {
     // Error backend
   }
-  return [];
+
+  // Fallback a seed data
+  const todas = await Promise.all(FICHAS.map((f) => resolverFichaSeed(f, refHoy)));
+  return todas.filter((f) => {
+    if (filtro.termino) {
+      const t = filtro.termino.toLowerCase();
+      const match =
+        f.paciente.nombre.toLowerCase().includes(t) ||
+        f.paciente.apellido.toLowerCase().includes(t) ||
+        f.paciente.rut.toLowerCase().includes(t);
+      if (!match) return false;
+    }
+    if (filtro.tipo && f.tipo !== filtro.tipo) return false;
+    return true;
+  });
 }
 
 export async function getFicha(id: string, hoy?: Date): Promise<FichaResuelta | undefined> {
+  const refHoy = hoy ?? new Date();
+
   try {
     const numId = parseInt(id.replace(/\D/g, ""), 10);
-    const todas = await listFichas(hoy);
-    const resumen = todas.find((f) => f.id === String(numId) || f.id === id);
-
-    const apiData = await fichaService.getById(id);
-    if (apiData) {
-      const resuelta = mapBackendDtoToResuelta(apiData);
-      if (resumen) {
-        resuelta.paciente = {
-          ...resumen.paciente,
-          ...resuelta.paciente,
-          rut: resumen.paciente.rut || resuelta.paciente.rut,
-        };
-        resuelta.registradaPor = resumen.registradaPor || resuelta.registradaPor;
-        resuelta.tipo = resumen.tipo || resuelta.tipo;
-        if (resumen.cita) {
-          resuelta.cita = { ...resumen.cita, ...resuelta.cita };
-        }
+    if (!isNaN(numId)) {
+      const apiData = await fichaService.getById(numId);
+      if (apiData) {
+        const resuelta = mapBackendDtoToResuelta(apiData);
+        return resuelta;
       }
-      if (!resuelta.paciente.rut && resuelta.cita.id && hoy) {
-        try {
-          const citaObj = await getCita(resuelta.cita.id, hoy);
-          if (citaObj) {
-            resuelta.cita = citaObj;
-            resuelta.paciente = citaObj.paciente;
-          }
-        } catch {
-          // Ignorar
-        }
-      }
-      return resuelta;
     }
   } catch {
-    const todas = await listFichas(hoy);
-    return todas.find((f) => f.id === String(id) || f.id === id);
+    // Error
   }
+
+  const seed = FICHAS.find((f) => f.id === id);
+  if (seed) return resolverFichaSeed(seed, refHoy);
   return undefined;
 }
 
 export async function fichasDelPaciente(pacienteId: string, _hoy?: Date): Promise<FichaResuelta[]> {
+  const refHoy = _hoy ?? new Date();
+
   try {
     const apiData = await fichaService.getHistorialPorPaciente(pacienteId);
-    if (apiData && Array.isArray(apiData)) {
+    if (apiData && Array.isArray(apiData) && apiData.length > 0) {
       return apiData.map(mapBackendDtoToResuelta);
     }
   } catch {
     // Error backend
   }
-  return [];
+
+  const todas = await Promise.all(FICHAS.map((f) => resolverFichaSeed(f, refHoy)));
+  return todas.filter((f) => f.paciente.id === pacienteId);
 }
 
 export async function fichaDeLaCita(citaId: string, _hoy?: Date): Promise<FichaResuelta | undefined> {
+  const refHoy = _hoy ?? new Date();
+
   try {
     const numId = parseInt(citaId.replace(/\D/g, ""), 10);
     if (!isNaN(numId)) {
@@ -151,16 +195,19 @@ export async function fichaDeLaCita(citaId: string, _hoy?: Date): Promise<FichaR
   } catch {
     // Error backend
   }
+
+  const seed = FICHAS.find((f) => f.citaId === citaId);
+  if (seed) return resolverFichaSeed(seed, refHoy);
   return undefined;
 }
 
 export async function totalFichas(): Promise<number> {
   try {
     const res = await fichaService.getAll();
-    if (res?.total !== undefined) return res.total;
-    if (res?.data && Array.isArray(res.data)) return res.data.length;
+    if (res?.total !== undefined && res.total > 0) return res.total;
+    if (res?.data && Array.isArray(res.data) && res.data.length > 0) return res.data.length;
   } catch {
     // Error backend
   }
-  return 0;
+  return FICHAS.length;
 }

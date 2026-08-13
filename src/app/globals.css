@@ -1,3 +1,4 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400,300&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -8,47 +9,30 @@
 @theme inline {
   --color-background: var(--background);
   --color-primary-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --color-primary: #059669;
-  /* Un verde esmeralda ideal para salud/bienestar */
   --color-card: #f9fafb;
-  /* Un gris extremadamente sutil para tus tarjetas */
   --color-muted: #6b7280;
   --radius-global: 12px;
 
   /* Variables globales de marca para modificar fondos, acentos y textos a la vez */
   --color-brand-bg: #ffffff;
-  /* Fondo claro base (blanco) */
   --color-brand-border: #e2e8f0;
-  /* Bordes claros (slate-200) */
   --color-brand-primary: #0c5dc5;
-  /* Azul principal (primary) */
   --color-brand-primary-hover: #1b73e3;
-  /* Azul hover */
   --color-brand-primary-glow: rgba(12, 93, 197, 0.08);
-  /* Resplandor sutil */
   --color-brand-muted: #334155;
-  /* Gris slate oscuro para alta legibilidad (neutral) */
 
   /* Tokens del Panel Administrativo */
   --color-panel-sidebar: #07336c;
-  /* brand-primary mezclado 55% con negro */
   --color-panel-sidebar-activo: #052651;
-  /* panel-sidebar mezclado 75% con negro */
   --color-panel-seleccion: #e7eff9;
-  /* brand-primary mezclado 10% con blanco */
   --color-panel-fondo: #fafcfe;
-  /* brand-primary mezclado 2% con blanco */
 }
 
-body {
+html, body {
   background-color: var(--color-brand-bg);
   color: var(--color-primary-foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 80px;
+  font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }

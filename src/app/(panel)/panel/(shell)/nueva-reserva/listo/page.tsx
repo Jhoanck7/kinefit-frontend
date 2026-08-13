@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
 import { fechaISO, formatearFechaExtensa, formatearRangoHorario } from "@/lib/panel/domain/formato";
 import { Button } from "@/components/panel/primitives/Button";
-import { StatusPill } from "@/components/panel/primitives/StatusPill";
 import { definicionEstado } from "@/lib/panel/domain/estados";
 
 const NOMBRE_SERVICIO: Record<string, string> = {
@@ -49,35 +48,31 @@ export default function NuevaReservaListoPage() {
   }
 
   return (
-    <div className="flex min-h-[70vh] items-center justify-center">
-      <div className="max-w-lg text-center space-y-4">
-        <h2 className="text-xl font-bold text-panel-sidebar">Cita registrada correctamente</h2>
+    <div className="flex min-h-[65vh] items-center justify-center font-sans shadow-none">
+      <div className="max-w-md w-full border border-slate-200 bg-white p-8 text-center space-y-5 rounded-none">
+        <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+          Cita Registrada Correctamente
+        </h2>
 
-        <div className="mx-auto flex flex-wrap items-center justify-center gap-2 rounded-full border border-brand-border bg-white px-5 py-3 text-sm">
-          <span className="font-bold text-panel-sidebar">{pacienteNombre}</span>
-          <span className="text-brand-muted">|</span>
-          <span className="text-brand-muted font-medium">{NOMBRE_SERVICIO[servicio] ?? servicio}</span>
-          <span className="text-brand-muted">|</span>
-          <span className="text-brand-muted font-medium">{formatearFechaExtensa(fecha)}</span>
-          <span className="text-brand-muted">|</span>
-          <span className="text-brand-muted font-medium">{formatearRangoHorario(hora, horaTermino)}</span>
+        <div className="border border-slate-200 bg-slate-50/70 p-4 text-xs space-y-1.5 rounded-none">
+          <p className="font-sans font-medium text-sm text-slate-900">{pacienteNombre}</p>
+          <p className="font-sans text-slate-600">{NOMBRE_SERVICIO[servicio] ?? servicio}</p>
+          <p className="font-sans text-slate-600">{formatearFechaExtensa(fecha)}</p>
+          <p className="font-sans font-medium text-slate-900">{formatearRangoHorario(hora, horaTermino)}</p>
         </div>
 
-        <div className="mt-4 flex flex-col items-center gap-2">
-          <StatusPill etiqueta={definicion.etiqueta} colorRol={definicion.colorRol} />
-          <p className="text-sm text-brand-muted">
-            La cita quedó en estado <strong>Por confirmar</strong> y requiere que la ratifiques desde la agenda.
-          </p>
-          <button
-            type="button"
-            onClick={() => router.push(`/panel/agenda?fecha=${fechaISO(fecha)}`)}
-            className="text-sm text-panel-sidebar underline underline-offset-2"
-          >
-            Ver la cita
-          </button>
+        <div className="flex items-center justify-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden />
+          <span className="font-sans text-xs font-bold uppercase tracking-wider text-blue-700">
+            {definicion.etiqueta}
+          </span>
         </div>
 
-        <div className="mt-8 flex justify-center gap-3">
+        <p className="font-sans text-xs text-slate-500">
+          La cita quedó en estado <strong>Por confirmar</strong> para su posterior ratificación desde la agenda.
+        </p>
+
+        <div className="pt-3 flex justify-center gap-3 border-t border-slate-200">
           <Button variante="secundario" onClick={registrarOtra}>
             Registrar otra cita
           </Button>

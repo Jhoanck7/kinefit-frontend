@@ -25,30 +25,32 @@ export default function HorariosPage() {
   if (horarios === null) return <div aria-hidden />;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-4xl space-y-4 font-sans shadow-none">
       <div>
-        <h2 className="mb-1 text-lg font-bold text-panel-sidebar">Horarios de atención por especialista</h2>
-        <p className="text-sm text-brand-muted">
-          Plantilla semanal de cada especialista, dentro del horario de atención del centro.
+        <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900 mb-0.5">
+          Horarios de atención por especialista
+        </h2>
+        <p className="font-sans text-xs text-slate-500">
+          Plantilla semanal configurada para cada profesional de la clínica.
         </p>
       </div>
 
       {horarios.map(({ especialista, plantilla }) => (
-        <Card key={especialista.id}>
-          <p className="mb-4 font-bold text-panel-sidebar">
-            {especialista.nombre} <span className="font-normal text-brand-muted">· {especialista.cargo}</span>
+        <Card key={especialista.id} className="rounded-none border-slate-200 shadow-none p-5">
+          <p className="mb-3 font-sans font-medium text-sm text-slate-900 border-b border-slate-200 pb-2">
+            {especialista.nombre} <span className="font-normal text-slate-500">· {especialista.cargo}</span>
           </p>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-7 sm:gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-7 sm:gap-2">
             {DIAS.map((dia) => {
               const rangos = plantilla.dias[dia.id];
               return (
-                <div key={dia.id} className="rounded-lg border border-brand-border p-3 text-center">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-brand-muted">{dia.etiqueta}</p>
+                <div key={dia.id} className="border border-slate-200 bg-slate-50/50 p-2.5 text-center rounded-none">
+                  <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-400">{dia.etiqueta}</p>
                   {!rangos || rangos.length === 0 ? (
-                    <p className="mt-1 text-xs text-brand-muted">No atiende</p>
+                    <p className="mt-1 font-sans text-xs text-slate-400 italic">No atiende</p>
                   ) : (
                     rangos.map((rango, i) => (
-                      <p key={i} className="mt-1 text-xs text-panel-sidebar">
+                      <p key={i} className="mt-1 font-sans font-medium text-xs text-slate-800">
                         {formatearRangoHorario(rango.inicio, rango.termino)}
                       </p>
                     ))

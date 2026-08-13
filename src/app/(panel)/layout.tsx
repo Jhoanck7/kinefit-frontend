@@ -1,16 +1,12 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import type { Metadata } from "next";
 import "../globals.css";
 import { RelojPanelProvider } from "@/lib/panel/reloj";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -29,9 +25,15 @@ export default function PanelRootLayout({
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400,300&display=swap"
+        />
+      </head>
+      <body className="min-h-full font-sans">
         <RelojPanelProvider>{children}</RelojPanelProvider>
       </body>
     </html>

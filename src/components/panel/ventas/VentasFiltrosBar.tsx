@@ -28,9 +28,8 @@ export function VentasFiltrosBar({
   onExportar,
 }: VentasFiltrosBarProps) {
   return (
-    <Card>
-      {/* Contenedor Centrado de Filtros Soportados por Backend */}
-      <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-panel-sidebar">
+    <Card className="p-4 rounded-none border-slate-200 shadow-none font-sans">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
         {/* Buscador de Paciente */}
         <div className="w-64 min-w-[200px]">
           <SearchInput
@@ -42,48 +41,48 @@ export function VentasFiltrosBar({
 
         {/* Rango de Fecha */}
         <div className="flex items-center gap-1.5">
-          <span className="font-semibold text-brand-muted text-sm">Fecha:</span>
+          <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">Fecha:</span>
           <select
             value={rangoFecha}
             onChange={(e) => setRangoFecha(e.target.value)}
-            className="rounded-lg border border-brand-border bg-panel-fondo px-3 py-2 text-sm font-medium text-panel-sidebar transition-colors focus:border-panel-sidebar focus:bg-white focus:outline-none"
+            className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
           >
-            <option value="hoy">Hoy</option>
-            <option value="ayer">Ayer</option>
-            <option value="7dias">Últimos 7 días</option>
-            <option value="30dias">Últimos 30 días</option>
-            <option value="personalizado">Personalizado</option>
+            <option value="hoy">HOY</option>
+            <option value="ayer">AYER</option>
+            <option value="7dias">ÚLTIMOS 7 DÍAS</option>
+            <option value="30dias">ÚLTIMOS 30 DÍAS</option>
+            <option value="personalizado">PERSONALIZADO</option>
           </select>
         </div>
 
         {/* Método de Pago */}
         <div className="flex items-center gap-1.5">
-          <span className="font-semibold text-brand-muted text-sm">Método de Pago:</span>
+          <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">Pago:</span>
           <select
             value={metodoPago}
             onChange={(e) => setMetodoPago(e.target.value)}
-            className="rounded-lg border border-brand-border bg-panel-fondo px-3 py-2 text-sm font-medium text-panel-sidebar transition-colors focus:border-panel-sidebar focus:bg-white focus:outline-none"
+            className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
           >
-            <option value="todos">Todos los métodos</option>
-            <option value="Efectivo">Efectivo</option>
-            <option value="Transferencia">Transferencia</option>
-            <option value="Debito">Débito</option>
-            <option value="Credito">Crédito</option>
+            <option value="todos">TODOS LOS MÉTODOS</option>
+            <option value="Efectivo">EFECTIVO</option>
+            <option value="Transferencia">TRANSFERENCIA</option>
+            <option value="Debito">DÉBITO</option>
+            <option value="Credito">CRÉDITO</option>
           </select>
         </div>
 
         {/* Botones de Acción */}
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <Button variante="secundario" className="px-4 py-2 text-sm" onClick={onAbrirConfiguracion}>
-            Tarifas / POS
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variante="secundario" className="px-3.5 py-2 text-xs" onClick={onAbrirConfiguracion}>
+            TARIFAS / POS
           </Button>
 
-          <Button variante="secundario" className="px-4 py-2 text-sm" onClick={onExportar}>
-            Exportar
+          <Button variante="secundario" className="px-3.5 py-2 text-xs" onClick={onExportar}>
+            EXPORTAR
           </Button>
 
-          <Button variante="primario" className="px-4 py-2 text-sm" onClick={onAbrirNuevaVenta}>
-            Registrar Venta
+          <Button variante="primario" className="px-4 py-2 text-xs" onClick={onAbrirNuevaVenta}>
+            REGISTRAR VENTA
           </Button>
         </div>
       </div>

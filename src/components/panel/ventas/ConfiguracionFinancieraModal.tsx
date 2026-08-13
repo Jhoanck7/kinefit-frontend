@@ -165,37 +165,37 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
   }
 
   return (
-    <Modal abierto={abierto} onCerrar={onClose}>
-      <div>
+    <Modal abierto={abierto} onCerrar={onClose} ancho="max-w-3xl">
+      <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
         {/* Encabezado */}
-        <div className="flex items-start justify-between gap-4 border-b border-brand-border p-6">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
           <div>
-            <h2 className="text-lg font-bold text-panel-sidebar">
+            <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
               Configuración Financiera
             </h2>
-            <p className="text-xs text-brand-muted">
-              Gestión de comisiones POS, porcentajes de reparto y tasa de IVA vigente
+            <p className="font-sans text-xs text-slate-500 mt-0.5">
+              Gestión de comisiones POS, repartos de honorarios e IVA
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Cerrar modal"
-            className="rounded-full p-1.5 text-brand-muted hover:bg-panel-fondo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar"
+            className="p-1 font-sans text-sm text-slate-400 hover:text-slate-900 rounded-none focus:outline-none"
           >
-            &times;
+            ✕
           </button>
         </div>
 
         {/* Selector de pestañas */}
-        <div className="flex border-b border-brand-border px-6 pt-2">
+        <div className="flex border-b border-slate-200 px-6 bg-white gap-4 text-xs font-bold uppercase tracking-wider">
           <button
             type="button"
             onClick={() => setTab("terminales")}
-            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+            className={`py-3 border-b-2 transition-colors ${
               tab === "terminales"
-                ? "border-panel-sidebar text-panel-sidebar"
-                : "border-transparent text-brand-muted hover:text-panel-sidebar"
+                ? "border-[#003366] text-[#003366]"
+                : "border-transparent text-slate-400 hover:text-slate-800"
             }`}
           >
             Máquinas POS ({terminales.length})
@@ -203,10 +203,10 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
           <button
             type="button"
             onClick={() => setTab("repartos")}
-            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+            className={`py-3 border-b-2 transition-colors ${
               tab === "repartos"
-                ? "border-panel-sidebar text-panel-sidebar"
-                : "border-transparent text-brand-muted hover:text-panel-sidebar"
+                ? "border-[#003366] text-[#003366]"
+                : "border-transparent text-slate-400 hover:text-slate-800"
             }`}
           >
             Acuerdos de Reparto ({acuerdos.length})
@@ -214,10 +214,10 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
           <button
             type="button"
             onClick={() => setTab("iva")}
-            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+            className={`py-3 border-b-2 transition-colors ${
               tab === "iva"
-                ? "border-panel-sidebar text-panel-sidebar"
-                : "border-transparent text-brand-muted hover:text-panel-sidebar"
+                ? "border-[#003366] text-[#003366]"
+                : "border-transparent text-slate-400 hover:text-slate-800"
             }`}
           >
             Tasa IVA Vigente
@@ -225,134 +225,136 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
         </div>
 
         {/* Contenido principal */}
-        <div className="p-6 space-y-4 text-sm text-panel-sidebar">
+        <div className="p-6 space-y-4 font-sans text-xs">
           {/* TAB 1: Terminales POS */}
           {tab === "terminales" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-brand-muted text-sm">
-                  Terminales y comisiones aplicadas al cobrar con tarjetas de débito o crédito:
+                <p className="font-sans text-xs text-slate-500">
+                  Terminales y comisiones aplicadas al cobrar con tarjetas:
                 </p>
                 {!mostrarFormTerminal && (
-                  <Button
-                    variante="secundario"
-                    className="px-3 py-1.5 text-xs"
+                  <button
+                    type="button"
                     onClick={() => {
                       resetFormTerminal();
                       setMostrarFormTerminal(true);
                     }}
+                    className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
                   >
-                    Agregar Terminal POS
-                  </Button>
+                    AGREGAR POS
+                  </button>
                 )}
               </div>
 
-              {/* Formulario de Terminal POS (Diferenciación Débito vs Crédito + Botón Cancelar abajo) */}
               {mostrarFormTerminal && (
-                <form onSubmit={handleGuardarTerminal} className="rounded-xl border border-brand-border bg-panel-fondo p-4 space-y-4">
-                  <h4 className="font-bold text-panel-sidebar text-sm">
+                <form onSubmit={handleGuardarTerminal} className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none">
+                  <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
                     {terminalEditandoId ? "Editar Terminal POS" : "Registrar Nueva Terminal POS"}
                   </h4>
 
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="block text-xs font-semibold text-brand-muted mb-1">Nombre Terminal</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Nombre Terminal</label>
                       <input
                         type="text"
                         placeholder="Ej. Tuu POS Transbank, Redelcom"
                         value={nombreTerminal}
                         onChange={(e) => setNombreTerminal(e.target.value)}
                         required
-                        className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                        className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-brand-muted mb-1">Plazo de Abono (Días)</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Plazo de Abono (Días)</label>
                       <input
                         type="number"
                         min="0"
                         value={plazoAbono}
                         onChange={(e) => setPlazoAbono(parseInt(e.target.value) || 0)}
-                        className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                        className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
                   </div>
 
-                  {/* Sección 1: Configuración Débito */}
-                  <div className="p-3 rounded-lg border border-brand-border bg-white space-y-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-panel-sidebar block">
-                      Comisión por Pagos con Débito
+                  <div className="p-3 border border-slate-200 bg-white space-y-2 rounded-none">
+                    <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-800 block">
+                      Comisión Débito
                     </span>
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
-                        <label className="block text-xs font-semibold text-brand-muted mb-1">Comisión Débito (%)</label>
+                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">% Débito</label>
                         <input
                           type="number"
                           step="0.01"
                           min="0"
                           value={pctDebito}
                           onChange={(e) => setPctDebito(parseFloat(e.target.value) || 0)}
-                          className="w-full rounded-lg border border-brand-border bg-panel-fondo px-3 py-1.5 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                          className="w-full rounded-none border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-brand-muted mb-1">Cargo Fijo Débito (CLP)</label>
+                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Cargo Fijo (CLP)</label>
                         <input
                           type="number"
                           min="0"
                           value={cargoFijoDebito}
                           onChange={(e) => setCargoFijoDebito(parseInt(e.target.value) || 0)}
-                          className="w-full rounded-lg border border-brand-border bg-panel-fondo px-3 py-1.5 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                          className="w-full rounded-none border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Sección 2: Configuración Crédito */}
-                  <div className="p-3 rounded-lg border border-brand-border bg-white space-y-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-panel-sidebar block">
-                      Comisión por Pagos con Crédito
+                  <div className="p-3 border border-slate-200 bg-white space-y-2 rounded-none">
+                    <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-800 block">
+                      Comisión Crédito
                     </span>
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
-                        <label className="block text-xs font-semibold text-brand-muted mb-1">Comisión Crédito (%)</label>
+                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">% Crédito</label>
                         <input
                           type="number"
                           step="0.01"
                           min="0"
                           value={pctCredito}
                           onChange={(e) => setPctCredito(parseFloat(e.target.value) || 0)}
-                          className="w-full rounded-lg border border-brand-border bg-panel-fondo px-3 py-1.5 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                          className="w-full rounded-none border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-brand-muted mb-1">Cargo Fijo Crédito (CLP)</label>
+                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Cargo Fijo (CLP)</label>
                         <input
                           type="number"
                           min="0"
                           value={cargoFijoCredito}
                           onChange={(e) => setCargoFijoCredito(parseInt(e.target.value) || 0)}
-                          className="w-full rounded-lg border border-brand-border bg-panel-fondo px-3 py-1.5 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                          className="w-full rounded-none border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Botones de acción agrupados abajo a la derecha */}
-                  <div className="flex justify-end gap-2 pt-2 border-t border-brand-border">
-                    <Button variante="secundario" className="px-4 py-1.5 text-xs" type="button" onClick={resetFormTerminal}>
+                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
+                    <button
+                      type="button"
+                      onClick={resetFormTerminal}
+                      className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+                    >
                       Cancelar
-                    </Button>
-                    <Button variante="primario" className="px-4 py-1.5 text-xs" type="submit">
-                      {terminalEditandoId ? "Actualizar Terminal" : "Guardar Terminal"}
-                    </Button>
+                    </button>
+                    <button
+                      type="submit"
+                      className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none"
+                    >
+                      {terminalEditandoId ? "Actualizar" : "Guardar"}
+                    </button>
                   </div>
                 </form>
               )}
 
-              {/* Lista de Terminales Existentes con Botones Editar/Eliminar y Semántica de Color Neutra */}
-              <div className="divide-y divide-brand-border rounded-xl border border-brand-border bg-white">
+              <div className="divide-y divide-slate-200 border border-slate-200 bg-white rounded-none">
                 {terminales.map((t) => {
                   const comDebito = t.comisiones?.find((c) => c.metodoPago === "Debito");
                   const comCredito = t.comisiones?.find((c) => c.metodoPago === "Credito");
@@ -366,37 +368,34 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
                   return (
                     <div key={t.id} className="p-4 flex flex-wrap justify-between items-center gap-3">
                       <div>
-                        <span className="font-bold text-panel-sidebar text-sm block">{t.nombre}</span>
-                        <span className="text-brand-muted text-sm">Abono en {t.plazoAbonoDias} día(s) hábil(es)</span>
+                        <span className="font-sans font-medium text-sm text-slate-900 block">{t.nombre}</span>
+                        <span className="font-sans text-xs text-slate-500">Abono en {t.plazoAbonoDias} día(s)</span>
                       </div>
 
                       <div className="flex items-center gap-4">
-                        <div className="text-right text-sm">
-                          <div className="font-semibold text-panel-sidebar">
-                            Débito: <span className="font-bold">{pctDeb}%</span>
-                            {fixDeb > 0 && <span className="text-brand-muted text-xs"> (+${fixDeb})</span>}
+                        <div className="text-right text-xs">
+                          <div className="font-sans text-slate-800">
+                            Débito: <span className="font-medium text-slate-900">{pctDeb}%</span>
+                            {fixDeb > 0 && <span className="text-slate-400"> (+${fixDeb})</span>}
                           </div>
-                          <div className="font-semibold text-panel-sidebar">
-                            Crédito: <span className="font-bold">{pctCred}%</span>
-                            {fixCred > 0 && <span className="text-brand-muted text-xs"> (+${fixCred})</span>}
+                          <div className="font-sans text-slate-800">
+                            Crédito: <span className="font-medium text-slate-900">{pctCred}%</span>
+                            {fixCred > 0 && <span className="text-slate-400"> (+${fixCred})</span>}
                           </div>
                         </div>
 
-                        {/* Botones Editar / Eliminar */}
-                        <div className="flex items-center gap-1 border-l border-brand-border pl-3">
+                        <div className="flex items-center gap-2 border-l border-slate-200 pl-3">
                           <button
                             type="button"
                             onClick={() => handleEditarTerminal(t)}
-                            title="Editar comisiones y plazo"
-                            className="rounded-lg p-1.5 text-brand-muted hover:bg-panel-seleccion hover:text-panel-sidebar transition-colors"
+                            className="font-sans text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950 underline"
                           >
                             Editar
                           </button>
                           <button
                             type="button"
                             onClick={() => handleEliminarTerminal(t.id)}
-                            title="Eliminar terminal"
-                            className="rounded-lg p-1.5 text-brand-muted hover:bg-rose-50 hover:text-rose-700 transition-colors"
+                            className="font-sans text-xs font-bold uppercase tracking-wider text-red-600 hover:text-red-800 underline"
                           >
                             Eliminar
                           </button>
@@ -413,37 +412,36 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
           {tab === "repartos" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-brand-muted text-sm">
-                  Porcentajes vigentes de distribución de honorarios por especialista:
+                <p className="font-sans text-xs text-slate-500">
+                  Porcentajes de distribución de honorarios por especialista:
                 </p>
                 {!mostrarFormReparto && (
-                  <Button
-                    variante="secundario"
-                    className="px-3 py-1.5 text-xs"
+                  <button
+                    type="button"
                     onClick={() => {
                       resetFormReparto();
                       setMostrarFormReparto(true);
                     }}
+                    className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
                   >
-                    Nuevo Acuerdo de Reparto
-                  </Button>
+                    NUEVO ACUERDO
+                  </button>
                 )}
               </div>
 
-              {/* Formulario de Acuerdo de Reparto */}
               {mostrarFormReparto && (
-                <form onSubmit={handleGuardarReparto} className="rounded-xl border border-brand-border bg-panel-fondo p-4 space-y-3">
-                  <h4 className="font-bold text-panel-sidebar text-sm">
-                    {repartoEditandoId ? "Editar Acuerdo de Reparto" : "Definir Acuerdo de Reparto"}
+                <form onSubmit={handleGuardarReparto} className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none">
+                  <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+                    {repartoEditandoId ? "Editar Acuerdo" : "Definir Acuerdo"}
                   </h4>
 
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <div>
-                      <label className="block text-xs font-semibold text-brand-muted mb-1">Especialista</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Especialista</label>
                       <select
                         value={especialistaNombre}
                         onChange={(e) => setEspecialistaNombre(e.target.value)}
-                        className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                        className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       >
                         <option value="Francesca Astudillo">Francesca Astudillo</option>
                         <option value="Valeria Sepúlveda">Valeria Sepúlveda</option>
@@ -453,7 +451,7 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-brand-muted mb-1">
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
                         % Profesional ({pctProf}% / {100 - pctProf}% Centro)
                       </label>
                       <input
@@ -462,66 +460,69 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
                         max="100"
                         value={pctProf}
                         onChange={(e) => setPctProf(parseInt(e.target.value) || 0)}
-                        className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                        className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-brand-muted mb-1">Vigente Desde</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Vigente Desde</label>
                       <input
                         type="date"
                         value={fechaVigenciaReparto}
                         onChange={(e) => setFechaVigenciaReparto(e.target.value)}
-                        className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                        className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
                   </div>
 
-                  {/* Botones de acción agrupados abajo */}
-                  <div className="flex justify-end gap-2 pt-2 border-t border-brand-border">
-                    <Button variante="secundario" className="px-4 py-1.5 text-xs" type="button" onClick={resetFormReparto}>
+                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
+                    <button
+                      type="button"
+                      onClick={resetFormReparto}
+                      className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+                    >
                       Cancelar
-                    </Button>
-                    <Button variante="primario" className="px-4 py-1.5 text-xs" type="submit">
-                      {repartoEditandoId ? "Actualizar Acuerdo" : "Guardar Acuerdo"}
-                    </Button>
+                    </button>
+                    <button
+                      type="submit"
+                      className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none"
+                    >
+                      {repartoEditandoId ? "Actualizar" : "Guardar"}
+                    </button>
                   </div>
                 </form>
               )}
 
-              {/* Lista de Acuerdos Existentes */}
-              <div className="divide-y divide-brand-border rounded-xl border border-brand-border bg-white">
+              <div className="divide-y divide-slate-200 border border-slate-200 bg-white rounded-none">
                 {acuerdos.map((a) => (
                   <div key={a.id} className="p-4 flex justify-between items-center gap-3">
                     <div>
-                      <span className="font-bold text-panel-sidebar text-sm block">{a.especialistaNombre}</span>
-                      <span className="text-brand-muted text-sm">Vigente desde: {a.vigenteDesde}</span>
+                      <span className="font-sans font-medium text-sm text-slate-900 block">{a.especialistaNombre}</span>
+                      <span className="font-sans text-xs text-slate-500">Vigente desde: {a.vigenteDesde}</span>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <div className="flex gap-2 text-sm">
-                        <span className="rounded-lg bg-emerald-50 px-3 py-1 text-emerald-800 font-bold text-sm">
+                      <div className="flex gap-2">
+                        <span className="border border-slate-200 bg-slate-50 px-2.5 py-0.5 font-sans text-xs font-medium text-slate-800 rounded-none">
                           {a.porcentajeProfesional}% Prof.
                         </span>
-                        <span className="rounded-lg bg-panel-seleccion px-3 py-1 text-panel-sidebar font-bold text-sm">
+                        <span className="border border-slate-200 bg-slate-50 px-2.5 py-0.5 font-sans text-xs font-medium text-slate-800 rounded-none">
                           {a.porcentajeCentro}% Clínica
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-1 border-l border-brand-border pl-3">
+                      <div className="flex items-center gap-2 border-l border-slate-200 pl-3">
                         <button
                           type="button"
                           onClick={() => handleEditarReparto(a)}
-                          title="Editar porcentaje de reparto"
-                          className="rounded-lg p-1.5 text-brand-muted hover:bg-panel-seleccion hover:text-panel-sidebar transition-colors text-sm"
+                          className="font-sans text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950 underline"
                         >
                           Editar
                         </button>
                         <button
                           type="button"
                           onClick={() => handleEliminarReparto(a.id)}
-                          title="Eliminar acuerdo"
-                          className="rounded-lg p-1.5 text-brand-muted hover:bg-rose-50 hover:text-rose-700 transition-colors text-sm"
+                          className="font-sans text-xs font-bold uppercase tracking-wider text-red-600 hover:text-red-800 underline"
                         >
                           Eliminar
                         </button>
@@ -537,26 +538,26 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
           {tab === "iva" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-brand-muted text-sm">
-                  Tasa de Impuesto al Valor Agregado (IVA) configurada en el sistema para prestaciones afectas:
+                <p className="font-sans text-xs text-slate-500">
+                  Tasa de Impuesto al Valor Agregado (IVA) para prestaciones afectas:
                 </p>
                 {!mostrarFormIva && (
-                  <Button
-                    variante="secundario"
-                    className="px-3 py-1.5 text-xs"
+                  <button
+                    type="button"
                     onClick={() => setMostrarFormIva(true)}
+                    className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
                   >
-                    Modificar Tasa IVA
-                  </Button>
+                    MODIFICAR TASA IVA
+                  </button>
                 )}
               </div>
 
               {mostrarFormIva && (
-                <form onSubmit={handleGuardarIva} className="rounded-xl border border-brand-border bg-panel-fondo p-4 space-y-3">
-                  <h4 className="font-bold text-panel-sidebar text-sm">Definir Nueva Tasa de IVA</h4>
+                <form onSubmit={handleGuardarIva} className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none">
+                  <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">Definir Nueva Tasa de IVA</h4>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="block text-xs font-semibold text-brand-muted mb-1">Porcentaje IVA (%)</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">% IVA</label>
                       <input
                         type="number"
                         step="0.01"
@@ -564,28 +565,35 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
                         max="100"
                         value={pctIva}
                         onChange={(e) => setPctIva(parseFloat(e.target.value) || 0)}
-                        className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                        className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-brand-muted mb-1">Vigente Desde</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Vigente Desde</label>
                       <input
                         type="date"
                         value={fechaVigenciaIva}
                         onChange={(e) => setFechaVigenciaIva(e.target.value)}
-                        className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                        className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
                   </div>
 
-                  <div className="flex justify-end gap-2 pt-2 border-t border-brand-border">
-                    <Button variante="secundario" className="px-4 py-1.5 text-xs" type="button" onClick={() => setMostrarFormIva(false)}>
+                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
+                    <button
+                      type="button"
+                      onClick={() => setMostrarFormIva(false)}
+                      className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+                    >
                       Cancelar
-                    </Button>
-                    <Button variante="primario" className="px-4 py-1.5 text-xs" type="submit">
-                      Actualizar Tasa IVA
-                    </Button>
+                    </button>
+                    <button
+                      type="submit"
+                      className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none"
+                    >
+                      Actualizar
+                    </button>
                   </div>
                 </form>
               )}
@@ -594,22 +602,20 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
                 {tasasIva.map((item, idx) => (
                   <div
                     key={item.id}
-                    className={`rounded-xl border border-brand-border p-4 flex justify-between items-center ${
-                      idx === 0 ? "bg-panel-fondo border-panel-sidebar" : "bg-white opacity-80"
-                    }`}
+                    className="border border-slate-200 p-4 flex justify-between items-center bg-white rounded-none"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-panel-sidebar text-sm">IVA Débito Fiscal Chile</span>
+                        <span className="font-sans font-medium text-sm text-slate-900">IVA Débito Fiscal Chile</span>
                         {idx === 0 && (
-                          <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-800">
+                          <span className="border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider text-emerald-800 rounded-none">
                             Vigente
                           </span>
                         )}
                       </div>
-                      <span className="text-brand-muted text-sm block mt-0.5">Vigente desde: {item.vigenteDesde}</span>
+                      <span className="font-sans text-xs text-slate-500 block mt-0.5">Vigente desde: {item.vigenteDesde}</span>
                     </div>
-                    <span className="text-xl font-bold text-panel-sidebar">{item.porcentaje}%</span>
+                    <span className="font-sans font-medium text-lg text-slate-900">{item.porcentaje}%</span>
                   </div>
                 ))}
               </div>
@@ -618,10 +624,14 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
         </div>
 
         {/* Footer */}
-        <div className="border-t border-brand-border p-6 flex justify-end">
-          <Button variante="primario" onClick={onClose}>
-            Entendido
-          </Button>
+        <div className="border-t border-slate-200 bg-slate-50/60 p-4 flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none"
+          >
+            ENTENDIDO
+          </button>
         </div>
       </div>
     </Modal>

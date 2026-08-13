@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Modal } from "@/components/panel/primitives/Modal";
-import { Button } from "@/components/panel/primitives/Button";
 import { MetodoPago, TERMINALES_MOCK, VentaMock } from "@/lib/mock/ventas";
 
 interface NuevaVentaModalProps {
@@ -76,39 +75,47 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
   }
 
   return (
-    <Modal abierto={abierto} onCerrar={onClose}>
-      <div className="p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-brand-border pb-3">
-          <h3 className="text-base font-bold text-panel-sidebar">Registrar Nueva Venta / Cobro</h3>
+    <Modal abierto={abierto} onCerrar={onClose} ancho="max-w-2xl">
+      <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
+        {/* Encabezado */}
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
+          <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+            Registrar Cobro Manual
+          </h3>
           <button
             type="button"
             onClick={onClose}
             aria-label="Cerrar modal"
-            className="rounded-lg p-1 text-brand-muted hover:bg-panel-fondo hover:text-panel-sidebar"
+            className="p-1 font-sans text-sm text-slate-400 hover:text-slate-900 rounded-none focus:outline-none"
           >
-            &times;
+            ✕
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4 text-sm text-panel-sidebar">
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 font-sans text-xs">
           <div>
-            <label className="block font-semibold mb-1 text-panel-sidebar">Nombre del Paciente *</label>
+            <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+              Nombre del Paciente *
+            </label>
             <input
               type="text"
               required
               value={pacienteNombre}
               onChange={(e) => setPacienteNombre(e.target.value)}
               placeholder="Ej: Sofía Castro"
-              className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+              className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold mb-1 text-panel-sidebar">Especialista Atención *</label>
+              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                Especialista Atención *
+              </label>
               <select
                 value={especialistaId}
                 onChange={(e) => setEspecialistaId(e.target.value)}
-                className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               >
                 <option value="esp-1">Francesca Astudillo</option>
                 <option value="esp-2">Valeria Sepúlveda</option>
@@ -118,21 +125,25 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
             </div>
 
             <div>
-              <label className="block font-semibold mb-1 text-panel-sidebar">Servicio / Concepto *</label>
+              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                Servicio / Concepto *
+              </label>
               <input
                 type="text"
                 required
                 value={servicioNombre}
                 onChange={(e) => setServicioNombre(e.target.value)}
                 placeholder="Ej: Evaluación Kinesiología"
-                className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold mb-1 text-panel-sidebar">Monto Bruto ($ CLP) *</label>
+              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                Monto Bruto ($ CLP) *
+              </label>
               <input
                 type="number"
                 required
@@ -140,16 +151,18 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
                 step={500}
                 value={montoBruto}
                 onChange={(e) => setMontoBruto(parseFloat(e.target.value) || 0)}
-                className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm font-bold text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block font-semibold mb-1 text-panel-sidebar">Tributación IVA</label>
+              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                Tributación IVA
+              </label>
               <select
                 value={afectoIva ? "afecto" : "exento"}
                 onChange={(e) => setAfectoIva(e.target.value === "afecto")}
-                className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               >
                 <option value="afecto">Afecto IVA (19%)</option>
                 <option value="exento">Exento IVA (0%)</option>
@@ -157,13 +170,15 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold mb-1 text-panel-sidebar">Método de Pago *</label>
+              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                Método de Pago *
+              </label>
               <select
                 value={metodoPago}
                 onChange={(e) => setMetodoPago(e.target.value as MetodoPago)}
-                className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               >
                 <option value="Debito">Débito</option>
                 <option value="Credito">Crédito</option>
@@ -173,12 +188,14 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
             </div>
 
             <div>
-              <label className="block font-semibold mb-1 text-panel-sidebar">Terminal POS</label>
+              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                Terminal POS
+              </label>
               <select
                 disabled={metodoPago === "Efectivo" || metodoPago === "Transferencia"}
                 value={terminalPosId}
                 onChange={(e) => setTerminalPosId(e.target.value)}
-                className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-panel-sidebar disabled:bg-panel-fondo disabled:text-brand-muted focus:border-panel-sidebar focus:outline-none"
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 disabled:bg-slate-50 disabled:text-slate-400 focus:border-slate-900 focus:outline-none"
               >
                 {TERMINALES_MOCK.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -189,13 +206,20 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
             </div>
           </div>
 
-          <div className="pt-4 flex justify-end gap-2 border-t border-brand-border">
-            <Button variante="secundario" type="button" onClick={onClose}>
+          <div className="pt-4 flex justify-end gap-2 border-t border-slate-200">
+            <button
+              type="button"
+              onClick={onClose}
+              className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+            >
               Cancelar
-            </Button>
-            <Button variante="primario" type="submit">
+            </button>
+            <button
+              type="submit"
+              className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none"
+            >
               Guardar Cobro
-            </Button>
+            </button>
           </div>
         </form>
       </div>

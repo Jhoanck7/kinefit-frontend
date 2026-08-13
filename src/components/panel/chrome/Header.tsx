@@ -30,6 +30,12 @@ function tituloDeLaRuta(pathname: string): string {
   return TITULOS_POR_RUTA.find((t) => pathname.startsWith(t.prefijo))?.titulo ?? "Panel Administrativo";
 }
 
+/**
+ * Barra Superior Canónica (Header) con estilo Frameless Satoshi:
+ * - Tipografía Satoshi (font-sans) para el título y nombre de usuario
+ * - Iniciales en font-mono
+ * - Botón de cerrar sesión sobrio y limpio
+ */
 export function Header() {
   const router = useRouter();
   const usuario = usePanelSessionStore((s) => s.usuario) ?? USUARIO_SESION_PANEL;
@@ -44,18 +50,18 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-brand-border bg-white px-8">
-      <h1 className="text-lg font-bold text-panel-sidebar">{titulo}</h1>
-      <div className="flex items-center gap-4">
+    <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-8 font-sans shadow-none">
+      <h1 className="text-xs font-bold uppercase tracking-widest text-slate-900 font-sans">{titulo}</h1>
+      <div className="flex items-center gap-4 font-sans">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-panel-sidebar">{usuario.nombre}</span>
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-panel-seleccion text-sm font-semibold text-panel-sidebar">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-700">{usuario.nombre}</span>
+          <span className="flex h-7 w-7 items-center justify-center rounded-none bg-slate-100 text-xs font-sans font-bold text-slate-800 border border-slate-200">
             {iniciales(usuario.nombre)}
           </span>
         </div>
         <button
           onClick={handleCerrarSesion}
-          className="text-xs font-semibold text-red-600 hover:text-red-800 transition-colors border border-red-200 rounded-lg px-2.5 py-1.5 bg-red-50 hover:bg-red-100"
+          className="text-xs font-bold uppercase tracking-wider text-slate-600 border border-slate-200 bg-white px-3 py-1.5 rounded-none shadow-none font-sans"
           title="Cerrar sesión de personal"
         >
           Cerrar sesión

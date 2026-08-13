@@ -34,17 +34,15 @@ export default function NuevaReservaEspecialistaPage() {
   const { fecha, hora, pacienteNombre, servicio, especialistaId, especialistaNombre, setEspecialista } =
     useNuevaReservaStore();
 
-  // Filtrar profesionales que realizan el servicio elegido (o todas si no hay servicio seleccionado)
   const especialistasFiltradas = servicio
     ? ESPECIALISTAS.filter((e) => e.servicios.includes(servicio))
     : ESPECIALISTAS;
 
   const opciones = especialistasFiltradas.map((esp) => ({
     id: esp.id,
-    titulo: esp.nombre,
-    descripcion: esp.cargo,
+    titulo: `${esp.nombre} (${esp.cargo})`,
     icono: (
-      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-panel-seleccion text-sm font-bold text-panel-sidebar">
+      <span className="flex h-7 w-7 items-center justify-center rounded-none bg-slate-100 text-xs font-bold font-sans text-slate-800">
         {esp.nombre
           .split(" ")
           .map((n) => n[0])
@@ -54,15 +52,17 @@ export default function NuevaReservaEspecialistaPage() {
   }));
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <div className="mb-8">
+    <div className="mx-auto max-w-5xl font-sans shadow-none">
+      <div className="mb-6">
         <StepIndicator pasos={PASOS} pasoActivo={3} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
-        <Card>
-          <h2 className="mb-4 text-lg font-bold text-panel-sidebar">¿Qué profesional atenderá?</h2>
-          <p className="mb-4 text-sm text-brand-muted">
+        <Card className="rounded-none border-slate-200 shadow-none p-6">
+          <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900 mb-1">
+            ¿Qué profesional atenderá?
+          </h2>
+          <p className="font-sans text-xs text-slate-500 mb-4">
             Selecciona la especialista asignada para la atención de {servicio ? (NOMBRE_SERVICIO[servicio] ?? servicio) : "este servicio"}.
           </p>
 
@@ -80,7 +80,7 @@ export default function NuevaReservaEspecialistaPage() {
               <button
                 type="button"
                 onClick={() => router.push("/panel/agenda")}
-                className="text-sm text-panel-sidebar underline underline-offset-2"
+                className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
               >
                 Cancelar reserva
               </button>

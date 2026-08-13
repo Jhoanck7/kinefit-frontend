@@ -12,15 +12,15 @@ interface ReportesTabSwitcherProps {
 
 export function ReportesTabSwitcher({ tabActivo, onCambiarTab }: ReportesTabSwitcherProps) {
   return (
-    <Card className="flex flex-wrap items-center justify-center gap-4 text-sm text-panel-sidebar">
-      <div className="flex flex-wrap justify-center gap-2">
+    <Card className="flex flex-wrap items-center justify-between p-4 rounded-none border-slate-200 shadow-none font-sans">
+      <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={() => onCambiarTab("reservas")}
-          className={`rounded-xl px-4 py-2 text-sm font-bold transition-all ${
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-colors ${
             tabActivo === "reservas"
-              ? "bg-panel-sidebar text-white shadow"
-              : "bg-panel-seleccion text-panel-sidebar hover:bg-panel-fondo"
+              ? "bg-[#003366] text-white"
+              : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
           }`}
         >
           1. Reservas y Métricas
@@ -29,10 +29,10 @@ export function ReportesTabSwitcher({ tabActivo, onCambiarTab }: ReportesTabSwit
         <button
           type="button"
           onClick={() => onCambiarTab("ventas")}
-          className={`rounded-xl px-4 py-2 text-sm font-bold transition-all ${
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-colors ${
             tabActivo === "ventas"
-              ? "bg-panel-sidebar text-white shadow"
-              : "bg-panel-seleccion text-panel-sidebar hover:bg-panel-fondo"
+              ? "bg-[#003366] text-white"
+              : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
           }`}
         >
           2. Reporte de Ventas
@@ -41,18 +41,18 @@ export function ReportesTabSwitcher({ tabActivo, onCambiarTab }: ReportesTabSwit
         <button
           type="button"
           onClick={() => onCambiarTab("comisiones")}
-          className={`rounded-xl px-4 py-2 text-sm font-bold transition-all ${
+          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-colors ${
             tabActivo === "comisiones"
-              ? "bg-panel-sidebar text-white shadow"
-              : "bg-panel-seleccion text-panel-sidebar hover:bg-panel-fondo"
+              ? "bg-[#003366] text-white"
+              : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
           }`}
         >
           3. Comisiones y Reparto
         </button>
       </div>
 
-      <div className="flex items-center gap-2 text-sm text-brand-muted font-medium">
-        <span>Acceso restringido:</span>
+      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+        <span className="text-[11px] uppercase tracking-wider text-slate-400">Acceso:</span>
         <NeutralBadge>Solo Administrador</NeutralBadge>
       </div>
     </Card>

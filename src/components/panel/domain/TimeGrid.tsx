@@ -57,7 +57,6 @@ function minutosDe(hora: string): number {
   return h * 60 + m;
 }
 
-/** Offset en px de la hora actual sobre la rejilla, o `null` si cae fuera de los tramos. */
 function offsetHoraActual(rejilla: { inicio: string; termino: string }[], horaActual: string): number | null {
   const minutosActual = minutosDe(horaActual);
   for (let idx = 0; idx < rejilla.length; idx++) {
@@ -71,6 +70,11 @@ function offsetHoraActual(rejilla: { inicio: string; termino: string }[], horaAc
   return null;
 }
 
+/**
+ * TimeGrid Frameless Minimalista:
+ * - Grilla separada solo por líneas horizontales de 1px en color gris muy claro (border-slate-100)
+ * - Tipografía Satoshi unificada
+ */
 export function TimeGrid({
   rejilla,
   citas,
@@ -83,7 +87,6 @@ export function TimeGrid({
   rejilla: { inicio: string; termino: string }[];
   citas: CitaResuelta[];
   bloqueos: BloqueoResuelto[];
-  /** Hora "HH:MM" si el día mostrado es hoy; `null` en caso contrario. */
   horaActual: string | null;
   onSeleccionarCita: (citaId: string) => void;
   onSeleccionarBloqueVacio: (hora: string) => void;
@@ -93,14 +96,14 @@ export function TimeGrid({
   const lineaHoraActual = horaActual ? offsetHoraActual(rejilla, horaActual) : null;
 
   return (
-    <div className="flex w-full">
+    <div className="flex w-full select-none shadow-none font-sans">
       {!ocultarHoras && (
-        <div className="w-14 shrink-0">
+        <div className="w-12 shrink-0">
           {rejilla.map((bloque) => (
             <div
               key={bloque.inicio}
               style={{ height: ALTURA_FILA_PX }}
-              className="flex items-start justify-end border-b border-brand-border/60 pr-2 pt-1 text-[11px] text-brand-muted font-medium"
+              className="flex items-start justify-end border-b border-slate-100 pr-2 pt-1 font-sans text-[11px] font-medium text-slate-400"
             >
               {bloque.inicio}
             </div>
@@ -108,18 +111,18 @@ export function TimeGrid({
         </div>
       )}
 
-      <div className={`relative flex-1 ${!ocultarHoras ? "border-l border-brand-border" : ""}`}>
+      <div className={`relative flex-1 ${!ocultarHoras ? "border-l border-slate-100" : ""}`}>
         {filas.map((item) => (
           <div
             key={item.inicio}
             style={{ height: item.bloques * ALTURA_FILA_PX }}
-            className="border-b border-brand-border/60"
+            className="border-b border-slate-100"
           >
             {item.tipo === "cita" && (
               <AppointmentCard cita={item.cita} onClick={() => onSeleccionarCita(item.cita.id)} />
             )}
             {item.tipo === "bloqueo" && (
-              <div className="flex h-full w-full items-center justify-center bg-slate-700 text-xs font-bold text-white p-1 text-center">
+              <div className="flex h-full w-full items-center justify-center border-b border-slate-100 bg-slate-100/70 p-1 text-center font-sans text-xs font-semibold uppercase tracking-wider text-slate-600 rounded-none shadow-none">
                 {item.bloqueo.motivo}
               </div>
             )}
@@ -128,7 +131,7 @@ export function TimeGrid({
                 type="button"
                 onClick={() => onSeleccionarBloqueVacio(item.inicio)}
                 aria-label={`Iniciar reserva a las ${item.inicio}`}
-                className="h-full w-full transition-colors hover:bg-panel-fondo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-panel-sidebar"
+                className="h-full w-full rounded-none transition-colors hover:bg-slate-50/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-blue-900"
               />
             )}
           </div>
@@ -140,7 +143,7 @@ export function TimeGrid({
             style={{ top: lineaHoraActual }}
             aria-hidden
           >
-            <span className="absolute -left-1 -top-1.5 h-3 w-3 rounded-full bg-red-500" />
+            <span className="absolute -left-1 -top-1 h-2 w-2 rounded-full bg-red-500" />
           </div>
         )}
       </div>

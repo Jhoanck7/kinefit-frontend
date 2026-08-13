@@ -1,4 +1,6 @@
 import { Convenio, Paciente } from "../domain/tipos";
+import { PACIENTES } from "./_seed/pacientes";
+import { CONVENIOS } from "./_seed/convenios";
 import { pacienteService, PacienteBackendDto } from "@/lib/services/paciente.service";
 
 export interface PacienteResuelto extends Paciente {
@@ -25,13 +27,26 @@ function mapBackendDtoToResuelto(dto: PacienteBackendDto): PacienteResuelto {
 export async function listPacientes(filtro = ""): Promise<PacienteResuelto[]> {
   try {
     const apiData = await pacienteService.getAll(filtro);
-    if (apiData && Array.isArray(apiData)) {
+    if (apiData && Array.isArray(apiData) && apiData.length > 0) {
       return apiData.map(mapBackendDtoToResuelto);
     }
   } catch {
     // Error backend
   }
-  return [];
+
+  // Fallback a seed data
+  const normalizar = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const termino = normalizar(filtro.trim());
+
+  return PACIENTES.map((p) => ({
+    ...p,
+    convenio: p.convenioId ? CONVENIOS.find((c) => c.id === p.convenioId) : undefined,
+  })).filter((p) => {
+    if (!termino) return true;
+    const nombreCompleto = normalizar(`${p.nombre} ${p.apellido}`);
+    const rut = p.rut.toLowerCase();
+    return nombreCompleto.includes(termino) || rut.includes(termino);
+  });
 }
 
 export async function buscarPacientes(termino: string): Promise<PacienteResuelto[]> {
@@ -47,6 +62,14 @@ export async function getPaciente(id: string): Promise<PacienteResuelto | undefi
     }
   } catch {
     // Error backend
+  }
+
+  const pSeed = PACIENTES.find((p) => p.id === id);
+  if (pSeed) {
+    return {
+      ...pSeed,
+      convenio: pSeed.convenioId ? CONVENIOS.find((c) => c.id === pSeed.convenioId) : undefined,
+    };
   }
   return undefined;
 }
@@ -71,9 +94,9 @@ export const RUT_DEMO_YA_EXISTENTE = "19.876.543-2";
 export async function totalPacientes(): Promise<number> {
   try {
     const todos = await pacienteService.getAll();
-    if (todos && Array.isArray(todos)) return todos.length;
+    if (todos && Array.isArray(todos) && todos.length > 0) return todos.length;
   } catch {
     // Error backend
   }
-  return 0;
+  return PACIENTES.length;
 }

@@ -3,12 +3,11 @@ export interface PasoIndicador {
 }
 
 /**
- * Indicador de progreso único (G-9): círculo, número dentro del nodo
- * (P1-7, NF1-2), etiquetas en Capitalización (P1-6).
+ * Indicador de progreso con estilo Frameless Satoshi
  */
 export function StepIndicator({ pasos, pasoActivo }: { pasos: PasoIndicador[]; pasoActivo: number }) {
   return (
-    <ol className="flex items-start w-full">
+    <ol className="flex items-start w-full font-sans">
       {pasos.map((paso, indice) => {
         const numero = indice + 1;
         const completado = numero < pasoActivo;
@@ -17,32 +16,26 @@ export function StepIndicator({ pasos, pasoActivo }: { pasos: PasoIndicador[]; p
           <li key={paso.etiqueta} className="flex-1 flex flex-col items-center relative">
             {indice > 0 && (
               <span
-                className={`absolute top-4 right-1/2 w-full h-0.5 -z-10 ${
-                  completado || activo ? "bg-panel-sidebar" : "bg-brand-border"
+                className={`absolute top-3.5 right-1/2 w-full h-[1px] -z-10 ${
+                  completado || activo ? "bg-[#003366]" : "bg-slate-200"
                 }`}
                 aria-hidden
               />
             )}
             <span
-              className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
+              className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold font-sans ${
                 completado
-                  ? "bg-panel-sidebar text-white"
+                  ? "bg-[#003366] text-white"
                   : activo
-                    ? "bg-panel-sidebar text-white"
-                    : "border-2 border-brand-border text-brand-muted bg-panel-fondo"
+                    ? "bg-[#003366] text-white"
+                    : "border border-slate-200 text-slate-400 bg-white"
               }`}
             >
-              {completado ? (
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                </svg>
-              ) : (
-                numero
-              )}
+              {completado ? "✓" : numero}
             </span>
             <span
-              className={`mt-2 text-xs text-center ${
-                activo ? "font-semibold text-panel-sidebar" : "text-brand-muted"
+              className={`mt-1.5 text-[11px] font-bold uppercase tracking-wider text-center ${
+                activo ? "text-[#003366]" : "text-slate-400"
               }`}
             >
               {paso.etiqueta}

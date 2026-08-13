@@ -24,7 +24,8 @@ const ITEMS_NAVEGACION = [
 ];
 
 /**
- * Barra lateral canónica
+ * Menú lateral con estilo Flat High-Contrast (Estilo Notion):
+ * - Fondo gris oscuro pizarra (bg-slate-900) para un contraste sobrio y elegante
  */
 export function Sidebar() {
   const pathname = usePathname();
@@ -39,15 +40,15 @@ export function Sidebar() {
   return (
     <nav
       aria-label="Navegación del panel"
-      className="sticky top-0 h-screen flex w-[20%] min-w-[240px] max-w-[300px] flex-col bg-panel-sidebar text-white shrink-0"
+      className="sticky top-0 h-screen flex w-[20%] min-w-[240px] max-w-[300px] flex-col bg-slate-900 text-slate-100 shrink-0 font-sans shadow-none border-r border-slate-800"
     >
-      <div className="flex items-center justify-center px-3 pt-6 pb-4 w-full">
+      <div className="flex items-center justify-center px-4 pt-6 pb-5 w-full">
         <Image
           src="/Kinefit Negro ver.png"
           alt="Kinefit Logo"
           width={280}
           height={100}
-          className="h-20 w-full object-contain brightness-0 invert"
+          className="h-16 w-full object-contain brightness-0 invert"
           priority
         />
       </div>
@@ -60,10 +61,11 @@ export function Sidebar() {
               <Link
                 href={href}
                 aria-current={activo ? "page" : undefined}
-                className={`flex items-center gap-3 rounded-full px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${activo
-                    ? "bg-panel-sidebar-activo font-semibold text-white"
-                    : "text-blue-100 hover:bg-white/10"
-                  }`}
+                className={`flex items-center gap-3 rounded-md px-3.5 py-2 text-xs font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400 ${
+                  activo
+                    ? "bg-slate-800 text-white font-bold"
+                    : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
+                }`}
               >
                 <Icono />
                 {etiqueta}
@@ -73,11 +75,11 @@ export function Sidebar() {
         })}
       </ul>
 
-      <div className="border-t border-white/10 px-3 py-4">
+      <div className="border-t border-slate-800 px-3 py-4">
         <button
           type="button"
           onClick={cerrarSesion}
-          className="flex w-full items-center gap-3 rounded-full px-4 py-2.5 text-sm text-blue-100 transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="flex w-full items-center gap-3 rounded-md px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"
         >
           <IconoCerrarSesion />
           Cerrar Sesión

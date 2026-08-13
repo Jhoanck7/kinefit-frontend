@@ -23,7 +23,7 @@ export interface OpcionServicio {
   titulo: string;
 }
 
-/** Catálogo oficial de servicios Hito 4 */
+/** Catálogo oficial de servicios */
 export const CATALAGO_SERVICIOS: OpcionServicio[] = [
   { id: "embarazadas", titulo: "Embarazadas" },
   { id: "masajes_pareja", titulo: "Masajes en pareja (masoterapia)" },
@@ -39,19 +39,21 @@ export default function NuevaReservaServicioPage() {
   const { fecha, hora, pacienteNombre, especialistaNombre, servicio, setServicio } = useNuevaReservaStore();
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <div className="mb-8">
+    <div className="mx-auto max-w-5xl font-sans shadow-none">
+      <div className="mb-6">
         <StepIndicator pasos={PASOS} pasoActivo={1} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
-        <Card>
-          <h2 className="mb-1 text-lg font-bold text-panel-sidebar">¿Qué servicio se realizará?</h2>
-          <p className="mb-4 text-xs font-medium text-brand-muted">
+        <Card className="rounded-none border-slate-200 shadow-none p-6">
+          <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900 mb-1">
+            ¿Qué servicio se realizará?
+          </h2>
+          <p className="font-sans text-xs text-slate-500 mb-4">
             Selecciona una opción del catálogo de atención oficial.
           </p>
 
-          <div className="grid grid-cols-1 gap-2.5">
+          <div className="grid grid-cols-1 gap-2">
             {CATALAGO_SERVICIOS.map((item) => {
               const seleccionado = servicio === item.id;
 
@@ -59,26 +61,22 @@ export default function NuevaReservaServicioPage() {
                 <div
                   key={item.id}
                   onClick={() => setServicio(item.id)}
-                  className={`flex items-center justify-between rounded-xl border px-4 py-3.5 transition-all cursor-pointer ${
+                  className={`flex items-center justify-between rounded-none border px-4 py-3 transition-colors cursor-pointer ${
                     seleccionado
-                      ? "border-panel-sidebar bg-panel-seleccion shadow-sm"
-                      : "border-brand-border bg-white hover:border-panel-sidebar/40"
+                      ? "border-[#003366] bg-blue-50/80 text-blue-950"
+                      : "border-slate-200 bg-white hover:bg-slate-50 text-slate-900"
                   }`}
                 >
-                  <p className="font-bold text-sm text-panel-sidebar">{item.titulo}</p>
+                  <p className="font-sans font-medium text-sm">{item.titulo}</p>
 
                   <div
-                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-none border ${
                       seleccionado
-                        ? "border-panel-sidebar bg-panel-sidebar text-white"
-                        : "border-brand-border bg-white"
+                        ? "border-[#003366] bg-[#003366] text-white"
+                        : "border-slate-300 bg-white"
                     }`}
                   >
-                    {seleccionado && (
-                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
-                    )}
+                    {seleccionado && <span className="text-[10px] font-bold">✓</span>}
                   </div>
                 </div>
               );
@@ -90,7 +88,7 @@ export default function NuevaReservaServicioPage() {
               <button
                 type="button"
                 onClick={() => router.push("/panel/agenda")}
-                className="text-sm text-panel-sidebar underline underline-offset-2"
+                className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
               >
                 Cancelar reserva
               </button>

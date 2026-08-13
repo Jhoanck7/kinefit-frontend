@@ -8,22 +8,23 @@ export interface FilaResumen {
 }
 
 /**
- * Panel de resumen persistente de los asistentes. Título único `RESUMEN`
- * en todo el panel (G-8, NF1-1, NF2-11) — nadie más decide su propio título.
+ * Panel de resumen persistente con estilo Frameless Satoshi:
+ * - Etiquetas micro-técnicas unificadas
+ * - Valores en Satoshi regular
  */
 export function SummaryPanel({ filas, titulo = "RESUMEN" }: { filas: FilaResumen[]; titulo?: string }) {
   return (
-    <Card className="sticky top-6 h-fit">
-      <p className="text-xs font-semibold uppercase tracking-wider text-brand-muted mb-4">
+    <Card className="sticky top-6 h-fit rounded-none border-slate-200 shadow-none font-sans p-5 bg-white">
+      <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-200 pb-1 mb-3">
         {titulo}
       </p>
-      <dl className="divide-y divide-brand-border">
+      <dl className="divide-y divide-slate-200">
         {filas.map((fila) => (
-          <div key={fila.etiqueta} className="flex items-start justify-between gap-3 py-3 first:pt-0 last:pb-0">
-            <dt className="text-sm text-brand-muted">{fila.etiqueta}</dt>
-            <dd className="flex items-center gap-2 text-sm font-medium text-right text-panel-sidebar">
+          <div key={fila.etiqueta} className="flex flex-col gap-0.5 py-2.5 first:pt-0 last:pb-0">
+            <dt className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">{fila.etiqueta}</dt>
+            <dd className="flex items-center gap-2 font-sans font-medium text-sm text-slate-900">
               {fila.icono}
-              {fila.valor ?? <span className="italic text-brand-muted font-normal">Por definir</span>}
+              {fila.valor ?? <span className="italic text-slate-400 font-normal text-xs">Por definir</span>}
             </dd>
           </div>
         ))}

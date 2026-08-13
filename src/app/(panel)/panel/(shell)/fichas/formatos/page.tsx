@@ -38,7 +38,7 @@ export default function FormatosListadoPage() {
           <p className="text-sm text-brand-muted">Define la estructura de campos que tendrá cada tipo de ficha clínica.</p>
         </div>
         <Button variante="primario" onClick={() => router.push("/panel/fichas/formatos/nuevo")}>
-          + Nuevo formato
+          Nuevo formato
         </Button>
       </div>
 
@@ -49,7 +49,7 @@ export default function FormatosListadoPage() {
             descripcion="Aún no se ha creado ningún formato de ficha clínica en el sistema."
             accion={
               <Button variante="primario" onClick={() => router.push("/panel/fichas/formatos/nuevo")}>
-                + Crear primer formato
+                Crear primer formato
               </Button>
             }
           />

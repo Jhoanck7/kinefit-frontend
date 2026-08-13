@@ -60,7 +60,7 @@ function PacientesContenido() {
   const visibles = pacientes.slice(inicio, inicio + TAMANO_PAGINA);
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="mx-auto max-w-6xl font-sans shadow-none">
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="flex-1 min-w-[240px]">
           <SearchInput
@@ -70,13 +70,13 @@ function PacientesContenido() {
           />
         </div>
         <Button variante="primario" onClick={() => router.push("/panel/pacientes/nuevo")}>
-          Nuevo paciente
+          NUEVO PACIENTE
         </Button>
       </div>
 
       <Table
         columnas={COLUMNAS}
-        encabezado={<p className="font-bold text-panel-sidebar">{total} pacientes registrados</p>}
+        encabezado={<p className="font-sans font-bold text-xs uppercase tracking-wider text-slate-900">{total} pacientes registrados</p>}
         pie={
           total > 0 ? (
             <Paginacion
@@ -93,23 +93,23 @@ function PacientesContenido() {
       >
         {visibles.map((paciente) => (
           <FilaTabla key={paciente.id} onClick={() => abrirParametros({ paciente: paciente.id })}>
-            <td className="px-4 py-3 font-medium text-panel-sidebar">
+            <td className="px-4 py-3 font-sans font-medium text-sm text-slate-900">
               {paciente.nombre}
               <span
                 title={paciente.origenRegistro === "web" ? "Registrado desde la web" : "Registrado por el personal"}
-                className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle"
-                style={{ backgroundColor: paciente.origenRegistro === "web" ? "#0c5dc5" : "#94a3b8" }}
+                className="ml-2 inline-block h-1.5 w-1.5 rounded-full align-middle"
+                style={{ backgroundColor: paciente.origenRegistro === "web" ? "#003366" : "#94a3b8" }}
               />
             </td>
-            <td className="px-4 py-3 text-panel-sidebar">{paciente.apellido}</td>
-            <td className="px-4 py-3 text-brand-muted">{paciente.rut}</td>
-            <td className="px-4 py-3 text-brand-muted">{paciente.correo}</td>
-            <td className="px-4 py-3 text-brand-muted whitespace-nowrap">{paciente.telefono}</td>
+            <td className="px-4 py-3 font-sans font-medium text-sm text-slate-900">{paciente.apellido}</td>
+            <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">{paciente.rut || "—"}</td>
+            <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">{paciente.correo || "—"}</td>
+            <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700 whitespace-nowrap">{paciente.telefono || "—"}</td>
             <td className="px-4 py-3">
               {paciente.convenio ? (
                 <NeutralBadge>{paciente.convenio.nombre}</NeutralBadge>
               ) : (
-                <span className="text-brand-muted">—</span>
+                <span className="font-sans text-xs text-slate-400">—</span>
               )}
             </td>
             <CeldaChevron />

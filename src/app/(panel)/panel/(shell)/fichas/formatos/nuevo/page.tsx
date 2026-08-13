@@ -458,7 +458,7 @@ function ConstructorFormatoContenido() {
                           }
                           className="text-xs font-semibold text-panel-sidebar underline underline-offset-2"
                         >
-                          + Agregar opción
+                          Agregar opción
                         </button>
                       </div>
                     )}
@@ -470,7 +470,7 @@ function ConstructorFormatoContenido() {
                   onClick={() => agregarCampo(seccion.id)}
                   className="w-full rounded-lg border-2 border-dashed border-brand-border py-2 text-sm font-semibold text-panel-sidebar hover:border-panel-sidebar/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar bg-slate-50/50"
                 >
-                  + Agregar campo
+                  Agregar campo
                 </button>
               </div>
             </div>
@@ -481,7 +481,7 @@ function ConstructorFormatoContenido() {
             onClick={() => setSecciones((prev) => [...prev, seccionNueva()])}
             className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-border py-4 font-semibold text-panel-sidebar hover:border-panel-sidebar/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar bg-white"
           >
-            + Agregar sección
+            Agregar sección
           </button>
 
           <div className="flex justify-end gap-3 border-t border-brand-border pt-6">

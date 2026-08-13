@@ -7,8 +7,7 @@ export interface OpcionSelector {
 }
 
 /**
- * Patrón de selección único en todo el panel (G-10, P2-1, NF2-8): fondo
- * azul tenue, borde azul profundo de 2 px, indicador de selección.
+ * Patrón de selección de opciones con estilo Frameless Satoshi
  */
 export function OptionSelector({
   opciones,
@@ -22,7 +21,7 @@ export function OptionSelector({
   orientacion?: "horizontal" | "vertical";
 }) {
   return (
-    <div className={`grid gap-3 ${orientacion === "horizontal" ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}>
+    <div className={`grid gap-2.5 font-sans ${orientacion === "horizontal" ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}>
       {opciones.map((opcion) => {
         const seleccionado = opcion.id === seleccionId;
         return (
@@ -32,31 +31,23 @@ export function OptionSelector({
             role="radio"
             aria-checked={seleccionado}
             onClick={() => onSeleccionar(opcion.id)}
-            className={`flex items-center justify-between gap-3 rounded-xl border-2 px-4 py-3.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-panel-sidebar ${
+            className={`flex items-center justify-between gap-3 rounded-none border p-3 text-left transition-colors font-sans shadow-none focus-visible:outline-none ${
               seleccionado
-                ? "border-panel-sidebar bg-panel-seleccion"
-                : "border-brand-border bg-white hover:border-panel-sidebar/40"
+                ? "border-[#003366] bg-blue-50/80 text-blue-950"
+                : "border-slate-200 bg-white hover:bg-slate-50 text-slate-900"
             }`}
           >
-            <span className="flex items-center gap-3">
+            <span className="flex items-center gap-2.5">
               {opcion.icono}
-              <span className="text-base font-medium text-panel-sidebar">{opcion.titulo}</span>
+              <span className="text-xs font-semibold uppercase tracking-wider">{opcion.titulo}</span>
             </span>
             <span
-              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
-                seleccionado ? "border-panel-sidebar bg-panel-sidebar" : "border-brand-border"
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-none border ${
+                seleccionado ? "border-[#003366] bg-[#003366] text-white" : "border-slate-300 bg-white"
               }`}
               aria-hidden
             >
-              {seleccionado && (
-                <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              )}
+              {seleccionado && <span className="text-[10px] font-bold">✓</span>}
             </span>
           </button>
         );

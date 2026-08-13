@@ -86,30 +86,34 @@ export default function NuevaFichaReservaPage() {
   const citaSeleccionada = reservas.find((r) => r.id === citaId);
 
   return (
-    <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
+    <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-[1fr_320px] font-sans shadow-none">
       <div className="sm:col-span-2">
         <StepIndicator pasos={[{ etiqueta: "Reserva" }, { etiqueta: "Ficha" }]} pasoActivo={1} />
       </div>
 
-      <Card>
-        <h2 className="mb-1 text-lg font-bold text-panel-sidebar">¿A qué atención corresponde la ficha?</h2>
-        <p className="mb-4 text-sm text-brand-muted">Busque al paciente y seleccione la reserva asociada.</p>
+      <Card className="rounded-none border-slate-200 shadow-none p-6">
+        <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900 mb-1">
+          ¿A qué atención corresponde la ficha?
+        </h2>
+        <p className="font-sans text-xs text-slate-500 mb-4">
+          Busque al paciente y seleccione la reserva asociada.
+        </p>
 
         <SearchInput placeholder="Buscar por nombre o RUT..." value={busqueda} onChange={setBusqueda} />
 
         {resultados.length > 0 && (
-          <ul className="mt-2 space-y-1 rounded-lg border border-brand-border p-1">
+          <ul className="mt-2 divide-y divide-slate-200 border border-slate-200 rounded-none bg-white">
             {resultados.map((paciente) => (
               <li key={paciente.id}>
                 <button
                   type="button"
                   onClick={() => seleccionarPaciente(paciente)}
-                  className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-panel-fondo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar"
+                  className="flex w-full items-center justify-between px-3 py-2 text-left font-sans text-sm hover:bg-slate-50 focus-visible:outline-none"
                 >
-                  <span>
+                  <span className="font-medium text-slate-900">
                     {paciente.nombre} {paciente.apellido}
                   </span>
-                  <span className="text-brand-muted">{paciente.rut}</span>
+                  <span className="text-xs text-slate-500">{paciente.rut}</span>
                 </button>
               </li>
             ))}
@@ -118,13 +122,13 @@ export default function NuevaFichaReservaPage() {
 
         {pacienteId && (
           <div className="mt-6">
-            <p className="mb-2 inline-block rounded-full bg-panel-seleccion px-3 py-1 text-xs font-semibold uppercase tracking-wide text-panel-sidebar">
+            <p className="mb-3 font-sans text-[11px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-200 pb-1">
               Reservas de {pacienteNombre}
             </p>
             {reservas.length === 0 ? (
               <EmptyState titulo="Sin reservas" descripcion="Este paciente no tiene reservas registradas." />
             ) : (
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {reservas.map((cita) => {
                   const seleccionada = cita.id === citaId;
                   const esAtendida = cita.estado === "atendida";
@@ -143,27 +147,27 @@ export default function NuevaFichaReservaPage() {
                             ? "La cita debe estar en estado 'Atendida' para asociar una ficha clínica"
                             : undefined
                         }
-                        className={`flex w-full items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar disabled:cursor-not-allowed disabled:opacity-75 ${
+                        className={`flex w-full items-center justify-between gap-3 border p-3 text-left transition-colors rounded-none ${
                           seleccionada
-                            ? "border-panel-sidebar bg-panel-seleccion"
-                            : "border-brand-border hover:border-panel-sidebar/40"
-                        }`}
+                            ? "border-blue-900 bg-blue-50/90 text-blue-950"
+                            : "border-slate-200 bg-white hover:bg-slate-50 text-slate-900"
+                        } disabled:opacity-60 disabled:cursor-not-allowed`}
                       >
                         <div>
-                          <p className="font-medium text-panel-sidebar">
+                          <p className="font-sans font-medium text-sm text-slate-900">
                             {formatearFechaExtensa(cita.fecha)} · {formatearRangoHorario(cita.horaInicio, cita.horaTermino)}
                           </p>
-                          <p className="text-sm text-brand-muted capitalize">
+                          <p className="font-sans text-xs text-slate-500 capitalize mt-0.5">
                             {cita.servicio} · {cita.especialista.nombre}
                           </p>
                         </div>
                         <span
-                          className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wide ${
+                          className={`shrink-0 border px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none ${
                             cita.conFicha
-                              ? "bg-emerald-100 text-emerald-800"
+                              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
                               : esAtendida
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-amber-100 text-amber-800"
+                              ? "border-blue-200 bg-blue-50 text-blue-800"
+                              : "border-amber-200 bg-amber-50 text-amber-800"
                           }`}
                         >
                           {cita.conFicha
@@ -178,14 +182,14 @@ export default function NuevaFichaReservaPage() {
                         <button
                           type="button"
                           onClick={() => router.push(`/panel/fichas/${cita.fichaId}`)}
-                          className="mt-1 text-xs text-panel-sidebar underline underline-offset-2 block"
+                          className="mt-1 font-sans text-xs text-slate-700 hover:text-slate-950 underline underline-offset-2 block"
                         >
                           Abrir la ficha existente
                         </button>
                       )}
 
                       {!esAtendida && !cita.conFicha && (
-                        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-amber-50 border border-amber-200 p-2.5 text-xs text-amber-800">
+                        <div className="flex flex-wrap items-center justify-between gap-2 border border-amber-200 bg-amber-50 p-2.5 font-sans text-xs text-amber-900 rounded-none">
                           <span>
                             Esta cita está en estado <strong>&ldquo;{cita.estado}&rdquo;</strong>. Debe estar marcada como <strong>Atendida</strong> para poder asociarle una ficha.
                           </span>
@@ -215,7 +219,7 @@ export default function NuevaFichaReservaPage() {
                 reiniciar();
                 router.push("/panel/fichas");
               }}
-              className="text-sm text-panel-sidebar underline underline-offset-2"
+              className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
             >
               Cancelar
             </button>

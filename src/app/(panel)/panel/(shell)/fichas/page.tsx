@@ -76,10 +76,10 @@ function FichasContenido() {
   const visibles = fichas.slice(inicio, inicio + TAMANO_PAGINA);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      {/* Barra de Filtros en Card idéntica a la sección de Ventas */}
-      <Card>
-        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-panel-sidebar">
+    <div className="mx-auto max-w-6xl space-y-4 font-sans shadow-none">
+      {/* Barra de Filtros en Card Frameless */}
+      <Card className="p-4 rounded-none border-slate-200 shadow-none">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
           {/* Buscador de Paciente / RUT */}
           <div className="w-64 min-w-[200px]">
             <SearchInput
@@ -91,16 +91,16 @@ function FichasContenido() {
 
           {/* Filtro Tipo de Ficha */}
           <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-brand-muted text-sm">Tipo:</span>
+            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">Tipo:</span>
             <select
               value={tipo}
               onChange={(e) => setTipo(e.target.value)}
-              className="rounded-lg border border-brand-border bg-panel-fondo px-3 py-2 text-sm font-medium text-panel-sidebar transition-colors focus:border-panel-sidebar focus:bg-white focus:outline-none"
+              className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
             >
-              <option value="">Todos los tipos</option>
+              <option value="">TODOS LOS TIPOS</option>
               {formatos.map((f) => (
                 <option key={f.id} value={f.nombre}>
-                  {f.nombre}
+                  {f.nombre.toUpperCase()}
                 </option>
               ))}
             </select>
@@ -108,32 +108,32 @@ function FichasContenido() {
 
           {/* Filtro Rango de Fechas (Desde / Hasta) */}
           <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-brand-muted text-sm">Desde:</span>
+            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">Desde:</span>
             <input
               type="date"
               value={desde}
               onChange={(e) => setDesde(e.target.value)}
-              className="rounded-lg border border-brand-border bg-panel-fondo px-3 py-2 text-sm font-medium text-panel-sidebar transition-colors focus:border-panel-sidebar focus:bg-white focus:outline-none cursor-pointer"
+              className="rounded-none border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none cursor-pointer"
             />
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-brand-muted text-sm">Hasta:</span>
+            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">Hasta:</span>
             <input
               type="date"
               value={hasta}
               onChange={(e) => setHasta(e.target.value)}
-              className="rounded-lg border border-brand-border bg-panel-fondo px-3 py-2 text-sm font-medium text-panel-sidebar transition-colors focus:border-panel-sidebar focus:bg-white focus:outline-none cursor-pointer"
+              className="rounded-none border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none cursor-pointer"
             />
           </div>
 
           {/* Botones de Acción */}
           <div className="flex flex-wrap items-center gap-2">
-            <Button variante="secundario" className="px-4 py-2 text-sm" onClick={() => router.push("/panel/fichas/formatos")}>
-              Formatos de ficha
+            <Button variante="secundario" className="px-3.5 py-2 text-xs" onClick={() => router.push("/panel/fichas/formatos")}>
+              FORMATOS DE FICHA
             </Button>
-            <Button variante="primario" className="px-4 py-2 text-sm" onClick={() => router.push("/panel/fichas/nueva/reserva")}>
-              Nueva ficha
+            <Button variante="primario" className="px-4 py-2 text-xs" onClick={() => router.push("/panel/fichas/nueva/reserva")}>
+              NUEVA FICHA
             </Button>
           </div>
         </div>
@@ -141,7 +141,7 @@ function FichasContenido() {
 
       <Table
         columnas={COLUMNAS}
-        encabezado={<p className="font-bold text-panel-sidebar">{total} fichas registradas</p>}
+        encabezado={<p className="font-sans font-bold text-xs uppercase tracking-wider text-slate-900">{total} fichas registradas</p>}
         pie={
           total > 0 ? (
             <Paginacion
@@ -158,18 +158,18 @@ function FichasContenido() {
       >
         {visibles.map((ficha) => (
           <FilaTabla key={ficha.id} onClick={() => abrirParametros({ ficha: ficha.id })}>
-            <td className="px-4 py-3 font-medium text-panel-sidebar">
+            <td className="px-4 py-3 font-sans font-medium text-sm text-slate-900">
               {ficha.paciente.nombre} {ficha.paciente.apellido}
             </td>
-            <td className="px-4 py-3 text-brand-muted">{ficha.paciente.rut}</td>
+            <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">{ficha.paciente.rut || "—"}</td>
             <td className="px-4 py-3">
               <NeutralBadge>{ficha.tipo}</NeutralBadge>
             </td>
-            <td className="px-4 py-3 text-brand-muted">{formatearFechaCorta(ficha.cita.fecha)}</td>
-            <td className="px-4 py-3 text-brand-muted">
-              {formatearFechaCorta(ficha.cita.fecha)} | {formatearRangoHorario(ficha.cita.horaInicio, ficha.cita.horaTermino)}
+            <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">{formatearFechaCorta(ficha.cita.fecha)}</td>
+            <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">
+              {formatearFechaCorta(ficha.cita.fecha)} · {formatearRangoHorario(ficha.cita.horaInicio, ficha.cita.horaTermino)}
             </td>
-            <td className="px-4 py-3 text-brand-muted">{ficha.registradaPor}</td>
+            <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">{ficha.registradaPor}</td>
             <CeldaChevron />
           </FilaTabla>
         ))}

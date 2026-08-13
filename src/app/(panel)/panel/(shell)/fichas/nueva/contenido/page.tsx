@@ -126,47 +126,45 @@ export default function NuevaFichaContenidoPage() {
   }
 
   return (
-    <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
+    <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-[1fr_320px] font-sans shadow-none">
       <div className="sm:col-span-2">
         <StepIndicator pasos={[{ etiqueta: "Reserva" }, { etiqueta: "Ficha" }]} pasoActivo={2} />
       </div>
 
       {errorMsg && (
-        <div className="sm:col-span-2 flex items-start justify-between rounded-xl border-2 border-red-400 bg-red-50 p-4 text-sm font-bold text-red-800 shadow-md">
-          <div className="flex items-center gap-2">
-            <span>{errorMsg}</span>
-          </div>
+        <div className="sm:col-span-2 flex items-start justify-between border border-red-300 bg-red-50 p-4 text-xs font-semibold text-red-800 rounded-none">
+          <span>{errorMsg}</span>
           <button
             type="button"
             onClick={() => setErrorMsg(null)}
             aria-label="Cerrar aviso de error"
-            className="text-red-700 hover:text-red-950 font-bold text-lg px-2"
+            className="text-red-700 hover:text-red-950 font-bold px-2"
           >
-            &times;
+            ✕
           </button>
         </div>
       )}
 
-      <Card>
-        <div className="mb-4 flex items-center gap-2 rounded-lg bg-panel-seleccion p-3 text-xs text-panel-sidebar">
+      <Card className="rounded-none border-slate-200 shadow-none p-6">
+        <div className="mb-4 flex items-center gap-2 border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-700 rounded-none">
           Contenido privado. No visible para el paciente.
         </div>
 
-        <h2 className="mb-4 text-lg font-bold text-panel-sidebar">Completa la ficha clínica</h2>
+        <h2 className="mb-4 font-sans text-sm font-bold uppercase tracking-wider text-slate-900">Completa la ficha clínica</h2>
 
         {opcionesFormato.length === 0 ? (
-          <div className="mb-6 rounded-xl border border-brand-border bg-slate-50 p-6 text-center space-y-3">
-            <p className="text-sm font-semibold text-panel-sidebar">No tienes formatos de ficha creados</p>
-            <p className="text-xs text-brand-muted">
+          <div className="mb-6 border border-slate-200 bg-slate-50 p-6 text-center space-y-3 rounded-none">
+            <p className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">No tienes formatos de ficha creados</p>
+            <p className="font-sans text-xs text-slate-500">
               Crea tu primer formato de ficha clínica para personalizar las evaluaciones de tus pacientes.
             </p>
             <Button variante="primario" onClick={() => router.push("/panel/fichas/formatos/nuevo")}>
-              + Crear formato de ficha
+              Crear formato de ficha
             </Button>
           </div>
         ) : (
           <div className="mb-6">
-            <p className="mb-2 text-sm font-medium text-panel-sidebar">Seleccionar formato de ficha</p>
+            <p className="mb-2 font-sans text-[11px] font-bold uppercase tracking-widest text-slate-400">Seleccionar formato de ficha</p>
             <OptionSelector opciones={opcionesFormato} seleccionId={formatoId} onSeleccionar={setFormato} orientacion="horizontal" />
           </div>
         )}
@@ -206,8 +204,8 @@ export default function NuevaFichaContenidoPage() {
               </CollapsibleSection>
             ))}
 
-            <div>
-              <p className="mb-2 text-sm font-medium text-panel-sidebar">Archivos adjuntos</p>
+            <div className="pt-2">
+              <p className="mb-2 font-sans text-[11px] font-bold uppercase tracking-widest text-slate-400">Archivos adjuntos</p>
               <FileDropzone archivos={adjuntos} onAgregar={agregarAdjunto} onQuitar={quitarAdjunto} />
             </div>
           </div>
@@ -221,7 +219,7 @@ export default function NuevaFichaContenidoPage() {
                 reiniciar();
                 router.push("/panel/fichas");
               }}
-              className="text-sm text-panel-sidebar underline underline-offset-2"
+              className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
             >
               Cancelar
             </button>

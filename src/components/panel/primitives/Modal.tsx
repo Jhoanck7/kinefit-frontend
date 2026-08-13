@@ -6,19 +6,22 @@ const SELECTOR_FOCUSABLES =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /**
- * Modal genérico con foco atrapado y devuelto al cerrar (G-14): se usa
- * tanto para el detalle de cita como para el de cancelación (DD-9).
+ * Modal genérico con estilo Soft SaaS (Stripe Style):
+ * - Esquinas suavizadas de 6px (rounded-md)
+ * - Sombra difusa suave (shadow-sm) y bordes definidos de 1px (border-slate-200)
  */
 export function Modal({
   abierto,
   onCerrar,
   children,
   ancho = "max-w-3xl",
+  className = "",
 }: {
   abierto: boolean;
   onCerrar: () => void;
   children: ReactNode;
   ancho?: string;
+  className?: string;
 }) {
   const contenedorRef = useRef<HTMLDivElement>(null);
   const disparadorRef = useRef<HTMLElement | null>(null);
@@ -67,7 +70,7 @@ export function Modal({
         ref={contenedorRef}
         role="dialog"
         aria-modal="true"
-        className={`relative bg-white rounded-2xl shadow-xl w-full ${ancho} max-h-[90vh] overflow-y-auto`}
+        className={`relative bg-white border border-slate-200 rounded-md shadow-sm w-full ${ancho} max-h-[90vh] overflow-y-auto ${className}`}
       >
         {children}
       </div>

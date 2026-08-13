@@ -11,14 +11,14 @@ interface BotonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const CLASES_BASE =
-  "inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-panel-sidebar disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 rounded-none px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 disabled:cursor-not-allowed disabled:opacity-50 shadow-none font-sans";
 
 const CLASES_VARIANTE: Record<VarianteBoton, string> = {
-  primario: "bg-panel-sidebar text-white hover:bg-panel-sidebar-activo",
+  primario: "bg-[#003366] text-white hover:bg-[#002244]",
   secundario:
-    "bg-white border-2 border-panel-sidebar text-panel-sidebar hover:bg-panel-seleccion",
-  terciario: "bg-transparent text-panel-sidebar underline underline-offset-2 px-1 py-1",
-  peligro: "bg-white border-2 border-red-600 text-red-600 hover:bg-red-50",
+    "bg-white border border-slate-200 text-slate-900 hover:bg-slate-50",
+  terciario: "bg-transparent text-slate-700 hover:text-slate-900 px-1 py-1",
+  peligro: "bg-red-50 border border-red-300 text-red-700 hover:bg-red-100",
 };
 
 export const Button = forwardRef<HTMLButtonElement, BotonProps>(function Button(
@@ -40,7 +40,7 @@ export const Button = forwardRef<HTMLButtonElement, BotonProps>(function Button(
     return (
       <span className="inline-flex flex-col gap-1">
         {boton}
-        <span className="text-xs text-brand-muted max-w-xs">{explicacionDeshabilitado}</span>
+        <span className="text-xs text-slate-500 max-w-xs">{explicacionDeshabilitado}</span>
       </span>
     );
   }

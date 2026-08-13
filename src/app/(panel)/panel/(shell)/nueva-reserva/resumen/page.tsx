@@ -89,7 +89,6 @@ export default function NuevaReservaResumenPage() {
 
       let targetBloqueId = bloqueHorarioId;
 
-      // Si no tenemos el bloqueHorarioId directo, resolverlo desde la API /agenda
       if (!targetBloqueId) {
         const agendaRes = await agendaService.getAgenda([numEspecialistaId], fechaStr, fechaStr);
         const dataArr = (agendaRes as any)?.data || (Array.isArray(agendaRes) ? agendaRes : []);
@@ -124,24 +123,26 @@ export default function NuevaReservaResumenPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <div className="mb-8">
+    <div className="mx-auto max-w-4xl space-y-6 font-sans shadow-none">
+      <div className="mb-6">
         <StepIndicator pasos={PASOS} pasoActivo={5} />
       </div>
 
       {errorMsg && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-700">
+        <div className="border border-red-300 bg-red-50 p-3 text-xs font-semibold text-red-800 rounded-none">
           {errorMsg}
         </div>
       )}
 
-      <Card>
-        <h2 className="mb-4 text-lg font-bold text-panel-sidebar">Notas de la reserva (opcional)</h2>
+      <Card className="rounded-none border-slate-200 shadow-none p-6 space-y-6">
+        <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+          Notas de la reserva (opcional)
+        </h2>
 
         <div className="space-y-4">
           <div>
             <div className="mb-1.5 flex items-center gap-2">
-              <span className="text-sm font-medium text-panel-sidebar">Nota para el paciente</span>
+              <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">Nota para el paciente</span>
               <InfoBadge>El paciente la verá en su confirmación</InfoBadge>
             </div>
             <TextAreaField
@@ -154,12 +155,11 @@ export default function NuevaReservaResumenPage() {
 
           <div>
             <div className="mb-1.5 flex items-center gap-2">
-              <span className="text-sm font-medium text-panel-sidebar">Nota interna</span>
+              <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">Nota interna</span>
               <InvertedBadge>Visible solo para el personal de KineFit</InvertedBadge>
             </div>
             <TextAreaField
               etiqueta=""
-              className="bg-panel-seleccion"
               value={notaInterna}
               onChange={(e) => setNotaInterna(e.target.value)}
               placeholder="Ej: Paciente prefiere ser atendido por Kinesiólogo hombre..."
@@ -167,18 +167,20 @@ export default function NuevaReservaResumenPage() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-xl bg-panel-seleccion p-4">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-brand-muted">Revisión final</p>
-          <dl className="divide-y divide-brand-border/60">
+        <div className="border border-slate-200 bg-slate-50/70 p-4 rounded-none">
+          <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-200 pb-1 mb-3">
+            Revisión final
+          </p>
+          <dl className="divide-y divide-slate-200">
             {filasResumen.map((fila) => (
-              <div key={fila.etiqueta} className="flex items-center justify-between py-2 text-sm">
-                <dt className="font-semibold text-brand-muted">{fila.etiqueta}</dt>
+              <div key={fila.etiqueta} className="flex items-center justify-between py-2.5 text-xs">
+                <dt className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">{fila.etiqueta}</dt>
                 <div className="flex items-center gap-3">
-                  <dd className="text-panel-sidebar font-medium">{fila.valor ?? "—"}</dd>
+                  <dd className="font-sans font-medium text-sm text-slate-900">{fila.valor ?? "—"}</dd>
                   <button
                     type="button"
                     onClick={() => router.push(fila.editar)}
-                    className="text-xs text-panel-sidebar underline underline-offset-2"
+                    className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950 underline"
                   >
                     Editar
                   </button>
@@ -193,7 +195,7 @@ export default function NuevaReservaResumenPage() {
             <button
               type="button"
               onClick={() => setConfirmarDescarte(true)}
-              className="text-sm text-panel-sidebar underline underline-offset-2"
+              className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
             >
               Cancelar reserva
             </button>
@@ -212,10 +214,14 @@ export default function NuevaReservaResumenPage() {
       </Card>
 
       <Modal abierto={confirmarDescarte} onCerrar={() => setConfirmarDescarte(false)} ancho="max-w-sm">
-        <div className="p-6">
-          <h3 className="text-lg font-bold text-panel-sidebar">¿Descartar esta reserva?</h3>
-          <p className="mt-2 text-sm text-brand-muted">Se perderá todo lo seleccionado en los pasos anteriores.</p>
-          <div className="mt-6 flex justify-end gap-3">
+        <div className="bg-white p-6 font-sans shadow-none rounded-none space-y-4">
+          <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+            ¿Descartar esta reserva?
+          </h3>
+          <p className="font-sans text-xs text-slate-500">
+            Se perderá todo lo seleccionado en los pasos anteriores.
+          </p>
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
             <Button variante="secundario" onClick={() => setConfirmarDescarte(false)}>
               Volver
             </Button>

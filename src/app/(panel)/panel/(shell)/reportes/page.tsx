@@ -13,43 +13,43 @@ export default function ReportesPage() {
   const [compararConAnterior, setCompararConAnterior] = useState(true);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      {/* 1. Selector de Pestañas Principales (Centrado) */}
+    <div className="mx-auto max-w-6xl space-y-4 font-sans shadow-none">
+      {/* 1. Selector de Pestañas Principales */}
       <ReportesTabSwitcher tabActivo={tabActivo} onCambiarTab={setTabActivo} />
 
-      {/* 2. Barra Superior de Filtros de Fecha de Reportes (Centrado) */}
-      <Card className="flex flex-wrap items-center justify-center gap-4 text-sm text-panel-sidebar">
-        <div className="flex flex-wrap items-center justify-center gap-4">
+      {/* 2. Barra Superior de Filtros de Fecha */}
+      <Card className="flex flex-wrap items-center justify-between p-4 rounded-none border-slate-200 shadow-none text-xs">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-brand-muted text-sm">Período de Análisis:</span>
+            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">Período:</span>
             <select
               value={rangoFecha}
               onChange={(e) => setRangoFecha(e.target.value)}
-              className="rounded-lg border border-brand-border bg-panel-fondo px-3 py-2 font-medium text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+              className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
             >
-              <option value="hoy">Hoy</option>
-              <option value="ayer">Ayer</option>
-              <option value="7dias">Últimos 7 días</option>
-              <option value="30dias">Últimos 30 días</option>
-              <option value="mesActual">Este Mes</option>
-              <option value="mesAnterior">Mes Anterior</option>
-              <option value="personalizado">Rango Personalizado</option>
+              <option value="hoy">HOY</option>
+              <option value="ayer">AYER</option>
+              <option value="7dias">ÚLTIMOS 7 DÍAS</option>
+              <option value="30dias">ÚLTIMOS 30 DÍAS</option>
+              <option value="mesActual">ESTE MES</option>
+              <option value="mesAnterior">MES ANTERIOR</option>
+              <option value="personalizado">RANGO PERSONALIZADO</option>
             </select>
           </div>
 
-          <label className="flex items-center gap-2 cursor-pointer font-medium text-sm text-panel-sidebar">
+          <label className="flex items-center gap-1.5 cursor-pointer font-medium text-xs text-slate-700">
             <input
               type="checkbox"
               checked={compararConAnterior}
               onChange={(e) => setCompararConAnterior(e.target.checked)}
-              className="rounded text-panel-sidebar focus:ring-panel-sidebar"
+              className="rounded-none text-[#003366] focus:ring-0"
             />
             Comparar con período anterior
           </label>
         </div>
 
-        <div className="text-brand-muted text-sm font-medium">
-          Mostrando datos consolidados (Datos de prueba)
+        <div className="text-slate-400 text-xs font-medium">
+          Mostrando datos consolidados
         </div>
       </Card>
 

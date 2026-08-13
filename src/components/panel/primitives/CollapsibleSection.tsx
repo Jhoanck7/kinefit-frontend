@@ -2,6 +2,9 @@
 
 import { ReactNode, useState } from "react";
 
+/**
+ * Sección plegable con estilo Frameless Satoshi
+ */
 export function CollapsibleSection({
   titulo,
   contador,
@@ -19,17 +22,17 @@ export function CollapsibleSection({
   const contenidoId = `seccion-${titulo.toLowerCase().replace(/\s+/g, "-")}`;
 
   return (
-    <div className="rounded-2xl border border-brand-border overflow-hidden">
-      <div className="flex items-center justify-between bg-panel-seleccion px-4 py-3">
+    <div className="rounded-none border border-slate-200 overflow-hidden font-sans shadow-none">
+      <div className="flex items-center justify-between bg-slate-50 px-4 py-2.5 border-b border-slate-200">
         <button
           type="button"
           onClick={() => setAbierta((v) => !v)}
           aria-expanded={abierta}
           aria-controls={contenidoId}
-          className="flex flex-1 items-center gap-2 text-left font-semibold text-panel-sidebar focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded"
+          className="flex flex-1 items-center gap-2 text-left font-sans text-xs font-bold uppercase tracking-wider text-slate-800 focus-visible:outline-none"
         >
           <svg
-            className={`h-4 w-4 shrink-0 transition-transform ${abierta ? "rotate-90" : ""}`}
+            className={`h-3.5 w-3.5 shrink-0 transition-transform ${abierta ? "rotate-90" : ""}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -39,12 +42,12 @@ export function CollapsibleSection({
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
           </svg>
           <span>{titulo}</span>
-          {contador && <span className="text-xs font-normal text-brand-muted">{contador}</span>}
+          {contador && <span className="font-sans text-[11px] font-normal text-slate-500">({contador})</span>}
         </button>
         {accion}
       </div>
       {abierta && (
-        <div id={contenidoId} className="bg-white p-4 space-y-4">
+        <div id={contenidoId} className="bg-white p-4 space-y-4 font-sans">
           {children}
         </div>
       )}

@@ -137,20 +137,20 @@ function NuevaReservaHorarioContenido() {
   const horaTerminoCalculada = hora ? sumarMinutos(hora, duracionMin) : null;
 
   return (
-    <div className="mx-auto max-w-5xl">
-      <div className="mb-8">
+    <div className="mx-auto max-w-5xl font-sans shadow-none">
+      <div className="mb-6">
         <StepIndicator pasos={PASOS} pasoActivo={2} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
-        <Card>
-          <h2 className="mb-4 text-lg font-bold text-panel-sidebar">¿Cuándo será la atención?</h2>
+        <Card className="rounded-none border-slate-200 shadow-none p-6">
+          <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900 mb-4">
+            ¿Cuándo será la atención?
+          </h2>
 
-
-
-          <div className="grid grid-cols-1 gap-6 divide-y divide-brand-border sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+          <div className="grid grid-cols-1 gap-6 divide-y divide-slate-200 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
             <div className="sm:pr-6 space-y-3">
-              <label className="block text-xs font-bold uppercase tracking-wide text-brand-muted">
+              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
                 Seleccionar Fecha de Atención
               </label>
               <input
@@ -163,32 +163,32 @@ function NuevaReservaHorarioContenido() {
                     setHorario(new Date(y, m - 1, d), "");
                   }
                 }}
-                className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm font-bold text-panel-sidebar focus:border-panel-sidebar focus:outline-none cursor-pointer shadow-sm"
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none cursor-pointer"
               />
               {fecha && (
-                <p className="text-xs font-semibold text-panel-sidebar pt-2">
-                  Fecha seleccionada: {formatearFechaExtensa(fecha)}
+                <p className="font-sans text-xs text-slate-700 pt-1">
+                  Fecha seleccionada: <span className="font-medium text-slate-900">{formatearFechaExtensa(fecha)}</span>
                 </p>
               )}
 
               {hora && horaTerminoCalculada && (
-                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-800 space-y-1">
-                  <p className="font-bold">Franja Horaria Consumida:</p>
-                  <p className="text-sm font-semibold">
+                <div className="border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900 space-y-0.5 rounded-none">
+                  <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-emerald-800">Franja Horaria:</p>
+                  <p className="font-sans font-medium text-sm text-emerald-950">
                     {hora} a {horaTerminoCalculada} hrs
                   </p>
-                  <p className="text-xs italic text-emerald-700">
-                    ({duracionMin} minutos / {bloquesRequeridos} bloques de 30 min)
+                  <p className="font-sans text-[11px] text-emerald-700">
+                    ({duracionMin} minutos · {bloquesRequeridos} bloques de 30 min)
                   </p>
                 </div>
               )}
             </div>
             <div className="sm:pl-6">
               {!fecha ? (
-                <p className="text-sm text-brand-muted">Selecciona primero una fecha para ver los horarios.</p>
+                <p className="font-sans text-xs text-slate-400">Selecciona primero una fecha para ver los horarios.</p>
               ) : (
                 <>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-muted">Mañana</p>
+                  <p className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-2">Mañana</p>
                   <BloquesChip
                     bloques={manana}
                     todosBloques={bloques}
@@ -196,8 +196,8 @@ function NuevaReservaHorarioContenido() {
                     horaSeleccionada={hora}
                     onSeleccionar={(b) => setHorario(fecha, b.inicio, b.id)}
                   />
-                  <div className="my-4 border-t border-brand-border" />
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-muted">Tarde</p>
+                  <div className="my-4 border-t border-slate-200" />
+                  <p className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-2">Tarde</p>
                   <BloquesChip
                     bloques={tarde}
                     todosBloques={bloques}
@@ -215,7 +215,7 @@ function NuevaReservaHorarioContenido() {
               <button
                 type="button"
                 onClick={() => router.push("/panel/agenda")}
-                className="text-sm text-panel-sidebar underline underline-offset-2"
+                className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
               >
                 Cancelar reserva
               </button>
@@ -268,9 +268,8 @@ function BloquesChip({
   horaSeleccionada: string | null;
   onSeleccionar: (bloque: BloqueConId) => void;
 }) {
-  if (bloques.length === 0) return <p className="text-sm text-brand-muted">Sin bloques en este tramo.</p>;
+  if (bloques.length === 0) return <p className="font-sans text-xs text-slate-400">Sin bloques en este tramo.</p>;
 
-  // Verificar si a partir de un bloque existen 'bloquesRequeridos' consecutivos libres
   function tieneBloquesConsecutivosDisponibles(idxInicio: number): boolean {
     if (idxInicio + bloquesRequeridos > todosBloques.length) return false;
     for (let offset = 0; offset < bloquesRequeridos; offset++) {
@@ -289,37 +288,23 @@ function BloquesChip({
         const seleccionado = bloque.inicio === horaSeleccionada;
         const noDisponible = bloque.estado !== "libre" || !tieneSuficienteTiempo;
 
-        const tooltip =
-          bloque.estado === "ocupado"
-            ? "Bloque ocupado"
-            : bloque.estado === "bloqueado"
-            ? bloque.motivo
-            : !tieneSuficienteTiempo
-            ? `Se requieren ${bloquesRequeridos} bloques consecutivos disponibles`
-            : undefined;
-
         return (
           <button
             key={bloque.id}
             type="button"
             disabled={noDisponible}
-            title={tooltip}
             onClick={() => onSeleccionar(bloque)}
-            className={`flex flex-col items-center justify-center gap-0.5 rounded-lg border px-2 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar ${
+            className={`flex flex-col items-center justify-center gap-0.5 rounded-none border px-2 py-2 text-xs font-sans transition-colors ${
               seleccionado
-                ? "border-panel-sidebar bg-panel-sidebar text-white font-bold"
+                ? "border-[#003366] bg-[#003366] text-white font-bold"
                 : noDisponible
-                  ? "border-brand-border text-brand-border/60 bg-slate-50 line-through cursor-not-allowed"
-                  : "border-brand-border text-panel-sidebar hover:border-panel-sidebar/40"
+                  ? "border-slate-200 text-slate-300 bg-slate-50 line-through cursor-not-allowed"
+                  : "border-slate-200 bg-white text-slate-900 hover:bg-slate-50"
             }`}
           >
             <div className="flex items-center gap-1">
               <span>{formatearRangoHorario(bloque.inicio, bloque.termino)}</span>
-              {seleccionado && (
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                </svg>
-              )}
+              {seleccionado && <span className="text-[10px] font-bold">✓</span>}
             </div>
             {bloquesRequeridos > 1 && !noDisponible && (
               <span className="text-[10px] opacity-75 font-normal">({bloquesRequeridos} bloques)</span>

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { VENTAS_MOCK, VentaMock, MetodoPago, TERMINALES_MOCK } from "@/lib/mock/ventas";
 import { Table, FilaTabla, CeldaChevron, Paginacion } from "@/components/panel/primitives/Table";
-import { NeutralBadge } from "@/components/panel/primitives/Badge";
 import { VentasFiltrosBar } from "@/components/panel/ventas/VentasFiltrosBar";
 import { VentaDetalleModal } from "@/components/panel/ventas/VentaDetalleModal";
 import { NuevaVentaModal } from "@/components/panel/ventas/NuevaVentaModal";
@@ -37,12 +36,11 @@ export default function PlanillaVentasPage() {
   const [modalNuevaVenta, setModalNuevaVenta] = useState(false);
   const [modalConfig, setModalConfig] = useState(false);
 
-  // Filtros soportados por el Backend (fechaDesde/fechaHasta, metodoPago, pacienteId/busqueda)
+  // Filtros
   const [rangoFecha, setRangoFecha] = useState("30dias");
   const [metodoPago, setMetodoPago] = useState("todos");
   const [busquedaPaciente, setBusquedaPaciente] = useState("");
 
-  // Filtrado de lista
   const ventasFiltradas = ventas.filter((v) => {
     if (metodoPago !== "todos" && v.metodoPago !== metodoPago) return false;
     if (
@@ -92,8 +90,8 @@ export default function PlanillaVentasPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      {/* 1. Barra de Filtros Procesables por Backend */}
+    <div className="mx-auto max-w-6xl space-y-4 font-sans shadow-none">
+      {/* Barra de Filtros */}
       <VentasFiltrosBar
         rangoFecha={rangoFecha}
         setRangoFecha={setRangoFecha}
@@ -106,10 +104,10 @@ export default function PlanillaVentasPage() {
         onExportar={handleExportar}
       />
 
-      {/* 2. Tabla Principal de Ventas */}
+      {/* Tabla Principal de Ventas */}
       <Table
         columnas={COLUMNAS}
-        encabezado={<p className="font-bold text-panel-sidebar">{total} ventas registradas</p>}
+        encabezado={<p className="font-sans font-bold text-xs uppercase tracking-wider text-slate-900">{total} ventas registradas</p>}
         pie={
           total > 0 ? (
             <Paginacion
@@ -128,26 +126,26 @@ export default function PlanillaVentasPage() {
           const primerItem = venta.items[0];
           return (
             <FilaTabla key={venta.id} onClick={() => setVentaSeleccionada(venta)}>
-              <td className="px-4 py-3 font-medium text-panel-sidebar">
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-900">
                 {venta.codigoDisplay}
               </td>
-              <td className="px-4 py-3 text-panel-sidebar">{venta.fechaFormateada}</td>
-              <td className="px-4 py-3 text-brand-muted">{venta.pacienteNombre}</td>
-              <td className="px-4 py-3 text-brand-muted">{primerItem?.servicioNombre ?? "Atención"}</td>
-              <td className="px-4 py-3 text-brand-muted whitespace-nowrap">
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">{venta.fechaFormateada}</td>
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">{venta.pacienteNombre}</td>
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">{primerItem?.servicioNombre ?? "Atención"}</td>
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-900 whitespace-nowrap">
                 ${venta.montoBruto.toLocaleString("es-CL")}
               </td>
-              <td className="px-4 py-3 text-brand-muted">{venta.metodoPago}</td>
-              <td className="px-4 py-3 text-brand-muted">{venta.terminalNombre ?? "—"}</td>
-              <td className="px-4 py-3 text-brand-muted">
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">{venta.metodoPago}</td>
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">{venta.terminalNombre ?? "—"}</td>
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">
                 {venta.comisionPosMonto > 0 ? `-$${venta.comisionPosMonto.toLocaleString("es-CL")}` : "$0"}
               </td>
-              <td className="px-4 py-3 text-brand-muted">${venta.ivaMonto.toLocaleString("es-CL")}</td>
-              <td className="px-4 py-3 text-brand-muted">${venta.montoNeto.toLocaleString("es-CL")}</td>
-              <td className="px-4 py-3 text-brand-muted">
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">${venta.ivaMonto.toLocaleString("es-CL")}</td>
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">${venta.montoNeto.toLocaleString("es-CL")}</td>
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">
                 {venta.pagoProfesional ? `$${venta.pagoProfesional.toLocaleString("es-CL")}` : "—"}
               </td>
-              <td className="px-4 py-3 text-brand-muted">
+              <td className="px-4 py-3 font-sans font-medium text-sm text-slate-700">
                 {venta.margenClinica ? `$${venta.margenClinica.toLocaleString("es-CL")}` : "—"}
               </td>
               <CeldaChevron />
@@ -156,7 +154,7 @@ export default function PlanillaVentasPage() {
         })}
       </Table>
 
-      {/* 3. Modales */}
+      {/* Modales */}
       <VentaDetalleModal venta={ventaSeleccionada} onClose={() => setVentaSeleccionada(null)} />
       <NuevaVentaModal
         abierto={modalNuevaVenta}
