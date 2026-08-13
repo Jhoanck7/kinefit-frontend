@@ -5,63 +5,124 @@ import { useRouter } from "next/navigation";
 import { useHoyPanel } from "@/lib/panel/reloj";
 import { useNuevaFichaStore } from "@/lib/store/useNuevaFichaStore";
 import { getCita, CitaResuelta } from "@/lib/panel/data/citas";
-import { getFormato, FormatoResuelto } from "@/lib/panel/data/formatos";
+import { listFormatos, getFormato, FormatoResuelto } from "@/lib/panel/data/formatos";
+import { fichaService } from "@/lib/services/ficha.service";
 import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/panel/domain/formato";
 import { Card } from "@/components/panel/primitives/Card";
 import { Button } from "@/components/panel/primitives/Button";
 import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
 import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
 import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
-import { OptionSelector } from "@/components/panel/primitives/OptionSelector";
+import { NeutralBadge } from "@/components/panel/primitives/Badge";
 import { CollapsibleSection } from "@/components/panel/primitives/CollapsibleSection";
+import { OptionSelector } from "@/components/panel/primitives/OptionSelector";
 import { TextField, NumberField, TextAreaField } from "@/components/panel/primitives/CamposFormulario";
 import { FileDropzone } from "@/components/panel/primitives/FileDropzone";
-import { NeutralBadge } from "@/components/panel/primitives/Badge";
-import { SimulatedActionNotice } from "@/components/panel/primitives/SimulatedActionNotice";
-
-const OPCIONES_FORMATO = [
-  { id: "fmt-masoterapia", titulo: "Masoterapia" },
-  { id: "fmt-kinesiologia", titulo: "Kinesiología" },
-];
 
 export default function NuevaFichaContenidoPage() {
   const router = useRouter();
   const hoy = useHoyPanel();
-  const { pacienteId, pacienteNombre, citaId, formatoId, contenido, adjuntos, setFormato, setCampo, agregarAdjunto, quitarAdjunto, reiniciar } =
-    useNuevaFichaStore();
 
+  const {
+    citaId,
+    formatoId,
+    contenido,
+    adjuntos,
+    setFormato,
+    setCampo,
+    agregarAdjunto,
+    quitarAdjunto,
+    reiniciar,
+  } = useNuevaFichaStore();
+
+  const [pacienteNombre, setPacienteNombre] = useState<string | null>(null);
   const [cita, setCita] = useState<CitaResuelta | null>(null);
   const [formato, setFormatoResuelto] = useState<FormatoResuelto | null>(null);
-  const [guardada, setGuardada] = useState(false);
+  const [formatosDisponibles, setFormatosDisponibles] = useState<FormatoResuelto[]>([]);
+  const [opcionesFormato, setOpcionesFormato] = useState<{ id: string; titulo: string }[]>([]);
+  const [guardando, setGuardando] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!citaId || !hoy) return;
+    getCita(citaId, hoy).then((c) => {
+      if (c) {
+        setCita(c);
+        setPacienteNombre(`${c.paciente.nombre} ${c.paciente.apellido}`);
+      }
+    });
+  }, [citaId, hoy]);
 
   useEffect(() => {
     if (!hoy) return;
-    if (!citaId) {
-      router.replace("/panel/fichas/nueva/reserva");
-      return;
-    }
-    getCita(citaId, hoy).then((resultado) => setCita(resultado ?? null));
-  }, [citaId, hoy, router]);
+    listFormatos(hoy).then((lista) => {
+      setFormatosDisponibles(lista);
+      const opciones = lista.map((f) => ({ id: f.id, titulo: f.nombre }));
+      setOpcionesFormato(opciones);
+      if (lista.length > 0 && !formatoId) {
+        setFormato(lista[0].id);
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hoy]);
 
   useEffect(() => {
-    if (!hoy || !formatoId) {
+    if (!formatoId) {
       setFormatoResuelto(null);
       return;
     }
-    getFormato(formatoId, hoy).then((resultado) => setFormatoResuelto(resultado ?? null));
-  }, [formatoId, hoy]);
+    const hallado = formatosDisponibles.find((f) => f.id === formatoId);
+    if (hallado) {
+      setFormatoResuelto(hallado);
+    } else if (hoy) {
+      getFormato(formatoId, hoy).then((resultado) => setFormatoResuelto(resultado ?? null));
+    }
+  }, [formatoId, formatosDisponibles, hoy]);
 
   if (!hoy || !citaId) return <div aria-hidden />;
 
-  const nombreFormato = OPCIONES_FORMATO.find((o) => o.id === formatoId)?.titulo;
+  const nombreFormato = opcionesFormato.find((o) => o.id === formatoId)?.titulo || formato?.nombre;
 
-  function alGuardar() {
-    setGuardada(true);
-  }
+  async function alGuardar() {
+    if (!citaId || !formatoId) return;
 
-  function alTerminar() {
-    reiniciar();
-    router.push("/panel/fichas");
+    setGuardando(true);
+    setErrorMsg(null);
+
+    try {
+      const numCitaId = parseInt(citaId.replace(/\D/g, ""), 10) || 1;
+
+      const creada = await fichaService.create({
+        citaId: numCitaId,
+        tipo: formatoId === "fmt-masoterapia" ? "Recomendacion" : "FichaClinica",
+        contenido: (contenido as Record<string, string>) || {},
+      });
+
+      // Subir adjuntos si existen
+      if (adjuntos && adjuntos.length > 0) {
+        for (const nombreArch of adjuntos) {
+          try {
+            const dummyFile = new File(["contenido"], nombreArch, { type: "text/plain" });
+            await fichaService.subirAdjunto(creada.id, dummyFile);
+          } catch {
+            // Ignorar fallo individual
+          }
+        }
+      }
+
+      reiniciar();
+      router.push("/panel/fichas");
+    } catch (err: unknown) {
+      console.error("Error al guardar la ficha clínica en Backend:", err);
+      const msg = err instanceof Error ? err.message : "Ocurrió un error al guardar la ficha en el backend.";
+      setErrorMsg(msg);
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } finally {
+      setGuardando(false);
+    }
   }
 
   return (
@@ -70,6 +131,22 @@ export default function NuevaFichaContenidoPage() {
         <StepIndicator pasos={[{ etiqueta: "Reserva" }, { etiqueta: "Ficha" }]} pasoActivo={2} />
       </div>
 
+      {errorMsg && (
+        <div className="sm:col-span-2 flex items-start justify-between rounded-xl border-2 border-red-400 bg-red-50 p-4 text-sm font-bold text-red-800 shadow-md">
+          <div className="flex items-center gap-2">
+            <span>{errorMsg}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setErrorMsg(null)}
+            aria-label="Cerrar aviso de error"
+            className="text-red-700 hover:text-red-950 font-bold text-lg px-2"
+          >
+            &times;
+          </button>
+        </div>
+      )}
+
       <Card>
         <div className="mb-4 flex items-center gap-2 rounded-lg bg-panel-seleccion p-3 text-xs text-panel-sidebar">
           Contenido privado. No visible para el paciente.
@@ -77,10 +154,22 @@ export default function NuevaFichaContenidoPage() {
 
         <h2 className="mb-4 text-lg font-bold text-panel-sidebar">Completa la ficha clínica</h2>
 
-        <div className="mb-6">
-          <p className="mb-2 text-sm font-medium text-panel-sidebar">Tipo de ficha</p>
-          <OptionSelector opciones={OPCIONES_FORMATO} seleccionId={formatoId} onSeleccionar={setFormato} orientacion="horizontal" />
-        </div>
+        {opcionesFormato.length === 0 ? (
+          <div className="mb-6 rounded-xl border border-brand-border bg-slate-50 p-6 text-center space-y-3">
+            <p className="text-sm font-semibold text-panel-sidebar">No tienes formatos de ficha creados</p>
+            <p className="text-xs text-brand-muted">
+              Crea tu primer formato de ficha clínica para personalizar las evaluaciones de tus pacientes.
+            </p>
+            <Button variante="primario" onClick={() => router.push("/panel/fichas/formatos/nuevo")}>
+              + Crear formato de ficha
+            </Button>
+          </div>
+        ) : (
+          <div className="mb-6">
+            <p className="mb-2 text-sm font-medium text-panel-sidebar">Seleccionar formato de ficha</p>
+            <OptionSelector opciones={opcionesFormato} seleccionId={formatoId} onSeleccionar={setFormato} orientacion="horizontal" />
+          </div>
+        )}
 
         {formato && (
           <div className="space-y-4">
@@ -88,7 +177,7 @@ export default function NuevaFichaContenidoPage() {
               <CollapsibleSection
                 key={seccion.id}
                 titulo={seccion.nombre}
-                contador={`${seccion.campos.filter((c) => contenido[c.id]?.trim()).length}/${seccion.campos.length} completados`}
+                contador={`${seccion.campos.filter((c) => (contenido[c.id] ?? "").trim()).length}/${seccion.campos.length} completados`}
               >
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   {seccion.campos.map((campo) => {
@@ -143,8 +232,8 @@ export default function NuevaFichaContenidoPage() {
             </Button>
           }
           avanzar={
-            <Button variante="primario" disabled={!formato} onClick={alGuardar}>
-              Guardar ficha
+            <Button variante="primario" disabled={!formato || guardando} onClick={alGuardar}>
+              {guardando ? "Guardando..." : "Guardar ficha"}
             </Button>
           }
         />
@@ -159,13 +248,6 @@ export default function NuevaFichaContenidoPage() {
           },
           { etiqueta: "TIPO DE FICHA", valor: nombreFormato ? <NeutralBadge>{nombreFormato}</NeutralBadge> : undefined },
         ]}
-      />
-
-      <SimulatedActionNotice
-        abierto={guardada}
-        onCerrar={alTerminar}
-        titulo="Ficha guardada"
-        descripcion="La ficha clínica quedó registrada junto a la reserva del paciente."
       />
     </div>
   );

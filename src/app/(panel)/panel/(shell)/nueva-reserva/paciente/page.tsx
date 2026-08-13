@@ -46,7 +46,7 @@ export default function NuevaReservaPacientePage() {
       setBuscado(false);
       return;
     }
-    buscarPacientes(busqueda).then((r) => {
+    buscarPacientes(busqueda).then((r: PacienteResuelto[]) => {
       setResultados(r);
       setBuscado(true);
     });

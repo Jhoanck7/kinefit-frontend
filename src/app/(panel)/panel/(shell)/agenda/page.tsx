@@ -7,7 +7,8 @@ import { usePanelSessionStore, USUARIO_SESION_PANEL } from "@/lib/store/usePanel
 import { generarRejillaDia } from "@/lib/panel/domain/horario";
 import { diaSemanaId, fechaISO } from "@/lib/panel/domain/formato";
 import { getAgendaDia, CitaResuelta, BloqueoResuelto } from "@/lib/panel/data/citas";
-import { ESPECIALISTAS } from "@/lib/panel/data/_seed/especialistas";
+import { listEspecialistas } from "@/lib/panel/data/especialistas";
+import { Especialista } from "@/lib/panel/domain/tipos";
 import { Card } from "@/components/panel/primitives/Card";
 import { Button } from "@/components/panel/primitives/Button";
 import { TimeGrid } from "@/components/panel/domain/TimeGrid";
@@ -24,19 +25,28 @@ function AgendaContenido() {
   const usuario = usePanelSessionStore((s) => s.usuario) ?? USUARIO_SESION_PANEL;
 
   const [dia, setDia] = useState<Date | null>(null);
+  const [especialistas, setEspecialistas] = useState<Especialista[]>([]);
   const [especialistaSeleccionado, setEspecialistaSeleccionado] = useState<string>("todas");
   const [modalBloqueos, setModalBloqueos] = useState(false);
 
-  // Datos por especialista para la vista comparativa de 3 columnas
+  // Datos por especialista para la vista comparativa de columnas
   const [agendaData, setAgendaData] = useState<
     Record<string, { citas: CitaResuelta[]; bloqueos: BloqueoResuelto[] }>
   >({});
 
+  useEffect(() => {
+    async function cargarListaEspecialistas() {
+      const lista = await listEspecialistas();
+      setEspecialistas(lista);
+    }
+    cargarListaEspecialistas();
+  }, []);
+
   const cargarAgenda = useCallback(() => {
-    if (!dia || !hoy) return;
+    if (!dia || !hoy || especialistas.length === 0) return;
 
     Promise.all(
-      ESPECIALISTAS.map(async (esp) => {
+      especialistas.map(async (esp) => {
         const res = await getAgendaDia(esp.id, dia, hoy);
         return { espId: esp.id, data: res };
       })
@@ -47,7 +57,7 @@ function AgendaContenido() {
       });
       setAgendaData(mapa);
     });
-  }, [dia, hoy]);
+  }, [dia, hoy, especialistas]);
 
   useEffect(() => {
     if (hoy && dia === null) {
@@ -92,17 +102,17 @@ function AgendaContenido() {
   const citaId = searchParams.get("cita");
   const cancelando = searchParams.get("cancelar") === "1";
 
-  // Determinar qué especialistas mostrar (Todas las 3 o 1 individual)
+  // Determinar qué especialistas mostrar (Todas las columnas o 1 individual)
   const especialistasAMostrar =
     especialistaSeleccionado === "todas"
-      ? ESPECIALISTAS
-      : ESPECIALISTAS.filter((e) => e.id === especialistaSeleccionado);
+      ? especialistas
+      : especialistas.filter((e) => e.id === especialistaSeleccionado);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       {/* Controles superiores: Navegación de Fecha + Selector Nativo de Calendario + Filtros */}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        {/* Controles de Navegación por Día y Selector de Fecha Nativo (Navegador/Google) */}
+        {/* Controles de Navegación por Día y Selector de Fecha Nativo */}
         <div className="flex items-center gap-3">
           <div className="flex overflow-hidden rounded-lg border border-brand-border bg-white shadow-sm items-center">
             <button
@@ -130,141 +140,99 @@ function AgendaContenido() {
             </button>
           </div>
 
-          {/* Componente de Fecha Nativo con Selector de Calendario Google/Chrome */}
           <input
             type="date"
             value={fechaISO(dia)}
             onChange={(e) => {
               if (e.target.value) {
-                setDia(new Date(`${e.target.value}T00:00:00`));
+                const [y, m, d] = e.target.value.split("-").map(Number);
+                setDia(new Date(y, m - 1, d));
               }
             }}
-            className="rounded-lg border border-brand-border bg-white px-3 py-1.5 text-sm font-bold text-panel-sidebar focus:border-panel-sidebar focus:outline-none cursor-pointer shadow-sm"
+            className="rounded-lg border border-brand-border bg-white px-3 py-1.5 font-bold text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none cursor-pointer shadow-sm"
           />
         </div>
 
-        {/* Filtro de Especialista y Botón de Gestión de Bloqueos */}
+        {/* Filtro por Especialista + Gestión de Bloqueos + Botón Nueva Reserva */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-brand-muted text-sm">Vista Agenda:</span>
-            <select
-              value={especialistaSeleccionado}
-              onChange={(e) => setEspecialistaSeleccionado(e.target.value)}
-              className="rounded-lg border border-brand-border bg-white px-3 py-1.5 text-sm font-medium text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
-            >
-              <option value="todas">Todas</option>
-              {ESPECIALISTAS.map((esp) => (
-                <option key={esp.id} value={esp.id}>
-                  {esp.nombre} ({esp.cargo})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <Button
-            variante="secundario"
-            onClick={() => setModalBloqueos(true)}
+          <select
+            value={especialistaSeleccionado}
+            onChange={(e) => setEspecialistaSeleccionado(e.target.value)}
+            className="rounded-lg border border-brand-border bg-white px-3 py-2 text-sm font-medium text-panel-sidebar focus:border-panel-sidebar focus:outline-none shadow-sm cursor-pointer"
           >
+            <option value="todas">Todas las especialistas</option>
+            {especialistas.map((esp) => (
+              <option key={esp.id} value={esp.id}>
+                {esp.nombre}
+              </option>
+            ))}
+          </select>
+
+          <Button variante="secundario" onClick={() => setModalBloqueos(true)}>
             Gestión de Bloqueos
           </Button>
+
           <Button
             variante="primario"
-            onClick={() => router.push(`/panel/nueva-reserva/horario?fecha=${fechaISO(dia)}`)}
+            onClick={() => router.push(`/panel/nueva-reserva/servicio`)}
           >
             Nueva reserva
           </Button>
         </div>
       </div>
 
-      {/* Contenedor Único Consolidado */}
-      <Card className="p-0 overflow-hidden space-y-0">
-        {/* Encabezado Unificado con los Nombres de las Especialistas */}
-        <div
-          className={`grid border-b border-brand-border bg-panel-seleccion/40 ${
-            especialistasAMostrar.length === 3 ? "grid-cols-[56px_1fr_1fr_1fr]" : "grid-cols-[56px_1fr]"
-          }`}
-        >
-          <div className="border-r border-brand-border p-3" aria-hidden />
-          {especialistasAMostrar.map((esp, idx) => (
-            <div
-              key={esp.id}
-              className={`p-3 text-center ${
-                idx > 0 ? "border-l border-brand-border" : ""
-              }`}
-            >
-              <p className="font-bold text-panel-sidebar text-sm">{esp.nombre}</p>
-              <p className="text-xs font-medium text-brand-muted">{esp.cargo}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Rejilla Única Pegada Dividida por Líneas Verticales Finas */}
-        <div
-          className={`grid ${
-            especialistasAMostrar.length === 3 ? "grid-cols-[56px_1fr_1fr_1fr]" : "grid-cols-[56px_1fr]"
-          }`}
-        >
-          {/* Columna de Horas (09:00, 10:00...) a la izquierda */}
-          <div className="w-14 border-r border-brand-border">
-            {rejilla.map((bloque) => (
-              <div
-                key={bloque.inicio}
-                style={{ height: 56 }}
-                className="flex items-start justify-end pr-2 pt-1 text-[11px] text-brand-muted font-medium border-b border-brand-border/60"
-              >
-                {bloque.inicio}
+      {/* Parrilla de Tiempo (TimeGrid) Comparativa con columnas según filtro */}
+      <Card className="p-4 sm:p-6 overflow-x-auto">
+        <div className="flex gap-4 min-w-[600px]">
+          {especialistasAMostrar.map((esp, index) => {
+            const data = agendaData[esp.id] ?? { citas: [], bloqueos: [] };
+            return (
+              <div key={esp.id} className="flex-1 min-w-[180px]">
+                <h3 className="mb-3 font-bold text-center text-panel-sidebar text-sm border-b pb-2">
+                  {esp.nombre}
+                </h3>
+                <TimeGrid
+                  rejilla={rejilla}
+                  citas={data.citas}
+                  bloqueos={data.bloqueos}
+                  horaActual={horaActual}
+                  ocultarHoras={index > 0}
+                  onSeleccionarCita={(citaIdSel) => abrirParametros({ cita: citaIdSel })}
+                  onSeleccionarBloqueVacio={() =>
+                    router.push(`/panel/nueva-reserva/servicio`)
+                  }
+                />
               </div>
-            ))}
-          </div>
-
-          {/* Columnas de los Especialistas Pegadas Separadas por Línea Vertical */}
-          <div
-            className={`col-span-${especialistasAMostrar.length} grid ${
-              especialistasAMostrar.length === 3 ? "grid-cols-3 divide-x divide-brand-border" : "grid-cols-1"
-            }`}
-          >
-            {especialistasAMostrar.map((esp) => {
-              const dataEsp = agendaData[esp.id] ?? { citas: [], bloqueos: [] };
-              const { citas, bloqueos } = dataEsp;
-
-              return (
-                <div key={esp.id} className="w-full">
-                  <TimeGrid
-                    rejilla={rejilla}
-                    citas={citas}
-                    bloqueos={bloqueos}
-                    horaActual={horaActual}
-                    ocultarHoras={true}
-                    onSeleccionarCita={(id) => abrirParametros({ cita: id })}
-                    onSeleccionarBloqueVacio={(hora) =>
-                      router.push(`/panel/nueva-reserva/horario?fecha=${fechaISO(dia)}&hora=${hora}`)
-                    }
-                  />
-                </div>
-              );
-            })}
-          </div>
+            );
+          })}
         </div>
       </Card>
 
-      <Card className="py-3 px-4">
-        <Legend />
-      </Card>
+      {/* Leyenda de Estados en la parte inferior */}
+      <Legend />
 
-      <AppointmentDetailModal
-        citaId={citaId}
-        hoy={hoy}
-        onCerrar={() => abrirParametros({ cita: undefined, cancelar: undefined })}
-        onSolicitarCancelacion={() => abrirParametros({ cancelar: "1" })}
-      />
+      {/* Modales de Gestión */}
+      {citaId && !cancelando && (
+        <AppointmentDetailModal
+          citaId={citaId}
+          hoy={hoy}
+          onCerrar={() => abrirParametros({ cita: undefined })}
+          onSolicitarCancelacion={() => abrirParametros({ cita: citaId, cancelar: "1" })}
+        />
+      )}
 
-      <CancelAppointmentModal
-        citaId={citaId}
-        hoy={hoy}
-        abierto={Boolean(citaId) && cancelando}
-        onVolver={() => abrirParametros({ cancelar: undefined })}
-        onConfirmado={() => abrirParametros({ cita: undefined, cancelar: undefined })}
-      />
+      {citaId && cancelando && (
+        <CancelAppointmentModal
+          citaId={citaId}
+          hoy={hoy}
+          abierto={cancelando}
+          onVolver={() => abrirParametros({ cita: citaId, cancelar: undefined })}
+          onConfirmado={() => {
+            abrirParametros({ cita: undefined, cancelar: undefined });
+            cargarAgenda();
+          }}
+        />
+      )}
 
       <GestionBloqueosModal
         abierto={modalBloqueos}

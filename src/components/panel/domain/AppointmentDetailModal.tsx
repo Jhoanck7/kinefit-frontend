@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getCita, CitaResuelta } from "@/lib/panel/data/citas";
 import { definicionEstado, IdAccionCita } from "@/lib/panel/domain/estados";
+import { citaService } from "@/lib/services/cita.service";
 import {
   formatearFechaExtensa,
   formatearFechaHora,
@@ -12,22 +13,11 @@ import { Modal } from "../primitives/Modal";
 import { Button } from "../primitives/Button";
 import { StatusPill } from "../primitives/StatusPill";
 import { OriginBadge } from "../primitives/OriginBadge";
-import { AuditTrail } from "./AuditTrail";
 
-const MENSAJES_ACCION: Record<IdAccionCita, { titulo: string; descripcion: string }> = {
-  confirmar: {
-    titulo: "Cita confirmada",
-    descripcion: "La cita pasó a estado Confirmada. El paciente será notificado.",
-  },
-  marcar_asistida: {
-    titulo: "Cita marcada como asistida",
-    descripcion: "La cita quedó registrada como Atendida.",
-  },
-  marcar_no_asistida: {
-    titulo: "Cita marcada como no asistida",
-    descripcion: "La cita quedó registrada como No asistida.",
-  },
-  cancelar: { titulo: "", descripcion: "" },
+const MAPA_ESTADO_NUEVO: Record<string, string> = {
+  confirmar: "Confirmada",
+  marcar_asistida: "Atendida",
+  marcar_no_asistida: "NoAsistida",
 };
 
 export function AppointmentDetailModal({
@@ -35,19 +25,22 @@ export function AppointmentDetailModal({
   hoy,
   onCerrar,
   onSolicitarCancelacion,
+  onEstadoCambiar,
 }: {
   citaId: string | null;
   hoy: Date;
   onCerrar: () => void;
   onSolicitarCancelacion: () => void;
+  onEstadoCambiar?: () => void;
 }) {
   const [cita, setCita] = useState<CitaResuelta | null>(null);
-  const [confirmacion, setConfirmacion] = useState<{ titulo: string; descripcion: string } | null>(null);
+  const [guardando, setGuardando] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!citaId) {
       setCita(null);
-      setConfirmacion(null);
+      setErrorMsg(null);
       return;
     }
     let cancelado = false;
@@ -60,35 +53,54 @@ export function AppointmentDetailModal({
   }, [citaId, hoy]);
 
   function alCerrar() {
-    setConfirmacion(null);
+    setErrorMsg(null);
     onCerrar();
   }
 
-  function ejecutarAccion(idAccion: IdAccionCita) {
+  async function ejecutarAccion(idAccion: IdAccionCita) {
     if (idAccion === "cancelar") {
       onSolicitarCancelacion();
       return;
     }
-    setConfirmacion(MENSAJES_ACCION[idAccion]);
+
+    const estadoNuevo = MAPA_ESTADO_NUEVO[idAccion];
+    if (!estadoNuevo || !cita) return;
+
+    setGuardando(true);
+    setErrorMsg(null);
+
+    try {
+      await citaService.updateEstado(
+        cita.id,
+        estadoNuevo,
+        undefined,
+        estadoNuevo === "Confirmada" ? "Profesional" : undefined
+      );
+
+      // Recargar datos actualizados de la cita desde el backend
+      const actualizada = await getCita(cita.id, hoy);
+      if (actualizada) setCita(actualizada);
+      onEstadoCambiar?.();
+    } catch (err: unknown) {
+      console.error("Error al actualizar el estado de la cita:", err);
+      setErrorMsg("No se pudo cambiar el estado de la cita en el servidor.");
+    } finally {
+      setGuardando(false);
+    }
   }
 
   return (
     <Modal abierto={Boolean(citaId)} onCerrar={alCerrar}>
       {!cita ? (
         <div className="p-10 text-center text-sm text-brand-muted">Cargando…</div>
-      ) : confirmacion ? (
-        <div className="p-8 text-center">
-          <h2 className="text-lg font-semibold text-panel-sidebar">{confirmacion.titulo}</h2>
-          <p className="mt-2 text-sm text-brand-muted">{confirmacion.descripcion}</p>
-          <p className="mt-3 text-xs italic text-brand-muted">
-            Acción simulada: esto no se guarda realmente en el prototipo.
-          </p>
-          <Button variante="primario" className="mt-6" onClick={alCerrar} autoFocus>
-            Entendido
-          </Button>
-        </div>
       ) : (
-        <DetalleCita cita={cita} onCerrar={alCerrar} onAccion={ejecutarAccion} />
+        <DetalleCita
+          cita={cita}
+          guardando={guardando}
+          errorMsg={errorMsg}
+          onCerrar={alCerrar}
+          onAccion={ejecutarAccion}
+        />
       )}
     </Modal>
   );
@@ -96,10 +108,14 @@ export function AppointmentDetailModal({
 
 function DetalleCita({
   cita,
+  guardando,
+  errorMsg,
   onCerrar,
   onAccion,
 }: {
   cita: CitaResuelta;
+  guardando: boolean;
+  errorMsg: string | null;
   onCerrar: () => void;
   onAccion: (idAccion: IdAccionCita) => void;
 }) {
@@ -127,6 +143,12 @@ function DetalleCita({
         </button>
       </div>
 
+      {errorMsg && (
+        <div className="mx-6 mt-4 rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700 border border-red-200">
+          {errorMsg}
+        </div>
+      )}
+
       <div className="p-6 space-y-6">
         {/* SECCIÓN 1: DATOS DEL PACIENTE */}
         <div className="space-y-2">
@@ -142,18 +164,18 @@ function DetalleCita({
             </div>
             <div className="flex justify-between items-center">
               <span className="text-brand-muted font-medium">RUT:</span>
-              <span className="font-semibold text-panel-sidebar">{cita.paciente.rut}</span>
+              <span className="font-semibold text-panel-sidebar">{cita.paciente.rut || "—"}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-brand-muted font-medium">Contacto:</span>
               <span className="font-medium text-panel-sidebar">
-                {cita.paciente.telefono} | {cita.paciente.correo}
+                {cita.paciente.telefono || "Sin fono"} | {cita.paciente.correo || "Sin correo"}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-brand-muted font-medium">Convenio:</span>
               <span className="font-semibold text-panel-sidebar">
-                {cita.paciente.convenio ? cita.paciente.convenio.nombre : "Particular"}
+                {cita.paciente.convenio?.nombre || "Sin convenio"}
               </span>
             </div>
           </div>
@@ -167,7 +189,7 @@ function DetalleCita({
           <div className="space-y-2 text-sm pt-1">
             <div className="flex justify-between items-center">
               <span className="text-brand-muted font-medium">Servicio:</span>
-              <span className="font-semibold text-panel-sidebar capitalize">{cita.servicio}</span>
+              <span className="font-semibold text-panel-sidebar capitalize">{cita.servicioNombre || cita.servicio}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-brand-muted font-medium">Atiende:</span>
@@ -237,26 +259,6 @@ function DetalleCita({
             </div>
           </div>
         )}
-
-        {/* SECCIÓN 4: HISTORIAL Y TRAZABILIDAD */}
-        <div className="space-y-2">
-          <p className="border-b border-brand-border pb-1.5 text-xs font-bold uppercase tracking-wider text-brand-muted">
-            Historial y Trazabilidad
-          </p>
-          <div className="space-y-1.5 text-sm pt-1">
-            {cita.historial.map((item, idx) => (
-              <div key={idx} className="flex justify-between items-center">
-                <span className="text-brand-muted font-medium">
-                  {formatearFechaHora(item.fecha)}:
-                </span>
-                <span className="font-semibold text-panel-sidebar">
-                  {item.estado.charAt(0).toUpperCase() + item.estado.slice(1)} por {item.responsable}
-                  {item.motivo ? ` (${item.motivo})` : ""}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Botones de acción del pie */}
@@ -269,10 +271,11 @@ function DetalleCita({
               <Button
                 key={accion.id}
                 variante={accion.estilo}
+                disabled={guardando}
                 className="flex-1 sm:flex-initial px-4 py-2 text-sm"
                 onClick={() => onAccion(accion.id)}
               >
-                {accion.etiqueta}
+                {guardando ? "Procesando..." : accion.etiqueta}
               </Button>
             ))}
           </div>

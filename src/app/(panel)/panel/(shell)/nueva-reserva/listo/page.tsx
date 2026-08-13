@@ -26,7 +26,7 @@ export default function NuevaReservaListoPage() {
 
   useEffect(() => {
     if (!fecha || !hora || !pacienteNombre || !servicio) {
-      router.replace("/panel/nueva-reserva/horario");
+      router.replace("/panel/nueva-reserva/servicio");
     }
   }, [fecha, hora, pacienteNombre, servicio, router]);
 
@@ -45,7 +45,7 @@ export default function NuevaReservaListoPage() {
 
   function registrarOtra() {
     reiniciar();
-    router.push("/panel/nueva-reserva/horario");
+    router.push("/panel/nueva-reserva/servicio");
   }
 
   return (

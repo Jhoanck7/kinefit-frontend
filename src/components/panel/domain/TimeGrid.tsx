@@ -19,10 +19,19 @@ function construirFilas(
     const bloque = rejilla[i];
     const cita = citas.find((c) => c.horaInicio === bloque.inicio);
     if (cita) {
-      items.push({ tipo: "cita", inicio: bloque.inicio, bloques: 1, cita });
-      i += 1;
+      let k = 0;
+      let horaActual = cita.horaInicio;
+      const horaTerminoCita = cita.horaTermino || "";
+      while (i + k < rejilla.length && (horaTerminoCita ? horaActual < horaTerminoCita : k < 1)) {
+        horaActual = rejilla[i + k].termino;
+        k += 1;
+      }
+      const numBloques = Math.max(1, k);
+      items.push({ tipo: "cita", inicio: bloque.inicio, bloques: numBloques, cita });
+      i += numBloques;
       continue;
     }
+
     const bloqueo = bloqueos.find((b) => b.horaInicio === bloque.inicio);
     if (bloqueo) {
       let k = 0;
@@ -31,10 +40,12 @@ function construirFilas(
         horaActual = rejilla[i + k].termino;
         k += 1;
       }
-      items.push({ tipo: "bloqueo", inicio: bloque.inicio, bloques: k, bloqueo });
-      i += k;
+      const numBloques = Math.max(1, k);
+      items.push({ tipo: "bloqueo", inicio: bloque.inicio, bloques: numBloques, bloqueo });
+      i += numBloques;
       continue;
     }
+
     items.push({ tipo: "vacio", inicio: bloque.inicio, termino: bloque.termino, bloques: 1 });
     i += 1;
   }
@@ -46,7 +57,7 @@ function minutosDe(hora: string): number {
   return h * 60 + m;
 }
 
-/** Offset en px de la hora actual sobre la rejilla, o `null` si cae fuera de los tramos (p. ej., en la colación). */
+/** Offset en px de la hora actual sobre la rejilla, o `null` si cae fuera de los tramos. */
 function offsetHoraActual(rejilla: { inicio: string; termino: string }[], horaActual: string): number | null {
   const minutosActual = minutosDe(horaActual);
   for (let idx = 0; idx < rejilla.length; idx++) {
@@ -72,7 +83,7 @@ export function TimeGrid({
   rejilla: { inicio: string; termino: string }[];
   citas: CitaResuelta[];
   bloqueos: BloqueoResuelto[];
-  /** Hora "HH:MM" si el día mostrado es hoy; `null` en caso contrario (A-8). */
+  /** Hora "HH:MM" si el día mostrado es hoy; `null` en caso contrario. */
   horaActual: string | null;
   onSeleccionarCita: (citaId: string) => void;
   onSeleccionarBloqueVacio: (hora: string) => void;

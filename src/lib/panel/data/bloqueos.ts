@@ -1,7 +1,6 @@
-import { BLOQUEOS } from "./_seed/bloqueos";
 import { getEspecialista } from "./especialistas";
-import { fechaDesdeOffset } from "./resolver";
 import { BloqueoResuelto } from "./citas";
+import { agendaService } from "@/lib/services/agenda.service";
 
 export interface CrearBloqueoInput {
   especialistaId: string;
@@ -11,62 +10,62 @@ export interface CrearBloqueoInput {
   motivo: string;
 }
 
-const ESTADOS_BLOQUEOS = new Map<string, boolean>();
-const BLOQUEOS_LOCALES: BloqueoResuelto[] = [];
-
 export async function crearBloqueo(input: CrearBloqueoInput): Promise<BloqueoResuelto> {
-  const especialista = await getEspecialista(input.especialistaId);
-  if (!especialista) throw new Error("Especialista no encontrada");
-
-  const id = `bloqueo-${Date.now()}`;
-  const nuevoBloqueo: BloqueoResuelto = {
-    id,
+  const espId = parseInt(input.especialistaId.replace(/\D/g, ""), 10) || 1;
+  const fechaIso = input.fecha.toISOString().split("T")[0];
+  const res = await agendaService.createBloqueo({
+    especialistaId: espId,
+    fechaInicio: fechaIso,
+    fechaFin: fechaIso,
     horaInicio: input.horaInicio,
-    horaTermino: input.horaTermino,
+    horaFin: input.horaTermino,
     motivo: input.motivo,
-    fecha: input.fecha,
-    especialista,
-    activo: true,
+  });
+  const especialista = await getEspecialista(input.especialistaId);
+  return {
+    id: String(res.id),
+    horaInicio: res.horaInicio,
+    horaTermino: res.horaFin,
+    motivo: res.motivo,
+    fecha: new Date(res.fechaInicio),
+    especialista: especialista || { id: input.especialistaId, nombre: res.especialistaNombre || "Especialista", cargo: "Profesional", servicios: ["kinesiologia"] },
+    activo: !res.revertido,
   };
-
-  ESTADOS_BLOQUEOS.set(id, true);
-  BLOQUEOS_LOCALES.unshift(nuevoBloqueo);
-  return nuevoBloqueo;
 }
 
 export async function revertirBloqueo(id: string): Promise<boolean> {
-  const estadoActual = ESTADOS_BLOQUEOS.get(id) ?? true;
-  const nuevoEstado = !estadoActual;
-  ESTADOS_BLOQUEOS.set(id, nuevoEstado);
-
-  const bLocal = BLOQUEOS_LOCALES.find((b) => b.id === id);
-  if (bLocal) {
-    bLocal.activo = nuevoEstado;
+  const numId = parseInt(id.replace(/\D/g, ""), 10);
+  if (!isNaN(numId)) {
+    const res = await agendaService.revertirBloqueo(numId);
+    return !res.revertido;
   }
-  return nuevoEstado;
+  return false;
 }
 
 export async function listBloqueosEspecialista(
   especialistaId: string,
-  hoy: Date
+  _hoy?: Date
 ): Promise<BloqueoResuelto[]> {
-  const especialista = await getEspecialista(especialistaId);
-  if (!especialista) return [];
+  try {
+    const espId = parseInt(especialistaId.replace(/\D/g, ""), 10);
+    if (!isNaN(espId)) {
+      const res = await agendaService.getBloqueos(espId);
+      if (res && Array.isArray(res)) {
+        const especialista = await getEspecialista(especialistaId);
+        return res.map((b) => ({
+          id: String(b.id),
+          horaInicio: b.horaInicio,
+          horaTermino: b.horaFin,
+          motivo: b.motivo,
+          fecha: new Date(b.fechaInicio),
+          especialista: especialista || { id: especialistaId, nombre: b.especialistaNombre || "Especialista", cargo: "Profesional", servicios: ["kinesiologia"] },
+          activo: !b.revertido,
+        }));
+      }
+    }
+  } catch {
+    // Error backend
+  }
 
-  const iniciales = BLOQUEOS.filter((b) => b.especialistaId === especialistaId).map((b) => ({
-    id: b.id,
-    horaInicio: b.horaInicio,
-    horaTermino: b.horaTermino,
-    motivo: b.motivo,
-    fecha: fechaDesdeOffset(hoy, b.offsetDias),
-    especialista,
-    activo: ESTADOS_BLOQUEOS.get(b.id) ?? (b.activo !== false),
-  }));
-
-  const locales = BLOQUEOS_LOCALES.filter((b) => b.especialista.id === especialistaId).map((b) => ({
-    ...b,
-    activo: ESTADOS_BLOQUEOS.get(b.id) ?? (b.activo !== false),
-  }));
-
-  return [...locales, ...iniciales];
+  return [];
 }

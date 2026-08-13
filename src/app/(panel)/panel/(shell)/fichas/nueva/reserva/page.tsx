@@ -7,6 +7,7 @@ import { useNuevaFichaStore } from "@/lib/store/useNuevaFichaStore";
 import { buscarPacientes, PacienteResuelto } from "@/lib/panel/data/pacientes";
 import { reservasDelPaciente, CitaResuelta } from "@/lib/panel/data/citas";
 import { fichaDeLaCita } from "@/lib/panel/data/fichas";
+import { citaService } from "@/lib/services/cita.service";
 import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/panel/domain/formato";
 import { Card } from "@/components/panel/primitives/Card";
 import { Button } from "@/components/panel/primitives/Button";
@@ -24,6 +25,7 @@ export default function NuevaFichaReservaPage() {
   const [busqueda, setBusqueda] = useState("");
   const [resultados, setResultados] = useState<PacienteResuelto[]>([]);
   const [reservas, setReservas] = useState<(CitaResuelta & { conFicha: boolean; fichaId?: string })[]>([]);
+  const [cambiandoEstadoId, setCambiandoEstadoId] = useState<string | null>(null);
 
   useEffect(() => {
     buscarPacientes(busqueda).then(setResultados);
@@ -53,6 +55,32 @@ export default function NuevaFichaReservaPage() {
 
   function seleccionarReserva(cita: CitaResuelta) {
     setReserva(pacienteId!, pacienteNombre!, cita.id);
+  }
+
+  async function cambiarEstadoAAtendida(citaIdStr: string) {
+    setCambiandoEstadoId(citaIdStr);
+    try {
+      const numId = parseInt(citaIdStr.replace(/\D/g, ""), 10);
+      if (!isNaN(numId)) {
+        await citaService.updateEstado(numId, "Atendida");
+        if (pacienteId && hoy) {
+          const citas = await reservasDelPaciente(pacienteId, hoy);
+          const conFichas = await Promise.all(
+            citas.map(async (cita) => {
+              const ficha = await fichaDeLaCita(cita.id, hoy);
+              return { ...cita, conFicha: Boolean(ficha), fichaId: ficha?.id };
+            })
+          );
+          setReservas(conFichas);
+          // Auto seleccionar
+          setReserva(pacienteId, pacienteNombre!, citaIdStr);
+        }
+      }
+    } catch (err) {
+      console.error("Error al actualizar cita a Atendida:", err);
+    } finally {
+      setCambiandoEstadoId(null);
+    }
   }
 
   const citaSeleccionada = reservas.find((r) => r.id === citaId);
@@ -96,18 +124,29 @@ export default function NuevaFichaReservaPage() {
             {reservas.length === 0 ? (
               <EmptyState titulo="Sin reservas" descripcion="Este paciente no tiene reservas registradas." />
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {reservas.map((cita) => {
                   const seleccionada = cita.id === citaId;
+                  const esAtendida = cita.estado === "atendida";
+                  const deshabilitada = cita.conFicha || !esAtendida;
+
                   return (
-                    <li key={cita.id}>
+                    <li key={cita.id} className="space-y-1">
                       <button
                         type="button"
-                        disabled={cita.conFicha}
+                        disabled={deshabilitada}
                         onClick={() => seleccionarReserva(cita)}
-                        title={cita.conFicha ? "Esta reserva ya tiene una ficha asociada" : undefined}
-                        className={`flex w-full items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar disabled:cursor-not-allowed disabled:opacity-60 ${
-                          seleccionada ? "border-panel-sidebar bg-panel-seleccion" : "border-brand-border hover:border-panel-sidebar/40"
+                        title={
+                          cita.conFicha
+                            ? "Esta reserva ya tiene una ficha asociada"
+                            : !esAtendida
+                            ? "La cita debe estar en estado 'Atendida' para asociar una ficha clínica"
+                            : undefined
+                        }
+                        className={`flex w-full items-center justify-between gap-3 rounded-xl border-2 px-4 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar disabled:cursor-not-allowed disabled:opacity-75 ${
+                          seleccionada
+                            ? "border-panel-sidebar bg-panel-seleccion"
+                            : "border-brand-border hover:border-panel-sidebar/40"
                         }`}
                       >
                         <div>
@@ -120,20 +159,45 @@ export default function NuevaFichaReservaPage() {
                         </div>
                         <span
                           className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wide ${
-                            cita.conFicha ? "bg-emerald-100 text-emerald-800" : "bg-blue-100 text-blue-700"
+                            cita.conFicha
+                              ? "bg-emerald-100 text-emerald-800"
+                              : esAtendida
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-amber-100 text-amber-800"
                           }`}
                         >
-                          {cita.conFicha ? "Con ficha" : "Sin ficha"}
+                          {cita.conFicha
+                            ? "Con ficha"
+                            : esAtendida
+                            ? "Atendida (Lista para ficha)"
+                            : `Estado: ${cita.estado}`}
                         </span>
                       </button>
+
                       {cita.conFicha && cita.fichaId && (
                         <button
                           type="button"
                           onClick={() => router.push(`/panel/fichas/${cita.fichaId}`)}
-                          className="mt-1 text-xs text-panel-sidebar underline underline-offset-2"
+                          className="mt-1 text-xs text-panel-sidebar underline underline-offset-2 block"
                         >
                           Abrir la ficha existente
                         </button>
+                      )}
+
+                      {!esAtendida && !cita.conFicha && (
+                        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-amber-50 border border-amber-200 p-2.5 text-xs text-amber-800">
+                          <span>
+                            Esta cita está en estado <strong>&ldquo;{cita.estado}&rdquo;</strong>. Debe estar marcada como <strong>Atendida</strong> para poder asociarle una ficha.
+                          </span>
+                          <Button
+                            variante="secundario"
+                            disabled={cambiandoEstadoId === cita.id}
+                            className="text-xs px-2.5 py-1"
+                            onClick={() => cambiarEstadoAAtendida(cita.id)}
+                          >
+                            {cambiandoEstadoId === cita.id ? "Actualizando..." : "Marcar como Atendida"}
+                          </Button>
+                        </div>
                       )}
                     </li>
                   );
@@ -159,7 +223,7 @@ export default function NuevaFichaReservaPage() {
           avanzar={
             <Button
               variante="primario"
-              disabled={!citaSeleccionada}
+              disabled={!citaSeleccionada || citaSeleccionada.estado !== "atendida"}
               onClick={() => router.push("/panel/fichas/nueva/contenido")}
             >
               Continuar

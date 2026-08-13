@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getFicha, fichasDelPaciente, FichaResuelta } from "@/lib/panel/data/fichas";
-import { getFormato, FormatoResuelto } from "@/lib/panel/data/formatos";
+import { getFormato, obtenerEtiquetaCampo, FormatoResuelto } from "@/lib/panel/data/formatos";
 import { formatearFechaCorta, formatearFechaHora, formatearRangoHorario } from "@/lib/panel/domain/formato";
 import { Modal } from "../primitives/Modal";
 import { Button } from "../primitives/Button";
@@ -178,25 +178,50 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
             </div>
 
             {/* SECCIÓN 2: CAMPOS DEL FORMATO DE FICHA */}
-            {formato?.secciones.map((seccion) => (
-              <div key={seccion.id} className="space-y-2">
-                <p className="border-b border-brand-border pb-1.5 text-xs font-bold uppercase tracking-wider text-brand-muted">
-                  {seccion.nombre}
-                </p>
-                <div className="space-y-2 pt-0.5">
-                  {seccion.campos.map((campo) => (
-                    <div key={campo.id} className="space-y-0.5">
-                      <span className="text-xs font-semibold text-brand-muted uppercase tracking-wide">
-                        {campo.nombre}
-                      </span>
-                      <p className="text-sm font-medium text-panel-sidebar bg-panel-fondo p-2.5 rounded-lg border border-brand-border/60">
-                        {ficha.contenido[campo.id] || "—"}
-                      </p>
-                    </div>
-                  ))}
+            {formato && formato.secciones && formato.secciones.length > 0 ? (
+              formato.secciones.map((seccion) => (
+                <div key={seccion.id} className="space-y-2">
+                  <p className="border-b border-brand-border pb-1.5 text-xs font-bold uppercase tracking-wider text-brand-muted">
+                    {seccion.nombre}
+                  </p>
+                  <div className="space-y-2 pt-0.5">
+                    {seccion.campos.map((campo) => (
+                      <div key={campo.id} className="space-y-0.5">
+                        <span className="text-xs font-semibold text-brand-muted uppercase tracking-wide">
+                          {campo.nombre}
+                        </span>
+                        <p className="text-sm font-medium text-panel-sidebar bg-panel-fondo p-2.5 rounded-lg border border-brand-border/60 whitespace-pre-wrap">
+                          {ficha.contenido[campo.id] || "—"}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              ))
+            ) : (
+              /* Renderizado dinámico de entradas reales en la base de datos */
+              <div className="space-y-2">
+                <p className="border-b border-brand-border pb-1.5 text-xs font-bold uppercase tracking-wider text-brand-muted">
+                  Contenido Clínico Registrado
+                </p>
+                {Object.keys(ficha.contenido).length === 0 ? (
+                  <p className="text-sm text-brand-muted italic py-1">Sin respuestas escritas en esta ficha.</p>
+                ) : (
+                  <div className="space-y-2 pt-0.5">
+                    {Object.entries(ficha.contenido).map(([clave, valor]) => (
+                      <div key={clave} className="space-y-0.5">
+                        <span className="text-xs font-semibold text-brand-muted uppercase tracking-wide">
+                          {obtenerEtiquetaCampo(clave)}
+                        </span>
+                        <p className="text-sm font-medium text-panel-sidebar bg-panel-fondo p-2.5 rounded-lg border border-brand-border/60 whitespace-pre-wrap">
+                          {String(valor || "—")}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            ))}
+            )}
 
             {/* SECCIÓN 3: DOCUMENTOS ADJUNTOS DE RESPALDO (FIC-002) */}
             <div className="space-y-3">

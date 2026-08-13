@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
-import { formatearFechaExtensa } from "@/lib/panel/domain/formato";
+import { fechaISO, formatearFechaExtensa } from "@/lib/panel/domain/formato";
+import { citaService } from "@/lib/services/cita.service";
+import { agendaService } from "@/lib/services/agenda.service";
 import { Card } from "@/components/panel/primitives/Card";
 import { Button } from "@/components/panel/primitives/Button";
 import { TextAreaField } from "@/components/panel/primitives/CamposFormulario";
@@ -30,12 +32,25 @@ const NOMBRE_SERVICIO: Record<string, string> = {
   kinesiologia: "Kinesiología",
 };
 
+const MAPA_SERVICIO_ID: Record<string, number> = {
+  masajes: 1,
+  kinesiologia: 2,
+  embarazadas: 3,
+  masajes_pareja: 4,
+  masajes_premium: 5,
+  masajes_reductivos: 6,
+  voucher_regalo: 7,
+};
+
 export default function NuevaReservaResumenPage() {
   const router = useRouter();
   const {
     fecha,
     hora,
+    bloqueHorarioId,
+    pacienteId,
     pacienteNombre,
+    especialistaId,
     especialistaNombre,
     servicio,
     notaPaciente,
@@ -44,7 +59,10 @@ export default function NuevaReservaResumenPage() {
     setNotaInterna,
     reiniciar,
   } = useNuevaReservaStore();
+
   const [confirmarDescarte, setConfirmarDescarte] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const filasResumen = [
     { etiqueta: "Servicio", valor: servicio ? NOMBRE_SERVICIO[servicio] : undefined, editar: "/panel/nueva-reserva/servicio" },
@@ -54,11 +72,68 @@ export default function NuevaReservaResumenPage() {
     { etiqueta: "Paciente", valor: pacienteNombre || undefined, editar: "/panel/nueva-reserva/paciente" },
   ];
 
+  async function handleConfirmarReserva() {
+    if (!fecha || !hora || !pacienteId || !servicio) {
+      setErrorMsg("Faltan datos obligatorios para registrar la reserva.");
+      return;
+    }
+
+    setGuardando(true);
+    setErrorMsg(null);
+
+    try {
+      const numPacienteId = parseInt(pacienteId.replace(/\D/g, ""), 10) || 1;
+      const numEspecialistaId = especialistaId ? parseInt(especialistaId.replace(/\D/g, ""), 10) || 1 : 1;
+      const numServicioId = MAPA_SERVICIO_ID[servicio] || 2;
+      const fechaStr = fechaISO(fecha);
+
+      let targetBloqueId = bloqueHorarioId;
+
+      // Si no tenemos el bloqueHorarioId directo, resolverlo desde la API /agenda
+      if (!targetBloqueId) {
+        const agendaRes = await agendaService.getAgenda([numEspecialistaId], fechaStr, fechaStr);
+        const dataArr = (agendaRes as any)?.data || (Array.isArray(agendaRes) ? agendaRes : []);
+        const hBuscada = hora.substring(0, 5);
+        const bloqueHallado = dataArr.find((b: any) => b.horaInicio && b.horaInicio.substring(0, 5) === hBuscada);
+        if (bloqueHallado) {
+          targetBloqueId = bloqueHallado.id;
+        }
+      }
+
+      if (!targetBloqueId) {
+        throw new Error("No se encontró el bloque horario seleccionado para esa fecha y hora. Re-selecciona el horario.");
+      }
+
+      await citaService.createManual({
+        pacienteId: numPacienteId,
+        especialistaId: numEspecialistaId,
+        servicioId: numServicioId,
+        bloqueHorarioId: targetBloqueId,
+        notaPaciente: notaPaciente || undefined,
+        notaInterna: notaInterna || undefined,
+      });
+
+      router.push("/panel/nueva-reserva/listo");
+    } catch (err: unknown) {
+      console.error("Error al registrar la cita en Backend:", err);
+      const msg = err instanceof Error ? err.message : "Ocurrió un error al guardar la cita.";
+      setErrorMsg(msg);
+    } finally {
+      setGuardando(false);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="mb-8">
         <StepIndicator pasos={PASOS} pasoActivo={5} />
       </div>
+
+      {errorMsg && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs font-semibold text-red-700">
+          {errorMsg}
+        </div>
+      )}
 
       <Card>
         <h2 className="mb-4 text-lg font-bold text-panel-sidebar">Notas de la reserva (opcional)</h2>
@@ -129,8 +204,8 @@ export default function NuevaReservaResumenPage() {
             </Button>
           }
           avanzar={
-            <Button variante="primario" onClick={() => router.push("/panel/nueva-reserva/listo")}>
-              Confirmar reserva
+            <Button variante="primario" onClick={handleConfirmarReserva} disabled={guardando}>
+              {guardando ? "Registrando..." : "Confirmar reserva"}
             </Button>
           }
         />

@@ -5,6 +5,7 @@ import { Servicio } from "@/lib/panel/domain/tipos";
 interface NuevaReservaState {
   fecha: Date | null;
   hora: string | null;
+  bloqueHorarioId: number | null;
   pacienteId: string | null;
   pacienteNombre: string | null;
   especialistaId: string | null;
@@ -12,7 +13,7 @@ interface NuevaReservaState {
   servicio: Servicio | null;
   notaPaciente: string;
   notaInterna: string;
-  setHorario: (fecha: Date, hora: string) => void;
+  setHorario: (fecha: Date, hora: string, bloqueHorarioId?: number | null) => void;
   setPaciente: (id: string, nombre: string) => void;
   setEspecialista: (id: string, nombre: string) => void;
   setServicio: (servicio: Servicio) => void;
@@ -24,6 +25,7 @@ interface NuevaReservaState {
 const ESTADO_INICIAL = {
   fecha: null,
   hora: null,
+  bloqueHorarioId: null,
   pacienteId: null,
   pacienteNombre: null,
   especialistaId: null,
@@ -35,7 +37,7 @@ const ESTADO_INICIAL = {
 
 export const useNuevaReservaStore = create<NuevaReservaState>()((set) => ({
   ...ESTADO_INICIAL,
-  setHorario: (fecha, hora) => set({ fecha, hora }),
+  setHorario: (fecha, hora, bloqueHorarioId = null) => set({ fecha, hora, bloqueHorarioId: bloqueHorarioId ?? null }),
   setPaciente: (pacienteId, pacienteNombre) => set({ pacienteId, pacienteNombre }),
   setEspecialista: (especialistaId, especialistaNombre) => set({ especialistaId, especialistaNombre }),
   setServicio: (servicio) => set({ servicio }),

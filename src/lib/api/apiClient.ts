@@ -1,5 +1,4 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5147/api';
-//SACAR CUANDO SE SUBA A PROD
 
 class ApiClient {
   private baseUrl: string;
@@ -8,18 +7,32 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
+  private getToken(): string | null {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('kinefit_token') || sessionStorage.getItem('kinefit_token');
+  }
+
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    const headers = {
-      'Content-Type': 'application/json',
-      ...options.headers,
+    const token = this.getToken();
+
+    const headers: Record<string, string> = {
+      ...(options.headers as Record<string, string>),
     };
+
+    if (!(options.body instanceof FormData) && !headers['Content-Type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    if (token && !headers['Authorization']) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
 
     const response = await fetch(url, { ...options, headers });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
-      throw new Error(error.message || `HTTP error! status: ${response.status}`);
+      const error = await response.json().catch(() => ({ message: 'Ocurrió un error en el servidor.' }));
+      throw new Error(error.message || `Error HTTP status: ${response.status}`);
     }
 
     if (response.status === 204) {
@@ -34,18 +47,29 @@ class ApiClient {
   }
 
   async post<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<T> {
+    const body = data instanceof FormData ? data : data !== undefined ? JSON.stringify(data) : undefined;
     return this.request<T>(endpoint, {
       ...options,
       method: 'POST',
-      body: data !== undefined ? JSON.stringify(data) : undefined,
+      body,
     });
   }
 
   async put<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<T> {
+    const body = data instanceof FormData ? data : data !== undefined ? JSON.stringify(data) : undefined;
     return this.request<T>(endpoint, {
       ...options,
       method: 'PUT',
-      body: data !== undefined ? JSON.stringify(data) : undefined,
+      body,
+    });
+  }
+
+  async patch<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<T> {
+    const body = data instanceof FormData ? data : data !== undefined ? JSON.stringify(data) : undefined;
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body,
     });
   }
 

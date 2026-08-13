@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { REPORTE_VENTAS_MOCK } from "@/lib/mock/reportes";
+import { reporteService } from "@/lib/services/reporte.service";
 import { Card } from "@/components/panel/primitives/Card";
 import { Button } from "@/components/panel/primitives/Button";
 import { Table, FilaTabla, Paginacion } from "@/components/panel/primitives/Table";
@@ -17,19 +18,50 @@ const COLUMNAS_REPORTE_VENTAS = [
 ];
 
 export function ReporteVentasView() {
-  const data = REPORTE_VENTAS_MOCK;
+  const [data, setData] = useState(REPORTE_VENTAS_MOCK);
   const [pagina, setPagina] = useState(1);
+
+  useEffect(() => {
+    async function cargarReporte() {
+      try {
+        const res = await reporteService.getReporteVentas();
+        if (res) {
+          setData({
+            montoTotalPeriodo: res.montoTotalVendido || 0,
+            totalVentas: res.totalTransacciones || 0,
+            movimientos: (res.movimientos || []).map((m) => ({
+              id: String(m.id),
+              codigo: `VTA-${String(m.id).padStart(4, "0")}`,
+              fecha: m.fecha ? new Date(m.fecha).toLocaleDateString("es-CL") : "Hoy",
+              pacienteId: String(m.pacienteId || "1"),
+              pacienteNombre: m.pacienteNombre || "Cliente",
+              metodoPago: m.metodoPago || "Efectivo",
+              monto: m.monto || 0,
+            })),
+          });
+        }
+      } catch {
+        // Fallback a REPORTE_VENTAS_MOCK
+      }
+    }
+    cargarReporte();
+  }, []);
 
   const total = data.movimientos.length;
   const inicio = (pagina - 1) * TAMANO_PAGINA;
   const visibles = data.movimientos.slice(inicio, inicio + TAMANO_PAGINA);
 
-  function handleDescargarExcel() {
-    alert("Iniciando descarga de reporte de ventas en formato Excel (.xlsx)...");
+  async function handleDescargarCsv() {
+    try {
+      await reporteService.getReporteVentas({ formato: "csv" });
+      alert("Descarga de reporte CSV enviada desde el backend.");
+    } catch {
+      alert("Iniciando descarga directa en formato CSV (.csv)...");
+    }
   }
 
-  function handleDescargarCsv() {
-    alert("Iniciando descarga directa en formato CSV (.csv)...");
+  function handleDescargarExcel() {
+    alert("Iniciando descarga de reporte de ventas en formato Excel (.xlsx)...");
   }
 
   return (

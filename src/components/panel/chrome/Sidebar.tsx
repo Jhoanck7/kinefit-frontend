@@ -16,7 +16,7 @@ import {
 
 const ITEMS_NAVEGACION = [
   { href: "/panel/agenda", etiqueta: "Agenda", prefijos: ["/panel/agenda", "/panel/horarios"], Icono: IconoAgenda },
-  { href: "/panel/nueva-reserva/horario", etiqueta: "Nueva reserva", prefijos: ["/panel/nueva-reserva"], Icono: IconoNuevaReserva },
+  { href: "/panel/nueva-reserva/servicio", etiqueta: "Nueva reserva", prefijos: ["/panel/nueva-reserva"], Icono: IconoNuevaReserva },
   { href: "/panel/pacientes", etiqueta: "Pacientes", prefijos: ["/panel/pacientes"], Icono: IconoPacientes },
   { href: "/panel/fichas", etiqueta: "Fichas clínicas", prefijos: ["/panel/fichas"], Icono: IconoFichas },
   { href: "/panel/ventas", etiqueta: "Ventas", prefijos: ["/panel/ventas"], Icono: IconoVentas },

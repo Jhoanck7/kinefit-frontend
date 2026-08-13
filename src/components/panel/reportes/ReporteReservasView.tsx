@@ -1,15 +1,45 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { REPORTE_RESERVAS_MOCK } from "@/lib/mock/reportes";
+import { reporteService } from "@/lib/services/reporte.service";
 import { Card } from "@/components/panel/primitives/Card";
 
 export function ReporteReservasView() {
-  const data = REPORTE_RESERVAS_MOCK;
+  const [data, setData] = useState(REPORTE_RESERVAS_MOCK);
+
+  useEffect(() => {
+    async function cargarReporte() {
+      try {
+        const res = await reporteService.getReporteReservas();
+        if (res) {
+          setData((prev) => ({
+            ...prev,
+            kpi: {
+              ...prev.kpi,
+              reservasTotales: res.totalReservas || prev.kpi.reservasTotales,
+              porcentajeOcupacion: res.tasaOcupacionPorcentaje || prev.kpi.porcentajeOcupacion,
+              tasaInasistencias: Math.round(((res.canceladas + res.noAsistidas) / (res.totalReservas || 1)) * 100) || prev.kpi.tasaInasistencias,
+            },
+            distribucionPorEstado: [
+              { estado: "Atendidas", cantidad: res.atendidas || 0, porcentaje: Math.round(((res.atendidas || 0) / (res.totalReservas || 1)) * 100) },
+              { estado: "Canceladas", cantidad: res.canceladas || 0, porcentaje: Math.round(((res.canceladas || 0) / (res.totalReservas || 1)) * 100) },
+              { estado: "No asistidas", cantidad: res.noAsistidas || 0, porcentaje: Math.round(((res.noAsistidas || 0) / (res.totalReservas || 1)) * 100) },
+            ],
+          }));
+        }
+      } catch {
+        // Fallback a REPORTE_RESERVAS_MOCK
+      }
+    }
+    cargarReporte();
+  }, []);
+
   const { kpi, evolucionTemporal, distribucionPorHora, distribucionPorDiaSemana, distribucionPorEstado, origen, rankingServicios, rankingProfesionales, rankingClientes, retencion } = data;
 
-  const maxReservasEvolucion = Math.max(...evolucionTemporal.map((p) => p.reservas));
-  const maxHora = Math.max(...distribucionPorHora.map((p) => p.cantidad));
-  const maxDia = Math.max(...distribucionPorDiaSemana.map((p) => p.cantidad));
+  const maxReservasEvolucion = Math.max(...evolucionTemporal.map((p) => p.reservas), 1);
+  const maxHora = Math.max(...distribucionPorHora.map((p) => p.cantidad), 1);
+  const maxDia = Math.max(...distribucionPorDiaSemana.map((p) => p.cantidad), 1);
 
   return (
     <div className="space-y-6 text-sm text-panel-sidebar">

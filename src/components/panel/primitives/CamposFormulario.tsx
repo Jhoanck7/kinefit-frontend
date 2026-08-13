@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes, useId } from "react";
 
 const CLASE_CONTROL =
   "w-full rounded-lg border border-brand-border bg-white px-3.5 py-2.5 text-sm text-panel-sidebar placeholder:text-brand-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar focus-visible:border-panel-sidebar transition-colors";
@@ -111,7 +111,8 @@ export function SwitchField({
   onChange: (valor: boolean) => void;
   id?: string;
 }) {
-  const inputId = id ?? etiqueta.toLowerCase().replace(/\s+/g, "-");
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
   return (
     <label htmlFor={inputId} className="inline-flex items-center gap-2 cursor-pointer select-none">
       <span
