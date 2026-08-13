@@ -114,20 +114,7 @@ export default function GallerySection({ config }: { config: LandingConfigData }
                         <p className="text-sm sm:text-base md:text-lg text-slate-200 leading-relaxed mb-6 max-w-3xl">
                           {slide.description}
                         </p>
-                        
-                        {/* Features Tags */}
-                        {slide.features && slide.features.length > 0 && (
-                          <div className="flex flex-wrap gap-2.5">
-                            {slide.features.map((feature) => (
-                              <span
-                                key={feature}
-                                className="bg-brand-primary/90 text-white rounded-none px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-brand-primary"
-                              >
-                                {feature}
-                              </span>
-                            ))}
-                          </div>
-                        )}
+
                       </div>
                     </div>
                   </div>

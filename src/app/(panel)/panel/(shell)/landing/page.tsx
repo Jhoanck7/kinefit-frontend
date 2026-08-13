@@ -269,6 +269,15 @@ export default function ConfigLandingPage() {
                   {/* DYNAMIC FORM RENDERING */}
                   {renderDynamicFields(seccionActiva)}
 
+                  {seccionActiva === "team" && (
+                    <div className="mt-6 rounded-xl border border-blue-200 bg-blue-50 p-4">
+                      <p className="text-sm text-blue-800 flex items-start gap-2">
+                        <svg className="w-5 h-5 shrink-0 mt-0.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span><strong>Nota:</strong> Las cartas de los especialistas (foto, nombre, rol, especialidad) se configuran individualmente en la sección <strong>Especialistas</strong> del menú lateral izquierdo.</span>
+                      </p>
+                    </div>
+                  )}
+
                   {/* CUSTOM RENDERERS FOR ARRAYS */}
                   {seccionActiva === "process" && (
                     <div className="space-y-4 pt-4 border-t border-slate-200 mt-4">
@@ -284,7 +293,7 @@ export default function ConfigLandingPage() {
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <TextField etiqueta="Título del Paso" value={step.title} onChange={(e) => handleProcessStepChange(idx, "title", e.target.value)} obligatorio />
-                            <TextField etiqueta="Nombre Icono (opcional)" value={(step as any).iconName || ""} onChange={(e) => handleProcessStepChange(idx, "iconName" as any, e.target.value)} />
+                            <TextField etiqueta="Número (ej: 01)" value={step.num} onChange={(e) => handleProcessStepChange(idx, "num", e.target.value)} obligatorio />
                           </div>
                           <div>
                             <label className="mb-1 block text-xs font-medium text-panel-sidebar">Descripción</label>
