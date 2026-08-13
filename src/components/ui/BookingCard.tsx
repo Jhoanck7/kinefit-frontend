@@ -176,7 +176,7 @@ export default function BookingCard() {
 
   if (success && webpayData) {
     return (
-      <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 bg-white">
+      <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 bg-transparent">
         <div className="w-16 h-16 rounded-full bg-red-100 border-2 border-red-500 flex items-center justify-center text-red-600 text-3xl mb-4 font-bold">
           💳
         </div>
@@ -209,7 +209,7 @@ export default function BookingCard() {
 
   if (success && !webpayData) {
     return (
-      <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 bg-white">
+      <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 bg-transparent">
         <div className="w-16 h-16 rounded-full bg-emerald-100 border-2 border-emerald-600 flex items-center justify-center text-emerald-600 text-3xl mb-6 font-bold">
           ✓
         </div>
@@ -228,7 +228,7 @@ export default function BookingCard() {
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-[400px] justify-between p-1 bg-white">
+    <div className="flex-1 flex flex-col min-h-[400px] justify-between p-1 bg-transparent">
       
       {isLoading && (
         <div className="absolute inset-0 bg-white/90 flex items-center justify-center z-50 rounded-2xl border-2 border-slate-200">

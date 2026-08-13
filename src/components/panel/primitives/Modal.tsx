@@ -22,19 +22,30 @@ export function Modal({
 }) {
   const contenedorRef = useRef<HTMLDivElement>(null);
   const disparadorRef = useRef<HTMLElement | null>(null);
+  const onCerrarRef = useRef(onCerrar);
+
+  useEffect(() => {
+    onCerrarRef.current = onCerrar;
+  }, [onCerrar]);
 
   useEffect(() => {
     if (!abierto) return;
     disparadorRef.current = document.activeElement as HTMLElement;
-    const contenedor = contenedorRef.current;
-    const focusables = contenedor?.querySelectorAll<HTMLElement>(SELECTOR_FOCUSABLES);
-    focusables?.[0]?.focus();
+    
+    // Esperar un frame para que los hijos se rendericen
+    requestAnimationFrame(() => {
+      const contenedor = contenedorRef.current;
+      const focusables = contenedor?.querySelectorAll<HTMLElement>(SELECTOR_FOCUSABLES);
+      focusables?.[0]?.focus();
+    });
 
     function onKeyDown(evento: KeyboardEvent) {
       if (evento.key === "Escape") {
-        onCerrar();
+        onCerrarRef.current();
         return;
       }
+      const contenedor = contenedorRef.current;
+      const focusables = contenedor?.querySelectorAll<HTMLElement>(SELECTOR_FOCUSABLES);
       if (evento.key !== "Tab" || !focusables || focusables.length === 0) return;
       const primero = focusables[0];
       const ultimo = focusables[focusables.length - 1];
@@ -52,7 +63,7 @@ export function Modal({
       document.removeEventListener("keydown", onKeyDown);
       disparadorRef.current?.focus();
     };
-  }, [abierto, onCerrar]);
+  }, [abierto]);
 
   if (!abierto) return null;
 

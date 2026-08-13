@@ -16,15 +16,18 @@ export interface BackendService {
 // Specialist Controller
 export interface BackendSpecialist {
   id: number;
-  sanityId?: string;
   nombre: string;
   cargo: string;
-  servicio: {
+  email?: string;
+  descripcion?: string;
+  fotoUrl?: string;
+  servicio?: {
     id: number;
     nombre: string;
-  };
+  } | null;
   activo: boolean;
   fechasDisponibles?: string[];
+
 }
 
 // TimeSlot / BloqueHorario Controller

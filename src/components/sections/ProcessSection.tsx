@@ -1,13 +1,21 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CLINIC_PROCESS_STEPS } from '@/lib/constants';
+import { landingConfigService, LandingConfigData, defaultLandingConfig, ProcessStepItem, defaultProcessSteps } from '@/lib/services/landingConfig.service';
 
-const STEPS = CLINIC_PROCESS_STEPS;
+export default function ProcessSection({ config }: { config: LandingConfigData }) {
+  let steps = defaultProcessSteps;
+  if (config.processStepsJson) {
+    try {
+      const parsed = JSON.parse(config.processStepsJson);
+      if (Array.isArray(parsed) && parsed.length > 0) steps = parsed;
+    } catch {}
+  }
 
-export default function ProcessSection() {
+
   return (
-    <section id="process" className="py-24 bg-gradient-to-b from-slate-50 via-blue-50/10 to-slate-50 border-b border-slate-200/60 text-slate-900 relative overflow-hidden">
+    <section id="process" className="py-24 bg-white border-b border-slate-200/60 text-slate-900 relative overflow-hidden">
       
       {/* Background soft glow decoration */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-blue-500/5 rounded-full filter blur-[150px] pointer-events-none -z-20" />
@@ -33,10 +41,10 @@ export default function ProcessSection() {
             El Proceso
           </h2>
           <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            ¿Cómo Trabajamos Contigo?
+            {config.processTitle || "¿Cómo Funciona Tu Atención en KineFit Chile?"}
           </p>
           <p className="text-slate-500 mt-4 text-base sm:text-lg">
-            Te acompañamos paso a paso con un plan ordenado y supervisado para garantizar resultados duraderos y seguros. A continuación te indicamos el paso a paso de los procesos realizados en nuestros pacientes.
+            {config.processSubtitle || "Un método estructurado paso a paso diseñado para garantizar tu pronta recuperación y bienestar duradero."}
           </p>
         </div>
 
@@ -80,9 +88,9 @@ export default function ProcessSection() {
 
           {/* Steps Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {STEPS.map((step) => (
+            {steps.map((step, idx) => (
               <div 
-                key={step.num}
+                key={idx}
                 className="group bg-white rounded-3xl border border-slate-200/60 p-8 shadow-sm hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>

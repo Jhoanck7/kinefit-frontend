@@ -167,8 +167,18 @@ function AgendaContent() {
 }
 
 export default function AgendaPage() {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="h-full" aria-hidden="true" />;
+  }
+
   return (
-    <Suspense fallback={<div className="h-full" aria-hidden />}>
+    <Suspense fallback={<div className="h-full" aria-hidden="true" />}>
       <AgendaContent />
     </Suspense>
   );

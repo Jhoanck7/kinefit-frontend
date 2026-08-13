@@ -38,8 +38,7 @@ export const NAV_LINKS = [
 
 // 3. Hero Section Copy
 export const HERO_COPY = {
-  tagline: "Centro de kinesiología,",
-  brandName: "rehabilitación y masoterapia",
+  tagline: "Centro de kinesiología,   rehabilitación y masoterapia",
   description: "En KineFit Chile combinamos rehabilitación kinésica avanzada y entrenamiento funcional de alto nivel. Diseñamos un plan de tratamiento a tu medida para sanar lesiones, recuperar movilidad y potenciar tu rendimiento físico.",
   ctaText: "VER Y AGENDAR SERVICIOS AHORA",
   ctaLink: "#agendamiento",

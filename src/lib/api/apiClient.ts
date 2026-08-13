@@ -10,12 +10,15 @@ class ApiClient {
   private async request<T>(
     endpoint: string, 
     options: RequestInit = {}, 
+    data?: unknown,
     token?: string, 
     apiKey?: string
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    
+    const isFormData = data instanceof FormData;
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(options.headers as Record<string, string>),
     };
 
@@ -27,7 +30,13 @@ class ApiClient {
       headers['Api-Key'] = apiKey;
     }
 
-    const response = await fetch(url, { ...options, headers });
+    const body = isFormData 
+      ? (data as FormData) 
+      : data !== undefined 
+        ? JSON.stringify(data) 
+        : undefined;
+
+    const response = await fetch(url, { ...options, headers, body });
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -47,35 +56,23 @@ class ApiClient {
   }
 
   async get<T>(endpoint: string, options?: RequestInit, token?: string, apiKey?: string): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'GET' }, token, apiKey);
+    return this.request<T>(endpoint, { ...options, method: 'GET' }, undefined, token, apiKey);
   }
 
   async post<T>(endpoint: string, data?: unknown, options?: RequestInit, token?: string, apiKey?: string): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: 'POST',
-      body: data !== undefined ? JSON.stringify(data) : undefined,
-    }, token, apiKey);
+    return this.request<T>(endpoint, { ...options, method: 'POST' }, data, token, apiKey);
   }
 
   async put<T>(endpoint: string, data?: unknown, options?: RequestInit, token?: string, apiKey?: string): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: 'PUT',
-      body: data !== undefined ? JSON.stringify(data) : undefined,
-    }, token, apiKey);
+    return this.request<T>(endpoint, { ...options, method: 'PUT' }, data, token, apiKey);
   }
 
   async patch<T>(endpoint: string, data?: unknown, options?: RequestInit, token?: string, apiKey?: string): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: 'PATCH',
-      body: data !== undefined ? JSON.stringify(data) : undefined,
-    }, token, apiKey);
+    return this.request<T>(endpoint, { ...options, method: 'PATCH' }, data, token, apiKey);
   }
 
   async delete<T>(endpoint: string, options?: RequestInit, token?: string, apiKey?: string): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'DELETE' }, token, apiKey);
+    return this.request<T>(endpoint, { ...options, method: 'DELETE' }, undefined, token, apiKey);
   }
 }
 
