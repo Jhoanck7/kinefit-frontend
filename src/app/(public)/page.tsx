@@ -5,27 +5,25 @@ import ProcessSection from "@/components/sections/ProcessSection";
 import TeamSection from "@/components/sections/TeamSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import LocationSection from "@/components/sections/LocationSection";
-import { sanityService } from "@/lib/services/sanity.service";
+import { landingConfigService } from "@/lib/services/landingConfig.service";
+import { specialistService } from "@/lib/services/specialist.service";
 
 
 export default async function Home() {
-  // Realizar consultas a Sanity CMS en paralelo desde el servidor
-  const [sanityGallery, sanityTeam, sanityTestimonials] = await Promise.all([
-    sanityService.getGallery(),
-    sanityService.getTeam(),
-    sanityService.getTestimonials(),
-  ]);
+  // SSR: Obtener toda la configuración de la Landing Page desde el servidor 
+  // una sola vez antes de renderizar (evita múltiples peticiones desde el cliente)
+  const config = await landingConfigService.getConfig();
+  const specialists = await specialistService.getEspecialistas(undefined, true);
 
   return (
     <main>
-      <HeroSection />
-      <AboutSection />
-      <TeamSection initialTeam={sanityTeam} />
-      <TestimonialsSection initialTestimonials={sanityTestimonials} />
-      <ProcessSection />
-      <GallerySection initialSlides={sanityGallery} />
-      <LocationSection />
-   
+      <HeroSection config={config} />
+      <AboutSection config={config} />
+      <TeamSection config={config} initialTeam={specialists} />
+      <TestimonialsSection config={config} />
+      <ProcessSection config={config} />
+      <GallerySection config={config} />
+      <LocationSection config={config} />
     </main>
   );
 }

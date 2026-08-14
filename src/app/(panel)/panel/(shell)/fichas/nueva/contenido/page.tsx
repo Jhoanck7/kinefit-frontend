@@ -22,8 +22,8 @@ import { FileDropzone } from "@/components/panel/primitives/FileDropzone";
 export default function NuevaFichaContenidoPage() {
   const router = useRouter();
   const hoy = useHoyPanel();
-
   const {
+    pacienteNombre,
     citaId,
     formatoId,
     contenido,
@@ -35,7 +35,6 @@ export default function NuevaFichaContenidoPage() {
     reiniciar,
   } = useNuevaFichaStore();
 
-  const [pacienteNombre, setPacienteNombre] = useState<string | null>(null);
   const [cita, setCita] = useState<CitaResuelta | null>(null);
   const [formato, setFormatoResuelto] = useState<FormatoResuelto | null>(null);
   const [formatosDisponibles, setFormatosDisponibles] = useState<FormatoResuelto[]>([]);
@@ -48,7 +47,6 @@ export default function NuevaFichaContenidoPage() {
     getCita(citaId, hoy).then((c) => {
       if (c) {
         setCita(c);
-        setPacienteNombre(`${c.paciente.nombre} ${c.paciente.apellido}`);
       }
     });
   }, [citaId, hoy]);

@@ -1,11 +1,13 @@
 "use client";
 
-import React from 'react';
-import { CLINIC_INFO } from '@/lib/constants';
+import React, { useEffect, useState } from 'react';
+import { landingConfigService, LandingConfigData, defaultLandingConfig } from '@/lib/services/landingConfig.service';
 
-export default function LocationSection() {
+export default function LocationSection({ config }: { config: LandingConfigData }) {
+
+  const address = config.clinicAddress || "Pje. Maximiliano Poblete 596, Antofagasta";
   const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(
-    CLINIC_INFO.address
+    address
   )}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
 
   return (
@@ -22,17 +24,17 @@ export default function LocationSection() {
               Ubicación
             </h2>
             <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-6">
-              ¿Cómo Llegar?
+              {config.locationTitle || "Visítanos en Antofagasta"}
             </p>
-            <p className="text-brand-muted text-base mb-8 leading-relaxed">
-              Estamos ubicados en el sector centro de Antofagasta.
+            <p className="text-slate-600 text-base mb-8 leading-relaxed">
+              {config.locationSubtitle || "Estamos ubicados en un sector accesible de Antofagasta para brindarte la mejor atención kinésica."}
             </p>
 
             {/* Location Cards */}
             <div className="space-y-6 w-full">
               {/* Address Card */}
-              <div className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200/50">
-                <div className="w-10 h-10 rounded-xl bg-brand-primary-glow flex items-center justify-center text-brand-primary shrink-0">
+              <div className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200/50 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -40,66 +42,55 @@ export default function LocationSection() {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 mb-1">Dirección</h3>
-                  <p className="text-xs text-brand-muted leading-relaxed">{CLINIC_INFO.address}</p>
+                  <p className="text-xs text-slate-600 leading-relaxed">{address}</p>
                 </div>
               </div>
 
-              {/* Contact Card */}
-              {/* <div className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200/50">
-                <div className="w-10 h-10 rounded-xl bg-brand-primary-glow flex items-center justify-center text-brand-primary shrink-0">
+              {/* Hours Card */}
+              <div className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200/50 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900 mb-1">Contacto Directo</h4>
-                  <p className="text-xs text-brand-muted leading-relaxed mb-1">Teléfono: {CLINIC_INFO.phone}</p>
-                  <p className="text-xs text-brand-muted leading-relaxed">Email: {CLINIC_INFO.email}</p>
+                  <h3 className="text-sm font-bold text-slate-900 mb-1">Horarios de Atención</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {config.hoursWeekday || "Lunes a Viernes: 09:00 - 21:00 hrs."}
+                  </p>
+                  <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+                    {config.hoursSaturday || "Sábados: 10:00 - 20:00 hrs."}
+                  </p>
                 </div>
-              </div> */}
+              </div>
             </div>
 
-            {/* External buttons */}
-            <div className="flex flex-wrap gap-4 mt-8 w-full">
+            {/* Direct Google Maps Navigation Button */}
+            <div className="mt-8 w-full">
               <a
-                href={`https://maps.google.com/?q=${encodeURIComponent(CLINIC_INFO.address)}`}
+                href={config.googleReviewsUrl || `https://maps.google.com/?q=${encodeURIComponent(address)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 min-w-[160px] text-center py-3 bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-md shadow-brand-primary/20 transition-all duration-300"
+                className="w-full inline-flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-primary/90 text-white font-bold text-xs uppercase tracking-wider px-6 py-4 rounded-xl shadow-md transition-all cursor-pointer"
               >
-                Abrir en Google Maps
+                <span>Abrir Dirección en Google Maps ↗</span>
               </a>
-              {/* <a
-                href={`https://waze.com/ul?q=${encodeURIComponent(CLINIC_INFO.address)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 min-w-[160px] text-center py-3 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold rounded-xl text-xs uppercase tracking-wider border border-slate-200 transition-all duration-300"
-              >
-                Abrir en Waze
-              </a> */}
             </div>
+
           </div>
 
-          {/* Right Column: Google Maps Iframe Container with Decorative Background */}
-          <div className="lg:col-span-7 relative w-full h-[350px] sm:h-[450px] group">
-            {/* 1. Technical Dots Pattern Background (Projects beyond borders) */}
-            <div className="absolute -inset-6 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] bg-[size:20px_20px] opacity-60 -z-20 rounded-[40px] pointer-events-none" />
-            
-            {/* 2. Soft Glowing Gradient Backdrop (Vibrant Brand Colors Aura) */}
-            <div className="absolute -inset-2 bg-gradient-to-tr from-brand-primary/20 via-indigo-500/20 to-purple-500/10 rounded-[36px] blur-xl opacity-80 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-500 -z-10 pointer-events-none" />
-            
-            {/* 3. The actual Card container holding the Map IFrame */}
-            <div className="w-full h-full rounded-3xl overflow-hidden border border-slate-200 shadow-2xl bg-white relative">
+          {/* Right Column: Google Maps Embed Frame */}
+          <div className="lg:col-span-7">
+            <div className="w-full h-[400px] lg:h-[480px] rounded-3xl overflow-hidden border border-slate-200 shadow-xl bg-slate-100 relative">
               <iframe
+                title="KineFit Chile Ubicación en Google Maps"
                 src={mapUrl}
                 width="100%"
                 height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
+                className="border-0 filter contrast-105"
+                allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Google Maps Kinefit"
-                className="w-full h-full grayscale-[10%] contrast-[105%] group-hover:grayscale-0 transition-all duration-700"
               />
             </div>
           </div>

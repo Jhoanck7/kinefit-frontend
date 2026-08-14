@@ -9,6 +9,8 @@ import {
   IconoNuevaReserva,
   IconoPacientes,
   IconoFichas,
+  IconoEspecialistas,
+  IconoLanding,
   IconoCerrarSesion,
   IconoVentas,
   IconoReportes,
@@ -19,8 +21,10 @@ const ITEMS_NAVEGACION = [
   { href: "/panel/nueva-reserva/servicio", etiqueta: "Nueva reserva", prefijos: ["/panel/nueva-reserva"], Icono: IconoNuevaReserva },
   { href: "/panel/pacientes", etiqueta: "Pacientes", prefijos: ["/panel/pacientes"], Icono: IconoPacientes },
   { href: "/panel/fichas", etiqueta: "Fichas clínicas", prefijos: ["/panel/fichas"], Icono: IconoFichas },
+  { href: "/panel/especialistas", etiqueta: "Especialistas", prefijos: ["/panel/especialistas"], Icono: IconoEspecialistas },
   { href: "/panel/ventas", etiqueta: "Ventas", prefijos: ["/panel/ventas"], Icono: IconoVentas },
   { href: "/panel/reportes", etiqueta: "Reportes", prefijos: ["/panel/reportes"], Icono: IconoReportes },
+  { href: "/panel/landing", etiqueta: "Configuración Landing", prefijos: ["/panel/landing"], Icono: IconoLanding },
 ];
 
 /**

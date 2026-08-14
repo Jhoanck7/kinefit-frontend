@@ -67,7 +67,8 @@ function NuevaReservaHorarioContenido() {
   const usuario = usePanelSessionStore((s) => s.usuario) ?? USUARIO_SESION_PANEL;
   const { fecha, hora, pacienteNombre, especialistaNombre, especialistaId, servicio, setHorario, setPaciente } = useNuevaReservaStore();
 
-  const [mesVisible, setMesVisible] = useState<Date | null>(null);
+  const [mesVisibleState, setMesVisible] = useState<Date | null>(null);
+  const mesVisible = mesVisibleState ?? (hoy ? new Date(hoy.getFullYear(), hoy.getMonth(), 1) : null);
   const [bloques, setBloques] = useState<BloqueConId[]>([]);
 
   const duracionMin = servicio ? (DURACION_MINUTOS_SERVICIO[servicio] ?? 60) : 60;
@@ -75,7 +76,6 @@ function NuevaReservaHorarioContenido() {
 
   useEffect(() => {
     if (!hoy) return;
-    if (mesVisible === null) setMesVisible(new Date(hoy.getFullYear(), hoy.getMonth(), 1));
 
     const fechaParam = searchParams.get("fecha");
     const horaParam = searchParams.get("hora");
@@ -318,7 +318,7 @@ function BloquesChip({
 
 export default function NuevaReservaHorarioPage() {
   return (
-    <Suspense fallback={<div aria-hidden />}>
+    <Suspense fallback={<div className="h-full" aria-hidden />}>
       <NuevaReservaHorarioContenido />
     </Suspense>
   );

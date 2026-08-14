@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { pacienteConRut, RUT_DEMO_YA_EXISTENTE } from "@/lib/panel/data/pacientes";
 import { listConvenios } from "@/lib/panel/data/convenios";
@@ -174,7 +174,7 @@ function RegistrarPacienteContenido() {
 
 export default function RegistrarPacientePage() {
   return (
-    <Suspense fallback={<div aria-hidden />}>
+    <Suspense fallback={<div className="h-full" aria-hidden />}>
       <RegistrarPacienteContenido />
     </Suspense>
   );
