@@ -1,4 +1,4 @@
-name: Deploy Frontend
+name: Deploy Frontend (Docker)
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy via SSH
+      - name: Deploy via SSH (Docker)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_IP }}
@@ -21,7 +21,12 @@ jobs:
             # NOTA: Cambia "/var/www/kinefit-frontend" por la ruta real en tu VPS
             cd /var/www/kinefit-frontend
             git pull origin merge-branch
-            npm install
-            npm run build
-            # Si usas pm2 para mantenerlo vivo (recomendado)
-            pm2 restart kinefit-frontend || pm2 start npm --name "kinefit-frontend" -- start
+            
+            # Construir la imagen de Docker
+            docker build -t kinefit-frontend .
+            
+            # Detener y eliminar el contenedor viejo si existe
+            docker rm -f kinefit-frontend-container || true
+            
+            # Levantar el nuevo contenedor en el puerto 3000
+            docker run -d --name kinefit-frontend-container --restart always -p 3000:3000 kinefit-frontend
