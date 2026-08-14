@@ -2,14 +2,18 @@
 
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { usePanelSessionStore, USUARIO_SESION_PANEL } from "@/lib/store/usePanelSessionStore";
+
+import {
+  usePanelSessionStore,
+  USUARIO_SESION_PANEL,
+} from "@/lib/store/usePanelSessionStore";
 
 function iniciales(nombre: string): string {
   return nombre
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
-    .map((parte) => parte[0])
+    .map(parte => parte[0])
     .join("")
     .toUpperCase();
 }
@@ -19,7 +23,10 @@ const TITULOS_POR_RUTA: { prefijo: string; titulo: string }[] = [
   { prefijo: "/panel/pacientes/nuevo", titulo: "Registrar Paciente" },
   { prefijo: "/panel/pacientes", titulo: "Pacientes" },
   { prefijo: "/panel/fichas", titulo: "Fichas clínicas" },
-  { prefijo: "/panel/ventas", titulo: "Planilla de Ventas y Registro de Cobros" },
+  {
+    prefijo: "/panel/ventas",
+    titulo: "Planilla de Ventas y Registro de Cobros",
+  },
   { prefijo: "/panel/reportes", titulo: "Reportes y Métricas" },
   { prefijo: "/panel/agenda/bloqueos", titulo: "Bloqueos de agenda" },
   { prefijo: "/panel/agenda", titulo: "Agenda" },
@@ -27,7 +34,10 @@ const TITULOS_POR_RUTA: { prefijo: string; titulo: string }[] = [
 ];
 
 function tituloDeLaRuta(pathname: string): string {
-  return TITULOS_POR_RUTA.find((t) => pathname.startsWith(t.prefijo))?.titulo ?? "Panel Administrativo";
+  return (
+    TITULOS_POR_RUTA.find(t => pathname.startsWith(t.prefijo))?.titulo ??
+    "Panel Administrativo"
+  );
 }
 
 /**
@@ -37,8 +47,8 @@ function tituloDeLaRuta(pathname: string): string {
  * - Botón de cerrar sesión sobrio y limpio
  */
 export function Header() {
-  const usuario = usePanelSessionStore((s) => s.usuario) ?? USUARIO_SESION_PANEL;
-  const salir = usePanelSessionStore((s) => s.salir);
+  const usuario = usePanelSessionStore(s => s.usuario) ?? USUARIO_SESION_PANEL;
+  const salir = usePanelSessionStore(s => s.salir);
   const pathname = usePathname();
   const titulo = tituloDeLaRuta(pathname);
 
@@ -49,10 +59,14 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-8 font-sans shadow-none">
-      <h1 className="text-xs font-bold uppercase tracking-widest text-slate-900 font-sans">{titulo}</h1>
+      <h1 className="text-xs font-bold uppercase tracking-widest text-slate-900 font-sans">
+        {titulo}
+      </h1>
       <div className="flex items-center gap-4 font-sans">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-700">{usuario.nombre}</span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-700">
+            {usuario.nombre}
+          </span>
           <span className="flex h-7 w-7 items-center justify-center rounded-none bg-slate-100 text-xs font-sans font-bold text-slate-800 border border-slate-200">
             {iniciales(usuario.nombre)}
           </span>

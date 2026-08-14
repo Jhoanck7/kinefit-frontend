@@ -1,31 +1,73 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+
 import { usePanelSessionStore } from "@/lib/store/usePanelSessionStore";
+
 import {
   IconoAgenda,
+  IconoCerrarSesion,
+  IconoEspecialistas,
+  IconoFichas,
+  IconoLanding,
   IconoNuevaReserva,
   IconoPacientes,
-  IconoFichas,
-  IconoEspecialistas,
-  IconoLanding,
-  IconoCerrarSesion,
-  IconoVentas,
   IconoReportes,
+  IconoVentas,
 } from "./iconos";
 
 const ITEMS_NAVEGACION = [
-  { href: "/panel/agenda", etiqueta: "Agenda", prefijos: ["/panel/agenda", "/panel/horarios"], Icono: IconoAgenda },
-  { href: "/panel/nueva-reserva/servicio", etiqueta: "Nueva reserva", prefijos: ["/panel/nueva-reserva"], Icono: IconoNuevaReserva },
-  { href: "/panel/pacientes", etiqueta: "Pacientes", prefijos: ["/panel/pacientes"], Icono: IconoPacientes },
-  { href: "/panel/fichas", etiqueta: "Fichas clínicas", prefijos: ["/panel/fichas"], Icono: IconoFichas },
-  { href: "/panel/especialistas", etiqueta: "Especialistas", prefijos: ["/panel/especialistas"], Icono: IconoEspecialistas },
-  { href: "/panel/ventas", etiqueta: "Ventas", prefijos: ["/panel/ventas"], Icono: IconoVentas },
-  { href: "/panel/reportes", etiqueta: "Reportes", prefijos: ["/panel/reportes"], Icono: IconoReportes },
-  { href: "/panel/landing", etiqueta: "Configuración Landing", prefijos: ["/panel/landing"], Icono: IconoLanding },
+  {
+    href: "/panel/agenda",
+    etiqueta: "Agenda",
+    prefijos: ["/panel/agenda", "/panel/horarios"],
+    Icono: IconoAgenda,
+  },
+  {
+    href: "/panel/nueva-reserva/servicio",
+    etiqueta: "Nueva reserva",
+    prefijos: ["/panel/nueva-reserva"],
+    Icono: IconoNuevaReserva,
+  },
+  {
+    href: "/panel/pacientes",
+    etiqueta: "Pacientes",
+    prefijos: ["/panel/pacientes"],
+    Icono: IconoPacientes,
+  },
+  {
+    href: "/panel/fichas",
+    etiqueta: "Fichas clínicas",
+    prefijos: ["/panel/fichas"],
+    Icono: IconoFichas,
+  },
+  {
+    href: "/panel/especialistas",
+    etiqueta: "Especialistas",
+    prefijos: ["/panel/especialistas"],
+    Icono: IconoEspecialistas,
+  },
+  {
+    href: "/panel/ventas",
+    etiqueta: "Ventas",
+    prefijos: ["/panel/ventas"],
+    Icono: IconoVentas,
+  },
+  {
+    href: "/panel/reportes",
+    etiqueta: "Reportes",
+    prefijos: ["/panel/reportes"],
+    Icono: IconoReportes,
+  },
+  {
+    href: "/panel/landing",
+    etiqueta: "Configuración Landing",
+    prefijos: ["/panel/landing"],
+    Icono: IconoLanding,
+  },
 ];
 
 /**
@@ -34,7 +76,7 @@ const ITEMS_NAVEGACION = [
  */
 export function Sidebar() {
   const pathname = usePathname();
-  const salir = usePanelSessionStore((s) => s.salir);
+  const salir = usePanelSessionStore(s => s.salir);
 
   function cerrarSesion() {
     salir();
@@ -59,7 +101,12 @@ export function Sidebar() {
 
       <ul className="flex-1 px-3 space-y-1">
         {ITEMS_NAVEGACION.map(({ href, etiqueta, prefijos, Icono }) => {
-          const activo = prefijos.some((p) => pathname === p || pathname.startsWith(`${p}/`) || pathname.startsWith(`${p}?`));
+          const activo = prefijos.some(
+            p =>
+              pathname === p ||
+              pathname.startsWith(`${p}/`) ||
+              pathname.startsWith(`${p}?`)
+          );
           return (
             <li key={href}>
               <Link

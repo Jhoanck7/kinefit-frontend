@@ -1,5 +1,5 @@
-import { apiClient } from '@/lib/api/apiClient';
-import { AuthGoogleResponse } from '@/types';
+import { apiClient } from "@/lib/api/apiClient";
+import { AuthGoogleResponse } from "@/types";
 
 export interface PersonalLoginRequestDto {
   email: string;
@@ -12,7 +12,7 @@ export interface PersonalLoginResponseDto {
     id: number;
     nombre: string;
     email: string;
-    rol: 'Administrador' | 'Especialista' | 'Personal';
+    rol: "Administrador" | "Especialista" | "Personal";
     especialistaId?: number;
   };
 }
@@ -20,28 +20,45 @@ export interface PersonalLoginResponseDto {
 interface GenericAuthResponse {
   data?: PersonalLoginResponseDto;
   token?: string;
-  usuario?: PersonalLoginResponseDto['usuario'];
+  usuario?: PersonalLoginResponseDto["usuario"];
   message?: string;
 }
 
 export const authService = {
-  async loginPersonal(dto: PersonalLoginRequestDto): Promise<PersonalLoginResponseDto> {
-    const raw = await apiClient.post<GenericAuthResponse>('/auth/personal', dto);
+  async loginPersonal(
+    dto: PersonalLoginRequestDto
+  ): Promise<PersonalLoginResponseDto> {
+    const raw = await apiClient.post<GenericAuthResponse>(
+      "/auth/personal",
+      dto
+    );
     return raw?.data || (raw as unknown as PersonalLoginResponseDto);
   },
 
-  async cambiarPasswordPersonal(passwordActual: string, nuevaPassword: string): Promise<void> {
-    return apiClient.patch<void>('/auth/personal/password', {
+  async cambiarPasswordPersonal(
+    passwordActual: string,
+    nuevaPassword: string
+  ): Promise<void> {
+    return apiClient.patch<void>("/auth/personal/password", {
       passwordActual,
       nuevaPassword,
     });
   },
 
   async loginWithGoogleToken(idToken: string): Promise<AuthGoogleResponse> {
-    return apiClient.post<AuthGoogleResponse>('/auth/google', { idToken });
+    return apiClient.post<AuthGoogleResponse>("/auth/google", { idToken });
   },
 
-  async updatePerfil(rut: string, telefono: string, token: string): Promise<{ message: string }> {
-    return apiClient.patch<{ message: string }>('/auth/perfil', { rut, telefono }, undefined, token);
-  }
+  async updatePerfil(
+    rut: string,
+    telefono: string,
+    token: string
+  ): Promise<{ message: string }> {
+    return apiClient.patch<{ message: string }>(
+      "/auth/perfil",
+      { rut, telefono },
+      undefined,
+      token
+    );
+  },
 };

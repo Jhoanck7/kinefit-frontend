@@ -1,7 +1,13 @@
 import { ReactNode } from "react";
 
 /** Badge informativo con estilo Frameless Satoshi */
-export function InfoBadge({ icono, children }: { icono?: ReactNode; children: ReactNode }) {
+export function InfoBadge({
+  icono,
+  children,
+}: {
+  icono?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-none border border-blue-200 bg-blue-50 px-2 py-0.5 font-sans text-[11px] font-medium text-blue-950">
       {icono}
@@ -11,7 +17,13 @@ export function InfoBadge({ icono, children }: { icono?: ReactNode; children: Re
 }
 
 /** Badge de contraste invertido */
-export function InvertedBadge({ icono, children }: { icono?: ReactNode; children: ReactNode }) {
+export function InvertedBadge({
+  icono,
+  children,
+}: {
+  icono?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-none bg-slate-900 px-2 py-0.5 font-sans text-[11px] font-medium text-white">
       {icono}

@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+
 import { Card } from "./Card";
 
 export interface ColumnaTabla {
@@ -25,12 +26,16 @@ export function Table({
 }) {
   return (
     <Card className="p-0 overflow-hidden rounded-none border-slate-200 shadow-none font-sans">
-      {encabezado && <div className="px-6 py-3.5 border-b border-slate-200 bg-white font-sans">{encabezado}</div>}
+      {encabezado && (
+        <div className="px-6 py-3.5 border-b border-slate-200 bg-white font-sans">
+          {encabezado}
+        </div>
+      )}
       <div className="overflow-x-auto">
         <table className="w-full text-sm font-sans">
           <thead className="bg-slate-50/80 border-b border-slate-200">
             <tr>
-              {columnas.map((columna) => (
+              {columnas.map(columna => (
                 <th
                   key={columna.titulo}
                   scope="col"
@@ -42,7 +47,9 @@ export function Table({
               <th scope="col" className="w-10" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200 bg-white">{children}</tbody>
+          <tbody className="divide-y divide-slate-200 bg-white">
+            {children}
+          </tbody>
         </table>
       </div>
       {pie}
@@ -65,7 +72,7 @@ export function FilaTabla({
       onClick={onClick}
       tabIndex={0}
       role="button"
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onClick();
@@ -81,8 +88,19 @@ export function FilaTabla({
 export function CeldaChevron() {
   return (
     <td className="px-4 py-3 text-right">
-      <svg className="inline h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+      <svg
+        className="inline h-4 w-4 text-slate-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+        aria-hidden
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M8.25 4.5l7.5 7.5-7.5 7.5"
+        />
       </svg>
     </td>
   );

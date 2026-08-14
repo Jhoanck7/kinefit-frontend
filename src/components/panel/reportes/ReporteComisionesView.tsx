@@ -1,7 +1,7 @@
 "use client";
 
-import { REPORTE_COMISIONES_MOCK } from "@/lib/mock/reportes";
 import { Card } from "@/components/panel/primitives/Card";
+import { REPORTE_COMISIONES_MOCK } from "@/lib/mock/reportes";
 
 export function ReporteComisionesView() {
   const data = REPORTE_COMISIONES_MOCK;
@@ -11,9 +11,12 @@ export function ReporteComisionesView() {
       {/* Encabezado e Info de Generación (Centrado) */}
       <Card className="flex flex-wrap items-center justify-center gap-3 text-center">
         <div>
-          <h3 className="text-sm font-bold text-panel-sidebar">Liquidación de Sueldos y Reparto de Comisiones</h3>
+          <h3 className="text-sm font-bold text-panel-sidebar">
+            Liquidación de Sueldos y Reparto de Comisiones
+          </h3>
           <p className="text-sm text-brand-muted">
-            Desglose de recaudación bruta, impuestos, cargos POS y honorarios a pagar por profesional
+            Desglose de recaudación bruta, impuestos, cargos POS y honorarios a
+            pagar por profesional
           </p>
         </div>
         <span className="rounded-xl bg-panel-seleccion px-3 py-1.5 text-sm font-semibold text-panel-sidebar">
@@ -23,8 +26,9 @@ export function ReporteComisionesView() {
 
       {/* Tarjetas de Liquidación por Profesional */}
       <div className="space-y-4">
-        {data.profesionales.map((p) => {
-          const tieneAcuerdo = p.montoProfesional !== undefined && p.montoCentro !== undefined;
+        {data.profesionales.map(p => {
+          const tieneAcuerdo =
+            p.montoProfesional !== undefined && p.montoCentro !== undefined;
           return (
             <Card key={p.especialistaId} className="space-y-4">
               {/* Encabezado del profesional */}
@@ -34,14 +38,20 @@ export function ReporteComisionesView() {
                     {p.especialistaNombre[0]}
                   </div>
                   <div>
-                    <h4 className="font-bold text-panel-sidebar text-sm">{p.especialistaNombre}</h4>
-                    <span className="text-sm text-brand-muted">{p.totalVentas} atenciones procesadas</span>
+                    <h4 className="font-bold text-panel-sidebar text-sm">
+                      {p.especialistaNombre}
+                    </h4>
+                    <span className="text-sm text-brand-muted">
+                      {p.totalVentas} atenciones procesadas
+                    </span>
                   </div>
                 </div>
 
                 {tieneAcuerdo ? (
                   <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-bold text-emerald-800">
-                    Acuerdo Vigente: {p.porcentajeProfesionalVigente}% Profesional / {100 - (p.porcentajeProfesionalVigente ?? 50)}% Centro
+                    Acuerdo Vigente: {p.porcentajeProfesionalVigente}%
+                    Profesional / {100 - (p.porcentajeProfesionalVigente ?? 50)}
+                    % Centro
                   </span>
                 ) : (
                   <span className="rounded-full bg-amber-50 px-3 py-1 text-sm font-bold text-amber-800">
@@ -53,28 +63,38 @@ export function ReporteComisionesView() {
               {/* Grid de desglose de importes */}
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
                 <div className="bg-panel-fondo p-3 rounded-xl border border-brand-border">
-                  <span className="text-brand-muted block font-medium">Recaudación Bruta</span>
+                  <span className="text-brand-muted block font-medium">
+                    Recaudación Bruta
+                  </span>
                   <span className="text-sm font-bold text-panel-sidebar mt-0.5 block">
                     ${p.montoTotalCobrado.toLocaleString("es-CL")}
                   </span>
                 </div>
 
                 <div className="bg-panel-fondo p-3 rounded-xl border border-brand-border">
-                  <span className="text-brand-muted block font-medium">Retención IVA</span>
+                  <span className="text-brand-muted block font-medium">
+                    Retención IVA
+                  </span>
                   <span className="text-sm font-semibold text-panel-sidebar mt-0.5 block">
                     -${p.impuesto.toLocaleString("es-CL")}
                   </span>
                 </div>
 
                 <div className="bg-panel-fondo p-3 rounded-xl border border-brand-border">
-                  <span className="text-brand-muted block font-medium">Comisión POS Descontada</span>
+                  <span className="text-brand-muted block font-medium">
+                    Comisión POS Descontada
+                  </span>
                   <span className="text-sm font-semibold text-rose-700 mt-0.5 block">
-                    {p.comisionTerminal > 0 ? `-$${p.comisionTerminal.toLocaleString("es-CL")}` : "$0"}
+                    {p.comisionTerminal > 0
+                      ? `-$${p.comisionTerminal.toLocaleString("es-CL")}`
+                      : "$0"}
                   </span>
                 </div>
 
                 <div className="bg-panel-fondo p-3 rounded-xl border border-brand-border">
-                  <span className="text-brand-muted block font-medium">Ventas Sin Reparto</span>
+                  <span className="text-brand-muted block font-medium">
+                    Ventas Sin Reparto
+                  </span>
                   <span className="text-sm font-bold text-panel-sidebar mt-0.5 block">
                     {p.ventasSinRepartoVigente} atenciones
                   </span>
@@ -86,7 +106,9 @@ export function ReporteComisionesView() {
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 pt-2">
                   <div className="rounded-xl bg-emerald-50 p-4 border border-emerald-200 flex justify-between items-center">
                     <div>
-                      <span className="text-sm font-semibold text-emerald-800 block">Líquido a Pagar Profesional</span>
+                      <span className="text-sm font-semibold text-emerald-800 block">
+                        Líquido a Pagar Profesional
+                      </span>
                       <span className="text-xs text-emerald-700">
                         {p.porcentajeProfesionalVigente}% de la base líquida
                       </span>
@@ -98,9 +120,12 @@ export function ReporteComisionesView() {
 
                   <div className="rounded-xl bg-panel-seleccion p-4 border border-brand-border flex justify-between items-center">
                     <div>
-                      <span className="text-sm font-semibold text-panel-sidebar block">Margen Neto Clínica</span>
+                      <span className="text-sm font-semibold text-panel-sidebar block">
+                        Margen Neto Clínica
+                      </span>
                       <span className="text-xs text-brand-muted">
-                        {100 - (p.porcentajeProfesionalVigente ?? 50)}% de la base líquida
+                        {100 - (p.porcentajeProfesionalVigente ?? 50)}% de la
+                        base líquida
                       </span>
                     </div>
                     <span className="text-xl font-bold text-panel-sidebar">
@@ -110,7 +135,10 @@ export function ReporteComisionesView() {
                 </div>
               ) : (
                 <div className="rounded-xl bg-amber-50 p-4 border border-amber-200 text-sm text-amber-900">
-                  <strong>Atención:</strong> {p.motivoNoCalculable ?? "No hay tasa de reparto registrada."} Configura un convenio en la sección de Ventas para calcular la liquidación.
+                  <strong>Atención:</strong>{" "}
+                  {p.motivoNoCalculable ?? "No hay tasa de reparto registrada."}{" "}
+                  Configura un convenio en la sección de Ventas para calcular la
+                  liquidación.
                 </div>
               )}
             </Card>

@@ -1,11 +1,15 @@
 "use client";
 
 import { useState } from "react";
+
 import { Card } from "@/components/panel/primitives/Card";
-import { ReportesTabSwitcher, TabReporte } from "@/components/panel/reportes/ReportesTabSwitcher";
-import { ReporteReservasView } from "@/components/panel/reportes/ReporteReservasView";
-import { ReporteVentasView } from "@/components/panel/reportes/ReporteVentasView";
 import { ReporteComisionesView } from "@/components/panel/reportes/ReporteComisionesView";
+import { ReporteReservasView } from "@/components/panel/reportes/ReporteReservasView";
+import {
+  ReportesTabSwitcher,
+  TabReporte,
+} from "@/components/panel/reportes/ReportesTabSwitcher";
+import { ReporteVentasView } from "@/components/panel/reportes/ReporteVentasView";
 
 export default function ReportesPage() {
   const [tabActivo, setTabActivo] = useState<TabReporte>("reservas");
@@ -21,10 +25,12 @@ export default function ReportesPage() {
       <Card className="flex flex-wrap items-center justify-between p-4 rounded-none border-slate-200 shadow-none text-xs">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">Período:</span>
+            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+              Período:
+            </span>
             <select
               value={rangoFecha}
-              onChange={(e) => setRangoFecha(e.target.value)}
+              onChange={e => setRangoFecha(e.target.value)}
               className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
             >
               <option value="hoy">HOY</option>
@@ -41,7 +47,7 @@ export default function ReportesPage() {
             <input
               type="checkbox"
               checked={compararConAnterior}
-              onChange={(e) => setCompararConAnterior(e.target.checked)}
+              onChange={e => setCompararConAnterior(e.target.checked)}
               className="rounded-none text-[#003366] focus:ring-0"
             />
             Comparar con período anterior

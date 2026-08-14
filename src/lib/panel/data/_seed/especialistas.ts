@@ -52,23 +52,59 @@ export const PLANTILLAS_HORARIO: PlantillaHorarioEspecialista[] = [
   {
     especialistaId: "esp-franchesca",
     dias: {
-      0: [{ inicio: "10:00", termino: "14:00" }, { inicio: "15:00", termino: "21:00" }],
-      1: [{ inicio: "09:00", termino: "14:00" }, { inicio: "15:00", termino: "21:00" }],
-      2: [{ inicio: "09:00", termino: "14:00" }, { inicio: "15:00", termino: "21:00" }],
-      3: [{ inicio: "09:00", termino: "14:00" }, { inicio: "15:00", termino: "21:00" }],
-      4: [{ inicio: "09:00", termino: "14:00" }, { inicio: "15:00", termino: "21:00" }],
-      5: [{ inicio: "09:00", termino: "14:00" }, { inicio: "15:00", termino: "21:00" }],
-      6: [{ inicio: "10:00", termino: "14:00" }, { inicio: "15:00", termino: "21:00" }],
+      0: [
+        { inicio: "10:00", termino: "14:00" },
+        { inicio: "15:00", termino: "21:00" },
+      ],
+      1: [
+        { inicio: "09:00", termino: "14:00" },
+        { inicio: "15:00", termino: "21:00" },
+      ],
+      2: [
+        { inicio: "09:00", termino: "14:00" },
+        { inicio: "15:00", termino: "21:00" },
+      ],
+      3: [
+        { inicio: "09:00", termino: "14:00" },
+        { inicio: "15:00", termino: "21:00" },
+      ],
+      4: [
+        { inicio: "09:00", termino: "14:00" },
+        { inicio: "15:00", termino: "21:00" },
+      ],
+      5: [
+        { inicio: "09:00", termino: "14:00" },
+        { inicio: "15:00", termino: "21:00" },
+      ],
+      6: [
+        { inicio: "10:00", termino: "14:00" },
+        { inicio: "15:00", termino: "21:00" },
+      ],
     },
   },
   {
     especialistaId: "esp-constanza",
     dias: {
-      1: [{ inicio: "09:00", termino: "14:00" }, { inicio: "15:00", termino: "18:00" }],
-      2: [{ inicio: "09:00", termino: "14:00" }, { inicio: "15:00", termino: "18:00" }],
-      3: [{ inicio: "09:00", termino: "14:00" }, { inicio: "15:00", termino: "18:00" }],
-      4: [{ inicio: "09:00", termino: "14:00" }, { inicio: "15:00", termino: "18:00" }],
-      5: [{ inicio: "09:00", termino: "14:00" }, { inicio: "15:00", termino: "18:00" }],
+      1: [
+        { inicio: "09:00", termino: "14:00" },
+        { inicio: "15:00", termino: "18:00" },
+      ],
+      2: [
+        { inicio: "09:00", termino: "14:00" },
+        { inicio: "15:00", termino: "18:00" },
+      ],
+      3: [
+        { inicio: "09:00", termino: "14:00" },
+        { inicio: "15:00", termino: "18:00" },
+      ],
+      4: [
+        { inicio: "09:00", termino: "14:00" },
+        { inicio: "15:00", termino: "18:00" },
+      ],
+      5: [
+        { inicio: "09:00", termino: "14:00" },
+        { inicio: "15:00", termino: "18:00" },
+      ],
     },
   },
   {

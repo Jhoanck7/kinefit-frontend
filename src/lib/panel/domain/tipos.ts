@@ -75,11 +75,7 @@ export interface Cita {
 }
 
 export type TipoCampoFormato =
-  | "texto_corto"
-  | "texto_largo"
-  | "numerico"
-  | "fecha"
-  | "seleccion";
+  "texto_corto" | "texto_largo" | "numerico" | "fecha" | "seleccion";
 
 export interface CampoFormato {
   id: string;

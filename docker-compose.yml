@@ -1,5 +1,4 @@
 services:
-
   kinefit-frontend:
     image: jhoanck7/kinefit-frontend:latest
     container_name: kinefit-frontend

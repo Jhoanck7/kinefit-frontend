@@ -1,7 +1,7 @@
 "use client";
 
-import { Card } from "@/components/panel/primitives/Card";
 import { NeutralBadge } from "@/components/panel/primitives/Badge";
+import { Card } from "@/components/panel/primitives/Card";
 
 export type TabReporte = "reservas" | "ventas" | "comisiones";
 
@@ -10,7 +10,10 @@ interface ReportesTabSwitcherProps {
   onCambiarTab: (tab: TabReporte) => void;
 }
 
-export function ReportesTabSwitcher({ tabActivo, onCambiarTab }: ReportesTabSwitcherProps) {
+export function ReportesTabSwitcher({
+  tabActivo,
+  onCambiarTab,
+}: ReportesTabSwitcherProps) {
   return (
     <Card className="flex flex-wrap items-center justify-between p-4 rounded-none border-slate-200 shadow-none font-sans">
       <div className="flex flex-wrap gap-2">
@@ -52,7 +55,9 @@ export function ReportesTabSwitcher({ tabActivo, onCambiarTab }: ReportesTabSwit
       </div>
 
       <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-        <span className="text-[11px] uppercase tracking-wider text-slate-400">Acceso:</span>
+        <span className="text-[11px] uppercase tracking-wider text-slate-400">
+          Acceso:
+        </span>
         <NeutralBadge>Solo Administrador</NeutralBadge>
       </div>
     </Card>

@@ -57,7 +57,8 @@ export function AppointmentCard({
   onClick: () => void;
 }) {
   const definicion = definicionEstado(cita.estado);
-  const config = ESTILO_ESTADO[definicion.colorRol] ?? ESTILO_ESTADO["azul-seleccion"];
+  const config =
+    ESTILO_ESTADO[definicion.colorRol] ?? ESTILO_ESTADO["azul-seleccion"];
 
   return (
     <button
@@ -86,7 +87,10 @@ export function AppointmentCard({
         </p>
 
         <div className="flex items-center gap-1.5">
-          <span className={`h-1.5 w-1.5 rounded-full ${config.dotBg}`} aria-hidden />
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${config.dotBg}`}
+            aria-hidden
+          />
           <span className="font-sans text-[10px] font-bold uppercase tracking-wider opacity-90">
             {definicion.etiqueta}
           </span>

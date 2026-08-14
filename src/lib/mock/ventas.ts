@@ -54,13 +54,13 @@ export interface VentaMock {
   terminalNombre?: string;
   montoBruto: number;
   items: VentaItemMock[];
-  
+
   // Campos calculados
   comisionPosMonto: number; // Ej: 1500
   ivaMonto: number; // Ej: 15966
   montoNeto: number; // Ej: 84034
   baseReparticion: number; // Ej: 82534
-  
+
   repartoConfigurado: boolean;
   porcentajeProfesionalAplicado?: number; // Ej: 50
   pagoProfesional?: number; // Ej: 41267
@@ -108,9 +108,30 @@ export const TERMINALES_MOCK: TerminalPOS[] = [
 ];
 
 export const ACUERDOS_REPARTO_MOCK: AcuerdoReparto[] = [
-  { id: "ac-1", especialistaId: "esp-1", especialistaNombre: "Francesca Astudillo", porcentajeProfesional: 50, porcentajeCentro: 50, vigenteDesde: "2026-01-01" },
-  { id: "ac-2", especialistaId: "esp-2", especialistaNombre: "Valeria Sepúlveda", porcentajeProfesional: 60, porcentajeCentro: 40, vigenteDesde: "2026-01-01" },
-  { id: "ac-3", especialistaId: "esp-3", especialistaNombre: "Constanza Morales", porcentajeProfesional: 55, porcentajeCentro: 45, vigenteDesde: "2026-01-01" },
+  {
+    id: "ac-1",
+    especialistaId: "esp-1",
+    especialistaNombre: "Francesca Astudillo",
+    porcentajeProfesional: 50,
+    porcentajeCentro: 50,
+    vigenteDesde: "2026-01-01",
+  },
+  {
+    id: "ac-2",
+    especialistaId: "esp-2",
+    especialistaNombre: "Valeria Sepúlveda",
+    porcentajeProfesional: 60,
+    porcentajeCentro: 40,
+    vigenteDesde: "2026-01-01",
+  },
+  {
+    id: "ac-3",
+    especialistaId: "esp-3",
+    especialistaNombre: "Constanza Morales",
+    porcentajeProfesional: 55,
+    porcentajeCentro: 45,
+    vigenteDesde: "2026-01-01",
+  },
 ];
 
 export const TASAS_IVA_MOCK: TasaImpuesto[] = [
@@ -132,7 +153,13 @@ export const VENTAS_MOCK: VentaMock[] = [
     terminalNombre: "Tuu POS",
     montoBruto: 100000,
     items: [
-      { id: "item-1", servicioNombre: "Masoterapia Reductiva (1 hora)", tipo: "Servicio", afectoIva: true, monto: 100000 },
+      {
+        id: "item-1",
+        servicioNombre: "Masoterapia Reductiva (1 hora)",
+        tipo: "Servicio",
+        afectoIva: true,
+        monto: 100000,
+      },
     ],
     comisionPosMonto: 1500,
     ivaMonto: 15966,
@@ -157,7 +184,13 @@ export const VENTAS_MOCK: VentaMock[] = [
     terminalNombre: "Sin POS",
     montoBruto: 45000,
     items: [
-      { id: "item-2", servicioNombre: "Evaluación Kinesiológica", tipo: "Servicio", afectoIva: false, monto: 45000 },
+      {
+        id: "item-2",
+        servicioNombre: "Evaluación Kinesiológica",
+        tipo: "Servicio",
+        afectoIva: false,
+        monto: 45000,
+      },
     ],
     comisionPosMonto: 0,
     ivaMonto: 0,
@@ -182,7 +215,13 @@ export const VENTAS_MOCK: VentaMock[] = [
     terminalNombre: "AgendaPro POS",
     montoBruto: 60000,
     items: [
-      { id: "item-3", servicioNombre: "Sesión Kinesiología Traumatológica", tipo: "Servicio", afectoIva: true, monto: 60000 },
+      {
+        id: "item-3",
+        servicioNombre: "Sesión Kinesiología Traumatológica",
+        tipo: "Servicio",
+        afectoIva: true,
+        monto: 60000,
+      },
     ],
     comisionPosMonto: 1310,
     ivaMonto: 9579,
@@ -205,7 +244,13 @@ export const VENTAS_MOCK: VentaMock[] = [
     terminalNombre: "Sin POS",
     montoBruto: 35000,
     items: [
-      { id: "item-4", servicioNombre: "Masaje Descontracturante 45 min", tipo: "Servicio", afectoIva: true, monto: 35000 },
+      {
+        id: "item-4",
+        servicioNombre: "Masaje Descontracturante 45 min",
+        tipo: "Servicio",
+        afectoIva: true,
+        monto: 35000,
+      },
     ],
     comisionPosMonto: 0,
     ivaMonto: 5588,

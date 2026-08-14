@@ -1,12 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getFicha, fichasDelPaciente, FichaResuelta } from "@/lib/panel/data/fichas";
-import { getFormato, obtenerEtiquetaCampo, FormatoResuelto } from "@/lib/panel/data/formatos";
-import { formatearFechaCorta, formatearFechaHora, formatearRangoHorario } from "@/lib/panel/domain/formato";
-import { Modal } from "../primitives/Modal";
+import { useEffect, useState } from "react";
+
+import {
+  FichaResuelta,
+  fichasDelPaciente,
+  getFicha,
+} from "@/lib/panel/data/fichas";
+import {
+  FormatoResuelto,
+  getFormato,
+  obtenerEtiquetaCampo,
+} from "@/lib/panel/data/formatos";
+import {
+  formatearFechaCorta,
+  formatearFechaHora,
+  formatearRangoHorario,
+} from "@/lib/panel/domain/formato";
+
 import { NeutralBadge } from "../primitives/Badge";
+import { Modal } from "../primitives/Modal";
 import { OutOfScopeInlineLink } from "../primitives/OutOfScope";
 
 interface FichaDetalleModalProps {
@@ -16,7 +30,12 @@ interface FichaDetalleModalProps {
   onSeleccionarFicha?: (nuevaFichaId: string) => void;
 }
 
-export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }: FichaDetalleModalProps) {
+export function FichaDetalleModal({
+  fichaId,
+  hoy,
+  onCerrar,
+  onSeleccionarFicha,
+}: FichaDetalleModalProps) {
   const router = useRouter();
   const [ficha, setFicha] = useState<FichaResuelta | null>(null);
   const [formato, setFormato] = useState<FormatoResuelto | null>(null);
@@ -31,7 +50,7 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
       setAdjuntosLocales([]);
       return;
     }
-    getFicha(fichaId, hoy).then((resultado) => {
+    getFicha(fichaId, hoy).then(resultado => {
       setFicha(resultado ?? null);
       if (resultado) {
         setAdjuntosLocales(resultado.adjuntos);
@@ -41,9 +60,11 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
 
   useEffect(() => {
     if (!hoy || !ficha) return;
-    getFormato(ficha.formatoId, hoy).then((resultado) => setFormato(resultado ?? null));
-    fichasDelPaciente(ficha.paciente.id, hoy).then((todas) =>
-      setAnteriores(todas.filter((f) => f.id !== ficha.id))
+    getFormato(ficha.formatoId, hoy).then(resultado =>
+      setFormato(resultado ?? null)
+    );
+    fichasDelPaciente(ficha.paciente.id, hoy).then(todas =>
+      setAnteriores(todas.filter(f => f.id !== ficha.id))
     );
   }, [ficha, hoy]);
 
@@ -77,15 +98,19 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
             <p class="sub">Fecha de Atención: ${formatearFechaCorta(ficha.cita.fecha)} | Registrada por ${ficha.registradaPor}</p>
           </div>
 
-          ${Object.entries(ficha.contenido).map(([clave, valor]) => `
+          ${Object.entries(ficha.contenido)
+            .map(
+              ([clave, valor]) => `
             <div class="field">
               <div class="label">${obtenerEtiquetaCampo(clave)}</div>
               <div class="value">${valor || "—"}</div>
             </div>
-          `).join('')}
+          `
+            )
+            .join("")}
 
           <div class="footer">
-            Documento Clínico Confidencial KineFit — Generado el ${new Date().toLocaleDateString('es-CL')}
+            Documento Clínico Confidencial KineFit — Generado el ${new Date().toLocaleDateString("es-CL")}
           </div>
           <script>
             window.onload = function() { window.print(); }
@@ -99,13 +124,15 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
   function handleSubirAdjuntoSimulado(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files || e.target.files.length === 0) return;
     const archivo = e.target.files[0];
-    setAdjuntosLocales((prev) => [...prev, archivo.name]);
+    setAdjuntosLocales(prev => [...prev, archivo.name]);
   }
 
   return (
     <Modal abierto={Boolean(fichaId)} onCerrar={onCerrar} ancho="max-w-4xl">
       {!ficha ? (
-        <div className="p-10 text-center font-sans text-xs text-slate-500">Cargando ficha…</div>
+        <div className="p-10 text-center font-sans text-xs text-slate-500">
+          Cargando ficha…
+        </div>
       ) : (
         <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
           {/* Encabezado Formal */}
@@ -118,7 +145,10 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
                 <NeutralBadge>{ficha.tipo}</NeutralBadge>
               </div>
               <p className="font-sans text-xs text-slate-500 mt-0.5">
-                {ficha.paciente.nombre} {ficha.paciente.apellido} · RUT <span className="text-slate-700 font-medium">{ficha.paciente.rut || "—"}</span>
+                {ficha.paciente.nombre} {ficha.paciente.apellido} · RUT{" "}
+                <span className="text-slate-700 font-medium">
+                  {ficha.paciente.rut || "—"}
+                </span>
               </p>
             </div>
             <button
@@ -137,7 +167,6 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
 
           {/* Cuerpo en 2 Columnas */}
           <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-            
             {/* COLUMNA IZQUIERDA PRINCIPAL (2/3) */}
             <div className="md:col-span-2 p-6 space-y-6 max-h-[60vh] overflow-y-auto">
               {/* Contenido Clínico */}
@@ -147,7 +176,9 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
                 </h3>
 
                 {Object.keys(ficha.contenido).length === 0 ? (
-                  <p className="font-sans text-xs text-slate-400 italic py-2">Sin respuestas escritas en esta ficha.</p>
+                  <p className="font-sans text-xs text-slate-400 italic py-2">
+                    Sin respuestas escritas en esta ficha.
+                  </p>
                 ) : (
                   <div className="space-y-4">
                     {Object.entries(ficha.contenido).map(([clave, valor]) => (
@@ -182,11 +213,16 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
                 </div>
 
                 {adjuntosLocales.length === 0 ? (
-                  <p className="font-sans text-xs text-slate-400 italic">Sin archivos adjuntos.</p>
+                  <p className="font-sans text-xs text-slate-400 italic">
+                    Sin archivos adjuntos.
+                  </p>
                 ) : (
                   <ul className="divide-y divide-slate-200 border border-slate-200 rounded-none bg-slate-50/50">
-                    {adjuntosLocales.map((nombre) => (
-                      <li key={nombre} className="flex items-center justify-between p-2.5 text-xs font-sans font-medium text-slate-800">
+                    {adjuntosLocales.map(nombre => (
+                      <li
+                        key={nombre}
+                        className="flex items-center justify-between p-2.5 text-xs font-sans font-medium text-slate-800"
+                      >
                         <span>{nombre}</span>
                         <div className="flex items-center gap-3">
                           <OutOfScopeInlineLink etiqueta="Ver" />
@@ -207,28 +243,40 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
                 </h3>
 
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Paciente</span>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    Paciente
+                  </span>
                   <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
                     {ficha.paciente.nombre} {ficha.paciente.apellido}
                   </p>
                 </div>
 
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">RUT</span>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    RUT
+                  </span>
                   <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
                     {ficha.paciente.rut || "—"}
                   </p>
                 </div>
 
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Atención Asociada</span>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    Atención Asociada
+                  </span>
                   <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                    {formatearFechaCorta(ficha.cita.fecha)} · {formatearRangoHorario(ficha.cita.horaInicio, ficha.cita.horaTermino)}
+                    {formatearFechaCorta(ficha.cita.fecha)} ·{" "}
+                    {formatearRangoHorario(
+                      ficha.cita.horaInicio,
+                      ficha.cita.horaTermino
+                    )}
                   </p>
                 </div>
 
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Registrada Por</span>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    Registrada Por
+                  </span>
                   <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
                     {ficha.registradaPor}
                   </p>
@@ -243,16 +291,24 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
                       Fichas Anteriores
                     </span>
                     <ul className="divide-y divide-slate-200">
-                      {anteriores.map((anterior) => (
-                        <li key={anterior.id} className="flex justify-between items-center py-2 text-xs">
-                          <span className="font-sans font-medium text-slate-900">{anterior.tipo}</span>
+                      {anteriores.map(anterior => (
+                        <li
+                          key={anterior.id}
+                          className="flex justify-between items-center py-2 text-xs"
+                        >
+                          <span className="font-sans font-medium text-slate-900">
+                            {anterior.tipo}
+                          </span>
                           <button
                             type="button"
                             onClick={() => {
-                              if (onSeleccionarFicha) onSeleccionarFicha(anterior.id);
+                              if (onSeleccionarFicha)
+                                onSeleccionarFicha(anterior.id);
                               else {
                                 onCerrar();
-                                router.push(`/panel/fichas?ficha=${anterior.id}`);
+                                router.push(
+                                  `/panel/fichas?ficha=${anterior.id}`
+                                );
                               }
                             }}
                             className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950 underline"
@@ -266,7 +322,6 @@ export function FichaDetalleModal({ fichaId, hoy, onCerrar, onSeleccionarFicha }
                 )}
               </div>
             </div>
-
           </div>
 
           {/* Pie de Acciones */}

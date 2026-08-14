@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import React, { useState, useEffect } from 'react';
-import { NAV_LINKS } from '@/lib/constants';
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+
+import { NAV_LINKS } from "@/lib/constants";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,38 +17,40 @@ export default function Navbar() {
         setIsScrolled(false);
       }
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navLinks = NAV_LINKS;
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 bg-white border-b ${
-      isScrolled
-        ? 'border-slate-300 py-2'
-        : 'border-slate-200 py-4'
-    }`}>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 bg-white border-b ${
+        isScrolled ? "border-slate-300 py-2" : "border-slate-200 py-4"
+      }`}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 sm:h-24 md:h-28">
-          
           {/* Logo container */}
           <div className="flex items-center">
-            <a href="#" className="relative w-56 sm:w-72 md:w-80 h-16 sm:h-20 md:h-24 block">
+            <a
+              href="#"
+              className="relative w-56 sm:w-72 md:w-80 h-16 sm:h-20 md:h-24 block"
+            >
               <Image
                 src="/Kinefit Negro ver.png"
                 alt="Kinefit Logo"
                 fill
                 priority
                 sizes="(max-width: 640px) 224px, (max-width: 768px) 288px, 320px"
-                className="object-contain object-left scale-[1.45] sm:scale-[1.35] origin-left -translate-y-1.5 sm:-translate-y-2" 
+                className="object-contain object-left scale-[1.45] sm:scale-[1.35] origin-left -translate-y-1.5 sm:-translate-y-2"
               />
             </a>
           </div>
 
           {/* Links (Desktop) */}
           <div className="hidden md:flex items-center gap-x-8 ml-auto">
-            {navLinks.map((link) => (
+            {navLinks.map(link => (
               <a
                 key={link.name}
                 href={link.href}
@@ -69,12 +72,32 @@ export default function Navbar() {
             >
               <span className="sr-only">Abrir menú principal</span>
               {isOpen ? (
-                <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="block h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               ) : (
-                <svg className="block h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                <svg
+                  className="block h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                  />
                 </svg>
               )}
             </button>
@@ -86,7 +109,7 @@ export default function Navbar() {
       {isOpen && (
         <div className="md:hidden bg-white border-t border-b border-slate-300 py-4 px-6">
           <div className="flex flex-col gap-3">
-            {navLinks.map((link) => (
+            {navLinks.map(link => (
               <a
                 key={link.name}
                 href={link.href}

@@ -1,29 +1,49 @@
-import { apiClient } from '@/lib/api/apiClient';
-import { 
-  BackendService, 
-  BackendSpecialist, 
-  BackendTimeSlot, 
-  CreateCitaDto 
-} from '@/types';
+import { apiClient } from "@/lib/api/apiClient";
+import {
+  BackendService,
+  BackendSpecialist,
+  BackendTimeSlot,
+  CreateCitaDto,
+} from "@/types";
 
 export const appointmentService = {
   async getServices(soloActivos = true): Promise<{ data: BackendService[] }> {
-    return apiClient.get<{ data: BackendService[] }>(`/servicios?soloActivos=${soloActivos}`);
+    return apiClient.get<{ data: BackendService[] }>(
+      `/servicios?soloActivos=${soloActivos}`
+    );
   },
 
-  async getEspecialistas(servicioId?: number, soloActivos = true): Promise<{ data: BackendSpecialist[] }> {
+  async getEspecialistas(
+    servicioId?: number,
+    soloActivos = true
+  ): Promise<{ data: BackendSpecialist[] }> {
     const queryParams = new URLSearchParams();
-    if (servicioId) queryParams.append('servicioId', servicioId.toString());
-    queryParams.append('soloActivos', soloActivos.toString());
+    if (servicioId) queryParams.append("servicioId", servicioId.toString());
+    queryParams.append("soloActivos", soloActivos.toString());
 
-    return apiClient.get<{ data: BackendSpecialist[] }>(`/especialistas?${queryParams.toString()}`);
+    return apiClient.get<{ data: BackendSpecialist[] }>(
+      `/especialistas?${queryParams.toString()}`
+    );
   },
 
-  async getBloques(especialistaId: number, fecha: string): Promise<{ data: BackendTimeSlot[] }> {
-    return apiClient.get<{ data: BackendTimeSlot[] }>(`/bloques?especialistaId=${especialistaId}&fecha=${fecha}`);
+  async getBloques(
+    especialistaId: number,
+    fecha: string
+  ): Promise<{ data: BackendTimeSlot[] }> {
+    return apiClient.get<{ data: BackendTimeSlot[] }>(
+      `/bloques?especialistaId=${especialistaId}&fecha=${fecha}`
+    );
   },
 
-  async crearCita(dto: CreateCitaDto, token?: string): Promise<{ data: { citaId: number } }> {
-    return apiClient.post<{ data: { citaId: number } }>('/citas', dto, undefined, token);
-  }
+  async crearCita(
+    dto: CreateCitaDto,
+    token?: string
+  ): Promise<{ data: { citaId: number } }> {
+    return apiClient.post<{ data: { citaId: number } }>(
+      "/citas",
+      dto,
+      undefined,
+      token
+    );
+  },
 };

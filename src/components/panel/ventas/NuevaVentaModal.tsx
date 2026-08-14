@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import { Modal } from "@/components/panel/primitives/Modal";
 import { MetodoPago, TERMINALES_MOCK, VentaMock } from "@/lib/mock/ventas";
 
@@ -10,7 +11,11 @@ interface NuevaVentaModalProps {
   onCrearVenta: (nuevaVenta: VentaMock) => void;
 }
 
-export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaModalProps) {
+export function NuevaVentaModal({
+  abierto,
+  onClose,
+  onCrearVenta,
+}: NuevaVentaModalProps) {
   const [pacienteNombre, setPacienteNombre] = useState("");
   const [especialistaId, setEspecialistaId] = useState("esp-1");
   const [servicioNombre, setServicioNombre] = useState("");
@@ -23,9 +28,10 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
     e.preventDefault();
     if (!pacienteNombre || !servicioNombre) return;
 
-    const termObj = TERMINALES_MOCK.find((t) => t.id === terminalPosId);
+    const termObj = TERMINALES_MOCK.find(t => t.id === terminalPosId);
 
-    const requiereTerminal = metodoPago === "Debito" || metodoPago === "Credito";
+    const requiereTerminal =
+      metodoPago === "Debito" || metodoPago === "Credito";
     const pctPos = requiereTerminal && termObj ? termObj.comisionPorcentaje : 0;
     const comisionPos = Math.round(montoBruto * (pctPos / 100));
 
@@ -50,7 +56,13 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
       id: `v-${idRandom}`,
       codigoDisplay: `#${idRandom}`,
       fechaIso: new Date().toISOString(),
-      fechaFormateada: new Date().toLocaleDateString("es-CL") + " " + new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" }),
+      fechaFormateada:
+        new Date().toLocaleDateString("es-CL") +
+        " " +
+        new Date().toLocaleTimeString("es-CL", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       pacienteId: `pac-${idRandom}`,
       pacienteNombre,
       especialistaId,
@@ -59,7 +71,15 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
       terminalPosId: requiereTerminal ? terminalPosId : undefined,
       terminalNombre: requiereTerminal && termObj ? termObj.nombre : "Sin POS",
       montoBruto,
-      items: [{ id: `item-${idRandom}`, servicioNombre, tipo: "Servicio", afectoIva, monto: montoBruto }],
+      items: [
+        {
+          id: `item-${idRandom}`,
+          servicioNombre,
+          tipo: "Servicio",
+          afectoIva,
+          monto: montoBruto,
+        },
+      ],
       comisionPosMonto: comisionPos,
       ivaMonto: iva,
       montoNeto: neto,
@@ -92,7 +112,10 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 font-sans text-xs">
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 space-y-4 font-sans text-xs"
+        >
           <div>
             <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
               Nombre del Paciente *
@@ -101,7 +124,7 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
               type="text"
               required
               value={pacienteNombre}
-              onChange={(e) => setPacienteNombre(e.target.value)}
+              onChange={e => setPacienteNombre(e.target.value)}
               placeholder="Ej: Sofía Castro"
               className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
             />
@@ -114,7 +137,7 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
               </label>
               <select
                 value={especialistaId}
-                onChange={(e) => setEspecialistaId(e.target.value)}
+                onChange={e => setEspecialistaId(e.target.value)}
                 className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               >
                 <option value="esp-1">Francesca Astudillo</option>
@@ -132,7 +155,7 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
                 type="text"
                 required
                 value={servicioNombre}
-                onChange={(e) => setServicioNombre(e.target.value)}
+                onChange={e => setServicioNombre(e.target.value)}
                 placeholder="Ej: Evaluación Kinesiología"
                 className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               />
@@ -150,7 +173,7 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
                 min={1000}
                 step={500}
                 value={montoBruto}
-                onChange={(e) => setMontoBruto(parseFloat(e.target.value) || 0)}
+                onChange={e => setMontoBruto(parseFloat(e.target.value) || 0)}
                 className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               />
             </div>
@@ -161,7 +184,7 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
               </label>
               <select
                 value={afectoIva ? "afecto" : "exento"}
-                onChange={(e) => setAfectoIva(e.target.value === "afecto")}
+                onChange={e => setAfectoIva(e.target.value === "afecto")}
                 className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               >
                 <option value="afecto">Afecto IVA (19%)</option>
@@ -177,7 +200,7 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
               </label>
               <select
                 value={metodoPago}
-                onChange={(e) => setMetodoPago(e.target.value as MetodoPago)}
+                onChange={e => setMetodoPago(e.target.value as MetodoPago)}
                 className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               >
                 <option value="Debito">Débito</option>
@@ -192,12 +215,14 @@ export function NuevaVentaModal({ abierto, onClose, onCrearVenta }: NuevaVentaMo
                 Terminal POS
               </label>
               <select
-                disabled={metodoPago === "Efectivo" || metodoPago === "Transferencia"}
+                disabled={
+                  metodoPago === "Efectivo" || metodoPago === "Transferencia"
+                }
                 value={terminalPosId}
-                onChange={(e) => setTerminalPosId(e.target.value)}
+                onChange={e => setTerminalPosId(e.target.value)}
                 className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 disabled:bg-slate-50 disabled:text-slate-400 focus:border-slate-900 focus:outline-none"
               >
-                {TERMINALES_MOCK.map((t) => (
+                {TERMINALES_MOCK.map(t => (
                   <option key={t.id} value={t.id}>
                     {t.nombre} ({t.comisionPorcentaje}%)
                   </option>

@@ -1,13 +1,20 @@
-import { Cita, Especialista, Bloqueo, CodigoEstadoCita, Servicio } from "../domain/tipos";
-import { CITAS } from "./_seed/citas";
-import { PACIENTES } from "./_seed/pacientes";
-import { ESPECIALISTAS } from "./_seed/especialistas";
-import { CONVENIOS } from "./_seed/convenios";
-import { fechaDesdeOffset, fechaHoraDesdeOffset } from "./resolver";
+import { CitaBackendDto, citaService } from "@/lib/services/cita.service";
+
 import { fechaISO } from "../domain/formato";
-import { PacienteResuelto, getPaciente } from "./pacientes";
+import {
+  Bloqueo,
+  Cita,
+  CodigoEstadoCita,
+  Especialista,
+  Servicio,
+} from "../domain/tipos";
+import { CITAS } from "./_seed/citas";
+import { CONVENIOS } from "./_seed/convenios";
+import { ESPECIALISTAS } from "./_seed/especialistas";
+import { PACIENTES } from "./_seed/pacientes";
 import { listBloqueosEspecialista } from "./bloqueos";
-import { citaService, CitaBackendDto } from "@/lib/services/cita.service";
+import { getPaciente, PacienteResuelto } from "./pacientes";
+import { fechaDesdeOffset, fechaHoraDesdeOffset } from "./resolver";
 
 export interface CambioEstadoResuelto {
   estado: Cita["estado"];
@@ -16,8 +23,15 @@ export interface CambioEstadoResuelto {
   motivo?: string;
 }
 
-export interface CitaResuelta
-  extends Omit<Cita, "offsetDias" | "creadaOffsetDias" | "creadaHora" | "historial" | "pacienteId" | "especialistaId"> {
+export interface CitaResuelta extends Omit<
+  Cita,
+  | "offsetDias"
+  | "creadaOffsetDias"
+  | "creadaHora"
+  | "historial"
+  | "pacienteId"
+  | "especialistaId"
+> {
   fecha: Date;
   creadaEn: Date;
   servicioNombre?: string;
@@ -32,7 +46,10 @@ export interface CitaResuelta
   };
 }
 
-export interface BloqueoResuelto extends Omit<Bloqueo, "offsetDias" | "especialistaId"> {
+export interface BloqueoResuelto extends Omit<
+  Bloqueo,
+  "offsetDias" | "especialistaId"
+> {
   fecha: Date;
   especialista: Especialista;
 }
@@ -54,7 +71,7 @@ function mapEstadoBackendToDomain(estadoBackend: string): CodigoEstadoCita {
 }
 
 function resolverPaciente(id: string): PacienteResuelto {
-  const paciente = PACIENTES.find((p) => p.id === id);
+  const paciente = PACIENTES.find(p => p.id === id);
   if (!paciente) {
     return {
       id,
@@ -69,12 +86,14 @@ function resolverPaciente(id: string): PacienteResuelto {
   }
   return {
     ...paciente,
-    convenio: paciente.convenioId ? CONVENIOS.find((c) => c.id === paciente.convenioId) : undefined,
+    convenio: paciente.convenioId
+      ? CONVENIOS.find(c => c.id === paciente.convenioId)
+      : undefined,
   };
 }
 
 function resolverEspecialista(id: string): Especialista {
-  const especialista = ESPECIALISTAS.find((e) => e.id === id);
+  const especialista = ESPECIALISTAS.find(e => e.id === id);
   if (!especialista) {
     return {
       id,
@@ -87,17 +106,27 @@ function resolverEspecialista(id: string): Especialista {
 }
 
 function resolverCita(cita: Cita, hoy: Date): CitaResuelta {
-  const { pacienteId, especialistaId, offsetDias, creadaOffsetDias, creadaHora, historial, ...resto } = cita;
+  const {
+    pacienteId,
+    especialistaId,
+    offsetDias,
+    creadaOffsetDias,
+    creadaHora,
+    historial,
+    ...resto
+  } = cita;
   return {
     ...resto,
     fecha: fechaHoraDesdeOffset(hoy, offsetDias, cita.horaInicio),
     creadaEn: fechaHoraDesdeOffset(hoy, creadaOffsetDias, creadaHora),
     paciente: resolverPaciente(pacienteId),
     especialista: resolverEspecialista(especialistaId),
-    montoAnticipo: (cita as any).montoAnticipo ?? (cita.origen === "web" ? 10000 : undefined),
+    montoAnticipo:
+      (cita as any).montoAnticipo ??
+      (cita.origen === "web" ? 10000 : undefined),
     webpayTransaccionId: (cita as any).webpayTransaccionId,
     notas: (cita as any).notas,
-    historial: historial.map((h) => ({
+    historial: historial.map(h => ({
       estado: h.estado,
       fecha: fechaHoraDesdeOffset(hoy, h.haceDias, h.hora),
       responsable: h.responsable,
@@ -116,12 +145,19 @@ function mapBackendCitaToResuelta(dto: CitaBackendDto): CitaResuelta {
   let espCargo = "Profesional";
 
   if (dto.especialista && typeof dto.especialista === "object") {
-    const objEsp = dto.especialista as { id?: number; nombre?: string; cargo?: string };
+    const objEsp = dto.especialista as {
+      id?: number;
+      nombre?: string;
+      cargo?: string;
+    };
     espId = String(objEsp.id || 1);
     espNombre = objEsp.nombre || "Especialista";
     espCargo = objEsp.cargo || "Profesional";
   } else {
-    const nombreStr = typeof dto.especialista === "string" ? dto.especialista : dto.especialistaNombre || "";
+    const nombreStr =
+      typeof dto.especialista === "string"
+        ? dto.especialista
+        : dto.especialistaNombre || "";
     espNombre = nombreStr || "Especialista";
     if (dto.especialistaId) {
       espId = String(dto.especialistaId);
@@ -143,7 +179,9 @@ function mapBackendCitaToResuelta(dto: CitaBackendDto): CitaResuelta {
   } else if (dto.servicioNombre) {
     servNombre = dto.servicioNombre;
   }
-  const servDomain: Servicio = servNombre.toLowerCase().includes("kinesiol") ? "kinesiologia" : "masajes";
+  const servDomain: Servicio = servNombre.toLowerCase().includes("kinesiol")
+    ? "kinesiologia"
+    : "masajes";
 
   // 3. Paciente
   let pId = "1";
@@ -156,7 +194,9 @@ function mapBackendCitaToResuelta(dto: CitaBackendDto): CitaResuelta {
   let pConvenioId: string | undefined = undefined;
 
   if (dto.paciente && typeof dto.paciente === "object") {
-    pId = dto.paciente.id ? String(dto.paciente.id) : String(dto.pacienteId || 1);
+    pId = dto.paciente.id
+      ? String(dto.paciente.id)
+      : String(dto.pacienteId || 1);
     pNombre = dto.paciente.nombre || "Paciente";
     pApellido = dto.paciente.apellido || "";
     pRut = dto.paciente.rut || dto.pacienteRut || "";
@@ -176,13 +216,19 @@ function mapBackendCitaToResuelta(dto: CitaBackendDto): CitaResuelta {
   }
 
   // 4. Tiempos
-  const horaIni = dto.horaInicio ? String(dto.horaInicio).substring(0, 5) : "09:00";
-  let horaFin = (dto.horaTermino || dto.horaFin) ? String(dto.horaTermino || dto.horaFin).substring(0, 5) : "10:00";
+  const horaIni = dto.horaInicio
+    ? String(dto.horaInicio).substring(0, 5)
+    : "09:00";
+  let horaFin =
+    dto.horaTermino || dto.horaFin
+      ? String(dto.horaTermino || dto.horaFin).substring(0, 5)
+      : "10:00";
 
-  const esServicioLargo = servNombre.toLowerCase().includes("premium") || 
-                          servNombre.toLowerCase().includes("pareja") || 
-                          servNombre.toLowerCase().includes("reductiv") ||
-                          servNombre.toLowerCase().includes("kinesiolog");
+  const esServicioLargo =
+    servNombre.toLowerCase().includes("premium") ||
+    servNombre.toLowerCase().includes("pareja") ||
+    servNombre.toLowerCase().includes("reductiv") ||
+    servNombre.toLowerCase().includes("kinesiolog");
 
   if (esServicioLargo && horaIni) {
     const [h, m] = horaIni.split(":").map(Number);
@@ -216,7 +262,11 @@ function mapBackendCitaToResuelta(dto: CitaBackendDto): CitaResuelta {
   return {
     id: String(dto.id),
     servicio: servDomain,
-    servicioNombre: servNombre || (servDomain === "kinesiologia" ? "Kinesiología" : "Masajes (masoterapia)"),
+    servicioNombre:
+      servNombre ||
+      (servDomain === "kinesiologia"
+        ? "Kinesiología"
+        : "Masajes (masoterapia)"),
     horaInicio: horaIni,
     horaTermino: horaFin,
     estado: mapEstadoBackendToDomain(dto.estado),
@@ -232,7 +282,9 @@ function mapBackendCitaToResuelta(dto: CitaBackendDto): CitaResuelta {
       telefono: pTelefono,
       origenRegistro: "manual",
       creadoHaceDias: 0,
-      convenio: pConvenioNombre ? { id: pConvenioId || "1", nombre: pConvenioNombre } : undefined,
+      convenio: pConvenioNombre
+        ? { id: pConvenioId || "1", nombre: pConvenioNombre }
+        : undefined,
     },
     especialista: {
       id: espId,
@@ -242,7 +294,8 @@ function mapBackendCitaToResuelta(dto: CitaBackendDto): CitaResuelta {
     },
     montoAnticipo,
     webpayTransaccionId,
-    notas: (notaPac || notaInt) ? { paciente: notaPac, interna: notaInt } : undefined,
+    notas:
+      notaPac || notaInt ? { paciente: notaPac, interna: notaInt } : undefined,
     historial: [
       {
         estado: mapEstadoBackendToDomain(dto.estado),
@@ -275,9 +328,12 @@ export async function getAgendaDia(
 
     const citasApi = (res?.data || []).map(mapBackendCitaToResuelta);
 
-    const todosBloqueos = await listBloqueosEspecialista(especialistaId, refHoy);
+    const todosBloqueos = await listBloqueosEspecialista(
+      especialistaId,
+      refHoy
+    );
     const bloqueos = todosBloqueos.filter(
-      (b) => fechaISO(b.fecha) === fechaObjetivo && b.activo !== false
+      b => fechaISO(b.fecha) === fechaObjetivo && b.activo !== false
     );
 
     if (citasApi.length > 0) {
@@ -289,22 +345,27 @@ export async function getAgendaDia(
 
   // Fallback transparente a datos semilla si la API no tiene registros o no está disponible
   const citasSeed = CITAS.filter(
-    (c) =>
-      (c.especialistaId === especialistaId || MAPA_ESPECIALISTA_ID[c.especialistaId] === parseInt(especialistaId.replace(/\D/g, ""), 10)) &&
+    c =>
+      (c.especialistaId === especialistaId ||
+        MAPA_ESPECIALISTA_ID[c.especialistaId] ===
+          parseInt(especialistaId.replace(/\D/g, ""), 10)) &&
       fechaISO(fechaDesdeOffset(refHoy, c.offsetDias)) === fechaObjetivo
   )
-    .map((c) => resolverCita(c, refHoy))
+    .map(c => resolverCita(c, refHoy))
     .sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
 
   const todosBloqueos = await listBloqueosEspecialista(especialistaId, refHoy);
   const bloqueos = todosBloqueos.filter(
-    (b) => fechaISO(b.fecha) === fechaObjetivo && b.activo !== false
+    b => fechaISO(b.fecha) === fechaObjetivo && b.activo !== false
   );
 
   return { citas: citasSeed, bloqueos };
 }
 
-export async function getCita(id: string, _hoy?: Date): Promise<CitaResuelta | undefined> {
+export async function getCita(
+  id: string,
+  _hoy?: Date
+): Promise<CitaResuelta | undefined> {
   const refHoy = _hoy ?? new Date();
 
   try {
@@ -330,27 +391,35 @@ export async function getCita(id: string, _hoy?: Date): Promise<CitaResuelta | u
     // Error al obtener de backend, buscar en semilla
   }
 
-  const citaSeed = CITAS.find((c) => c.id === id);
+  const citaSeed = CITAS.find(c => c.id === id);
   return citaSeed ? resolverCita(citaSeed, refHoy) : undefined;
 }
 
-export async function historialPaciente(pacienteId: string, _hoy?: Date): Promise<CitaResuelta[]> {
+export async function historialPaciente(
+  pacienteId: string,
+  _hoy?: Date
+): Promise<CitaResuelta[]> {
   const refHoy = _hoy ?? new Date();
 
   try {
     const numId = parseInt(pacienteId.replace(/\D/g, ""), 10);
     if (!isNaN(numId)) {
-      const res = await citaService.getAll({ pacienteId: numId } as Record<string, unknown>);
+      const res = await citaService.getAll({ pacienteId: numId } as Record<
+        string,
+        unknown
+      >);
       if (res?.data && res.data.length > 0) {
-        return res.data.map(mapBackendCitaToResuelta).sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
+        return res.data
+          .map(mapBackendCitaToResuelta)
+          .sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
       }
     }
   } catch {
     // Fallback
   }
 
-  return CITAS.filter((c) => c.pacienteId === pacienteId)
-    .map((c) => resolverCita(c, refHoy))
+  return CITAS.filter(c => c.pacienteId === pacienteId)
+    .map(c => resolverCita(c, refHoy))
     .sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
 }
 
@@ -360,17 +429,23 @@ export async function contadoresPaciente(
 ): Promise<{ atendidas: number; canceladas: number; noAsistidas: number }> {
   const historial = await historialPaciente(pacienteId, _hoy);
   return {
-    atendidas: historial.filter((c) => c.estado === "atendida").length,
-    canceladas: historial.filter((c) => c.estado === "cancelada").length,
-    noAsistidas: historial.filter((c) => c.estado === "no_asistida").length,
+    atendidas: historial.filter(c => c.estado === "atendida").length,
+    canceladas: historial.filter(c => c.estado === "cancelada").length,
+    noAsistidas: historial.filter(c => c.estado === "no_asistida").length,
   };
 }
 
-export async function reservasDelPaciente(pacienteId: string, _hoy?: Date): Promise<CitaResuelta[]> {
+export async function reservasDelPaciente(
+  pacienteId: string,
+  _hoy?: Date
+): Promise<CitaResuelta[]> {
   return historialPaciente(pacienteId, _hoy);
 }
 
-export async function listCitasDelDia(fecha: Date, _hoy?: Date): Promise<CitaResuelta[]> {
+export async function listCitasDelDia(
+  fecha: Date,
+  _hoy?: Date
+): Promise<CitaResuelta[]> {
   const fechaObjetivo = fechaISO(fecha);
   const refHoy = _hoy ?? new Date();
 
@@ -386,7 +461,7 @@ export async function listCitasDelDia(fecha: Date, _hoy?: Date): Promise<CitaRes
     // Fallback
   }
 
-  return CITAS.filter((c) => fechaISO(fechaDesdeOffset(refHoy, c.offsetDias)) === fechaObjetivo).map(
-    (c) => resolverCita(c, refHoy)
-  );
+  return CITAS.filter(
+    c => fechaISO(fechaDesdeOffset(refHoy, c.offsetDias)) === fechaObjetivo
+  ).map(c => resolverCita(c, refHoy));
 }

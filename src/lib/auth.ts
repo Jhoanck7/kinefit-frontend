@@ -21,8 +21,12 @@ export function extractUserFromJwt(token: string) {
 
   const user = {
     id: decoded.usuario_id,
-    email: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
-    nombre: decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+    email:
+      decoded[
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+      ],
+    nombre:
+      decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
     rol: decoded.rol,
     especialistaId: decoded.especialista_id,
     exp: decoded.exp,
@@ -35,12 +39,16 @@ export function extractUserFromJwt(token: string) {
   return user;
 }
 
-export function isSessionExpired(session: { customExp?: number } | null | undefined): boolean {
+export function isSessionExpired(
+  session: { customExp?: number } | null | undefined
+): boolean {
   if (!session?.customExp) return true;
   return Math.floor(Date.now() / 1000) >= session.customExp;
 }
 
-export function isTokenExpired(token: { customExp?: number } | null | undefined): boolean {
+export function isTokenExpired(
+  token: { customExp?: number } | null | undefined
+): boolean {
   if (!token?.customExp) return true;
   return Math.floor(Date.now() / 1000) >= token.customExp;
 }

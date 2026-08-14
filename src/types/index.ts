@@ -27,7 +27,6 @@ export interface BackendSpecialist {
   } | null;
   activo: boolean;
   fechasDisponibles?: string[];
-
 }
 
 // TimeSlot / BloqueHorario Controller
@@ -35,7 +34,7 @@ export interface BackendTimeSlot {
   id: number;
   horaInicio: string;
   horaFin: string;
-  estado: 'Disponible' | 'Ocupado' | 'Bloqueado' | string;
+  estado: "Disponible" | "Ocupado" | "Bloqueado" | string;
   hora?: string;
   especialistaSanityId?: string;
   fecha?: string;
@@ -90,7 +89,7 @@ export interface IniciarTransaccionResponseData {
 }
 
 export interface ConfirmarTransaccionResponseData {
-  resultado: 'Aprobado' | 'Rechazado';
+  resultado: "Aprobado" | "Rechazado";
   cita?: {
     id: number;
     estado: string;
@@ -117,7 +116,7 @@ export interface Appointment {
   patientName: string;
   patientEmail: string;
   patientPhone: string;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: "pending" | "confirmed" | "cancelled";
   createdAt: string;
 }
 

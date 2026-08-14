@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, ReactNode } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 
 const SELECTOR_FOCUSABLES =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -34,11 +34,12 @@ export function Modal({
   useEffect(() => {
     if (!abierto) return;
     disparadorRef.current = document.activeElement as HTMLElement;
-    
+
     // Esperar un frame para que los hijos se rendericen
     requestAnimationFrame(() => {
       const contenedor = contenedorRef.current;
-      const focusables = contenedor?.querySelectorAll<HTMLElement>(SELECTOR_FOCUSABLES);
+      const focusables =
+        contenedor?.querySelectorAll<HTMLElement>(SELECTOR_FOCUSABLES);
       focusables?.[0]?.focus();
     });
 
@@ -48,8 +49,10 @@ export function Modal({
         return;
       }
       const contenedor = contenedorRef.current;
-      const focusables = contenedor?.querySelectorAll<HTMLElement>(SELECTOR_FOCUSABLES);
-      if (evento.key !== "Tab" || !focusables || focusables.length === 0) return;
+      const focusables =
+        contenedor?.querySelectorAll<HTMLElement>(SELECTOR_FOCUSABLES);
+      if (evento.key !== "Tab" || !focusables || focusables.length === 0)
+        return;
       const primero = focusables[0];
       const ultimo = focusables[focusables.length - 1];
       if (evento.shiftKey && document.activeElement === primero) {

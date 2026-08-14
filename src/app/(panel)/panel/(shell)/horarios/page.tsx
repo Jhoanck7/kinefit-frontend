@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { listHorarios, HorarioEspecialista } from "@/lib/panel/data/horarios";
-import { formatearRangoHorario } from "@/lib/panel/domain/formato";
+
 import { Card } from "@/components/panel/primitives/Card";
+import { HorarioEspecialista, listHorarios } from "@/lib/panel/data/horarios";
+import { formatearRangoHorario } from "@/lib/panel/domain/formato";
 
 const DIAS: { id: 0 | 1 | 2 | 3 | 4 | 5 | 6; etiqueta: string }[] = [
   { id: 1, etiqueta: "Lunes" },
@@ -36,21 +37,37 @@ export default function HorariosPage() {
       </div>
 
       {horarios.map(({ especialista, plantilla }) => (
-        <Card key={especialista.id} className="rounded-none border-slate-200 shadow-none p-5">
+        <Card
+          key={especialista.id}
+          className="rounded-none border-slate-200 shadow-none p-5"
+        >
           <p className="mb-3 font-sans font-medium text-sm text-slate-900 border-b border-slate-200 pb-2">
-            {especialista.nombre} <span className="font-normal text-slate-500">· {especialista.cargo}</span>
+            {especialista.nombre}{" "}
+            <span className="font-normal text-slate-500">
+              · {especialista.cargo}
+            </span>
           </p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-7 sm:gap-2">
-            {DIAS.map((dia) => {
+            {DIAS.map(dia => {
               const rangos = plantilla.dias[dia.id];
               return (
-                <div key={dia.id} className="border border-slate-200 bg-slate-50/50 p-2.5 text-center rounded-none">
-                  <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-400">{dia.etiqueta}</p>
+                <div
+                  key={dia.id}
+                  className="border border-slate-200 bg-slate-50/50 p-2.5 text-center rounded-none"
+                >
+                  <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {dia.etiqueta}
+                  </p>
                   {!rangos || rangos.length === 0 ? (
-                    <p className="mt-1 font-sans text-xs text-slate-400 italic">No atiende</p>
+                    <p className="mt-1 font-sans text-xs text-slate-400 italic">
+                      No atiende
+                    </p>
                   ) : (
                     rangos.map((rango, i) => (
-                      <p key={i} className="mt-1 font-sans font-medium text-xs text-slate-800">
+                      <p
+                        key={i}
+                        className="mt-1 font-sans font-medium text-xs text-slate-800"
+                      >
                         {formatearRangoHorario(rango.inicio, rango.termino)}
                       </p>
                     ))

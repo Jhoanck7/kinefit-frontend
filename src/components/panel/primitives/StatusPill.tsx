@@ -6,13 +6,36 @@ import { ColorRolEstado } from "@/lib/panel/domain/estados";
  * imposible que el mismo estado se vea de dos colores en dos pantallas
  * (DD-5, A.6).
  */
-const CLASES_ROL: Record<ColorRolEstado, { fondo: string; texto: string; punto: string }> = {
-  "azul-seleccion": { fondo: "bg-blue-100", texto: "text-blue-800", punto: "bg-blue-500" },
-  ambar: { fondo: "bg-amber-100", texto: "text-amber-800", punto: "bg-amber-500" },
-  verde: { fondo: "bg-emerald-100", texto: "text-emerald-800", punto: "bg-emerald-500" },
-  "azul-profundo": { fondo: "bg-indigo-100", texto: "text-indigo-900", punto: "bg-indigo-700" },
+const CLASES_ROL: Record<
+  ColorRolEstado,
+  { fondo: string; texto: string; punto: string }
+> = {
+  "azul-seleccion": {
+    fondo: "bg-blue-100",
+    texto: "text-blue-800",
+    punto: "bg-blue-500",
+  },
+  ambar: {
+    fondo: "bg-amber-100",
+    texto: "text-amber-800",
+    punto: "bg-amber-500",
+  },
+  verde: {
+    fondo: "bg-emerald-100",
+    texto: "text-emerald-800",
+    punto: "bg-emerald-500",
+  },
+  "azul-profundo": {
+    fondo: "bg-indigo-100",
+    texto: "text-indigo-900",
+    punto: "bg-indigo-700",
+  },
   rojo: { fondo: "bg-red-100", texto: "text-red-800", punto: "bg-red-500" },
-  gris: { fondo: "bg-slate-200", texto: "text-slate-700", punto: "bg-slate-500" },
+  gris: {
+    fondo: "bg-slate-200",
+    texto: "text-slate-700",
+    punto: "bg-slate-500",
+  },
 };
 
 interface StatusPillProps {
@@ -22,7 +45,12 @@ interface StatusPillProps {
   className?: string;
 }
 
-export function StatusPill({ etiqueta, colorRol, conTrama, className = "" }: StatusPillProps) {
+export function StatusPill({
+  etiqueta,
+  colorRol,
+  conTrama,
+  className = "",
+}: StatusPillProps) {
   const clases = CLASES_ROL[colorRol];
   return (
     <span
@@ -34,7 +62,12 @@ export function StatusPill({ etiqueta, colorRol, conTrama, className = "" }: Sta
 }
 
 export function PuntoEstado({ colorRol }: { colorRol: ColorRolEstado }) {
-  return <span className={`h-2.5 w-2.5 rounded-full ${CLASES_ROL[colorRol].punto}`} aria-hidden />;
+  return (
+    <span
+      className={`h-2.5 w-2.5 rounded-full ${CLASES_ROL[colorRol].punto}`}
+      aria-hidden
+    />
+  );
 }
 
 export { CLASES_ROL as CLASES_ROL_ESTADO };

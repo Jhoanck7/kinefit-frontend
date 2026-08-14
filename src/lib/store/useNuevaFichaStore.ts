@@ -11,7 +11,11 @@ interface NuevaFichaState {
   formatoId: string | null;
   contenido: Record<string, string>;
   adjuntos: string[];
-  setReserva: (pacienteId: string, pacienteNombre: string, citaId: string) => void;
+  setReserva: (
+    pacienteId: string,
+    pacienteNombre: string,
+    citaId: string
+  ) => void;
   setFormato: (formatoId: string) => void;
   setCampo: (campoId: string, valor: string) => void;
   agregarAdjunto: (nombre: string) => void;
@@ -19,20 +23,29 @@ interface NuevaFichaState {
   reiniciar: () => void;
 }
 
-export const useNuevaFichaStore = create<NuevaFichaState>()((set) => ({
+export const useNuevaFichaStore = create<NuevaFichaState>()(set => ({
   pacienteId: null,
   pacienteNombre: null,
   citaId: null,
   formatoId: null,
   contenido: {},
   adjuntos: [],
-  setReserva: (pacienteId, pacienteNombre, citaId) => set({ pacienteId, pacienteNombre, citaId }),
-  setFormato: (formatoId) => set({ formatoId }),
+  setReserva: (pacienteId, pacienteNombre, citaId) =>
+    set({ pacienteId, pacienteNombre, citaId }),
+  setFormato: formatoId => set({ formatoId }),
   setCampo: (campoId, valor) =>
-    set((estado) => ({ contenido: { ...estado.contenido, [campoId]: valor } })),
-  agregarAdjunto: (nombre) => set((estado) => ({ adjuntos: [...estado.adjuntos, nombre] })),
-  quitarAdjunto: (nombre) =>
-    set((estado) => ({ adjuntos: estado.adjuntos.filter((a) => a !== nombre) })),
+    set(estado => ({ contenido: { ...estado.contenido, [campoId]: valor } })),
+  agregarAdjunto: nombre =>
+    set(estado => ({ adjuntos: [...estado.adjuntos, nombre] })),
+  quitarAdjunto: nombre =>
+    set(estado => ({ adjuntos: estado.adjuntos.filter(a => a !== nombre) })),
   reiniciar: () =>
-    set({ pacienteId: null, pacienteNombre: null, citaId: null, formatoId: null, contenido: {}, adjuntos: [] }),
+    set({
+      pacienteId: null,
+      pacienteNombre: null,
+      citaId: null,
+      formatoId: null,
+      contenido: {},
+      adjuntos: [],
+    }),
 }));

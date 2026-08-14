@@ -1,5 +1,6 @@
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+
 import { extractUserFromJwt } from "@/lib/auth";
 
 export const authConfig = {
@@ -50,7 +51,8 @@ export const authConfig = {
         session.user.id = token.userId as string;
         session.user.nombre = token.nombre as string;
         session.user.rol = token.rol as string;
-        session.user.especialistaId = token.especialistaId as string | undefined;
+        session.user.especialistaId = token.especialistaId as
+          string | undefined;
       }
       return session;
     },

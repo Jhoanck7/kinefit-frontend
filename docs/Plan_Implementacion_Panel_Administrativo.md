@@ -2,12 +2,12 @@
 
 ## KineFit Chile · Frontend
 
-| Campo | Detalle |
-|---|---|
-| Documento | Plan de implementación |
-| Repositorio | `Jhoanck7/kinefit-frontend`, rama `feature/administrative-panel` |
-| Base de análisis | Código en `51b300c` (HEAD de `feature/administrative-panel`, idéntica a `main`) |
-| Fecha | 27 de julio de 2026 |
+| Campo             | Detalle                                                                                                                     |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Documento         | Plan de implementación                                                                                                      |
+| Repositorio       | `Jhoanck7/kinefit-frontend`, rama `feature/administrative-panel`                                                            |
+| Base de análisis  | Código en `51b300c` (HEAD de `feature/administrative-panel`, idéntica a `main`)                                             |
+| Fecha             | 27 de julio de 2026                                                                                                         |
 | Documentos fuente | `Briefing_Prototipo_Frontend_KineFit`, `Requerimientos_Panel_Administrativo_KineFit`, `Especificacion_Visual_Panel_KineFit` |
 
 > **Trazabilidad con las fuentes.** Este plan incorpora los tres documentos completos: el `Briefing_Prototipo_Frontend_KineFit`, la `Especificacion_Visual_Panel_KineFit` (Partes A a E, correcciones A-, M-, W-, P1- a P4-, PE-, PA-, F-, NF1-, NF2-, FM-, CF- y G-1 a G-14) y el `Documento_de_Requerimientos v1.1` (RF-GEN a RF-NOT, capítulo 13 incluido). Las correcciones y requerimientos se referencian por su código para que pueda verificarse que ninguno se pierde.
@@ -22,15 +22,15 @@
 
 ## Capítulo 1 — Resumen ejecutivo
 
-Se construye, dentro del repositorio `kinefit-frontend`, un prototipo navegable y no funcional del panel administrativo: **20 vistas** —19 rutas y un modal— bajo la raíz `/panel`, que cubren las 21 especificadas, aisladas del sitio público mediante *route groups* del App Router, alimentadas por un universo de datos de prueba local y sin una sola llamada a la API.
+Se construye, dentro del repositorio `kinefit-frontend`, un prototipo navegable y no funcional del panel administrativo: **20 vistas** —19 rutas y un modal— bajo la raíz `/panel`, que cubren las 21 especificadas, aisladas del sitio público mediante _route groups_ del App Router, alimentadas por un universo de datos de prueba local y sin una sola llamada a la API.
 
 **Diez fases.** La primera es obligatoriamente la reorganización del layout raíz, porque hoy ese layout monta Navbar, Footer y el botón de WhatsApp alrededor de absolutamente todo lo que se renderice bajo `src/app/`, y cualquier vista de panel creada antes de esa reorganización heredaría los tres. Las nueve restantes se ordenan por valor de retroalimentación: primero Agenda, luego el asistente de reserva manual, después Pacientes, Fichas clínicas, Bloqueos y horarios, y al final el constructor de formatos —que existe para provocar una decisión del cliente, no porque esté comprometido—.
 
-**La dependencia crítica no es técnica, es de datos.** Las fases 4 a 9 construyen vistas que muestran a los mismos pacientes, las mismas citas y las mismas fichas desde ángulos distintos. Si el universo de datos de prueba no está definido y centralizado *antes* de la primera vista con contenido, cada vista inventará sus propios ejemplos y el prototipo reproducirá exactamente el defecto que arruina la retroalimentación: datos que no cuadran entre pantallas. Por eso la fase 3 —modelo de dominio y universo de datos— es previa a toda vista de contenido y no es negociable en el orden.
+**La dependencia crítica no es técnica, es de datos.** Las fases 4 a 9 construyen vistas que muestran a los mismos pacientes, las mismas citas y las mismas fichas desde ángulos distintos. Si el universo de datos de prueba no está definido y centralizado _antes_ de la primera vista con contenido, cada vista inventará sus propios ejemplos y el prototipo reproducirá exactamente el defecto que arruina la retroalimentación: datos que no cuadran entre pantallas. Por eso la fase 3 —modelo de dominio y universo de datos— es previa a toda vista de contenido y no es negociable en el orden.
 
-**El riesgo principal es la contaminación del sitio público.** Es el único punto donde este trabajo puede romper algo que hoy funciona, y está concentrado en una sola fase. Se mitiga con una regla de verificación explícita en cada fase: *el sitio público debe verse y comportarse exactamente igual*, comprobado a ojo sobre las siete secciones de la portada y sobre el HTML servido.
+**El riesgo principal es la contaminación del sitio público.** Es el único punto donde este trabajo puede romper algo que hoy funciona, y está concentrado en una sola fase. Se mitiga con una regla de verificación explícita en cada fase: _el sitio público debe verse y comportarse exactamente igual_, comprobado a ojo sobre las siete secciones de la portada y sobre el HTML servido.
 
-**La entrega se resuelve desplegando a producción bajo `/panel`**, sin enlaces desde ninguna parte del sitio público y con metadata `noindex, nofollow`. El pipeline solo se dispara con *push* a `main`; construir un entorno de vista previa cuesta más que el problema que resuelve para cuatro usuarios internos. Un panel al que solo se llega escribiendo la URL, y que ningún enlace ni buscador alcanza, no tiene exposición real.
+**La entrega se resuelve desplegando a producción bajo `/panel`**, sin enlaces desde ninguna parte del sitio público y con metadata `noindex, nofollow`. El pipeline solo se dispara con _push_ a `main`; construir un entorno de vista previa cuesta más que el problema que resuelve para cuatro usuarios internos. Un panel al que solo se llega escribiendo la URL, y que ningún enlace ni buscador alcanza, no tiene exposición real.
 
 ---
 
@@ -49,13 +49,13 @@ Todo lo de este capítulo está **verificado leyendo el código**, salvo donde d
 
 ### 2.1 Stack — confirmado, con una precisión
 
-| Tecnología | Versión declarada en `package.json` |
-|---|---|
-| Next.js | `16.2.9` |
-| React / React DOM | `19.2.4` |
-| Zustand | `^5.0.14` |
-| Tailwind CSS | `^4` vía `@tailwindcss/postcss` |
-| TypeScript | `^5` |
+| Tecnología        | Versión declarada en `package.json` |
+| ----------------- | ----------------------------------- |
+| Next.js           | `16.2.9`                            |
+| React / React DOM | `19.2.4`                            |
+| Zustand           | `^5.0.14`                           |
+| Tailwind CSS      | `^4` vía `@tailwindcss/postcss`     |
+| TypeScript        | `^5`                                |
 
 Dependencias de producción: **cuatro** (`next`, `react`, `react-dom`, `zustand`). No hay librería de componentes, ni de iconos, ni de fechas, ni de formularios. Todo el SVG del proyecto está escrito a mano y en línea.
 
@@ -104,19 +104,19 @@ Esto contradice frontalmente la premisa del briefing de que el panel «no debe t
 
 `src/app/globals.css` tiene 37 líneas. Los tokens declarados bajo `@theme inline`:
 
-| Token | Valor | ¿Quién lo usa? |
-|---|---|---|
-| `--color-primary` | `#059669` (verde esmeralda) | **Solo `Button.tsx`** |
-| `--color-primary-foreground` | `#0f172a` | **Solo `Button.tsx`** |
-| `--color-card` | `#f9fafb` | **Solo `Card.tsx`** |
-| `--color-muted` | `#6b7280` | **Solo `Button.tsx`** |
-| `--radius-global` | `12px` | **Solo `Button.tsx` y `Card.tsx`** |
-| `--color-brand-primary` | `#0c5dc5` (azul de marca) | Todo el sitio visible |
-| `--color-brand-primary-hover` | `#1b73e3` | Todo el sitio visible |
-| `--color-brand-border` | `#e2e8f0` | Todo el sitio visible |
-| `--color-brand-muted` | `#334155` | Todo el sitio visible |
-| `--color-brand-bg` | `#ffffff` | `<body>` y fondos de sección |
-| `--color-brand-primary-glow` | `rgba(12,93,197,.08)` | Declarado, **sin uso** |
+| Token                         | Valor                       | ¿Quién lo usa?                     |
+| ----------------------------- | --------------------------- | ---------------------------------- |
+| `--color-primary`             | `#059669` (verde esmeralda) | **Solo `Button.tsx`**              |
+| `--color-primary-foreground`  | `#0f172a`                   | **Solo `Button.tsx`**              |
+| `--color-card`                | `#f9fafb`                   | **Solo `Card.tsx`**                |
+| `--color-muted`               | `#6b7280`                   | **Solo `Button.tsx`**              |
+| `--radius-global`             | `12px`                      | **Solo `Button.tsx` y `Card.tsx`** |
+| `--color-brand-primary`       | `#0c5dc5` (azul de marca)   | Todo el sitio visible              |
+| `--color-brand-primary-hover` | `#1b73e3`                   | Todo el sitio visible              |
+| `--color-brand-border`        | `#e2e8f0`                   | Todo el sitio visible              |
+| `--color-brand-muted`         | `#334155`                   | Todo el sitio visible              |
+| `--color-brand-bg`            | `#ffffff`                   | `<body>` y fondos de sección       |
+| `--color-brand-primary-glow`  | `rgba(12,93,197,.08)`       | Declarado, **sin uso**             |
 
 **Y el hallazgo que resuelve el punto 7.3 del briefing: `Button.tsx` y `Card.tsx` no son consumidos por absolutamente nada.** Verificado por búsqueda exhaustiva de sus importaciones y de sus utilidades asociadas en todo `src/`: cero coincidencias fuera de sus propios archivos.
 
@@ -136,13 +136,13 @@ Esto cambia por completo la evaluación de riesgo del punto 7.3, y se resuelve e
 
 `src/components/ui/` — cinco archivos, de los cuales **dos están muertos**:
 
-| Componente | Estado | Nota |
-|---|---|---|
-| `Navbar` | Vivo, Client | Fijo, cambia de aspecto al desplazar, menú móvil propio |
-| `Footer` | Vivo, Client | Marcado `'use client'` sin necesitarlo salvo por `new Date()` |
-| `WhatsAppButton` | Vivo, Client | Botón flotante inferior derecho |
-| `BookingCard` | **Muerto** | Importado sin usarse (2.5) |
-| `Button`, `Card` | **Muertos** | Cero consumidores (2.6) |
+| Componente       | Estado       | Nota                                                          |
+| ---------------- | ------------ | ------------------------------------------------------------- |
+| `Navbar`         | Vivo, Client | Fijo, cambia de aspecto al desplazar, menú móvil propio       |
+| `Footer`         | Vivo, Client | Marcado `'use client'` sin necesitarlo salvo por `new Date()` |
+| `WhatsAppButton` | Vivo, Client | Botón flotante inferior derecho                               |
+| `BookingCard`    | **Muerto**   | Importado sin usarse (2.5)                                    |
+| `Button`, `Card` | **Muertos**  | Cero consumidores (2.6)                                       |
 
 `src/components/sections/` — ocho archivos, **siete vivos** y `ServicesSection` inalcanzable (2.4).
 
@@ -152,10 +152,10 @@ Sí existe un **idioma visual consistente y observable**, que el panel debe here
 
 ### 2.9 Estado global
 
-| Store | Persistencia | Consumidores reales |
-|---|---|---|
-| `useBookingStore` | Ninguna | `BookingCard` (muerto), `HeroSection` (lee un valor), `ServicesSection` (no renderizada) |
-| `useAuthStore` | `localStorage`, clave `kinefit-auth-storage` | **Ninguno.** Cero importaciones en todo `src/` |
+| Store             | Persistencia                                 | Consumidores reales                                                                      |
+| ----------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `useBookingStore` | Ninguna                                      | `BookingCard` (muerto), `HeroSection` (lee un valor), `ServicesSection` (no renderizada) |
+| `useAuthStore`    | `localStorage`, clave `kinefit-auth-storage` | **Ninguno.** Cero importaciones en todo `src/`                                           |
 
 `useAuthStore` guarda `token`, `user` e `isAuthenticated`, con `setSession` y `logout`. Su tipo `Usuario` tiene `role: string` —un string libre, no una unión— con un comentario que sugiere «Paciente» o «Kinesiologo». Verificado: **nada lo importa**. Es una pieza completa, persistida y desconectada.
 
@@ -188,20 +188,20 @@ Sí existe un **idioma visual consistente y observable**, que el panel debe here
 
 ## Capítulo 3 — Discrepancias y resoluciones
 
-| # | Tema | Dice el documento | Dice el código | Prevalece | Fundamento |
-|---|---|---|---|---|---|
-| **D-1** | **Color primario del panel** | Requerimientos: azul Pantone 2767 `#13294B`. Y también: derivar del sitio oficial | `--color-brand-primary: #0c5dc5` | **El código.** El panel deriva del token de marca | Los dos enunciados del documento son incompatibles; el segundo es el que expresa la intención de fondo. Un azul propio se desincroniza el día que el sitio cambie el suyo. `#13294B` se conserva como **intención de valor**, no de literal: la barra lateral necesita un azul más oscuro, y ese escalón se declara como token derivado del azul de marca, no como constante ajena |
-| **D-2** | **Tipografía** | Requerimientos: Arial/Helvetica. Briefing: «el proyecto usa Geist Sans, gana el proyecto» | **El sitio renderiza en Arial.** `body` fija Arial/Helvetica y anula a Geist, que se carga y se descarta (§2.7) | **El código, que aquí coincide con los requerimientos: Arial** | El briefing invierte el hecho. Resolver «a favor del proyecto» significa, literalmente, Arial. **El panel no declara familia tipográfica propia y hereda la del `body`.** Así el panel se ve como el sitio hoy, y el día que alguien conecte Geist correctamente, panel y sitio cambian juntos. Introducir Geist solo en el panel produciría dos tipografías distintas en un mismo despliegue — exactamente lo que ambos documentos quieren evitar |
-| **D-3** | **`Button.tsx` saldrá verde** | Briefing 7.3: reutilizarlo pintaría de verde todos los botones del panel; corregir el token «cae dentro de *no se modifica el sitio público*» | **`Button.tsx` y `Card.tsx` no tienen un solo consumidor.** El token verde no pinta nada en producción (§2.6) | **El código. La premisa de riesgo no se sostiene** | Ver resolución ampliada abajo |
-| **D-4** | **El flujo de reserva público «ya funciona»** | Briefing 2.3 y 4.3 | `BookingCard` está importado sin usarse; `ServicesSection` no se renderiza; el llamado a la acción va a AgendaPro (§2.5) | **El código** | No cambia el alcance —igual no se tocan—, pero **sí baja el riesgo**: no hay flujo público en ejecución con el que interferir. También significa que el patrón «Sanity con reserva a constantes locales» está vivo solo en Team, Testimonials y Gallery |
-| **D-5** | **`output: 'standalone'`** | Briefing: el Dockerfile no lo aprovecha, implicando que no está configurado | **`next.config.ts` sí lo declara**; el Dockerfile no lo usa | **El código** | Deuda real, fuera de alcance. Se registra porque afecta al tamaño de imagen, no a la entrega |
-| **D-6** | **Ocho secciones en la landing** | Briefing 4.2 | Siete renderizadas; `ServicesSection` inalcanzable (§2.4) | **El código** | Importa para la verificación de no regresión: la lista de control son **siete** secciones. Alguien que espere ocho reportará un falso positivo |
-| **D-7** | **Existe un sistema de componentes reutilizable** | Briefing 4.3 lo da por establecido | No hay una sola primitiva de interfaz en uso (§2.8) | **El código** | El panel debe **crear** sus primitivas. Es trabajo de la fase 2 que el plan contabiliza explícitamente |
-| **D-8** | **`Appointment.status`** | Panel: siete estados | Tres: `pending`, `confirmed`, `cancelled` (§2.10) | **Los requerimientos, en un tipo nuevo** | No se extiende el tipo existente: es el contrato del flujo público. El panel declara su propio catálogo |
-| **D-9** | **`useAuthStore` puede reutilizarse** | Briefing 7.5 lo plantea como opción | Cero consumidores (§2.9) | Ver decisión DD-3 | Verificado: no lo referencia nada |
-| **D-10** | **Despliegue** | El compose versionado declara `kinefit-frontend` | El workflow opera sobre un servicio llamado `frontend` (§2.11) | **Hay que averiguarlo** | Incoherencia sin resolver entre repositorio y VPS. Riesgo de entrega, no de código. Se verifica en la fase 1 |
-| **D-11** | **La agenda de ejemplo** | Especificación visual B.1: `Mi Agenda - Valeria Araneda`, con citas a las 09:00, 10:00 y 11:30. Parte D: la sesión simulada es **Valeria Araneda** | Requerimientos 13.2, horarios confirmados por el cliente: **Valeria Araneda atiende de 18:00 a 21:00** | **Los requerimientos.** Y obliga a cambiar la usuaria de la sesión | Ver resolución ampliada abajo. **Es la contradicción más consecuente de las cuatro fuentes** |
-| **D-12** | **Cómo se valida el prototipo** | Requerimientos 13.5: «exportación del prototipo a **PDF**, distribución a las especialistas y recolección de retroalimentación mediante formulario» | Briefing 1.2: el prototipo de Figma es insuficiente precisamente porque **«no es navegable de verdad»** | **El briefing.** Se entrega desplegado, no en PDF | Ver resolución ampliada abajo |
+| #        | Tema                                              | Dice el documento                                                                                                                                   | Dice el código                                                                                                           | Prevalece                                                          | Fundamento                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **D-1**  | **Color primario del panel**                      | Requerimientos: azul Pantone 2767 `#13294B`. Y también: derivar del sitio oficial                                                                   | `--color-brand-primary: #0c5dc5`                                                                                         | **El código.** El panel deriva del token de marca                  | Los dos enunciados del documento son incompatibles; el segundo es el que expresa la intención de fondo. Un azul propio se desincroniza el día que el sitio cambie el suyo. `#13294B` se conserva como **intención de valor**, no de literal: la barra lateral necesita un azul más oscuro, y ese escalón se declara como token derivado del azul de marca, no como constante ajena                                                                 |
+| **D-2**  | **Tipografía**                                    | Requerimientos: Arial/Helvetica. Briefing: «el proyecto usa Geist Sans, gana el proyecto»                                                           | **El sitio renderiza en Arial.** `body` fija Arial/Helvetica y anula a Geist, que se carga y se descarta (§2.7)          | **El código, que aquí coincide con los requerimientos: Arial**     | El briefing invierte el hecho. Resolver «a favor del proyecto» significa, literalmente, Arial. **El panel no declara familia tipográfica propia y hereda la del `body`.** Así el panel se ve como el sitio hoy, y el día que alguien conecte Geist correctamente, panel y sitio cambian juntos. Introducir Geist solo en el panel produciría dos tipografías distintas en un mismo despliegue — exactamente lo que ambos documentos quieren evitar |
+| **D-3**  | **`Button.tsx` saldrá verde**                     | Briefing 7.3: reutilizarlo pintaría de verde todos los botones del panel; corregir el token «cae dentro de _no se modifica el sitio público_»       | **`Button.tsx` y `Card.tsx` no tienen un solo consumidor.** El token verde no pinta nada en producción (§2.6)            | **El código. La premisa de riesgo no se sostiene**                 | Ver resolución ampliada abajo                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **D-4**  | **El flujo de reserva público «ya funciona»**     | Briefing 2.3 y 4.3                                                                                                                                  | `BookingCard` está importado sin usarse; `ServicesSection` no se renderiza; el llamado a la acción va a AgendaPro (§2.5) | **El código**                                                      | No cambia el alcance —igual no se tocan—, pero **sí baja el riesgo**: no hay flujo público en ejecución con el que interferir. También significa que el patrón «Sanity con reserva a constantes locales» está vivo solo en Team, Testimonials y Gallery                                                                                                                                                                                            |
+| **D-5**  | **`output: 'standalone'`**                        | Briefing: el Dockerfile no lo aprovecha, implicando que no está configurado                                                                         | **`next.config.ts` sí lo declara**; el Dockerfile no lo usa                                                              | **El código**                                                      | Deuda real, fuera de alcance. Se registra porque afecta al tamaño de imagen, no a la entrega                                                                                                                                                                                                                                                                                                                                                       |
+| **D-6**  | **Ocho secciones en la landing**                  | Briefing 4.2                                                                                                                                        | Siete renderizadas; `ServicesSection` inalcanzable (§2.4)                                                                | **El código**                                                      | Importa para la verificación de no regresión: la lista de control son **siete** secciones. Alguien que espere ocho reportará un falso positivo                                                                                                                                                                                                                                                                                                     |
+| **D-7**  | **Existe un sistema de componentes reutilizable** | Briefing 4.3 lo da por establecido                                                                                                                  | No hay una sola primitiva de interfaz en uso (§2.8)                                                                      | **El código**                                                      | El panel debe **crear** sus primitivas. Es trabajo de la fase 2 que el plan contabiliza explícitamente                                                                                                                                                                                                                                                                                                                                             |
+| **D-8**  | **`Appointment.status`**                          | Panel: siete estados                                                                                                                                | Tres: `pending`, `confirmed`, `cancelled` (§2.10)                                                                        | **Los requerimientos, en un tipo nuevo**                           | No se extiende el tipo existente: es el contrato del flujo público. El panel declara su propio catálogo                                                                                                                                                                                                                                                                                                                                            |
+| **D-9**  | **`useAuthStore` puede reutilizarse**             | Briefing 7.5 lo plantea como opción                                                                                                                 | Cero consumidores (§2.9)                                                                                                 | Ver decisión DD-3                                                  | Verificado: no lo referencia nada                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **D-10** | **Despliegue**                                    | El compose versionado declara `kinefit-frontend`                                                                                                    | El workflow opera sobre un servicio llamado `frontend` (§2.11)                                                           | **Hay que averiguarlo**                                            | Incoherencia sin resolver entre repositorio y VPS. Riesgo de entrega, no de código. Se verifica en la fase 1                                                                                                                                                                                                                                                                                                                                       |
+| **D-11** | **La agenda de ejemplo**                          | Especificación visual B.1: `Mi Agenda - Valeria Araneda`, con citas a las 09:00, 10:00 y 11:30. Parte D: la sesión simulada es **Valeria Araneda**  | Requerimientos 13.2, horarios confirmados por el cliente: **Valeria Araneda atiende de 18:00 a 21:00**                   | **Los requerimientos.** Y obliga a cambiar la usuaria de la sesión | Ver resolución ampliada abajo. **Es la contradicción más consecuente de las cuatro fuentes**                                                                                                                                                                                                                                                                                                                                                       |
+| **D-12** | **Cómo se valida el prototipo**                   | Requerimientos 13.5: «exportación del prototipo a **PDF**, distribución a las especialistas y recolección de retroalimentación mediante formulario» | Briefing 1.2: el prototipo de Figma es insuficiente precisamente porque **«no es navegable de verdad»**                  | **El briefing.** Se entrega desplegado, no en PDF                  | Ver resolución ampliada abajo                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 ### D-3 ampliada — resolución de `Button.tsx`
 
@@ -221,12 +221,12 @@ Esto además convierte el punto 7.3 del briefing —presentado como trampa— en
 
 Tres exigencias de las fuentes no pueden cumplirse a la vez:
 
-| Fuente | Exige |
-|---|---|
-| Especificación visual B.1 y Parte D | La sesión y la agenda de ejemplo son de **Valeria Araneda** |
-| Especificación visual A-7 y Parte D.3 | La jornada de ejemplo muestra **una cita de cada uno de los siete estados**, más un bloqueo |
-| Requerimientos 13.2 (cliente, última reunión) | Valeria Araneda atiende **de 18:00 a 21:00** |
-| Requerimientos RF-AGD-015 | Los bloques fuera del horario del especialista se presentan **atenuados y no seleccionables** |
+| Fuente                                        | Exige                                                                                         |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Especificación visual B.1 y Parte D           | La sesión y la agenda de ejemplo son de **Valeria Araneda**                                   |
+| Especificación visual A-7 y Parte D.3         | La jornada de ejemplo muestra **una cita de cada uno de los siete estados**, más un bloqueo   |
+| Requerimientos 13.2 (cliente, última reunión) | Valeria Araneda atiende **de 18:00 a 21:00**                                                  |
+| Requerimientos RF-AGD-015                     | Los bloques fuera del horario del especialista se presentan **atenuados y no seleccionables** |
 
 La jornada de Valeria son **seis bloques de 30 minutos**. Hay que colocar en ellos siete estados y un bloqueo: **ocho elementos en seis huecos.** No cabe. Y con RF-AGD-015 aplicado, las once horas restantes de la rejilla —de 09:00 a 18:00— aparecerían atenuadas: la agenda de ejemplo sería una franja gris con seis bloques al final.
 
@@ -250,7 +250,7 @@ El capítulo 13.5 de los requerimientos mantiene como mecanismo de validación �
 
 Ese mecanismo se definió cuando el prototipo era el de Figma, donde exportar a PDF no pierde nada: pantallas sueltas antes, pantallas sueltas después. **Aplicado al prototipo del frontend, tira justamente lo que se está pagando por construir.** El briefing dedica su punto 1.2 a explicar que Figma es insuficiente porque «no es navegable de verdad» y porque «el cliente no puede recorrer el flujo; solo mirar pantallas sueltas». Un PDF del prototipo del frontend es, exactamente, pantallas sueltas.
 
-Además, la mitad de lo que hay que validar **no se puede fotografiar**: que el ítem activo siga a la sección, que una cita Pendiente de pago tenga las acciones deshabilitadas *y explique por qué*, que el resumen del asistente se complete al avanzar, que cancelar exija motivo, que el paso 1 no ofrezca la franja de 14:00.
+Además, la mitad de lo que hay que validar **no se puede fotografiar**: que el ítem activo siga a la sección, que una cita Pendiente de pago tenga las acciones deshabilitadas _y explique por qué_, que el resumen del asistente se complete al avanzar, que cancelar exija motivo, que el paso 1 no ofrezca la franja de 14:00.
 
 **Resolución: se entrega desplegado** (DD-8), y **se conserva el formulario**, que es la parte del mecanismo que sí funciona y que responde a una restricción real del cliente —el equipo clínico está saturado y no hay reuniones que coordinar—.
 
@@ -266,11 +266,11 @@ El PDF puede acompañar como material de apoyo, nunca como el prototipo.
 
 Tres espacios, con una regla de dependencia en un solo sentido:
 
-| Espacio | Contenido | Puede importar de |
-|---|---|---|
-| **Global** | `<html>`, `<body>`, fuentes, hoja de estilos, tokens | — |
-| **Público** | Landing, secciones, cromo, metadata, JSON-LD, `constants.ts` | Global |
-| **Panel** | Rutas, layout, primitivas, dominio, datos de prueba | Global |
+| Espacio     | Contenido                                                    | Puede importar de |
+| ----------- | ------------------------------------------------------------ | ----------------- |
+| **Global**  | `<html>`, `<body>`, fuentes, hoja de estilos, tokens         | —                 |
+| **Público** | Landing, secciones, cromo, metadata, JSON-LD, `constants.ts` | Global            |
+| **Panel**   | Rutas, layout, primitivas, dominio, datos de prueba          | Global            |
 
 **Público y panel no se importan entre sí, en ninguna dirección.** No es purismo: es lo que garantiza que el panel salga entero de una sola pasada el día que se descarte o se mueva, y lo que impide que el verde de `Button.tsx` llegue al panel.
 
@@ -296,7 +296,7 @@ src/app/                        src/app/
                                         └── …secciones
 ```
 
-Los paréntesis marcan *route groups*: agrupan archivos sin aportar segmento a la URL. La portada sigue respondiendo en `/`; el panel cuelga de `/panel`.
+Los paréntesis marcan _route groups_: agrupan archivos sin aportar segmento a la URL. La portada sigue respondiendo en `/`; el panel cuelga de `/panel`.
 
 **No hay `src/app/layout.tsx`.** Cuando la raíz no declara layout, cada grupo aporta el suyo, con su propio `<html>` y `<body>`. Esa es la clave de esta variante: el layout público **no se reescribe, se mueve**. Conserva íntegros su `<html>`, su `<body>`, sus fuentes, su `defaultMetadata`, su JSON-LD y su cromo, exactamente como están hoy. El panel no hereda nada de él porque no está en su árbol.
 
@@ -316,10 +316,10 @@ Los paréntesis marcan *route groups*: agrupan archivos sin aportar segmento a l
 
 **Se mueve — dos archivos, en la fase 1, y solo aquí:**
 
-| Qué | De | A | Edición de contenido |
-|---|---|---|---|
-| El layout actual, íntegro | `src/app/layout.tsx` | `src/app/(public)/layout.tsx` | **Ninguna** |
-| La página de la portada | `src/app/page.tsx` | `src/app/(public)/page.tsx` | **Ninguna** |
+| Qué                       | De                   | A                             | Edición de contenido |
+| ------------------------- | -------------------- | ----------------------------- | -------------------- |
+| El layout actual, íntegro | `src/app/layout.tsx` | `src/app/(public)/layout.tsx` | **Ninguna**          |
+| La página de la portada   | `src/app/page.tsx`   | `src/app/(public)/page.tsx`   | **Ninguna**          |
 
 **Eso es todo lo que este plan hace sobre el sitio público.** Dos movimientos de archivo, cero líneas editadas. El cromo, la metadata y el JSON-LD viajan dentro del layout sin que nadie los reparta a mano, que es justamente lo que elimina el riesgo de perderlos por el camino.
 
@@ -348,12 +348,12 @@ Queda la verificación de todos modos —está en la fase 1—, pero pasa de ser
 
 ### 4.5 Aislamiento — los cuatro mecanismos
 
-| Requisito | Mecanismo | Verificación |
-|---|---|---|
-| Sin cromo público en el panel | El cromo vive en el layout público, hermano del panel | Recorrer `/panel` y comprobar ausencia de barra superior, pie y botón flotante |
-| Sin enlaces desde el sitio público | `NAV_LINKS`, `Footer` y secciones no se modifican; el panel no se enlaza desde ninguna parte | Buscar la cadena `panel` en `src/components/sections/`, `src/components/ui/` y `constants.ts`: cero resultados |
-| Sin indexación | El layout del panel exporta metadata propia con `noindex, nofollow`; **al no estar en el layout raíz, no hereda `index: true`** | Ver el HTML servido de `/panel`: debe traer la directiva de no indexación y **no** el JSON-LD de la clínica |
-| Sin sitemap | No existe sitemap (§2.2). No se crea | Nada que hacer |
+| Requisito                          | Mecanismo                                                                                                                       | Verificación                                                                                                   |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Sin cromo público en el panel      | El cromo vive en el layout público, hermano del panel                                                                           | Recorrer `/panel` y comprobar ausencia de barra superior, pie y botón flotante                                 |
+| Sin enlaces desde el sitio público | `NAV_LINKS`, `Footer` y secciones no se modifican; el panel no se enlaza desde ninguna parte                                    | Buscar la cadena `panel` en `src/components/sections/`, `src/components/ui/` y `constants.ts`: cero resultados |
+| Sin indexación                     | El layout del panel exporta metadata propia con `noindex, nofollow`; **al no estar en el layout raíz, no hereda `index: true`** | Ver el HTML servido de `/panel`: debe traer la directiva de no indexación y **no** el JSON-LD de la clínica    |
+| Sin sitemap                        | No existe sitemap (§2.2). No se crea                                                                                            | Nada que hacer                                                                                                 |
 
 Sobre robots.txt: **no se añade.** El sitio no publica hoy ninguno, un archivo que enumera `/panel` en un Disallow es la única pista pública de que `/panel` existe, y una ruta sin enlaces entrantes no es descubrible por rastreo. La metadata a nivel de layout es suficiente y no filtra información. Si el cliente exige robots.txt por política, se revisa; no es lo predeterminado.
 
@@ -361,11 +361,11 @@ Sobre robots.txt: **no se añade.** El sitio no publica hoy ninguno, un archivo 
 
 Bajo `src/components/panel/`, en tres capas:
 
-| Capa | Qué contiene | Ejemplos |
-|---|---|---|
-| **Cromo** | Estructura fija de la Parte A | Barra lateral, ítem de navegación, encabezado, marco de dos zonas |
+| Capa           | Qué contiene                                       | Ejemplos                                                                                                                                                                        |
+| -------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Cromo**      | Estructura fija de la Parte A                      | Barra lateral, ítem de navegación, encabezado, marco de dos zonas                                                                                                               |
 | **Primitivas** | Los ladrillos que el proyecto no tiene (§2.8, D-7) | Botón de cuatro variantes, tarjeta, tabla, modal, campo, píldora de estado, distintivo de origen, panel de resumen, indicador de pasos, estado vacío, aviso de fuera de alcance |
-| **Dominio** | Piezas que conocen el modelo del panel | Rejilla horaria, tarjeta de cita, leyenda de estados, fila de paciente, cabecera de ficha |
+| **Dominio**    | Piezas que conocen el modelo del panel             | Rejilla horaria, tarjeta de cita, leyenda de estados, fila de paciente, cabecera de ficha                                                                                       |
 
 La **píldora de estado** y la **leyenda** son el mismo componente alimentado por el mismo catálogo (DD-5). Es lo que impide, por construcción, que un estado se vea de dos colores en dos pantallas.
 
@@ -442,13 +442,13 @@ Es un detalle pequeño y de una sola vez, pero descubrirlo en la fase 4 —con l
 
 Hay una tensión real entre documentos que conviene resolver explícitamente antes de que alguien la resuelva por su cuenta en mitad de la fase 6:
 
-| Fuente | Qué pide |
-|---|---|
-| Parte D | «Los RUT deben tener dígito verificador válido: los del prototipo son de relleno y varios no verifican» |
-| Requerimientos RF-GEN-006, RF-NRV-033 | El RUT debe **validarse** con su dígito verificador y verificarse su unicidad |
-| Briefing, restricción 6 | **«Sin validación real de RUT.»** No se implementa lógica de negocio |
+| Fuente                                | Qué pide                                                                                                |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Parte D                               | «Los RUT deben tener dígito verificador válido: los del prototipo son de relleno y varios no verifican» |
+| Requerimientos RF-GEN-006, RF-NRV-033 | El RUT debe **validarse** con su dígito verificador y verificarse su unicidad                           |
+| Briefing, restricción 6               | **«Sin validación real de RUT.»** No se implementa lógica de negocio                                    |
 
-**No se contradicen: hablan de cosas distintas.** Uno exige que *los datos* sean válidos; el otro exige que *la aplicación* los valide.
+**No se contradicen: hablan de cosas distintas.** Uno exige que _los datos_ sean válidos; el otro exige que _la aplicación_ los valide.
 
 **Resolución:**
 
@@ -490,28 +490,28 @@ No valida, no calcula disponibilidad, no aplica transiciones de estado, no persi
 
 Las rutas siguen las **sugeridas por la especificación visual** allí donde las da (B.1, B.4, B.9, B.10, B.13, B.14) y las derivan de ellas donde no.
 
-| # | Vista | Ruta | Ítem activo | Figma | Prioridad | Fase |
-|---|---|---|---|---|---|---|
-| 1 | Acceso del personal | `/panel/acceso` | — | **Nueva** (5.3 media) | Alta · puerta de entrada de la demostración | 2 |
-| 2 | Agenda — panel principal | `/panel/agenda` | Agenda | Sí (B.1) | **Máxima** | 4 |
-| 3 | Detalle de cita — modal | `/panel/agenda?cita=…` | Agenda | Sí (B.2 manual, B.3 web) | **Máxima** | 4 |
-| 4 | Modal de cancelación con advertencia de anticipo | Sobre la #3 | Agenda | **Nueva** (Parte E · W-5) | **Máxima** | 4 |
-| 5 | Nueva reserva · paso 1 — Horario | `/panel/nueva-reserva/horario` | Nueva reserva | Sí (B.4) | Alta | 5 |
-| 6 | Nueva reserva · paso 2 — Paciente | `/panel/nueva-reserva/paciente` | Nueva reserva | Sí (B.5) | Alta | 5 |
-| 7 | Nueva reserva · paso 3 — Servicio | `/panel/nueva-reserva/servicio` | Nueva reserva | Sí (B.6) | Alta | 5 |
-| 8 | Nueva reserva · paso 4 — Notas y resumen | `/panel/nueva-reserva/resumen` | Nueva reserva | Sí (B.7) | Alta | 5 |
-| 9 | Nueva reserva · éxito | `/panel/nueva-reserva/listo` | Nueva reserva | Sí (B.8) | Alta | 5 |
-| 10 | Pacientes — listado | `/panel/pacientes` | Pacientes | Sí (B.9) | Alta | 6 |
-| 11 | Perfil del paciente | `/panel/pacientes/[id]` | Pacientes | **Nueva** (Parte E · PA-4) | Alta · cierra un vacío visible | 6 |
-| 12 | Registro de paciente nuevo | `/panel/pacientes/nuevo` | Pacientes | **Nueva** (Parte E · PA-3, P2-4) | Media-alta | 6 |
-| 13 | Fichas clínicas — listado | `/panel/fichas` | Fichas clínicas | Sí (B.10) | Media-alta | 7 |
-| 14 | Nueva ficha · paso 1 — Reserva asociada | `/panel/fichas/nueva/reserva` | Fichas clínicas | Sí (B.11) | Media-alta | 7 |
-| 15 | Nueva ficha · paso 2 — Contenido | `/panel/fichas/nueva/contenido` | Fichas clínicas | Sí (B.12) | Media-alta | 7 |
-| 16 | Ficha clínica guardada | `/panel/fichas/[id]` | Fichas clínicas | **Nueva** (Parte E · F-5) | Media-alta · cierra un vacío visible | 7 |
-| 17 | Bloqueos de agenda y excepciones | `/panel/agenda/bloqueos` | Agenda | **Nueva** (5.3 media) | Media | 8 |
-| 18 | Horarios de atención por especialista | `/panel/horarios` | — | **Nueva** (5.3 media) | Media | 8 |
-| 19 | Formatos de ficha — listado | `/panel/fichas/formatos` | **Fichas clínicas** | Sí (B.13) | **Baja · para decidir** | 9 |
-| 20 | Constructor de formato | `/panel/fichas/formatos/nuevo` | **Fichas clínicas** | Sí (B.14) | **Baja · para decidir** | 9 |
+| #   | Vista                                            | Ruta                            | Ítem activo         | Figma                            | Prioridad                                   | Fase |
+| --- | ------------------------------------------------ | ------------------------------- | ------------------- | -------------------------------- | ------------------------------------------- | ---- |
+| 1   | Acceso del personal                              | `/panel/acceso`                 | —                   | **Nueva** (5.3 media)            | Alta · puerta de entrada de la demostración | 2    |
+| 2   | Agenda — panel principal                         | `/panel/agenda`                 | Agenda              | Sí (B.1)                         | **Máxima**                                  | 4    |
+| 3   | Detalle de cita — modal                          | `/panel/agenda?cita=…`          | Agenda              | Sí (B.2 manual, B.3 web)         | **Máxima**                                  | 4    |
+| 4   | Modal de cancelación con advertencia de anticipo | Sobre la #3                     | Agenda              | **Nueva** (Parte E · W-5)        | **Máxima**                                  | 4    |
+| 5   | Nueva reserva · paso 1 — Horario                 | `/panel/nueva-reserva/horario`  | Nueva reserva       | Sí (B.4)                         | Alta                                        | 5    |
+| 6   | Nueva reserva · paso 2 — Paciente                | `/panel/nueva-reserva/paciente` | Nueva reserva       | Sí (B.5)                         | Alta                                        | 5    |
+| 7   | Nueva reserva · paso 3 — Servicio                | `/panel/nueva-reserva/servicio` | Nueva reserva       | Sí (B.6)                         | Alta                                        | 5    |
+| 8   | Nueva reserva · paso 4 — Notas y resumen         | `/panel/nueva-reserva/resumen`  | Nueva reserva       | Sí (B.7)                         | Alta                                        | 5    |
+| 9   | Nueva reserva · éxito                            | `/panel/nueva-reserva/listo`    | Nueva reserva       | Sí (B.8)                         | Alta                                        | 5    |
+| 10  | Pacientes — listado                              | `/panel/pacientes`              | Pacientes           | Sí (B.9)                         | Alta                                        | 6    |
+| 11  | Perfil del paciente                              | `/panel/pacientes/[id]`         | Pacientes           | **Nueva** (Parte E · PA-4)       | Alta · cierra un vacío visible              | 6    |
+| 12  | Registro de paciente nuevo                       | `/panel/pacientes/nuevo`        | Pacientes           | **Nueva** (Parte E · PA-3, P2-4) | Media-alta                                  | 6    |
+| 13  | Fichas clínicas — listado                        | `/panel/fichas`                 | Fichas clínicas     | Sí (B.10)                        | Media-alta                                  | 7    |
+| 14  | Nueva ficha · paso 1 — Reserva asociada          | `/panel/fichas/nueva/reserva`   | Fichas clínicas     | Sí (B.11)                        | Media-alta                                  | 7    |
+| 15  | Nueva ficha · paso 2 — Contenido                 | `/panel/fichas/nueva/contenido` | Fichas clínicas     | Sí (B.12)                        | Media-alta                                  | 7    |
+| 16  | Ficha clínica guardada                           | `/panel/fichas/[id]`            | Fichas clínicas     | **Nueva** (Parte E · F-5)        | Media-alta · cierra un vacío visible        | 7    |
+| 17  | Bloqueos de agenda y excepciones                 | `/panel/agenda/bloqueos`        | Agenda              | **Nueva** (5.3 media)            | Media                                       | 8    |
+| 18  | Horarios de atención por especialista            | `/panel/horarios`               | —                   | **Nueva** (5.3 media)            | Media                                       | 8    |
+| 19  | Formatos de ficha — listado                      | `/panel/fichas/formatos`        | **Fichas clínicas** | Sí (B.13)                        | **Baja · para decidir**                     | 9    |
+| 20  | Constructor de formato                           | `/panel/fichas/formatos/nuevo`  | **Fichas clínicas** | Sí (B.14)                        | **Baja · para decidir**                     | 9    |
 
 **El recuento, que conviene fijar porque aparece en tres lugares del plan:** la especificación describe **21 vistas** —14 existentes en Figma y 7 en la Parte E—. La tabla tiene **20 filas**, porque la #3 unifica B.2 y B.3. Y de esas 20, **19 son rutas**: la #4 es un modal sobre el detalle.
 
@@ -545,7 +545,7 @@ Unificar B.2 y B.3 no es un recorte: son la misma vista cuyo contenido y accione
 
 **Por qué es correcta, y por dos motivos distintos:**
 
-- **El aislamiento pasa a ser una propiedad estructural.** El panel no *evita* renderizar el Navbar ni *anula* la metadata de indexación: es que ni el Navbar ni esa metadata están en su árbol. No hay condición que alguien pueda romper después, ni reparto que se pueda hacer mal.
+- **El aislamiento pasa a ser una propiedad estructural.** El panel no _evita_ renderizar el Navbar ni _anula_ la metadata de indexación: es que ni el Navbar ni esa metadata están en su árbol. No hay condición que alguien pueda romper después, ni reparto que se pueda hacer mal.
 - **El cambio sobre el sitio público se reduce a mover dos archivos.** Cero líneas editadas. Es la única variante en la que la verificación de no regresión deja de exigir criterio: el HTML servido de `/` tiene que ser idéntico, y si no lo es, algo se hizo mal. Con cualquier variante que edite el layout, la comparación produce diferencias que hay que juzgar una a una.
 
 **Restricción del usuario que motivó revisar esta decisión:** nada fuera del panel debe modificarse, y todo debe trabajarse de forma aislada. Esta variante es la que más se acerca a cumplirla sin renunciar a los requisitos de aislamiento del propio briefing. **Los dos movimientos de archivo son irreducibles**: mientras el panel viva bajo `src/app/`, un layout en la raíz lo envuelve, y ningún layout hijo puede quitar el cromo ni el JSON-LD que puso el padre.
@@ -569,7 +569,7 @@ Unificar B.2 y B.3 no es un recorte: son la misma vista cuyo contenido y accione
 
 **Alternativas.**
 
-1. Reutilizarlo generalizando `Usuario.role`. Descartada por tres razones: `Usuario` es del contrato de la API pública y tocarlo entra en el espacio compartido; la clave `kinefit-auth-storage` colisionaría el día que exista sesión de paciente en el mismo navegador —lo advierte el propio briefing—; y confundir *usuario del personal* con *usuario paciente* en un solo tipo es exactamente la distinción que el vocabulario del proyecto pide preservar.
+1. Reutilizarlo generalizando `Usuario.role`. Descartada por tres razones: `Usuario` es del contrato de la API pública y tocarlo entra en el espacio compartido; la clave `kinefit-auth-storage` colisionaría el día que exista sesión de paciente en el mismo navegador —lo advierte el propio briefing—; y confundir _usuario del personal_ con _usuario paciente_ en un solo tipo es exactamente la distinción que el vocabulario del proyecto pide preservar.
 2. Sin store: usuario fijo en una constante. Descartada: no permite cerrar sesión ni volver al acceso, y la pantalla de acceso quedaría decorativa. Un botón «Cerrar Sesión» que no cierra nada es de los caminos muertos que el punto 7.9 prohíbe.
 3. **Store propio del panel, con clave de persistencia propia.** Elegida.
 
@@ -597,17 +597,17 @@ Unificar B.2 y B.3 no es un recorte: son la misma vista cuyo contenido y accione
 
 Y la parte que importa de verdad, la del punto 7.6:
 
-| | Pendiente de pago | Por confirmar |
-|---|---|---|
-| Origen | Solo web | Solo manual |
-| Qué significa | Webpay en curso | Cita manual sin ratificar |
-| Expira sola | **Sí** | **No** |
-| Acciones | **Ninguna**, todas deshabilitadas y con explicación visible | **Confirmar cita** (primaria) · Cancelar cita |
-| Color | Azul de selección | Ámbar |
+|               | Pendiente de pago                                           | Por confirmar                                 |
+| ------------- | ----------------------------------------------------------- | --------------------------------------------- |
+| Origen        | Solo web                                                    | Solo manual                                   |
+| Qué significa | Webpay en curso                                             | Cita manual sin ratificar                     |
+| Expira sola   | **Sí**                                                      | **No**                                        |
+| Acciones      | **Ninguna**, todas deshabilitadas y con explicación visible | **Confirmar cita** (primaria) · Cancelar cita |
+| Color         | Azul de selección                                           | Ámbar                                         |
 
 Al declarar las acciones **dentro del catálogo**, la vista de detalle no elige qué botones mostrar: los deriva del estado. Es imposible que una cita Pendiente de pago ofrezca confirmar. Y las acciones deshabilitadas **explican por qué lo están** — sin eso, una especialista reportará «el botón no funciona» en vez de opinar sobre si la regla tiene sentido.
 
-**El catálogo declara además cuál acción es la primaria**, y esto no es un detalle estético: las correcciones M-9 y W-3 señalan que en Figma todas las acciones del detalle tienen el mismo peso visual, con lo que la pantalla no comunica qué se espera que haga la especialista. En una cita **Por confirmar** la acción esperada es *Confirmar cita*; en una **Confirmada**, *Marcar como asistida*. Al vivir esa jerarquía en el catálogo y no en cada vista, la barra de acciones se deriva entera —qué botones, en qué estilo y cuál destacado— de un solo dato.
+**El catálogo declara además cuál acción es la primaria**, y esto no es un detalle estético: las correcciones M-9 y W-3 señalan que en Figma todas las acciones del detalle tienen el mismo peso visual, con lo que la pantalla no comunica qué se espera que haga la especialista. En una cita **Por confirmar** la acción esperada es _Confirmar cita_; en una **Confirmada**, _Marcar como asistida_. Al vivir esa jerarquía en el catálogo y no en cada vista, la barra de acciones se deriva entera —qué botones, en qué estilo y cuál destacado— de un solo dato.
 
 ### DD-6 · Componentes compartidos entre sitio público y panel
 
@@ -615,15 +615,15 @@ Al declarar las acciones **dentro del catálogo**, la vista de detalle no elige 
 
 **Elegida:**
 
-| Qué | Decisión | Por qué |
-|---|---|---|
-| Tokens de marca de `globals.css` | **Se reutilizan** | Es lo que cumple el requisito de derivar del sitio oficial, y lo que mantiene ambos sincronizados |
-| Tipografía del `body` | **Se hereda, sin declarar familia propia** | Resolución D-2 |
-| Escala de radios, bordes e idioma visual | **Se replica el criterio, no el código** | No hay código que reutilizar (§2.8) |
-| `Navbar`, `Footer`, `WhatsAppButton` | **No se usan** | Son el cromo público; el panel tiene el suyo |
-| `Button`, `Card` | **No se usan** | Resolución D-3 |
-| `BookingCard` | **No se usa**, ni se toma como base | Llama a la API. El asistente del panel es otra cosa: sin pago, con cuatro pasos distintos y panel de resumen persistente |
-| Los tokens nuevos del panel | **Se añaden a `globals.css`**, derivados del azul de marca | Un solo lugar para los tokens del proyecto. Añadir no modifica |
+| Qué                                      | Decisión                                                   | Por qué                                                                                                                  |
+| ---------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Tokens de marca de `globals.css`         | **Se reutilizan**                                          | Es lo que cumple el requisito de derivar del sitio oficial, y lo que mantiene ambos sincronizados                        |
+| Tipografía del `body`                    | **Se hereda, sin declarar familia propia**                 | Resolución D-2                                                                                                           |
+| Escala de radios, bordes e idioma visual | **Se replica el criterio, no el código**                   | No hay código que reutilizar (§2.8)                                                                                      |
+| `Navbar`, `Footer`, `WhatsAppButton`     | **No se usan**                                             | Son el cromo público; el panel tiene el suyo                                                                             |
+| `Button`, `Card`                         | **No se usan**                                             | Resolución D-3                                                                                                           |
+| `BookingCard`                            | **No se usa**, ni se toma como base                        | Llama a la API. El asistente del panel es otra cosa: sin pago, con cuatro pasos distintos y panel de resumen persistente |
+| Los tokens nuevos del panel              | **Se añaden a `globals.css`**, derivados del azul de marca | Un solo lugar para los tokens del proyecto. Añadir no modifica                                                           |
 
 **Regla de dependencia verificable:** ninguna importación desde `src/components/panel/` o `src/app/(panel)/` hacia `src/components/ui/`, `src/components/sections/` o `src/lib/constants.ts`. Se comprueba por búsqueda en cada fase.
 
@@ -691,7 +691,7 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 ### Fase 1 — Reorganización de layouts y andamiaje de rutas
 
-*Tamaño relativo: pequeña. Riesgo: el más alto del plan.*
+_Tamaño relativo: pequeña. Riesgo: el más alto del plan._
 
 **Objetivo.** El sitio público sigue exactamente igual, servido ahora desde su propio grupo de rutas, y `/panel` responde con una página propia sin rastro del cromo público.
 
@@ -729,14 +729,14 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 **Riesgos.**
 
-| Riesgo | Mitigación |
-|---|---|
-| **La convención de dos raíces no se comporta como se espera en esta versión de Next** | Es ahora el riesgo principal de la fase. Se mitiga leyendo la documentación incluida **antes** de mover nada (§2.1), y comprobando en local antes de fusionar |
-| `icon.svg` deja de resolverse al no haber layout raíz | **Ya resuelto en el alcance**: el archivo se mueve dentro de cada grupo. Verificación sobre el HTML servido de ambos |
-| El pie de página se despega del fondo (§4.4) | **Prácticamente eliminado por la variante elegida**: el `<body>` público viaja intacto dentro de su propio layout. Verificación 3 queda como control redundante |
-| El JSON-LD o la metadata pública dejan de emitirse | Verificación 4 sobre el HTML servido, no sobre la pantalla. Al no editarse el archivo, el único modo de perderlos es que el movimiento esté mal hecho |
-| El panel hereda indexación | Verificación 5. Estructuralmente imposible: no comparte layout |
-| Se aprovecha el viaje para «mejorar de paso» | Alcance cerrado. Cualquier mejora va a una rama distinta |
+| Riesgo                                                                                | Mitigación                                                                                                                                                      |
+| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **La convención de dos raíces no se comporta como se espera en esta versión de Next** | Es ahora el riesgo principal de la fase. Se mitiga leyendo la documentación incluida **antes** de mover nada (§2.1), y comprobando en local antes de fusionar   |
+| `icon.svg` deja de resolverse al no haber layout raíz                                 | **Ya resuelto en el alcance**: el archivo se mueve dentro de cada grupo. Verificación sobre el HTML servido de ambos                                            |
+| El pie de página se despega del fondo (§4.4)                                          | **Prácticamente eliminado por la variante elegida**: el `<body>` público viaja intacto dentro de su propio layout. Verificación 3 queda como control redundante |
+| El JSON-LD o la metadata pública dejan de emitirse                                    | Verificación 4 sobre el HTML servido, no sobre la pantalla. Al no editarse el archivo, el único modo de perderlos es que el movimiento esté mal hecho           |
+| El panel hereda indexación                                                            | Verificación 5. Estructuralmente imposible: no comparte layout                                                                                                  |
+| Se aprovecha el viaje para «mejorar de paso»                                          | Alcance cerrado. Cualquier mejora va a una rama distinta                                                                                                        |
 
 **Paralelizable con.** **Con nada.** Es la única fase con exclusión total: toca la raíz de la que cuelga todo lo demás. Es también el argumento para hacerla pequeña y cerrarla rápido.
 
@@ -744,7 +744,7 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 ### Fase 2 — Cromo del panel, primitivas, tokens y sesión simulada
 
-*Tamaño relativo: grande. Es la fase que el briefing subestima (D-7).*
+_Tamaño relativo: grande. Es la fase que el briefing subestima (D-7)._
 
 **Objetivo.** El panel tiene su barra lateral, su encabezado, su pantalla de acceso y su juego completo de primitivas. Las cuatro secciones son navegables y responden con vistas vacías rotuladas. **Primera fusión a `main` y primer despliegue.**
 
@@ -759,18 +759,19 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 - **Primitivas.** La Parte B las multiplica respecto de la lista mínima de la Parte A: botón de cuatro variantes con estado deshabilitado explicado, tarjeta, **tabla con cabecera azul tenue, distintivo de celda y paginación** (B.9, B.10), modal, buscador con lupa y texto de ayuda, campo de texto, área de texto, numérico, desplegable, interruptor, **sección plegable** (B.12), **selector de opción** (B.6, B.12), **badge informativo y badge de contraste invertido** (B.7), píldora de estado, distintivo de origen, **panel de resumen persistente**, **indicador de progreso**, barra de acciones inferior, zona de arrastre de archivos, estado vacío.
 - **Ocho correcciones de la Parte B se cierran aquí, de una vez, por vivir en la primitiva y no en la vista.** Es el argumento más fuerte para construirlas antes que cualquier pantalla:
 
-| Corrección | Qué unifica | Dónde se decide |
-|---|---|---|
-| P1-6 | Mayúsculas contra Capitalización en las etiquetas de paso | Indicador de progreso |
-| P1-7, NF1-2 | Cuadrado contra círculo; el número dentro del nodo, no en la etiqueta | Indicador de progreso |
-| NF1-1, NF2-11, G-8 | `RESUMEN`, `Resumen` y `Resumen de Reserva` conviviendo | Panel de resumen |
-| P2-1, NF2-8 | Selección en gris contra selección en azul con borde | Selector de opción |
-| NF1-3 | `Cancelar` como botón secundario contra enlace subrayado | Barra de acciones |
-| NF1-5 | Flecha en `Continuar →` en unos sitios y no en otros | Botón |
-| G-6 | El distintivo de origen cambia de color según el estado de la cita | Distintivo de origen |
-| G-7, P1-5 | Raya media y guion mezclados en los rangos horarios | Formateador (fase 3) |
+| Corrección         | Qué unifica                                                           | Dónde se decide       |
+| ------------------ | --------------------------------------------------------------------- | --------------------- |
+| P1-6               | Mayúsculas contra Capitalización en las etiquetas de paso             | Indicador de progreso |
+| P1-7, NF1-2        | Cuadrado contra círculo; el número dentro del nodo, no en la etiqueta | Indicador de progreso |
+| NF1-1, NF2-11, G-8 | `RESUMEN`, `Resumen` y `Resumen de Reserva` conviviendo               | Panel de resumen      |
+| P2-1, NF2-8        | Selección en gris contra selección en azul con borde                  | Selector de opción    |
+| NF1-3              | `Cancelar` como botón secundario contra enlace subrayado              | Barra de acciones     |
+| NF1-5              | Flecha en `Continuar →` en unos sitios y no en otros                  | Botón                 |
+| G-6                | El distintivo de origen cambia de color según el estado de la cita    | Distintivo de origen  |
+| G-7, P1-5          | Raya media y guion mezclados en los rangos horarios                   | Formateador (fase 3)  |
 
-  Construidas después, cada una de estas ocho habría que corregirla en varias vistas ya hechas. Construidas ahora, **no pueden ocurrir**.
+Construidas después, cada una de estas ocho habría que corregirla en varias vistas ya hechas. Construidas ahora, **no pueden ocurrir**.
+
 - **Accesibilidad de teclado, decidida una vez en las primitivas** (G-14). Estado de foco visible en todo control interactivo, orden de tabulación coherente con el orden visual, y foco atrapado y devuelto en los modales. **Es un panel que se va a usar a diario, muchas veces sin soltar el teclado**, y las especialistas vienen de una plataforma donde eso funciona. Va aquí y no en la fase 10 por la misma razón que las ocho correcciones de arriba: en la primitiva es una decisión; repartida por veinte vistas es una auditoría.
 - **Estados vacíos** de cada listado y de la agenda (G-13): un día sin citas, una búsqueda sin resultados, un paciente sin fichas. Son situaciones que las especialistas van a encontrar recorriendo el prototipo, y la semilla las provoca a propósito (§5.5).
 - **Los tres mecanismos de autoexplicación** de DD-7.
@@ -789,12 +790,12 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 **Riesgos.**
 
-| Riesgo | Mitigación |
-|---|---|
-| Se subestima por creer que hay componentes reutilizables (D-7) | El plan lo declara: es la fase grande. Se puede partir en dos —cromo, y primitivas— si hay que interrumpir |
+| Riesgo                                                            | Mitigación                                                                                                    |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Se subestima por creer que hay componentes reutilizables (D-7)    | El plan lo declara: es la fase grande. Se puede partir en dos —cromo, y primitivas— si hay que interrumpir    |
 | Las primitivas se quedan cortas y hay que ampliarlas en la fase 4 | Aceptado y esperado. La lista sale de la Parte A, que es el marco canónico; ampliarla es barato, rehacerla no |
-| Se despliega y el aislamiento no se comporta como en local | **Es exactamente el motivo de desplegar ahora**, con el armazón vacío, y no en la fase 10 |
-| El compose del VPS no coincide con el versionado (D-10) | Se aclaró en la fase 1. Si el despliegue falla, falla sobre una página vacía |
+| Se despliega y el aislamiento no se comporta como en local        | **Es exactamente el motivo de desplegar ahora**, con el armazón vacío, y no en la fase 10                     |
+| El compose del VPS no coincide con el versionado (D-10)           | Se aclaró en la fase 1. Si el despliegue falla, falla sobre una página vacía                                  |
 
 **Paralelizable con.** **Fase 3**, sin fricción: una construye interfaz sin datos, la otra datos sin interfaz. Es el mejor punto de reparto entre los dos desarrolladores de todo el plan.
 
@@ -802,7 +803,7 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 ### Fase 3 — Modelo de dominio y universo de datos de prueba
 
-*Tamaño relativo: media. Valor estructural: el más alto del plan.*
+_Tamaño relativo: media. Valor estructural: el más alto del plan._
 
 **Objetivo.** Existe el vocabulario del panel y existe un universo de datos coherente, consultable a través de una capa de acceso asíncrona. Nada de esto se ve todavía en pantalla.
 
@@ -826,11 +827,11 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 **Riesgos.**
 
-| Riesgo | Mitigación |
-|---|---|
-| El modelo se diseña contra lo que hará falta más tarde y hay que rehacerlo | Se construye contra las **catorce vistas de Figma más las cuatro nuevas**, que ya están inventariadas (capítulo 6). El inventario es el requisito de entrada |
-| Se contradice el modelo que el backend está definiendo en paralelo | **Se comparte el catálogo de estados y el modelo de cita con el equipo de backend al cerrar esta fase.** Es la decisión del prototipo que más condiciona al backend (capítulo 13) |
-| La semilla queda pobre y las vistas parecen vacías | La cobertura mínima del §5.5 es criterio de término, no aspiración |
+| Riesgo                                                                     | Mitigación                                                                                                                                                                        |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| El modelo se diseña contra lo que hará falta más tarde y hay que rehacerlo | Se construye contra las **catorce vistas de Figma más las cuatro nuevas**, que ya están inventariadas (capítulo 6). El inventario es el requisito de entrada                      |
+| Se contradice el modelo que el backend está definiendo en paralelo         | **Se comparte el catálogo de estados y el modelo de cita con el equipo de backend al cerrar esta fase.** Es la decisión del prototipo que más condiciona al backend (capítulo 13) |
+| La semilla queda pobre y las vistas parecen vacías                         | La cobertura mínima del §5.5 es criterio de término, no aspiración                                                                                                                |
 
 **Paralelizable con.** **Fase 2.** Ver allí.
 
@@ -838,7 +839,7 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 ### Fase 4 — Agenda
 
-*Tamaño relativo: grande. Valor de retroalimentación: el más alto.*
+_Tamaño relativo: grande. Valor de retroalimentación: el más alto._
 
 **Objetivo.** La sección de trabajo diario funciona de punta a punta: rejilla de la jornada, navegación entre días, detalle de cita según origen y estado, y cancelación con advertencia de anticipo.
 
@@ -866,12 +867,12 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 **Riesgos.**
 
-| Riesgo | Mitigación |
-|---|---|
+| Riesgo                                                                                 | Mitigación                                                                                                |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | La rejilla completa hasta las 21:00 con desplazamiento es más trabajo del que aparenta | Es la corrección A-5 y no es opcional: una agenda que se corta a las 15:00 impide evaluar la jornada real |
-| Se replica la ambigüedad de «Pendiente» del prototipo de Figma | Imposible por construcción: el catálogo de la fase 3 tiene dos entradas distintas con acciones distintas |
-| Reaparece el bloque de colación | Imposible por construcción: el generador no lo produce |
-| El modal de cancelación abre una discusión de política de devolución no resuelta | **Es su propósito.** El prototipo pregunta; no decide |
+| Se replica la ambigüedad de «Pendiente» del prototipo de Figma                         | Imposible por construcción: el catálogo de la fase 3 tiene dos entradas distintas con acciones distintas  |
+| Reaparece el bloque de colación                                                        | Imposible por construcción: el generador no lo produce                                                    |
+| El modal de cancelación abre una discusión de política de devolución no resuelta       | **Es su propósito.** El prototipo pregunta; no decide                                                     |
 
 **Paralelizable con.** Nada crítico. Es el punto de convergencia. Puede solaparse con el arranque de la fase 5, que comparte la rejilla horaria y el catálogo de servicios.
 
@@ -879,7 +880,7 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 ### Fase 5 — Asistente de nueva reserva
 
-*Tamaño relativo: grande.*
+_Tamaño relativo: grande._
 
 **Objetivo.** El personal puede recorrer de principio a fin la creación de una cita manual, en cuatro pasos con resumen persistente, y llegar a una pantalla de éxito.
 
@@ -908,11 +909,11 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 **Riesgos.**
 
-| Riesgo | Mitigación |
-|---|---|
-| Reaparece el paso de pago por analogía con el flujo web | Criterio de término explícito, por búsqueda de texto |
-| El estado del asistente se complica más de lo previsto | Store de vida corta, sin persistencia. Una recarga vuelve al paso 1 (DD-4) |
-| El enlace a «paciente nuevo» queda inerte hasta la fase 6 | Componente de fuera de alcance mientras tanto |
+| Riesgo                                                    | Mitigación                                                                 |
+| --------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Reaparece el paso de pago por analogía con el flujo web   | Criterio de término explícito, por búsqueda de texto                       |
+| El estado del asistente se complica más de lo previsto    | Store de vida corta, sin persistencia. Una recarga vuelve al paso 1 (DD-4) |
+| El enlace a «paciente nuevo» queda inerte hasta la fase 6 | Componente de fuera de alcance mientras tanto                              |
 
 **Paralelizable con.** **Fase 6.** Pacientes comparte con el paso 2 el modelo de paciente pero no su interfaz.
 
@@ -920,7 +921,7 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 ### Fase 6 — Pacientes
 
-*Tamaño relativo: media.*
+_Tamaño relativo: media._
 
 **Objetivo.** El listado de pacientes deja de ser un callejón sin salida: cada fila abre un perfil con historial, y existe el registro de paciente nuevo.
 
@@ -946,10 +947,10 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 **Riesgos.**
 
-| Riesgo | Mitigación |
-|---|---|
-| Se cuela validación de RUT «porque es fácil» | Restricción 6. Es lógica de negocio y su regla la fija el backend |
-| Los contadores se escriben a mano y discrepan | Imposible por construcción: se derivan (fase 3) |
+| Riesgo                                        | Mitigación                                                        |
+| --------------------------------------------- | ----------------------------------------------------------------- |
+| Se cuela validación de RUT «porque es fácil»  | Restricción 6. Es lógica de negocio y su regla la fija el backend |
+| Los contadores se escriben a mano y discrepan | Imposible por construcción: se derivan (fase 3)                   |
 
 **Paralelizable con.** **Fase 5**, y con la 7 si hay tres frentes.
 
@@ -957,7 +958,7 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 ### Fase 7 — Fichas clínicas
 
-*Tamaño relativo: grande.*
+_Tamaño relativo: grande._
 
 **Objetivo.** Se crea una ficha en dos pasos, se listan las fichas y **se abre una ficha guardada** con el historial de fichas anteriores del paciente.
 
@@ -984,9 +985,9 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 **Riesgos.**
 
-| Riesgo | Mitigación |
-|---|---|
-| Se replica el marco desviado de Figma | El cromo viene del layout del panel: **no hay dónde desviarse.** La verificación es un control redundante |
+| Riesgo                                       | Mitigación                                                                                                                                            |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Se replica el marco desviado de Figma        | El cromo viene del layout del panel: **no hay dónde desviarse.** La verificación es un control redundante                                             |
 | El formulario de ficha crece indefinidamente | Su contenido depende de la decisión pendiente sobre formatos configurables (fase 9). **Se construye con secciones fijas** y esa limitación se declara |
 
 **Paralelizable con.** Fase 8.
@@ -995,7 +996,7 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 ### Fase 8 — Bloqueos de agenda y horarios de atención
 
-*Tamaño relativo: pequeña.*
+_Tamaño relativo: pequeña._
 
 **Objetivo.** Se gestionan las excepciones que cierran franjas y se consultan los horarios de atención por especialista.
 
@@ -1018,10 +1019,10 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 **Riesgos.**
 
-| Riesgo | Mitigación |
-|---|---|
-| Reaparece la colación del centro como bloqueo de ejemplo | Está en el alcance excluido y en el criterio de término |
-| Se confunden bloqueo y horario | Vocabulario del proyecto: el bloqueo es una excepción; el horario es la regla |
+| Riesgo                                                   | Mitigación                                                                    |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Reaparece la colación del centro como bloqueo de ejemplo | Está en el alcance excluido y en el criterio de término                       |
+| Se confunden bloqueo y horario                           | Vocabulario del proyecto: el bloqueo es una excepción; el horario es la regla |
 
 **Paralelizable con.** Fases 7 y 9.
 
@@ -1029,7 +1030,7 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 ### Fase 9 — Formatos de ficha
 
-*Tamaño relativo: media. Prioridad: la más baja, deliberadamente.*
+_Tamaño relativo: media. Prioridad: la más baja, deliberadamente._
 
 **Objetivo.** Existe el submódulo de formatos, con listado y constructor, **como instrumento para provocar una decisión del cliente**.
 
@@ -1055,11 +1056,11 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 **Riesgos.**
 
-| Riesgo | Mitigación |
-|---|---|
-| Se invierte esfuerzo en algo que se descartará | Va última, precisamente por eso |
-| El cliente lo interpreta como compromiso | El aviso es parte del alcance, no un adorno |
-| El constructor crece hacia un editor completo | Es un prototipo para decidir. Composición visual, nada más |
+| Riesgo                                         | Mitigación                                                 |
+| ---------------------------------------------- | ---------------------------------------------------------- |
+| Se invierte esfuerzo en algo que se descartará | Va última, precisamente por eso                            |
+| El cliente lo interpreta como compromiso       | El aviso es parte del alcance, no un adorno                |
+| El constructor crece hacia un editor completo  | Es un prototipo para decidir. Composición visual, nada más |
 
 **Paralelizable con.** Fase 8.
 
@@ -1067,7 +1068,7 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 ### Fase 10 — Coherencia transversal, cierre y entrega
 
-*Tamaño relativo: pequeña. Imprescindible.*
+_Tamaño relativo: pequeña. Imprescindible._
 
 **Objetivo.** El prototipo se recorre entero sin cabos sueltos y llega a manos del cliente y las tres especialistas con instrucciones de qué revisar.
 
@@ -1092,10 +1093,10 @@ Diez fases. El tamaño relativo se indica para justificar el orden, sin estimaci
 
 **Riesgos.**
 
-| Riesgo | Mitigación |
-|---|---|
+| Riesgo                                                          | Mitigación                                                                                           |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | Se descubren incoherencias tarde y hay que retocar varias fases | Las cuatro reglas del §5.4 las previenen por construcción. Esta fase debería confirmar, no descubrir |
-| Se recorta por falta de tiempo | Es la fase que convierte el trabajo en retroalimentación. Recortarla es tirar las nueve anteriores |
+| Se recorta por falta de tiempo                                  | Es la fase que convierte el trabajo en retroalimentación. Recortarla es tirar las nueve anteriores   |
 
 **Paralelizable con.** Nada.
 
@@ -1146,15 +1147,15 @@ El cliente pidió expresamente centrar la revisión en lo **funcional**, no en l
 
 - Si el flujo de la jornada refleja cómo trabajan de verdad.
 - Si falta un paso, un dato o una acción en algún punto.
-- Si la distinción entre **Pendiente de pago** y **Por confirmar** se entiende sin explicación. *(Es la pregunta más importante del prototipo: es la trampa 7.6 y solo ellas pueden responderla.)*
+- Si la distinción entre **Pendiente de pago** y **Por confirmar** se entiende sin explicación. _(Es la pregunta más importante del prototipo: es la trampa 7.6 y solo ellas pueden responderla.)_
 - Si la advertencia de anticipo al cancelar dice lo que debe decir, y qué debería pasar con esos 10.000 CLP.
 - Si el asistente de reserva manual pide lo necesario y nada más.
 - Si el perfil del paciente y la ficha muestran lo que se consulta en la práctica.
 - **Los campos de la ficha clínica**, dirigido en particular a **Valeria Araneda**: los del prototipo son provisorios y su estructura definitiva le corresponde definirla a ella. Es la decisión pendiente N° 1 y está marcada **bloqueante** — de todas las preguntas del formulario, es la que más trabajo desbloquea.
-- Si el constructor de formatos hace falta, o basta con formatos fijos. *(Es la decisión que este submódulo existe para provocar, y la de mayor impacto en el alcance: los formatos configurables obligan a versionarlos para que las fichas históricas conserven su estructura.)*
+- Si el constructor de formatos hace falta, o basta con formatos fijos. _(Es la decisión que este submódulo existe para provocar, y la de mayor impacto en el alcance: los formatos configurables obligan a versionarlos para que las fichas históricas conserven su estructura.)_
 - Si cada especialista debe ver todas las fichas del centro o solo las de sus propias atenciones (decisión pendiente N° 2, también bloqueante).
 - Si los horarios de atención que muestra el panel corresponden a los reales de cada una.
-- Qué echan de menos de AgendaPro. *(El cliente dio la directriz de parecerse a esa plataforma; esta pregunta la convierte en una lista concreta en vez de una aspiración abierta.)*
+- Qué echan de menos de AgendaPro. _(El cliente dio la directriz de parecerse a esa plataforma; esta pregunta la convierte en una lista concreta en vez de una aspiración abierta.)_
 
 **No se pide opinar sobre:** colores, tipografías, tamaños ni espaciados; los datos mostrados, que son de prueba y así lo declara el propio panel; el rendimiento; nada marcado como fuera de alcance, que las propias vistas señalan.
 
@@ -1166,12 +1167,12 @@ Tres, para que ningún reporte se gaste en ellas: los datos son ficticios; nada 
 
 DD-8 fusiona a `main` y despliega a producción en cada fase con valor mostrable. Es la decisión correcta, pero tiene una consecuencia que hay que nombrar: **un error se ve en kinefitchile.com**. El plan verifica antes de fusionar; falta decir qué pasa si algo pasa igual.
 
-| Regla | Detalle |
-|---|---|
-| **Reversión** | Revertir el commit de fusión en `main` y volver a desplegar. El pipeline se dispara con el push, así que la vuelta atrás usa el mismo camino que la ida. No se corrige en caliente sobre `main`: se revierte primero, se arregla después en la rama |
-| **Horario** | **La primera fusión —la de la fase 1, la única que toca el sitio público— se hace en horario de baja visita.** Las nueve siguientes solo añaden rutas bajo `/panel` y no pueden afectar a `/` |
-| **Quién mira** | Quien fusiona comprueba `/` en producción inmediatamente después del despliegue, no al día siguiente |
-| **Referencia** | El HTML de `/` guardado antes de la fase 1 (§8, F1) es la referencia contra la cual se compara en cualquier momento del proyecto, no solo en esa fase |
+| Regla          | Detalle                                                                                                                                                                                                                                             |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Reversión**  | Revertir el commit de fusión en `main` y volver a desplegar. El pipeline se dispara con el push, así que la vuelta atrás usa el mismo camino que la ida. No se corrige en caliente sobre `main`: se revierte primero, se arregla después en la rama |
+| **Horario**    | **La primera fusión —la de la fase 1, la única que toca el sitio público— se hace en horario de baja visita.** Las nueve siguientes solo añaden rutas bajo `/panel` y no pueden afectar a `/`                                                       |
+| **Quién mira** | Quien fusiona comprueba `/` en producción inmediatamente después del despliegue, no al día siguiente                                                                                                                                                |
+| **Referencia** | El HTML de `/` guardado antes de la fase 1 (§8, F1) es la referencia contra la cual se compara en cualquier momento del proyecto, no solo en esa fase                                                                                               |
 
 **El riesgo se concentra entero en la fase 1.** A partir de la fase 2, el sitio público y el panel no comparten ningún archivo, y un fallo del panel es invisible desde `/`.
 
@@ -1179,21 +1180,21 @@ DD-8 fusiona a `main` y despliega a producción en cada fase con valor mostrable
 
 ## Capítulo 10 — Riesgos del proyecto
 
-| # | Riesgo | Prob. | Impacto | Mitigación |
-|---|---|---|---|---|
-| R-1 | **Contaminación del sitio público por la reorganización de layouts.** El único punto donde el trabajo puede romper algo que funciona | **Baja** | Alto | Bajó de media a baja al adoptar la variante de dos raíces (DD-1): el sitio público se **mueve sin editarse**, con lo que la expectativa de la comparación pasa a ser identidad exacta. Fase 1 aislada, pequeña y primera, con alcance cerrado y sin higiene oportunista |
-| R-1b | **La convención de dos raíces se comporta distinto en Next 16.2.9** de lo que sugiere la experiencia previa | Media | Medio | `AGENTS.md` lo advierte explícitamente. Lectura obligatoria de la documentación incluida antes de mover nada, y comprobación en local antes de fusionar. Si la convención no sirve, se cae a la variante de raíz compartida mínima —descartada pero válida— sin rehacer nada más del plan |
-| R-2 | **Incoherencia de datos entre pantallas.** El defecto que arruina la retroalimentación (7.4) | Baja tras F3 | Alto | Las cuatro reglas estructurales del §5.4: referencias por identidad, contadores derivados, fecha única, rejilla generada. Comprobación transversal en F10 |
-| R-3 | **La fase 2 se subestima** por suponer un sistema de componentes que no existe (D-7) | Alta | Medio | Declarado como fase grande. Divisible en cromo y primitivas |
-| R-4 | **Interrupción por exámenes** a mitad de una fase | Alta | Bajo | Toda fase deja algo desplegable. Corte natural al cerrar F4 |
-| R-5 | **Divergencia con el modelo del backend**, que avanza en paralelo | Media | Alto | El catálogo de estados y el modelo de cita se comparten al cerrar F3, no al final (capítulo 13) |
-| R-6 | **Inflado de alcance** por la directriz de parecerse a AgendaPro (7.10) | Media | Medio | El inventario del capítulo 6 es cerrado. Toda vista adicional es cambio de alcance, no ajuste |
-| R-7 | **El despliegue falla por la incoherencia entre el compose versionado y el del VPS** (D-10) | Media | Medio | Se aclara en F1 y se ejerce por primera vez en F2, sobre un armazón vacío |
-| R-8 | **Reintroducción del paso de pago** en la reserva manual por analogía con el flujo web (7.7) | Baja | Medio | Criterio de término de F5 por búsqueda de texto |
-| R-9 | **El cliente pospone la validación más allá de tres semanas** y el prototipo envejece sin retroalimentación | Media | Alto | Despliegue incremental desde F2: hay algo que mirar mucho antes del final. **Fuera del control del equipo** |
-| R-10 | **El plazo de AgendaPro (tres meses) vence** antes de alcanzar paridad funcional | Media | Alto | Fuera del alcance de este plan. Se registra porque el orden de fases —agenda y reserva primero— es la mejor contribución posible a mitigarlo |
-| R-11 | **Se pierden correcciones por el camino.** Son más de noventa, repartidas en catorce vistas y una tabla transversal, y se van cerrando a lo largo de siete fases | Alta | Medio | Cada fase declara qué códigos cierra, y **la fase 10 recorre el checklist completo como criterio de término** (§8.2). Sin ese recorrido explícito, las menores —A-8, F-6, CF-5, NF2-12, PA-2— son las primeras en caerse |
-| R-12 | **Un error llega a producción** por la política de desplegar en cada fase (DD-8) | Media | Medio | Verificación antes de fusionar, primera fusión en horario de baja visita, y **procedimiento de reversión escrito** (§9.5). El sitio público solo está expuesto en la fase 1; a partir de la 2, un fallo del panel no lo afecta |
+| #    | Riesgo                                                                                                                                                           | Prob.        | Impacto | Mitigación                                                                                                                                                                                                                                                                                |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R-1  | **Contaminación del sitio público por la reorganización de layouts.** El único punto donde el trabajo puede romper algo que funciona                             | **Baja**     | Alto    | Bajó de media a baja al adoptar la variante de dos raíces (DD-1): el sitio público se **mueve sin editarse**, con lo que la expectativa de la comparación pasa a ser identidad exacta. Fase 1 aislada, pequeña y primera, con alcance cerrado y sin higiene oportunista                   |
+| R-1b | **La convención de dos raíces se comporta distinto en Next 16.2.9** de lo que sugiere la experiencia previa                                                      | Media        | Medio   | `AGENTS.md` lo advierte explícitamente. Lectura obligatoria de la documentación incluida antes de mover nada, y comprobación en local antes de fusionar. Si la convención no sirve, se cae a la variante de raíz compartida mínima —descartada pero válida— sin rehacer nada más del plan |
+| R-2  | **Incoherencia de datos entre pantallas.** El defecto que arruina la retroalimentación (7.4)                                                                     | Baja tras F3 | Alto    | Las cuatro reglas estructurales del §5.4: referencias por identidad, contadores derivados, fecha única, rejilla generada. Comprobación transversal en F10                                                                                                                                 |
+| R-3  | **La fase 2 se subestima** por suponer un sistema de componentes que no existe (D-7)                                                                             | Alta         | Medio   | Declarado como fase grande. Divisible en cromo y primitivas                                                                                                                                                                                                                               |
+| R-4  | **Interrupción por exámenes** a mitad de una fase                                                                                                                | Alta         | Bajo    | Toda fase deja algo desplegable. Corte natural al cerrar F4                                                                                                                                                                                                                               |
+| R-5  | **Divergencia con el modelo del backend**, que avanza en paralelo                                                                                                | Media        | Alto    | El catálogo de estados y el modelo de cita se comparten al cerrar F3, no al final (capítulo 13)                                                                                                                                                                                           |
+| R-6  | **Inflado de alcance** por la directriz de parecerse a AgendaPro (7.10)                                                                                          | Media        | Medio   | El inventario del capítulo 6 es cerrado. Toda vista adicional es cambio de alcance, no ajuste                                                                                                                                                                                             |
+| R-7  | **El despliegue falla por la incoherencia entre el compose versionado y el del VPS** (D-10)                                                                      | Media        | Medio   | Se aclara en F1 y se ejerce por primera vez en F2, sobre un armazón vacío                                                                                                                                                                                                                 |
+| R-8  | **Reintroducción del paso de pago** en la reserva manual por analogía con el flujo web (7.7)                                                                     | Baja         | Medio   | Criterio de término de F5 por búsqueda de texto                                                                                                                                                                                                                                           |
+| R-9  | **El cliente pospone la validación más allá de tres semanas** y el prototipo envejece sin retroalimentación                                                      | Media        | Alto    | Despliegue incremental desde F2: hay algo que mirar mucho antes del final. **Fuera del control del equipo**                                                                                                                                                                               |
+| R-10 | **El plazo de AgendaPro (tres meses) vence** antes de alcanzar paridad funcional                                                                                 | Media        | Alto    | Fuera del alcance de este plan. Se registra porque el orden de fases —agenda y reserva primero— es la mejor contribución posible a mitigarlo                                                                                                                                              |
+| R-11 | **Se pierden correcciones por el camino.** Son más de noventa, repartidas en catorce vistas y una tabla transversal, y se van cerrando a lo largo de siete fases | Alta         | Medio   | Cada fase declara qué códigos cierra, y **la fase 10 recorre el checklist completo como criterio de término** (§8.2). Sin ese recorrido explícito, las menores —A-8, F-6, CF-5, NF2-12, PA-2— son las primeras en caerse                                                                  |
+| R-12 | **Un error llega a producción** por la política de desplegar en cada fase (DD-8)                                                                                 | Media        | Medio   | Verificación antes de fusionar, primera fusión en horario de baja visita, y **procedimiento de reversión escrito** (§9.5). El sitio público solo está expuesto en la fase 1; a partir de la 2, un fallo del panel no lo afecta                                                            |
 
 ---
 
@@ -1203,42 +1204,42 @@ Con las cuatro fuentes completas, **tres supuestos de la primera versión de est
 
 Quedan estos:
 
-| # | Supuesto | Si resulta falso |
-|---|---|---|
+| #       | Supuesto                                                                                                                                                 | Si resulta falso                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **S-1** | La sesión simulada es Franchesca Astudillo. **Ya no es supuesto sino decisión tomada** (D-11), pero se conserva la fila porque el cliente aún no lo sabe | Si el cliente insistiera en Valeria Araneda, hay que elegir entre su horario real y la corrección A-7. **Recomendación en ese caso: sacrificar A-7 antes que el horario**, repartiendo los siete estados entre varios días navegables y compensando con el listado de fichas y el perfil del paciente, donde la codificación de color también se ve junta. Se pierde poder juzgarla de un vistazo, que era el punto. Afecta a la semilla (F3) y a la agenda (F4) |
-| **S-2** | **Las especialistas ven todas las fichas del centro**, no solo las propias. Es lo que asume el prototipo de Figma | Es la **decisión pendiente N° 2 de los requerimientos, marcada bloqueante**. Si resulta que cada una ve solo las suyas, cambia el listado de fichas (#13), el perfil del paciente (#11) y la semilla. Conviene resolverla antes de F7 |
-| **S-3** | El rol Especialista es el único que se prototipa; el panel del Administrador queda fuera (requerimientos 1.2) | El inventario del capítulo 6 crecería con vistas no especificadas |
-| **S-4** | Los datos del panel no incluyen información real de pacientes | Si se pidiera cargar datos reales, la decisión de desplegar a producción sin autenticación (DD-8) **deja de ser válida** y hay que rehacer la estrategia de entrega |
-| **S-5** | Los servicios del prototipo son exactamente dos: Masoterapia y Kinesiología, en ese orden | Los requerimientos mencionan además Kinesiología Deportiva y Entrenamiento Funcional para el sitio público, y su activación depende de la resolución sanitaria. Si entran, cambia la semilla y el paso 3. Trabajo menor |
-| **S-6** | Un usuario del personal puede estar asociado a un especialista, pero son entidades distintas | Si el backend los unifica, cambia el modelo de dominio de F3 |
-| **S-7** | El campo convenio mantiene su definición de acuerdo con empresas y sindicatos, sin campo adicional de previsión de salud | Es la **decisión pendiente N° 11**. Si se añade previsión, gana una columna el listado de pacientes y un campo el formulario de alta |
-| **S-8** | El despliegue actual funciona pese a la incoherencia de nombres de servicio (D-10) | Si el compose del VPS resulta ser el versionado y el despliegue está roto, la entrega necesita arreglar el pipeline primero — trabajo de infraestructura no contemplado. Se agrava porque el VPS **está contratado a nombre del desarrollador de frontend y su traspaso a la empresa sigue sin formalizarse** (requerimientos 13.8) |
-| **S-9** | La restricción de **dos atenciones simultáneas** (13.2) no se representa en el prototipo | Es la decisión pendiente N° 14, y depende de si responde a boxes o a personal. Si debe representarse, afecta a la agenda y al paso 1 del asistente |
+| **S-2** | **Las especialistas ven todas las fichas del centro**, no solo las propias. Es lo que asume el prototipo de Figma                                        | Es la **decisión pendiente N° 2 de los requerimientos, marcada bloqueante**. Si resulta que cada una ve solo las suyas, cambia el listado de fichas (#13), el perfil del paciente (#11) y la semilla. Conviene resolverla antes de F7                                                                                                                                                                                                                            |
+| **S-3** | El rol Especialista es el único que se prototipa; el panel del Administrador queda fuera (requerimientos 1.2)                                            | El inventario del capítulo 6 crecería con vistas no especificadas                                                                                                                                                                                                                                                                                                                                                                                                |
+| **S-4** | Los datos del panel no incluyen información real de pacientes                                                                                            | Si se pidiera cargar datos reales, la decisión de desplegar a producción sin autenticación (DD-8) **deja de ser válida** y hay que rehacer la estrategia de entrega                                                                                                                                                                                                                                                                                              |
+| **S-5** | Los servicios del prototipo son exactamente dos: Masoterapia y Kinesiología, en ese orden                                                                | Los requerimientos mencionan además Kinesiología Deportiva y Entrenamiento Funcional para el sitio público, y su activación depende de la resolución sanitaria. Si entran, cambia la semilla y el paso 3. Trabajo menor                                                                                                                                                                                                                                          |
+| **S-6** | Un usuario del personal puede estar asociado a un especialista, pero son entidades distintas                                                             | Si el backend los unifica, cambia el modelo de dominio de F3                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **S-7** | El campo convenio mantiene su definición de acuerdo con empresas y sindicatos, sin campo adicional de previsión de salud                                 | Es la **decisión pendiente N° 11**. Si se añade previsión, gana una columna el listado de pacientes y un campo el formulario de alta                                                                                                                                                                                                                                                                                                                             |
+| **S-8** | El despliegue actual funciona pese a la incoherencia de nombres de servicio (D-10)                                                                       | Si el compose del VPS resulta ser el versionado y el despliegue está roto, la entrega necesita arreglar el pipeline primero — trabajo de infraestructura no contemplado. Se agrava porque el VPS **está contratado a nombre del desarrollador de frontend y su traspaso a la empresa sigue sin formalizarse** (requerimientos 13.8)                                                                                                                              |
+| **S-9** | La restricción de **dos atenciones simultáneas** (13.2) no se representa en el prototipo                                                                 | Es la decisión pendiente N° 14, y depende de si responde a boxes o a personal. Si debe representarse, afecta a la agenda y al paso 1 del asistente                                                                                                                                                                                                                                                                                                               |
 
 ---
 
 ## Capítulo 12 — Qué queda deliberadamente fuera
 
-| Qué | Motivo |
-|---|---|
-| Integración con el backend, en cualquier forma | Restricción 2. El prototipo existe para validar flujo antes de que exista lógica |
-| Autenticación real, token, validación de credenciales, guardia de rutas | Restricción 5, y el mecanismo definitivo sigue abierto con el cliente. Un guardia dejaría gente atascada en una pantalla de acceso simulada |
-| Lógica de negocio: validación de RUT, cálculo de disponibilidad, transiciones de estado, persistencia | Restricción 6. Su definición es del backend, y prototiparla induciría a validar reglas inventadas |
-| Reportes operativos y panel del rol Administrador | Fuera del alcance declarado (5.4) |
-| Gestión de contenido institucional | Vive en Sanity |
-| **Agenda por box** | Decisión pendiente sin parámetros definidos: no se sabe cuántos boxes hay, cómo se identifican ni cómo se asignan (7.10). Prototiparla sería inventar el requisito |
-| Boxes de atención y registro de pago de cita manual | Marcados «por confirmar» (5.4). El registro de pago manual además **ya se eliminó una vez del prototipo por indicación expresa** y no se reintroduce |
-| **Restricción de dos atenciones simultáneas** (RF-HOR-008) | Decisión pendiente N° 14: no se sabe si responde a boxes o a personal, y eso determina cómo se modela. No se prototipa lo que no está definido |
-| **Notificaciones al paciente** (RF-NOT-001 a 003) | El canal —correo, WhatsApp o ambos— no está formalizado, y WhatsApp exige infraestructura con costo aún sin evaluar. El icono de campana del encabezado declara estar fuera de alcance |
-| **Crear una ficha desde el detalle de la cita** (RF-FIC-017) | Decisión pendiente N° 12. El detalle de una cita Atendida sí ofrece **acceder** a su ficha, que es lo que fija A.6; crearla desde ahí es otra cosa y está sin resolver |
-| Auditoría real | El prototipo **muestra** la traza de la cita (M-8, RF-AUD-003) con datos de la semilla, pero no registra nada. Registrar es del backend |
-| Exportación real a PDF | Es funcionalidad, no prototipo. La vista la declara fuera de alcance en lugar de dejar un botón inerte |
-| **Corrección de la deuda técnica del sitio público** | Restricción de no modificarlo. Se reporta: `ServicesSection` inalcanzable, `BookingCard` importado sin usarse, `Button` y `Card` sin consumidores, `--color-primary-glow` sin uso, `animate-fade-in` sin definición, el espacio inicial en el nombre de ` auth.service.ts`, el Dockerfile que ignora `output: 'standalone'`, la red no declarada en el compose, `apiClient` sin cabecera de autorización, y las **dos versiones contradictorias del horario** en `constants.ts` con un JSON-LD que usa la incorrecta y omite el domingo |
-| Corrección del token verde y de `Button.tsx` | D-3: el panel no los importa, así que no hace falta tocarlos. Se dejan como están |
-| Conectar Geist correctamente | D-2: el `body` fija Arial y anula a Geist. **Es deuda del sitio público**, no del panel. El panel hereda la fuente del `body`, sea cual sea |
-| Tests automatizados | El proyecto no tiene ninguno y montar la infraestructura excede el alcance. La verificación es manual y está especificada fase a fase. **Es una debilidad reconocida, no un olvido** |
-| Adaptación a móvil del panel | S-3. La Parte A describe una estructura de escritorio |
-| robots.txt | §4.5: no existe hoy, y enumerar `/panel` en un Disallow sería la única pista pública de su existencia |
+| Qué                                                                                                   | Motivo                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Integración con el backend, en cualquier forma                                                        | Restricción 2. El prototipo existe para validar flujo antes de que exista lógica                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Autenticación real, token, validación de credenciales, guardia de rutas                               | Restricción 5, y el mecanismo definitivo sigue abierto con el cliente. Un guardia dejaría gente atascada en una pantalla de acceso simulada                                                                                                                                                                                                                                                                                                                                                                                             |
+| Lógica de negocio: validación de RUT, cálculo de disponibilidad, transiciones de estado, persistencia | Restricción 6. Su definición es del backend, y prototiparla induciría a validar reglas inventadas                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Reportes operativos y panel del rol Administrador                                                     | Fuera del alcance declarado (5.4)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Gestión de contenido institucional                                                                    | Vive en Sanity                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Agenda por box**                                                                                    | Decisión pendiente sin parámetros definidos: no se sabe cuántos boxes hay, cómo se identifican ni cómo se asignan (7.10). Prototiparla sería inventar el requisito                                                                                                                                                                                                                                                                                                                                                                      |
+| Boxes de atención y registro de pago de cita manual                                                   | Marcados «por confirmar» (5.4). El registro de pago manual además **ya se eliminó una vez del prototipo por indicación expresa** y no se reintroduce                                                                                                                                                                                                                                                                                                                                                                                    |
+| **Restricción de dos atenciones simultáneas** (RF-HOR-008)                                            | Decisión pendiente N° 14: no se sabe si responde a boxes o a personal, y eso determina cómo se modela. No se prototipa lo que no está definido                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Notificaciones al paciente** (RF-NOT-001 a 003)                                                     | El canal —correo, WhatsApp o ambos— no está formalizado, y WhatsApp exige infraestructura con costo aún sin evaluar. El icono de campana del encabezado declara estar fuera de alcance                                                                                                                                                                                                                                                                                                                                                  |
+| **Crear una ficha desde el detalle de la cita** (RF-FIC-017)                                          | Decisión pendiente N° 12. El detalle de una cita Atendida sí ofrece **acceder** a su ficha, que es lo que fija A.6; crearla desde ahí es otra cosa y está sin resolver                                                                                                                                                                                                                                                                                                                                                                  |
+| Auditoría real                                                                                        | El prototipo **muestra** la traza de la cita (M-8, RF-AUD-003) con datos de la semilla, pero no registra nada. Registrar es del backend                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Exportación real a PDF                                                                                | Es funcionalidad, no prototipo. La vista la declara fuera de alcance en lugar de dejar un botón inerte                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **Corrección de la deuda técnica del sitio público**                                                  | Restricción de no modificarlo. Se reporta: `ServicesSection` inalcanzable, `BookingCard` importado sin usarse, `Button` y `Card` sin consumidores, `--color-primary-glow` sin uso, `animate-fade-in` sin definición, el espacio inicial en el nombre de ` auth.service.ts`, el Dockerfile que ignora `output: 'standalone'`, la red no declarada en el compose, `apiClient` sin cabecera de autorización, y las **dos versiones contradictorias del horario** en `constants.ts` con un JSON-LD que usa la incorrecta y omite el domingo |
+| Corrección del token verde y de `Button.tsx`                                                          | D-3: el panel no los importa, así que no hace falta tocarlos. Se dejan como están                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Conectar Geist correctamente                                                                          | D-2: el `body` fija Arial y anula a Geist. **Es deuda del sitio público**, no del panel. El panel hereda la fuente del `body`, sea cual sea                                                                                                                                                                                                                                                                                                                                                                                             |
+| Tests automatizados                                                                                   | El proyecto no tiene ninguno y montar la infraestructura excede el alcance. La verificación es manual y está especificada fase a fase. **Es una debilidad reconocida, no un olvido**                                                                                                                                                                                                                                                                                                                                                    |
+| Adaptación a móvil del panel                                                                          | S-3. La Parte A describe una estructura de escritorio                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| robots.txt                                                                                            | §4.5: no existe hoy, y enumerar `/panel` en un Disallow sería la única pista pública de su existencia                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 ---
 
@@ -1295,22 +1296,22 @@ Ordenadas por lo que bloquean.
 
 **Resueltas.** Con las cuatro fuentes completas quedaron respondidas las de la primera versión sobre el detalle de las vistas, el alcance de dispositivos, la fecha de referencia y `BookingCard` —el capítulo 13.8 de los requerimientos confirma que la derivación del agendamiento a AgendaPro es una **«redirección temporal» deliberada**, no un descuido—. Y el **28 de julio de 2026** se resolvieron las dos que estaban en cabeza:
 
-| Resuelta | Decisión |
-|---|---|
-| ¿Franchesca o Valeria como usuaria de la sesión? | **Franchesca Astudillo** (D-11). Falta comunicárselo al cliente |
-| ¿Desplegado o PDF? | **Desplegado** (D-12). El PDF era una idea de una etapa anterior. Falta comunicárselo al cliente |
+| Resuelta                                         | Decisión                                                                                         |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| ¿Franchesca o Valeria como usuaria de la sesión? | **Franchesca Astudillo** (D-11). Falta comunicárselo al cliente                                  |
+| ¿Desplegado o PDF?                               | **Desplegado** (D-12). El PDF era una idea de una etapa anterior. Falta comunicárselo al cliente |
 
 **Abiertas**, ordenadas por lo que bloquean:
 
-| # | Pregunta | Qué queda condicionado |
-|---|---|---|
-| **P-1** | **¿Cada especialista ve todas las fichas del centro o solo las suyas?** Decisión pendiente N° 2 de los requerimientos, marcada **bloqueante** (S-2) | El listado de fichas, el perfil del paciente y la semilla. Debe resolverse antes de F7 |
+| #       | Pregunta                                                                                                                                                                     | Qué queda condicionado                                                                                                                                                                                             |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **P-1** | **¿Cada especialista ve todas las fichas del centro o solo las suyas?** Decisión pendiente N° 2 de los requerimientos, marcada **bloqueante** (S-2)                          | El listado de fichas, el perfil del paciente y la semilla. Debe resolverse antes de F7                                                                                                                             |
 | **P-2** | **¿Cuántos pacientes tiene la base de prueba?** La Parte D exige que «si un listado dice 48 pacientes registrados, la paginación recorra 48», pero su elenco nombra **diez** | La semilla (F3). Recomendación: **el recuento se deriva de la semilla** —regla de contadores derivados— y se siembra lo suficiente para que la paginación tenga sentido, con los diez nombrados como protagonistas |
-| **P-3** | **El horario de Constanza Maldonado se contradice**: 13.2 dice «09:00 a 17:00» y a continuación «la última atención finaliza a las 18:00» | La semilla y la vista de horarios (#18). Menor, pero es un dato que se va a mostrar en pantalla |
-| **P-4** | ¿Cuál es el compose que corre realmente en el VPS, y por qué el workflow opera sobre un servicio con otro nombre? (D-10) | La entrega. Se resuelve en la fase 1 consultando el VPS, no adivinando |
-| **P-5** | ¿Qué debe ocurrir con el anticipo de 10.000 CLP al cancelar una cita web? Y su corolario de la decisión pendiente N° 3: ¿puede el especialista cancelarla por sí mismo? | El texto y las acciones del modal de la fase 4. Mientras siga abierta, el modal **advierte sin prometer**, que es lo que corresponde a un prototipo cuya función es preguntar |
-| **P-6** | El horario del sitio público se contradice a sí mismo y el JSON-LD publica una versión que omite el domingo (§2.12) | Nada de este plan: el panel usa la regla canónica. **Se pregunta porque es un dato público incorrecto**, y corregirlo es trabajo del sitio, no del panel |
+| **P-3** | **El horario de Constanza Maldonado se contradice**: 13.2 dice «09:00 a 17:00» y a continuación «la última atención finaliza a las 18:00»                                    | La semilla y la vista de horarios (#18). Menor, pero es un dato que se va a mostrar en pantalla                                                                                                                    |
+| **P-4** | ¿Cuál es el compose que corre realmente en el VPS, y por qué el workflow opera sobre un servicio con otro nombre? (D-10)                                                     | La entrega. Se resuelve en la fase 1 consultando el VPS, no adivinando                                                                                                                                             |
+| **P-5** | ¿Qué debe ocurrir con el anticipo de 10.000 CLP al cancelar una cita web? Y su corolario de la decisión pendiente N° 3: ¿puede el especialista cancelarla por sí mismo?      | El texto y las acciones del modal de la fase 4. Mientras siga abierta, el modal **advierte sin prometer**, que es lo que corresponde a un prototipo cuya función es preguntar                                      |
+| **P-6** | El horario del sitio público se contradice a sí mismo y el JSON-LD publica una versión que omite el domingo (§2.12)                                                          | Nada de este plan: el panel usa la regla canónica. **Se pregunta porque es un dato público incorrecto**, y corregirlo es trabajo del sitio, no del panel                                                           |
 
 ---
 
-*Fin del documento.*
+_Fin del documento._

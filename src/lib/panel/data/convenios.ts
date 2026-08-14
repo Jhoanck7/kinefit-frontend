@@ -6,5 +6,5 @@ export async function listConvenios(): Promise<Convenio[]> {
 }
 
 export async function getConvenio(id: string): Promise<Convenio | undefined> {
-  return CONVENIOS.find((c) => c.id === id);
+  return CONVENIOS.find(c => c.id === id);
 }

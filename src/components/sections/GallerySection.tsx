@@ -1,9 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { CAROUSEL_SLIDES } from '@/lib/constants';
-import {  landingConfigService, GallerySlideItem , LandingConfigData } from '@/lib/services/landingConfig.service';
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+
+import { CAROUSEL_SLIDES } from "@/lib/constants";
+import {
+  GallerySlideItem,
+  LandingConfigData,
+  landingConfigService,
+} from "@/lib/services/landingConfig.service";
 
 interface SanityGalleryItem {
   title: string;
@@ -16,7 +21,11 @@ interface GallerySectionProps {
   initialSlides?: SanityGalleryItem[] | null;
 }
 
-export default function GallerySection({ config }: { config: LandingConfigData }) {
+export default function GallerySection({
+  config,
+}: {
+  config: LandingConfigData;
+}) {
   let slides = CAROUSEL_SLIDES;
   if (config.galleryJson) {
     try {
@@ -27,14 +36,12 @@ export default function GallerySection({ config }: { config: LandingConfigData }
 
   const [current, setCurrent] = useState(0);
 
-
-
   const nextSlide = React.useCallback(() => {
-    setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    setCurrent(prev => (prev === slides.length - 1 ? 0 : prev + 1));
   }, [slides.length]);
 
   const prevSlide = () => {
-    setCurrent((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+    setCurrent(prev => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
   useEffect(() => {
@@ -44,8 +51,8 @@ export default function GallerySection({ config }: { config: LandingConfigData }
   }, [nextSlide, slides.length]);
 
   return (
-    <section 
-      id="instalaciones" 
+    <section
+      id="instalaciones"
       className="py-0 bg-slate-50 text-slate-900 overflow-hidden w-full"
     >
       {/* Full-bleed Edge-to-Edge Carousel Container */}
@@ -60,18 +67,19 @@ export default function GallerySection({ config }: { config: LandingConfigData }
             }
           }
         `}</style>
-        
+
         {/* Carousel Track Container */}
         <div className="relative overflow-hidden w-full py-0">
-          <div 
+          <div
             className="flex transition-transform duration-700 ease-out gallery-track"
-            style={{ 
-              transform: `translateX(calc(50vw - ${current} * var(--slide-width) - var(--slide-width) / 2))` 
+            style={{
+              transform: `translateX(calc(50vw - ${current} * var(--slide-width) - var(--slide-width) / 2))`,
             }}
           >
             {slides.map((slide, index) => {
               const isActive = index === current;
-              const isPrev = index === (current - 1 + slides.length) % slides.length;
+              const isPrev =
+                index === (current - 1 + slides.length) % slides.length;
               const isNext = index === (current + 1) % slides.length;
 
               return (
@@ -82,8 +90,8 @@ export default function GallerySection({ config }: { config: LandingConfigData }
                     if (isNext) nextSlide();
                   }}
                   className={`w-full lg:w-[85vw] shrink-0 px-0 lg:px-2 transition-all duration-700 ease-out select-none ${
-                    isActive 
-                      ? "opacity-100 scale-100 z-20 cursor-default" 
+                    isActive
+                      ? "opacity-100 scale-100 z-20 cursor-default"
                       : "opacity-40 scale-[0.97] blur-[0.5px] z-10 cursor-pointer hover:opacity-60"
                   }`}
                 >
@@ -92,7 +100,10 @@ export default function GallerySection({ config }: { config: LandingConfigData }
                     {/* Full Size Image */}
                     <div className="relative w-full h-full">
                       <Image
-                        src={slide.image || "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?auto=format&fit=crop&w=1600&q=80"}
+                        src={
+                          slide.image ||
+                          "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?auto=format&fit=crop&w=1600&q=80"
+                        }
                         alt={slide.title}
                         fill
                         priority={index === 0}
@@ -107,14 +118,15 @@ export default function GallerySection({ config }: { config: LandingConfigData }
 
                     {/* Minimal Overlay Content at bottom */}
                     <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 md:p-16 z-20 text-white text-left transition-opacity duration-500">
-                      <div className={`transition-all duration-700 ${isActive ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'}`}>
+                      <div
+                        className={`transition-all duration-700 ${isActive ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
+                      >
                         <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 tracking-tight text-white uppercase">
                           {slide.title}
                         </h3>
                         <p className="text-sm sm:text-base md:text-lg text-slate-200 leading-relaxed mb-6 max-w-3xl">
                           {slide.description}
                         </p>
-
                       </div>
                     </div>
                   </div>
@@ -127,8 +139,6 @@ export default function GallerySection({ config }: { config: LandingConfigData }
         {/* Navigation Buttons */}
         {slides.length > 1 && (
           <>
-
-
             {/* Bottom Indicators */}
             <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center gap-2">
               {slides.map((_, index) => (

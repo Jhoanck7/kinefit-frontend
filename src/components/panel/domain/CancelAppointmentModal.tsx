@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCita, CitaResuelta } from "@/lib/panel/data/citas";
+
+import { CitaResuelta, getCita } from "@/lib/panel/data/citas";
 import { citaService } from "@/lib/services/cita.service";
+
 import { Modal } from "../primitives/Modal";
 
 /**
@@ -28,7 +30,7 @@ export function CancelAppointmentModal({
 
   useEffect(() => {
     if (!citaId || !abierto) return;
-    getCita(citaId, hoy).then((resultado) => setCita(resultado ?? null));
+    getCita(citaId, hoy).then(resultado => setCita(resultado ?? null));
   }, [citaId, hoy, abierto]);
 
   useEffect(() => {
@@ -56,19 +58,22 @@ export function CancelAppointmentModal({
     }
   }
 
-  const tienePagoAsociado = cita?.origen === "web" && cita.montoAnticipo !== undefined;
+  const tienePagoAsociado =
+    cita?.origen === "web" && cita.montoAnticipo !== undefined;
 
   return (
     <Modal abierto={abierto} onCerrar={onVolver} ancho="max-w-md">
       <div className="p-6 bg-white text-slate-900 font-sans rounded-none shadow-none">
         <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
-          CANCELAR RESERVA <span className="font-sans text-slate-900 font-bold">#{citaId}</span>
+          CANCELAR RESERVA{" "}
+          <span className="font-sans text-slate-900 font-bold">#{citaId}</span>
         </h2>
         <p className="mt-1 text-xs text-slate-600">
           Se cancelará la atención de{" "}
           <strong className="text-slate-900 font-semibold">
             {cita ? `${cita.paciente.nombre} ${cita.paciente.apellido}` : "…"}
-          </strong>.
+          </strong>
+          .
         </p>
 
         {errorMsg && (
@@ -79,8 +84,8 @@ export function CancelAppointmentModal({
 
         {tienePagoAsociado && (
           <div className="mt-4 border border-amber-300 bg-amber-50 p-3 font-sans text-xs text-amber-900 rounded-none">
-            Esta cita tiene un anticipo de{" "}
-            <strong>$10.000 CLP</strong> pagado vía Webpay. Se debe gestionar la devolución.
+            Esta cita tiene un anticipo de <strong>$10.000 CLP</strong> pagado
+            vía Webpay. Se debe gestionar la devolución.
           </div>
         )}
 
@@ -91,7 +96,7 @@ export function CancelAppointmentModal({
           <textarea
             rows={3}
             value={motivo}
-            onChange={(e) => setMotivo(e.target.value)}
+            onChange={e => setMotivo(e.target.value)}
             placeholder="Ingrese la razón de la cancelación..."
             className="w-full border border-slate-200 bg-white p-2.5 font-sans text-xs text-slate-900 rounded-none shadow-none focus:border-slate-900 focus:outline-none"
           />

@@ -6,7 +6,10 @@ import { HTMLAttributes } from "react";
  * - Bordes finos de 1px (border-slate-200)
  * - Sin sombras (shadow-none)
  */
-export function Card({ className = "", ...props }: HTMLAttributes<HTMLDivElement>) {
+export function Card({
+  className = "",
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={`bg-white rounded-none border border-slate-200 p-6 shadow-none font-sans ${className}`}

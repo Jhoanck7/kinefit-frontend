@@ -22,7 +22,13 @@ const CLASES_VARIANTE: Record<VarianteBoton, string> = {
 };
 
 export const Button = forwardRef<HTMLButtonElement, BotonProps>(function Button(
-  { variante = "primario", explicacionDeshabilitado, className = "", disabled, ...props },
+  {
+    variante = "primario",
+    explicacionDeshabilitado,
+    className = "",
+    disabled,
+    ...props
+  },
   ref
 ) {
   const boton = (
@@ -40,7 +46,9 @@ export const Button = forwardRef<HTMLButtonElement, BotonProps>(function Button(
     return (
       <span className="inline-flex flex-col gap-1">
         {boton}
-        <span className="text-xs text-slate-500 max-w-xs">{explicacionDeshabilitado}</span>
+        <span className="text-xs text-slate-500 max-w-xs">
+          {explicacionDeshabilitado}
+        </span>
       </span>
     );
   }

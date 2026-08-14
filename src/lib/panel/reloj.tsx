@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 const RelojPanelContext = createContext<Date | null>(null);
 
@@ -11,9 +11,15 @@ const RelojPanelContext = createContext<Date | null>(null);
  * entre el huso horario del VPS y el del navegador de la especialista.
  */
 export function RelojPanelProvider({ children }: { children: ReactNode }) {
-  const [hoy] = useState<Date | null>(() => (typeof window !== "undefined" ? new Date() : null));
+  const [hoy] = useState<Date | null>(() =>
+    typeof window !== "undefined" ? new Date() : null
+  );
 
-  return <RelojPanelContext.Provider value={hoy}>{children}</RelojPanelContext.Provider>;
+  return (
+    <RelojPanelContext.Provider value={hoy}>
+      {children}
+    </RelojPanelContext.Provider>
+  );
 }
 
 /** `null` hasta que se resuelve en el cliente (un instante, tras el montaje). */

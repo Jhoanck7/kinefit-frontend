@@ -1,35 +1,46 @@
-import { Metadata } from 'next';
+import { Metadata } from "next";
 
 export const defaultMetadata: Metadata = {
   title: {
-    default: 'Kinefit - Centro de Kinesiología y Masoterapia',
-    template: '%s | Kinefit'
+    default: "Kinefit - Centro de Kinesiología y Masoterapia",
+    template: "%s | Kinefit",
   },
-  description: 'Centro de rehabilitación kinésica y masoterapia.',
-  keywords: ['kinesiología', 'masoterapia', 'rehabilitación', 'kinefit', 'kinefitchile','KineFitChile', 'kinesiólogo', 'terapia física'],
-  authors: [{ name: 'Kinefit' }],
+  description: "Centro de rehabilitación kinésica y masoterapia.",
+  keywords: [
+    "kinesiología",
+    "masoterapia",
+    "rehabilitación",
+    "kinefit",
+    "kinefitchile",
+    "KineFitChile",
+    "kinesiólogo",
+    "terapia física",
+  ],
+  authors: [{ name: "Kinefit" }],
   icons: {
-    icon: '/icon.svg',
-    shortcut: '/icon.svg',
-    apple: '/Kinefit color.png',
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/Kinefit color.png",
   },
-  creator: 'Kinefit',
-  publisher: 'Kinefit',
+  creator: "Kinefit",
+  publisher: "Kinefit",
   robots: {
     index: true,
-    follow: true
+    follow: true,
   },
   openGraph: {
-    title: 'Kinefit - Centro de Kinesiología y Masoterapia',
-    description: 'Centro de rehabilitación kinésica, entrenamiento funcional y bienestar integral.',
-    type: 'website',
-    locale: 'es_CL',
-    url: 'https://kinefitchile.com',
-    siteName: 'Kinefit'
+    title: "Kinefit - Centro de Kinesiología y Masoterapia",
+    description:
+      "Centro de rehabilitación kinésica, entrenamiento funcional y bienestar integral.",
+    type: "website",
+    locale: "es_CL",
+    url: "https://kinefitchile.com",
+    siteName: "Kinefit",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'Kinefit - Centro de Kinesiología y Masoterapia',
-    description: 'Centro de rehabilitación kinésica, entrenamiento funcional y bienestar integral.'
-  }
+    card: "summary_large_image",
+    title: "Kinefit - Centro de Kinesiología y Masoterapia",
+    description:
+      "Centro de rehabilitación kinésica, entrenamiento funcional y bienestar integral.",
+  },
 };

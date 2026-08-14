@@ -1,19 +1,23 @@
 "use client";
 
-import { useEffect, useState, useCallback, Suspense } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useHoyPanel } from "@/lib/panel/reloj";
-import { Especialista } from "@/lib/panel/domain/tipos";
-import { listEspecialistas } from "@/lib/panel/data/especialistas";
-import { getAgendaDia, CitaResuelta, BloqueoResuelto } from "@/lib/panel/data/citas";
-import { generarRejillaDia } from "@/lib/panel/domain/horario";
-import { DiaSemanaId } from "@/lib/panel/domain/tipos";
-import { fechaISO } from "@/lib/panel/domain/formato";
-import { TimeGrid } from "@/components/panel/domain/TimeGrid";
-import { Legend } from "@/components/panel/domain/Legend";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
+
 import { AppointmentDetailModal } from "@/components/panel/domain/AppointmentDetailModal";
 import { CancelAppointmentModal } from "@/components/panel/domain/CancelAppointmentModal";
 import { GestionBloqueosModal } from "@/components/panel/domain/GestionBloqueosModal";
+import { Legend } from "@/components/panel/domain/Legend";
+import { TimeGrid } from "@/components/panel/domain/TimeGrid";
+import {
+  BloqueoResuelto,
+  CitaResuelta,
+  getAgendaDia,
+} from "@/lib/panel/data/citas";
+import { listEspecialistas } from "@/lib/panel/data/especialistas";
+import { fechaISO } from "@/lib/panel/domain/formato";
+import { generarRejillaDia } from "@/lib/panel/domain/horario";
+import { DiaSemanaId, Especialista } from "@/lib/panel/domain/tipos";
+import { useHoyPanel } from "@/lib/panel/reloj";
 
 function AgendaContenido() {
   const router = useRouter();
@@ -34,8 +38,11 @@ function AgendaContenido() {
 
   const [horaActual, setHoraActual] = useState<string | null>(null);
   const [especialistas, setEspecialistas] = useState<Especialista[]>([]);
-  const [especialistaSeleccionado, setEspecialistaSeleccionado] = useState<string>("todas");
-  const [agendaData, setAgendaData] = useState<Record<string, { citas: CitaResuelta[]; bloqueos: BloqueoResuelto[] }>>({});
+  const [especialistaSeleccionado, setEspecialistaSeleccionado] =
+    useState<string>("todas");
+  const [agendaData, setAgendaData] = useState<
+    Record<string, { citas: CitaResuelta[]; bloqueos: BloqueoResuelto[] }>
+  >({});
   const [modalBloqueos, setModalBloqueos] = useState(false);
 
   useEffect(() => {
@@ -51,14 +58,17 @@ function AgendaContenido() {
 
     try {
       const resultados = await Promise.all(
-        especialistas.map(async (esp) => {
+        especialistas.map(async esp => {
           const res = await getAgendaDia(esp.id, dia, hoy);
           return { espId: esp.id, data: res };
         })
       );
 
-      const mapa: Record<string, { citas: CitaResuelta[]; bloqueos: BloqueoResuelto[] }> = {};
-      resultados.forEach((r) => {
+      const mapa: Record<
+        string,
+        { citas: CitaResuelta[]; bloqueos: BloqueoResuelto[] }
+      > = {};
+      resultados.forEach(r => {
         mapa[r.espId] = r.data;
       });
       setAgendaData(mapa);
@@ -117,7 +127,7 @@ function AgendaContenido() {
   const especialistasAMostrar =
     especialistaSeleccionado === "todas"
       ? especialistas
-      : especialistas.filter((e) => e.id === especialistaSeleccionado);
+      : especialistas.filter(e => e.id === especialistaSeleccionado);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 font-sans shadow-none">
@@ -154,7 +164,7 @@ function AgendaContenido() {
           <input
             type="date"
             value={fechaISO(dia)}
-            onChange={(e) => {
+            onChange={e => {
               if (e.target.value) {
                 const [y, m, d] = e.target.value.split("-").map(Number);
                 setDia(new Date(y, m - 1, d));
@@ -168,11 +178,11 @@ function AgendaContenido() {
         <div className="flex flex-wrap items-center gap-2">
           <select
             value={especialistaSeleccionado}
-            onChange={(e) => setEspecialistaSeleccionado(e.target.value)}
+            onChange={e => setEspecialistaSeleccionado(e.target.value)}
             className="border border-slate-200 bg-white px-3 py-1.5 font-sans text-xs font-medium text-slate-900 rounded-none focus:border-slate-900 focus:outline-none cursor-pointer uppercase tracking-wider"
           >
             <option value="todas">TODAS LAS ESPECIALISTAS</option>
-            {especialistas.map((esp) => (
+            {especialistas.map(esp => (
               <option key={esp.id} value={esp.id}>
                 {esp.nombre.toUpperCase()}
               </option>
@@ -213,7 +223,9 @@ function AgendaContenido() {
                   bloqueos={data.bloqueos}
                   horaActual={horaActual}
                   ocultarHoras={index > 0}
-                  onSeleccionarCita={(citaIdSel) => abrirParametros({ cita: citaIdSel })}
+                  onSeleccionarCita={citaIdSel =>
+                    abrirParametros({ cita: citaIdSel })
+                  }
                   onSeleccionarBloqueVacio={() =>
                     router.push(`/panel/nueva-reserva/servicio`)
                   }
@@ -233,7 +245,9 @@ function AgendaContenido() {
           citaId={citaId}
           hoy={hoy ?? new Date()}
           onCerrar={() => abrirParametros({ cita: undefined })}
-          onSolicitarCancelacion={() => abrirParametros({ cita: citaId, cancelar: "1" })}
+          onSolicitarCancelacion={() =>
+            abrirParametros({ cita: citaId, cancelar: "1" })
+          }
           onEstadoCambiar={cargarAgenda}
         />
       )}
@@ -243,7 +257,9 @@ function AgendaContenido() {
           citaId={citaId}
           hoy={hoy ?? new Date()}
           abierto={cancelando}
-          onVolver={() => abrirParametros({ cita: citaId, cancelar: undefined })}
+          onVolver={() =>
+            abrirParametros({ cita: citaId, cancelar: undefined })
+          }
           onConfirmado={() => {
             abrirParametros({ cita: undefined, cancelar: undefined });
             cargarAgenda();

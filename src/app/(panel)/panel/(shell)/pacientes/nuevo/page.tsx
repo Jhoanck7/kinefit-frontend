@@ -1,21 +1,28 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { pacienteConRut, RUT_DEMO_YA_EXISTENTE } from "@/lib/panel/data/pacientes";
+import React, { Suspense, useEffect, useState } from "react";
+
+import { Button } from "@/components/panel/primitives/Button";
+import {
+  SelectField,
+  TextField,
+} from "@/components/panel/primitives/CamposFormulario";
+import { Card } from "@/components/panel/primitives/Card";
 import { listConvenios } from "@/lib/panel/data/convenios";
+import {
+  pacienteConRut,
+  RUT_DEMO_YA_EXISTENTE,
+} from "@/lib/panel/data/pacientes";
 import { Convenio } from "@/lib/panel/domain/tipos";
 import { pacienteService } from "@/lib/services/paciente.service";
 import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
-import { Card } from "@/components/panel/primitives/Card";
-import { Button } from "@/components/panel/primitives/Button";
-import { TextField, SelectField } from "@/components/panel/primitives/CamposFormulario";
 
 function RegistrarPacienteContenido() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const retorno = searchParams.get("retorno");
-  const setPacienteReserva = useNuevaReservaStore((s) => s.setPaciente);
+  const setPacienteReserva = useNuevaReservaStore(s => s.setPaciente);
 
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
@@ -24,7 +31,10 @@ function RegistrarPacienteContenido() {
   const [telefono, setTelefono] = useState("");
   const [convenioId, setConvenioId] = useState<string>("");
 
-  const [pacienteExistente, setPacienteExistente] = useState<{ id: string; nombre: string } | null>(null);
+  const [pacienteExistente, setPacienteExistente] = useState<{
+    id: string;
+    nombre: string;
+  } | null>(null);
   const [convenios, setConvenios] = useState<Convenio[]>([]);
 
   const [guardando, setGuardando] = useState(false);
@@ -50,7 +60,14 @@ function RegistrarPacienteContenido() {
         // Fallback local
       }
       const existente = await pacienteConRut(valor.trim());
-      setPacienteExistente(existente ? { id: existente.id, nombre: `${existente.nombre} ${existente.apellido}` } : null);
+      setPacienteExistente(
+        existente
+          ? {
+              id: existente.id,
+              nombre: `${existente.nombre} ${existente.apellido}`,
+            }
+          : null
+      );
     } else {
       setPacienteExistente(null);
     }
@@ -78,14 +95,20 @@ function RegistrarPacienteContenido() {
       });
 
       if (retorno) {
-        setPacienteReserva(String(creado.id), `${creado.nombre} ${creado.apellido}`.trim());
+        setPacienteReserva(
+          String(creado.id),
+          `${creado.nombre} ${creado.apellido}`.trim()
+        );
         router.push(retorno);
       } else {
         router.push("/panel/pacientes");
       }
     } catch (err: unknown) {
       console.error("Error al registrar paciente en Backend:", err);
-      const msg = err instanceof Error ? err.message : "No se pudo registrar el paciente en el backend.";
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "No se pudo registrar el paciente en el backend.";
       setErrorMsg(msg);
     } finally {
       setGuardando(false);
@@ -95,7 +118,9 @@ function RegistrarPacienteContenido() {
   return (
     <div className="mx-auto max-w-2xl">
       <Card>
-        <h2 className="mb-6 text-lg font-bold text-panel-sidebar">Registrar paciente nuevo</h2>
+        <h2 className="mb-6 text-lg font-bold text-panel-sidebar">
+          Registrar paciente nuevo
+        </h2>
 
         {errorMsg && (
           <div className="mb-4 rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700 border border-red-200">
@@ -105,8 +130,20 @@ function RegistrarPacienteContenido() {
 
         <form onSubmit={alEnviar} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <TextField etiqueta="Nombre" obligatorio required value={nombre} onChange={(e) => setNombre(e.target.value)} />
-            <TextField etiqueta="Apellido" obligatorio required value={apellido} onChange={(e) => setApellido(e.target.value)} />
+            <TextField
+              etiqueta="Nombre"
+              obligatorio
+              required
+              value={nombre}
+              onChange={e => setNombre(e.target.value)}
+            />
+            <TextField
+              etiqueta="Apellido"
+              obligatorio
+              required
+              value={apellido}
+              onChange={e => setApellido(e.target.value)}
+            />
           </div>
           <TextField
             etiqueta="RUT"
@@ -114,14 +151,17 @@ function RegistrarPacienteContenido() {
             required
             placeholder="12.345.678-9"
             value={rut}
-            onChange={(e) => alCambiarRut(e.target.value)}
+            onChange={e => alCambiarRut(e.target.value)}
           />
           {pacienteExistente && (
             <div className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
-              Ya existe un paciente registrado con este RUT: <strong>{pacienteExistente.nombre}</strong>.{" "}
+              Ya existe un paciente registrado con este RUT:{" "}
+              <strong>{pacienteExistente.nombre}</strong>.{" "}
               <button
                 type="button"
-                onClick={() => router.push(`/panel/pacientes/${pacienteExistente.id}`)}
+                onClick={() =>
+                  router.push(`/panel/pacientes/${pacienteExistente.id}`)
+                }
                 className="underline underline-offset-2"
               >
                 Usar este paciente
@@ -135,7 +175,7 @@ function RegistrarPacienteContenido() {
             obligatorio
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
           />
           <TextField
             etiqueta="Teléfono"
@@ -143,15 +183,15 @@ function RegistrarPacienteContenido() {
             obligatorio
             required
             value={telefono}
-            onChange={(e) => setTelefono(e.target.value)}
+            onChange={e => setTelefono(e.target.value)}
           />
           <SelectField
             etiqueta="Convenio institucional"
             value={convenioId}
-            onChange={(e) => setConvenioId(e.target.value)}
+            onChange={e => setConvenioId(e.target.value)}
           >
             <option value="">Sin convenio</option>
-            {convenios.map((c) => (
+            {convenios.map(c => (
               <option key={c.id} value={c.id}>
                 {c.nombre}
               </option>
@@ -159,7 +199,12 @@ function RegistrarPacienteContenido() {
           </SelectField>
 
           <div className="flex justify-end gap-3 border-t border-brand-border pt-6">
-            <Button type="button" variante="secundario" onClick={() => router.back()} disabled={guardando}>
+            <Button
+              type="button"
+              variante="secundario"
+              onClick={() => router.back()}
+              disabled={guardando}
+            >
               Cancelar
             </Button>
             <Button type="submit" variante="primario" disabled={guardando}>

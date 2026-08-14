@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
-import { fechaISO, formatearFechaExtensa, formatearRangoHorario } from "@/lib/panel/domain/formato";
+import { useEffect } from "react";
+
 import { Button } from "@/components/panel/primitives/Button";
 import { definicionEstado } from "@/lib/panel/domain/estados";
+import {
+  fechaISO,
+  formatearFechaExtensa,
+  formatearRangoHorario,
+} from "@/lib/panel/domain/formato";
+import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
 
 const NOMBRE_SERVICIO: Record<string, string> = {
   embarazadas: "Embarazadas",
@@ -20,7 +25,8 @@ const NOMBRE_SERVICIO: Record<string, string> = {
 
 export default function NuevaReservaListoPage() {
   const router = useRouter();
-  const { fecha, hora, pacienteNombre, servicio, reiniciar } = useNuevaReservaStore();
+  const { fecha, hora, pacienteNombre, servicio, reiniciar } =
+    useNuevaReservaStore();
   const definicion = definicionEstado("por_confirmar");
 
   useEffect(() => {
@@ -29,7 +35,8 @@ export default function NuevaReservaListoPage() {
     }
   }, [fecha, hora, pacienteNombre, servicio, router]);
 
-  if (!fecha || !hora || !pacienteNombre || !servicio) return <div aria-hidden />;
+  if (!fecha || !hora || !pacienteNombre || !servicio)
+    return <div aria-hidden />;
 
   const [h, m] = hora.split(":").map(Number);
   const minutosTermino = h * 60 + m + 30;
@@ -55,10 +62,18 @@ export default function NuevaReservaListoPage() {
         </h2>
 
         <div className="border border-slate-200 bg-slate-50/70 p-4 text-xs space-y-1.5 rounded-none">
-          <p className="font-sans font-medium text-sm text-slate-900">{pacienteNombre}</p>
-          <p className="font-sans text-slate-600">{NOMBRE_SERVICIO[servicio] ?? servicio}</p>
-          <p className="font-sans text-slate-600">{formatearFechaExtensa(fecha)}</p>
-          <p className="font-sans font-medium text-slate-900">{formatearRangoHorario(hora, horaTermino)}</p>
+          <p className="font-sans font-medium text-sm text-slate-900">
+            {pacienteNombre}
+          </p>
+          <p className="font-sans text-slate-600">
+            {NOMBRE_SERVICIO[servicio] ?? servicio}
+          </p>
+          <p className="font-sans text-slate-600">
+            {formatearFechaExtensa(fecha)}
+          </p>
+          <p className="font-sans font-medium text-slate-900">
+            {formatearRangoHorario(hora, horaTermino)}
+          </p>
         </div>
 
         <div className="flex items-center justify-center gap-1.5">
@@ -69,7 +84,8 @@ export default function NuevaReservaListoPage() {
         </div>
 
         <p className="font-sans text-xs text-slate-500">
-          La cita quedó en estado <strong>Por confirmar</strong> para su posterior ratificación desde la agenda.
+          La cita quedó en estado <strong>Por confirmar</strong> para su
+          posterior ratificación desde la agenda.
         </p>
 
         <div className="pt-3 flex justify-center gap-3 border-t border-slate-200">

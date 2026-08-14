@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api/apiClient';
+import { apiClient } from "@/lib/api/apiClient";
 
 export interface BloqueHorarioBackendDto {
   id: number;
@@ -6,7 +6,7 @@ export interface BloqueHorarioBackendDto {
   fecha: string;
   horaInicio: string;
   horaTermino: string;
-  estado: 'Disponible' | 'Reservado' | 'Bloqueado';
+  estado: "Disponible" | "Reservado" | "Bloqueado";
   citaId?: number | null;
   bloqueoId?: number | null;
 }
@@ -34,30 +34,46 @@ export interface CreateBloqueoAgendaDto {
 }
 
 export const agendaService = {
-  async getAgenda(especialistaIds: number[], desde: string, hasta: string): Promise<BloqueHorarioBackendDto[]> {
-    const idsStr = especialistaIds.join(',');
+  async getAgenda(
+    especialistaIds: number[],
+    desde: string,
+    hasta: string
+  ): Promise<BloqueHorarioBackendDto[]> {
+    const idsStr = especialistaIds.join(",");
     return apiClient.get<BloqueHorarioBackendDto[]>(
       `/agenda?especialistaIds=${encodeURIComponent(idsStr)}&desde=${desde}&hasta=${hasta}`
     );
   },
 
-  async generar(desde: string, hasta: string, especialistaId?: number): Promise<{ creados: number }> {
-    return apiClient.post<{ creados: number }>('/agenda/generar', {
+  async generar(
+    desde: string,
+    hasta: string,
+    especialistaId?: number
+  ): Promise<{ creados: number }> {
+    return apiClient.post<{ creados: number }>("/agenda/generar", {
       desde,
       hasta,
       especialistaId,
     });
   },
 
-  async getBloqueos(especialistaId: number): Promise<BloqueoAgendaBackendDto[]> {
-    return apiClient.get<BloqueoAgendaBackendDto[]>(`/bloqueos-agenda?especialistaId=${especialistaId}`);
+  async getBloqueos(
+    especialistaId: number
+  ): Promise<BloqueoAgendaBackendDto[]> {
+    return apiClient.get<BloqueoAgendaBackendDto[]>(
+      `/bloqueos-agenda?especialistaId=${especialistaId}`
+    );
   },
 
-  async createBloqueo(dto: CreateBloqueoAgendaDto): Promise<BloqueoAgendaBackendDto> {
-    return apiClient.post<BloqueoAgendaBackendDto>('/bloqueos-agenda', dto);
+  async createBloqueo(
+    dto: CreateBloqueoAgendaDto
+  ): Promise<BloqueoAgendaBackendDto> {
+    return apiClient.post<BloqueoAgendaBackendDto>("/bloqueos-agenda", dto);
   },
 
   async revertirBloqueo(id: number | string): Promise<BloqueoAgendaBackendDto> {
-    return apiClient.patch<BloqueoAgendaBackendDto>(`/bloqueos-agenda/${id}/revertir`);
+    return apiClient.patch<BloqueoAgendaBackendDto>(
+      `/bloqueos-agenda/${id}/revertir`
+    );
   },
 };

@@ -32,7 +32,7 @@ export const USUARIO_SESION_PANEL: UsuarioPanel = {
 
 export const usePanelSessionStore = create<PanelSessionState>()(
   persist(
-    (set) => ({
+    set => ({
       usuario: null,
       entrar: (usuario = USUARIO_SESION_PANEL) => set({ usuario }),
       salir: () => set({ usuario: null }),

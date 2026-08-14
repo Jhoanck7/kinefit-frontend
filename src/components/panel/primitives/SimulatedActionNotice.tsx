@@ -1,8 +1,9 @@
 "use client";
 
 import { ReactNode } from "react";
-import { Modal } from "./Modal";
+
 import { Button } from "./Button";
+import { Modal } from "./Modal";
 
 /**
  * Componente de acción simulada (DD-7): toda acción que en el producto
@@ -29,7 +30,12 @@ export function SimulatedActionNotice({
         <p className="mt-3 text-xs text-brand-muted italic">
           Acción simulada: esto no se guarda realmente en el prototipo.
         </p>
-        <Button variante="primario" className="mt-6" onClick={onCerrar} autoFocus>
+        <Button
+          variante="primario"
+          className="mt-6"
+          onClick={onCerrar}
+          autoFocus
+        >
           Entendido
         </Button>
       </div>

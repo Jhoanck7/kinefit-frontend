@@ -1,7 +1,7 @@
 "use client";
 
-import { VentaMock } from "@/lib/mock/ventas";
 import { Modal } from "@/components/panel/primitives/Modal";
+import { VentaMock } from "@/lib/mock/ventas";
 
 interface VentaDetalleModalProps {
   venta: VentaMock | null;
@@ -24,7 +24,10 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
         <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
           <div>
             <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
-              Comprobante de Venta <span className="font-sans font-bold text-slate-900">{venta.codigoDisplay}</span>
+              Comprobante de Venta{" "}
+              <span className="font-sans font-bold text-slate-900">
+                {venta.codigoDisplay}
+              </span>
             </h2>
             <p className="font-sans text-xs text-slate-500 mt-0.5">
               {venta.fechaFormateada}
@@ -42,7 +45,6 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
 
         {/* Cuerpo en 2 Columnas */}
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-          
           {/* COLUMNA IZQUIERDA (2/3) - DESGLOSE CONTABLE */}
           <div className="md:col-span-2 p-6 space-y-6">
             <div>
@@ -51,32 +53,53 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
               </h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">Monto Cobrado (Bruto)</span>
-                  <span className="font-sans font-medium text-sm text-slate-900">${venta.montoBruto.toLocaleString("es-CL")} CLP</span>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                    Monto Cobrado (Bruto)
+                  </span>
+                  <span className="font-sans font-medium text-sm text-slate-900">
+                    ${venta.montoBruto.toLocaleString("es-CL")} CLP
+                  </span>
                 </div>
 
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">IVA ({primerItem?.afectoIva ? "19% Afecto" : "Exento"})</span>
-                  <span className="font-sans font-medium text-sm text-slate-700">-${venta.ivaMonto.toLocaleString("es-CL")} CLP</span>
-                </div>
-
-                <div className="border-t border-slate-200 my-1" />
-
-                <div className="flex justify-between items-center text-sm">
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">Monto Neto Real</span>
-                  <span className="font-sans font-medium text-sm text-slate-900">${venta.montoNeto.toLocaleString("es-CL")} CLP</span>
-                </div>
-
-                <div className="flex justify-between items-center text-sm">
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">Comisión POS {venta.terminalNombre ? `(${venta.terminalNombre})` : ""}</span>
-                  <span className="font-sans font-medium text-sm text-slate-700">-${venta.comisionPosMonto.toLocaleString("es-CL")} CLP</span>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                    IVA ({primerItem?.afectoIva ? "19% Afecto" : "Exento"})
+                  </span>
+                  <span className="font-sans font-medium text-sm text-slate-700">
+                    -${venta.ivaMonto.toLocaleString("es-CL")} CLP
+                  </span>
                 </div>
 
                 <div className="border-t border-slate-200 my-1" />
 
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-[#003366]">Base Líquida a Repartir</span>
-                  <span className="font-sans font-bold text-sm text-[#003366]">${venta.baseReparticion.toLocaleString("es-CL")} CLP</span>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                    Monto Neto Real
+                  </span>
+                  <span className="font-sans font-medium text-sm text-slate-900">
+                    ${venta.montoNeto.toLocaleString("es-CL")} CLP
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                    Comisión POS{" "}
+                    {venta.terminalNombre ? `(${venta.terminalNombre})` : ""}
+                  </span>
+                  <span className="font-sans font-medium text-sm text-slate-700">
+                    -${venta.comisionPosMonto.toLocaleString("es-CL")} CLP
+                  </span>
+                </div>
+
+                <div className="border-t border-slate-200 my-1" />
+
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-[#003366]">
+                    Base Líquida a Repartir
+                  </span>
+                  <span className="font-sans font-bold text-sm text-[#003366]">
+                    ${venta.baseReparticion.toLocaleString("es-CL")} CLP
+                  </span>
                 </div>
               </div>
             </div>
@@ -85,11 +108,14 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
               <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
                 DISTRIBUCIÓN DE HONORARIOS
               </h3>
-              {venta.repartoConfigurado && venta.pagoProfesional !== undefined && venta.margenClinica !== undefined ? (
+              {venta.repartoConfigurado &&
+              venta.pagoProfesional !== undefined &&
+              venta.margenClinica !== undefined ? (
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-sm">
                     <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
-                      Pago Especialista ({venta.porcentajeProfesionalAplicado ?? 50}%)
+                      Pago Especialista (
+                      {venta.porcentajeProfesionalAplicado ?? 50}%)
                     </span>
                     <span className="font-sans font-medium text-sm text-slate-900">
                       ${venta.pagoProfesional.toLocaleString("es-CL")} CLP
@@ -97,7 +123,8 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
                   </div>
                   <div className="flex justify-between items-center text-sm">
                     <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
-                      Margen Clínica ({100 - (venta.porcentajeProfesionalAplicado ?? 50)}%)
+                      Margen Clínica (
+                      {100 - (venta.porcentajeProfesionalAplicado ?? 50)}%)
                     </span>
                     <span className="font-sans font-medium text-sm text-slate-900">
                       ${venta.margenClinica.toLocaleString("es-CL")} CLP
@@ -106,7 +133,8 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
                 </div>
               ) : (
                 <p className="font-sans text-xs text-slate-500">
-                  {venta.motivoNoCalculable ?? "Sin acuerdo de reparto registrado al momento de la transacción."}
+                  {venta.motivoNoCalculable ??
+                    "Sin acuerdo de reparto registrado al momento de la transacción."}
                 </p>
               )}
             </div>
@@ -120,29 +148,43 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
               </h3>
 
               <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Paciente</span>
-                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">{venta.pacienteNombre}</p>
-              </div>
-
-              <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Servicio</span>
-                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">{primerItem?.servicioNombre ?? "Atención general"}</p>
-              </div>
-
-              <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Profesional</span>
-                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">{venta.especialistaNombre}</p>
-              </div>
-
-              <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Medio de Pago</span>
+                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                  Paciente
+                </span>
                 <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                  {venta.metodoPago} {venta.terminalNombre ? `· ${venta.terminalNombre}` : ""}
+                  {venta.pacienteNombre}
+                </p>
+              </div>
+
+              <div>
+                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                  Servicio
+                </span>
+                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                  {primerItem?.servicioNombre ?? "Atención general"}
+                </p>
+              </div>
+
+              <div>
+                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                  Profesional
+                </span>
+                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                  {venta.especialistaNombre}
+                </p>
+              </div>
+
+              <div>
+                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                  Medio de Pago
+                </span>
+                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                  {venta.metodoPago}{" "}
+                  {venta.terminalNombre ? `· ${venta.terminalNombre}` : ""}
                 </p>
               </div>
             </div>
           </div>
-
         </div>
 
         {/* Pie de Acciones */}

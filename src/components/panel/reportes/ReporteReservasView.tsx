@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+import { Card } from "@/components/panel/primitives/Card";
 import { REPORTE_RESERVAS_MOCK } from "@/lib/mock/reportes";
 import { reporteService } from "@/lib/services/reporte.service";
-import { Card } from "@/components/panel/primitives/Card";
 
 export function ReporteReservasView() {
   const [data, setData] = useState(REPORTE_RESERVAS_MOCK);
@@ -13,18 +14,42 @@ export function ReporteReservasView() {
       try {
         const res = await reporteService.getReporteReservas();
         if (res) {
-          setData((prev) => ({
+          setData(prev => ({
             ...prev,
             kpi: {
               ...prev.kpi,
               reservasTotales: res.totalReservas || prev.kpi.reservasTotales,
-              porcentajeOcupacion: res.tasaOcupacionPorcentaje || prev.kpi.porcentajeOcupacion,
-              tasaInasistencias: Math.round(((res.canceladas + res.noAsistidas) / (res.totalReservas || 1)) * 100) || prev.kpi.tasaInasistencias,
+              porcentajeOcupacion:
+                res.tasaOcupacionPorcentaje || prev.kpi.porcentajeOcupacion,
+              tasaInasistencias:
+                Math.round(
+                  ((res.canceladas + res.noAsistidas) /
+                    (res.totalReservas || 1)) *
+                    100
+                ) || prev.kpi.tasaInasistencias,
             },
             distribucionPorEstado: [
-              { estado: "Atendidas", cantidad: res.atendidas || 0, porcentaje: Math.round(((res.atendidas || 0) / (res.totalReservas || 1)) * 100) },
-              { estado: "Canceladas", cantidad: res.canceladas || 0, porcentaje: Math.round(((res.canceladas || 0) / (res.totalReservas || 1)) * 100) },
-              { estado: "No asistidas", cantidad: res.noAsistidas || 0, porcentaje: Math.round(((res.noAsistidas || 0) / (res.totalReservas || 1)) * 100) },
+              {
+                estado: "Atendidas",
+                cantidad: res.atendidas || 0,
+                porcentaje: Math.round(
+                  ((res.atendidas || 0) / (res.totalReservas || 1)) * 100
+                ),
+              },
+              {
+                estado: "Canceladas",
+                cantidad: res.canceladas || 0,
+                porcentaje: Math.round(
+                  ((res.canceladas || 0) / (res.totalReservas || 1)) * 100
+                ),
+              },
+              {
+                estado: "No asistidas",
+                cantidad: res.noAsistidas || 0,
+                porcentaje: Math.round(
+                  ((res.noAsistidas || 0) / (res.totalReservas || 1)) * 100
+                ),
+              },
             ],
           }));
         }
@@ -35,11 +60,25 @@ export function ReporteReservasView() {
     cargarReporte();
   }, []);
 
-  const { kpi, evolucionTemporal, distribucionPorHora, distribucionPorDiaSemana, distribucionPorEstado, origen, rankingServicios, rankingProfesionales, rankingClientes, retencion } = data;
+  const {
+    kpi,
+    evolucionTemporal,
+    distribucionPorHora,
+    distribucionPorDiaSemana,
+    distribucionPorEstado,
+    origen,
+    rankingServicios,
+    rankingProfesionales,
+    rankingClientes,
+    retencion,
+  } = data;
 
-  const maxReservasEvolucion = Math.max(...evolucionTemporal.map((p) => p.reservas), 1);
-  const maxHora = Math.max(...distribucionPorHora.map((p) => p.cantidad), 1);
-  const maxDia = Math.max(...distribucionPorDiaSemana.map((p) => p.cantidad), 1);
+  const maxReservasEvolucion = Math.max(
+    ...evolucionTemporal.map(p => p.reservas),
+    1
+  );
+  const maxHora = Math.max(...distribucionPorHora.map(p => p.cantidad), 1);
+  const maxDia = Math.max(...distribucionPorDiaSemana.map(p => p.cantidad), 1);
 
   return (
     <div className="space-y-6 text-sm text-panel-sidebar">
@@ -48,43 +87,61 @@ export function ReporteReservasView() {
         {/* KPI 1: Reservas Totales */}
         <Card>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">Reservas Totales</span>
+            <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+              Reservas Totales
+            </span>
             {kpi.variacionReservasTotales !== undefined && (
               <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-sm font-bold text-emerald-800">
                 +{kpi.variacionReservasTotales}% vs anterior
               </span>
             )}
           </div>
-          <p className="mt-3 text-2xl font-bold text-panel-sidebar">{kpi.reservasTotales}</p>
-          <p className="mt-1 text-sm text-brand-muted">Citas agendadas en el rango seleccionado</p>
+          <p className="mt-3 text-2xl font-bold text-panel-sidebar">
+            {kpi.reservasTotales}
+          </p>
+          <p className="mt-1 text-sm text-brand-muted">
+            Citas agendadas en el rango seleccionado
+          </p>
         </Card>
 
         {/* KPI 2: Porcentaje de Ocupación */}
         <Card>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">Tasa de Ocupación</span>
+            <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+              Tasa de Ocupación
+            </span>
             {kpi.variacionPorcentajeOcupacion !== undefined && (
               <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-sm font-bold text-emerald-800">
                 +{kpi.variacionPorcentajeOcupacion}% vs anterior
               </span>
             )}
           </div>
-          <p className="mt-3 text-2xl font-bold text-panel-sidebar">{kpi.porcentajeOcupacion}%</p>
-          <p className="mt-1 text-sm text-brand-muted">Bloques ocupados vs disponibles en agenda</p>
+          <p className="mt-3 text-2xl font-bold text-panel-sidebar">
+            {kpi.porcentajeOcupacion}%
+          </p>
+          <p className="mt-1 text-sm text-brand-muted">
+            Bloques ocupados vs disponibles en agenda
+          </p>
         </Card>
 
         {/* KPI 3: Tasa de Inasistencias */}
         <Card>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">Tasa de Inasistencias</span>
+            <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+              Tasa de Inasistencias
+            </span>
             {kpi.variacionTasaInasistencias !== undefined && (
               <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-sm font-bold text-emerald-800">
                 {kpi.variacionTasaInasistencias}% mejora
               </span>
             )}
           </div>
-          <p className="mt-3 text-2xl font-bold text-panel-sidebar">{kpi.tasaInasistencias}%</p>
-          <p className="mt-1 text-sm text-brand-muted">Citas no asistidas o canceladas a última hora</p>
+          <p className="mt-3 text-2xl font-bold text-panel-sidebar">
+            {kpi.tasaInasistencias}%
+          </p>
+          <p className="mt-1 text-sm text-brand-muted">
+            Citas no asistidas o canceladas a última hora
+          </p>
         </Card>
       </div>
 
@@ -92,33 +149,49 @@ export function ReporteReservasView() {
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
           <div>
-            <h3 className="text-sm font-bold text-panel-sidebar">Evolución Temporal de Reservas e Ingresos</h3>
-            <p className="text-sm text-brand-muted">Comportamiento diario/semanal durante el rango seleccionado</p>
+            <h3 className="text-sm font-bold text-panel-sidebar">
+              Evolución Temporal de Reservas e Ingresos
+            </h3>
+            <p className="text-sm text-brand-muted">
+              Comportamiento diario/semanal durante el rango seleccionado
+            </p>
           </div>
           <div className="flex items-center gap-4 text-sm font-semibold text-panel-sidebar">
             <span className="flex items-center gap-1.5">
-              <span className="h-3 w-3 rounded-full bg-panel-sidebar inline-block" /> Reservas (N°)
+              <span className="h-3 w-3 rounded-full bg-panel-sidebar inline-block" />{" "}
+              Reservas (N°)
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-3 w-3 rounded-full bg-slate-400 inline-block" /> Ingresos ($ CLP)
+              <span className="h-3 w-3 rounded-full bg-slate-400 inline-block" />{" "}
+              Ingresos ($ CLP)
             </span>
           </div>
         </div>
 
         <div className="h-48 flex items-end justify-between gap-2 pt-6 border-b border-brand-border pb-2">
-          {evolucionTemporal.map((item) => {
-            const alturaPct = Math.round((item.reservas / maxReservasEvolucion) * 100);
+          {evolucionTemporal.map(item => {
+            const alturaPct = Math.round(
+              (item.reservas / maxReservasEvolucion) * 100
+            );
             return (
-              <div key={item.periodo} className="flex-1 flex flex-col items-center gap-2 group relative">
+              <div
+                key={item.periodo}
+                className="flex-1 flex flex-col items-center gap-2 group relative"
+              >
                 <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-panel-sidebar text-white text-xs py-1 px-2 rounded pointer-events-none whitespace-nowrap z-10">
-                  {item.reservas} citas | ${item.ingresos.toLocaleString("es-CL")}
+                  {item.reservas} citas | $
+                  {item.ingresos.toLocaleString("es-CL")}
                 </div>
-                <span className="text-xs font-bold text-panel-sidebar">{item.reservas}</span>
+                <span className="text-xs font-bold text-panel-sidebar">
+                  {item.reservas}
+                </span>
                 <div
                   style={{ height: `${alturaPct}%` }}
                   className="w-full max-w-[36px] rounded-t-lg bg-panel-sidebar transition-all group-hover:opacity-80"
                 />
-                <span className="text-xs font-semibold text-brand-muted mt-1">{item.periodo}</span>
+                <span className="text-xs font-semibold text-brand-muted mt-1">
+                  {item.periodo}
+                </span>
               </div>
             );
           })}
@@ -132,18 +205,22 @@ export function ReporteReservasView() {
             Horarios de Mayor Demanda (Distribución por Hora)
           </h4>
           <div className="space-y-3">
-            {distribucionPorHora.map((h) => {
+            {distribucionPorHora.map(h => {
               const pct = Math.round((h.cantidad / maxHora) * 100);
               return (
                 <div key={h.hora} className="flex items-center gap-3 text-sm">
-                  <span className="w-12 font-semibold text-panel-sidebar">{h.hora}</span>
+                  <span className="w-12 font-semibold text-panel-sidebar">
+                    {h.hora}
+                  </span>
                   <div className="flex-1 h-3 rounded-full bg-panel-seleccion overflow-hidden">
                     <div
                       style={{ width: `${pct}%` }}
                       className="h-full bg-panel-sidebar rounded-full transition-all"
                     />
                   </div>
-                  <span className="w-8 text-right font-bold text-panel-sidebar">{h.cantidad}</span>
+                  <span className="w-8 text-right font-bold text-panel-sidebar">
+                    {h.cantidad}
+                  </span>
                 </div>
               );
             })}
@@ -155,18 +232,22 @@ export function ReporteReservasView() {
             Demanda por Día de la Semana
           </h4>
           <div className="space-y-3">
-            {distribucionPorDiaSemana.map((d) => {
+            {distribucionPorDiaSemana.map(d => {
               const pct = Math.round((d.cantidad / maxDia) * 100);
               return (
                 <div key={d.dia} className="flex items-center gap-3 text-sm">
-                  <span className="w-16 font-semibold text-panel-sidebar">{d.dia}</span>
+                  <span className="w-16 font-semibold text-panel-sidebar">
+                    {d.dia}
+                  </span>
                   <div className="flex-1 h-3 rounded-full bg-panel-seleccion overflow-hidden">
                     <div
                       style={{ width: `${pct}%` }}
                       className="h-full bg-panel-sidebar rounded-full transition-all"
                     />
                   </div>
-                  <span className="w-8 text-right font-bold text-panel-sidebar">{d.cantidad}</span>
+                  <span className="w-8 text-right font-bold text-panel-sidebar">
+                    {d.cantidad}
+                  </span>
                 </div>
               );
             })}
@@ -177,11 +258,18 @@ export function ReporteReservasView() {
       {/* 4. Estado de Citas, Origen y Retención */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <Card className="space-y-3">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted">Distribución por Estado</h4>
+          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+            Distribución por Estado
+          </h4>
           <div className="space-y-2 text-sm">
-            {distribucionPorEstado.map((e) => (
-              <div key={e.estado} className="flex justify-between items-center p-2 rounded-lg bg-panel-fondo">
-                <span className="font-semibold text-panel-sidebar">{e.estado}</span>
+            {distribucionPorEstado.map(e => (
+              <div
+                key={e.estado}
+                className="flex justify-between items-center p-2 rounded-lg bg-panel-fondo"
+              >
+                <span className="font-semibold text-panel-sidebar">
+                  {e.estado}
+                </span>
                 <span className="font-bold text-panel-sidebar">
                   {e.cantidad} ({e.porcentaje}%)
                 </span>
@@ -191,12 +279,16 @@ export function ReporteReservasView() {
         </Card>
 
         <Card className="space-y-3">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted">Origen de Reservas</h4>
+          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+            Origen de Reservas
+          </h4>
           <div className="space-y-3 pt-1">
-            {origen.map((o) => (
+            {origen.map(o => (
               <div key={o.origen} className="space-y-1">
                 <div className="flex justify-between text-sm font-bold text-panel-sidebar">
-                  <span>{o.origen === "Web" ? "Reserva Web" : "Agendamiento Manual"}</span>
+                  <span>
+                    {o.origen === "Web" ? "Reserva Web" : "Agendamiento Manual"}
+                  </span>
                   <span>
                     {o.cantidad} ({o.porcentaje}%)
                   </span>
@@ -213,18 +305,30 @@ export function ReporteReservasView() {
         </Card>
 
         <Card className="space-y-3">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted">Retención de Pacientes</h4>
+          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+            Retención de Pacientes
+          </h4>
           <div className="pt-2 text-center">
-            <span className="text-2xl font-bold text-panel-sidebar">{retencion.porcentajeRecurrentes}%</span>
-            <span className="text-sm font-semibold text-brand-muted block mt-0.5">Pacientes Recurrentes</span>
+            <span className="text-2xl font-bold text-panel-sidebar">
+              {retencion.porcentajeRecurrentes}%
+            </span>
+            <span className="text-sm font-semibold text-brand-muted block mt-0.5">
+              Pacientes Recurrentes
+            </span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-center text-sm pt-2 border-t border-brand-border">
             <div className="bg-panel-fondo p-2 rounded-lg">
-              <span className="font-bold text-panel-sidebar block">{retencion.nuevos}</span>
-              <span className="text-xs text-brand-muted">Nuevos ({retencion.porcentajeNuevos}%)</span>
+              <span className="font-bold text-panel-sidebar block">
+                {retencion.nuevos}
+              </span>
+              <span className="text-xs text-brand-muted">
+                Nuevos ({retencion.porcentajeNuevos}%)
+              </span>
             </div>
             <div className="bg-panel-fondo p-2 rounded-lg">
-              <span className="font-bold text-panel-sidebar block">{retencion.recurrentes}</span>
+              <span className="font-bold text-panel-sidebar block">
+                {retencion.recurrentes}
+              </span>
               <span className="text-xs text-brand-muted">Recurrentes</span>
             </div>
           </div>
@@ -234,45 +338,78 @@ export function ReporteReservasView() {
       {/* 5. Rankings */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card>
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted mb-3">Top Servicios Solicitados</h4>
+          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted mb-3">
+            Top Servicios Solicitados
+          </h4>
           <div className="divide-y divide-brand-border text-sm">
             {rankingServicios.map((s, idx) => (
-              <div key={s.id} className="py-2.5 flex justify-between items-center">
+              <div
+                key={s.id}
+                className="py-2.5 flex justify-between items-center"
+              >
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-panel-sidebar text-sm">#{idx + 1}</span>
-                  <span className="font-medium text-panel-sidebar">{s.nombre}</span>
+                  <span className="font-bold text-panel-sidebar text-sm">
+                    #{idx + 1}
+                  </span>
+                  <span className="font-medium text-panel-sidebar">
+                    {s.nombre}
+                  </span>
                 </div>
-                <span className="font-bold text-panel-sidebar bg-panel-seleccion px-2 py-0.5 rounded">{s.cantidad} citas</span>
+                <span className="font-bold text-panel-sidebar bg-panel-seleccion px-2 py-0.5 rounded">
+                  {s.cantidad} citas
+                </span>
               </div>
             ))}
           </div>
         </Card>
 
         <Card>
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted mb-3">Top Especialistas</h4>
+          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted mb-3">
+            Top Especialistas
+          </h4>
           <div className="divide-y divide-brand-border text-xs text-sm">
             {rankingProfesionales.map((p, idx) => (
-              <div key={p.id} className="py-2.5 flex justify-between items-center">
+              <div
+                key={p.id}
+                className="py-2.5 flex justify-between items-center"
+              >
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-panel-sidebar text-sm">#{idx + 1}</span>
-                  <span className="font-medium text-panel-sidebar">{p.nombre}</span>
+                  <span className="font-bold text-panel-sidebar text-sm">
+                    #{idx + 1}
+                  </span>
+                  <span className="font-medium text-panel-sidebar">
+                    {p.nombre}
+                  </span>
                 </div>
-                <span className="font-bold text-panel-sidebar bg-panel-seleccion px-2 py-0.5 rounded">{p.cantidad} atenciones</span>
+                <span className="font-bold text-panel-sidebar bg-panel-seleccion px-2 py-0.5 rounded">
+                  {p.cantidad} atenciones
+                </span>
               </div>
             ))}
           </div>
         </Card>
 
         <Card>
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted mb-3">Pacientes Más Frecuentes</h4>
+          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted mb-3">
+            Pacientes Más Frecuentes
+          </h4>
           <div className="divide-y divide-brand-border text-sm">
             {rankingClientes.map((c, idx) => (
-              <div key={c.id} className="py-2.5 flex justify-between items-center">
+              <div
+                key={c.id}
+                className="py-2.5 flex justify-between items-center"
+              >
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-panel-sidebar text-sm">#{idx + 1}</span>
-                  <span className="font-medium text-panel-sidebar">{c.nombre}</span>
+                  <span className="font-bold text-panel-sidebar text-sm">
+                    #{idx + 1}
+                  </span>
+                  <span className="font-medium text-panel-sidebar">
+                    {c.nombre}
+                  </span>
                 </div>
-                <span className="font-bold text-panel-sidebar bg-panel-seleccion px-2 py-0.5 rounded">{c.cantidad} visitas</span>
+                <span className="font-bold text-panel-sidebar bg-panel-seleccion px-2 py-0.5 rounded">
+                  {c.cantidad} visitas
+                </span>
               </div>
             ))}
           </div>

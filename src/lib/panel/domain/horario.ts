@@ -45,7 +45,11 @@ function bloquesDeTramo(rango: RangoHorario): RangoHorario[] {
   const inicio = minutosDesdeMedianoche(rango.inicio);
   const fin = minutosDesdeMedianoche(rango.termino);
   const bloques: RangoHorario[] = [];
-  for (let t = inicio; t + DURACION_BLOQUE_MIN <= fin; t += DURACION_BLOQUE_MIN) {
+  for (
+    let t = inicio;
+    t + DURACION_BLOQUE_MIN <= fin;
+    t += DURACION_BLOQUE_MIN
+  ) {
     bloques.push({
       inicio: horaDesdeMinutos(t),
       termino: horaDesdeMinutos(t + DURACION_BLOQUE_MIN),
@@ -71,11 +75,13 @@ export function generarRejillaEspecialista(
   rangosEspecialista: RangoHorario[]
 ): RangoHorario[] {
   const rejillaCentro = generarRejillaDia(diaSemana);
-  return rejillaCentro.filter((bloque) =>
+  return rejillaCentro.filter(bloque =>
     rangosEspecialista.some(
-      (rango) =>
-        minutosDesdeMedianoche(bloque.inicio) >= minutosDesdeMedianoche(rango.inicio) &&
-        minutosDesdeMedianoche(bloque.termino) <= minutosDesdeMedianoche(rango.termino)
+      rango =>
+        minutosDesdeMedianoche(bloque.inicio) >=
+          minutosDesdeMedianoche(rango.inicio) &&
+        minutosDesdeMedianoche(bloque.termino) <=
+          minutosDesdeMedianoche(rango.termino)
     )
   );
 }
