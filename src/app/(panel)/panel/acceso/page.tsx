@@ -1,8 +1,9 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { usePanelSessionStore } from "@/lib/store/usePanelSessionStore";
 import { authService } from "@/lib/services/auth.service";
 import { TextField } from "@/components/panel/primitives/CamposFormulario";
@@ -14,14 +15,7 @@ export default function AccesoPage() {
   const [cargando, setCargando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("kinefit_token");
-      if (token) {
-        router.replace("/panel/agenda");
-      }
-    }
-  }, [router]);
+  // La redirección si ya hay sesión la maneja middleware.ts en el servidor.
 
   async function alEnviar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
@@ -39,6 +33,17 @@ export default function AccesoPage() {
       });
 
       if (res?.usuario && res?.token) {
+        const sesion = await signIn("credentials", {
+          email: res.usuario.email,
+          token: res.token,
+          redirect: false,
+        });
+
+        if (sesion?.error) {
+          setErrorMsg("No se pudo establecer la sesión del panel. Intenta nuevamente.");
+          return;
+        }
+
         entrar({
           nombre: res.usuario.nombre,
           rol: res.usuario.rol === "Administrador" ? "Administrador" : "Especialista",

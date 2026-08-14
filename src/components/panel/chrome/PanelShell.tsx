@@ -1,47 +1,30 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { ReactNode, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { usePanelSessionStore } from "@/lib/store/usePanelSessionStore";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 
 export function PanelShell({ children }: { children: ReactNode }) {
-  const router = useRouter();
+  const { data: session, status } = useSession();
   const usuario = usePanelSessionStore((s) => s.usuario);
   const entrar = usePanelSessionStore((s) => s.entrar);
-  const [verificado, setVerificado] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (status !== "authenticated" || usuario || !session?.user) return;
 
-    const token = localStorage.getItem("kinefit_token");
-    const rawUser = localStorage.getItem("kinefit_user");
+    entrar({
+      nombre: session.user.nombre || "Personal KineFit",
+      rol: session.user.rol === "Administrador" ? "Administrador" : "Especialista",
+      cargo: session.user.rol === "Administrador" ? "Administrador General" : "Especialista",
+      especialistaId: session.user.especialistaId,
+    });
+  }, [status, session, usuario, entrar]);
 
-    if (!token) {
-      router.replace("/panel/acceso");
-      return;
-    }
-
-    // Si hay token en localStorage pero el store de Zustand aún no ha hidratado
-    if (!usuario && rawUser) {
-      try {
-        const u = JSON.parse(rawUser);
-        entrar({
-          nombre: u.nombre || "Personal KineFit",
-          rol: u.rol === "Administrador" ? "Administrador" : "Especialista",
-          cargo: u.rol === "Administrador" ? "Administrador General" : "Especialista",
-          especialistaId: u.especialistaId ? String(u.especialistaId) : undefined,
-        });
-      } catch {
-        // Ignorar error de parseo
-      }
-    }
-
-    setVerificado(true);
-  }, [usuario, entrar, router]);
-
-  if (!verificado) {
+  // La protección real ya la hace middleware.ts en el servidor; este estado
+  // es solo para no pintar el panel mientras la sesión de cliente hidrata.
+  if (status === "loading") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-panel-fondo">
         <p className="text-sm font-semibold text-brand-muted">Verificando sesión...</p>

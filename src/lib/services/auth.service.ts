@@ -27,13 +27,7 @@ interface GenericAuthResponse {
 export const authService = {
   async loginPersonal(dto: PersonalLoginRequestDto): Promise<PersonalLoginResponseDto> {
     const raw = await apiClient.post<GenericAuthResponse>('/auth/personal', dto);
-    const data = raw?.data || (raw as unknown as PersonalLoginResponseDto);
-
-    if (data?.token && typeof window !== 'undefined') {
-      localStorage.setItem('kinefit_token', data.token);
-      localStorage.setItem('kinefit_user', JSON.stringify(data.usuario));
-    }
-    return data;
+    return raw?.data || (raw as unknown as PersonalLoginResponseDto);
   },
 
   async cambiarPasswordPersonal(passwordActual: string, nuevaPassword: string): Promise<void> {
@@ -41,17 +35,6 @@ export const authService = {
       passwordActual,
       nuevaPassword,
     });
-  },
-
-  getStoredToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('kinefit_token');
-  },
-
-  logout(): void {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem('kinefit_token');
-    localStorage.removeItem('kinefit_user');
   },
 
   async loginWithGoogleToken(idToken: string): Promise<AuthGoogleResponse> {

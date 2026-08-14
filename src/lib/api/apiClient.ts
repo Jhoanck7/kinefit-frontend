@@ -1,3 +1,5 @@
+import { getSession } from 'next-auth/react';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5147/api';
 
 class ApiClient {
@@ -7,9 +9,13 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  private getToken(): string | null {
+  // Fallback para llamadas del panel que no pasan un token explícito
+  // (el flujo público de reserva del paciente siempre pasa el suyo,
+  // así que nunca llega a depender de esto).
+  private async getPanelSessionToken(): Promise<string | null> {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('kinefit_token') || sessionStorage.getItem('kinefit_token');
+    const session = await getSession();
+    return session?.accessToken ?? null;
   }
 
   private async request<T>(
@@ -27,7 +33,7 @@ class ApiClient {
       ...(options.headers as Record<string, string>),
     };
 
-    const resolvedToken = token || this.getToken();
+    const resolvedToken = token || (await this.getPanelSessionToken());
     if (resolvedToken && !headers['Authorization']) {
       headers['Authorization'] = `Bearer ${resolvedToken}`;
     }

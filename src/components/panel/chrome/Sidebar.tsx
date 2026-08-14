@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { usePanelSessionStore } from "@/lib/store/usePanelSessionStore";
 import {
   IconoAgenda,
@@ -33,12 +34,11 @@ const ITEMS_NAVEGACION = [
  */
 export function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const salir = usePanelSessionStore((s) => s.salir);
 
   function cerrarSesion() {
     salir();
-    router.push("/panel/acceso");
+    signOut({ callbackUrl: "/panel/acceso" });
   }
 
   return (

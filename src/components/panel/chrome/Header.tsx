@@ -1,8 +1,8 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { usePanelSessionStore, USUARIO_SESION_PANEL } from "@/lib/store/usePanelSessionStore";
-import { authService } from "@/lib/services/auth.service";
 
 function iniciales(nombre: string): string {
   return nombre
@@ -37,16 +37,14 @@ function tituloDeLaRuta(pathname: string): string {
  * - Botón de cerrar sesión sobrio y limpio
  */
 export function Header() {
-  const router = useRouter();
   const usuario = usePanelSessionStore((s) => s.usuario) ?? USUARIO_SESION_PANEL;
   const salir = usePanelSessionStore((s) => s.salir);
   const pathname = usePathname();
   const titulo = tituloDeLaRuta(pathname);
 
   function handleCerrarSesion() {
-    authService.logout();
     salir();
-    router.replace("/panel/acceso");
+    signOut({ callbackUrl: "/panel/acceso" });
   }
 
   return (

@@ -1,5 +1,6 @@
 import { JetBrains_Mono } from "next/font/google";
 import type { Metadata } from "next";
+import { SessionProvider } from "next-auth/react";
 import "../globals.css";
 import { RelojPanelProvider } from "@/lib/panel/reloj";
 
@@ -34,7 +35,9 @@ export default function PanelRootLayout({
         />
       </head>
       <body className="min-h-full font-sans">
-        <RelojPanelProvider>{children}</RelojPanelProvider>
+        <SessionProvider>
+          <RelojPanelProvider>{children}</RelojPanelProvider>
+        </SessionProvider>
       </body>
     </html>
   );
