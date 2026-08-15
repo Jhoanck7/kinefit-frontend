@@ -23,8 +23,18 @@ export const CITAS: Cita[] = [
     creadaOffsetDias: -2,
     creadaHora: "11:15",
     historial: [
-      { estado: "por_confirmar", haceDias: -2, hora: "11:15", responsable: "Franchesca Astudillo" },
-      { estado: "confirmada", haceDias: -1, hora: "09:40", responsable: "Franchesca Astudillo" },
+      {
+        estado: "por_confirmar",
+        haceDias: -2,
+        hora: "11:15",
+        responsable: "Franchesca Astudillo",
+      },
+      {
+        estado: "confirmada",
+        haceDias: -1,
+        hora: "09:40",
+        responsable: "Franchesca Astudillo",
+      },
     ],
   },
   {
@@ -42,7 +52,12 @@ export const CITAS: Cita[] = [
     webpayTransaccionId: "WP-8841203",
     montoAnticipo: 10000,
     historial: [
-      { estado: "confirmada", haceDias: -4, hora: "20:05", responsable: "Sistema (pago Webpay)" },
+      {
+        estado: "confirmada",
+        haceDias: -4,
+        hora: "20:05",
+        responsable: "Sistema (pago Webpay)",
+      },
     ],
   },
   {
@@ -58,7 +73,12 @@ export const CITAS: Cita[] = [
     creadaOffsetDias: -1,
     creadaHora: "16:20",
     historial: [
-      { estado: "por_confirmar", haceDias: -1, hora: "16:20", responsable: "Franchesca Astudillo" },
+      {
+        estado: "por_confirmar",
+        haceDias: -1,
+        hora: "16:20",
+        responsable: "Franchesca Astudillo",
+      },
     ],
   },
 
@@ -76,7 +96,12 @@ export const CITAS: Cita[] = [
     creadaOffsetDias: 0,
     creadaHora: "08:50",
     historial: [
-      { estado: "pendiente_pago", haceDias: 0, hora: "08:50", responsable: "Sistema (Webpay en curso)" },
+      {
+        estado: "pendiente_pago",
+        haceDias: 0,
+        hora: "08:50",
+        responsable: "Sistema (Webpay en curso)",
+      },
     ],
   },
   {
@@ -93,7 +118,12 @@ export const CITAS: Cita[] = [
     creadaHora: "12:10",
     notas: { interna: "Prefiere sesión en box 2, ya conoce el lugar." },
     historial: [
-      { estado: "por_confirmar", haceDias: -1, hora: "12:10", responsable: "Franchesca Astudillo" },
+      {
+        estado: "por_confirmar",
+        haceDias: -1,
+        hora: "12:10",
+        responsable: "Franchesca Astudillo",
+      },
     ],
   },
   {
@@ -112,7 +142,12 @@ export const CITAS: Cita[] = [
     montoAnticipo: 10000,
     notas: { paciente: "Recuerde traer ropa cómoda para la sesión." },
     historial: [
-      { estado: "confirmada", haceDias: -5, hora: "18:30", responsable: "Sistema (pago Webpay)" },
+      {
+        estado: "confirmada",
+        haceDias: -5,
+        hora: "18:30",
+        responsable: "Sistema (pago Webpay)",
+      },
     ],
   },
   {
@@ -128,9 +163,24 @@ export const CITAS: Cita[] = [
     creadaOffsetDias: -6,
     creadaHora: "10:00",
     historial: [
-      { estado: "por_confirmar", haceDias: -6, hora: "10:00", responsable: "Franchesca Astudillo" },
-      { estado: "confirmada", haceDias: -5, hora: "09:15", responsable: "Franchesca Astudillo" },
-      { estado: "atendida", haceDias: 0, hora: "17:05", responsable: "Franchesca Astudillo" },
+      {
+        estado: "por_confirmar",
+        haceDias: -6,
+        hora: "10:00",
+        responsable: "Franchesca Astudillo",
+      },
+      {
+        estado: "confirmada",
+        haceDias: -5,
+        hora: "09:15",
+        responsable: "Franchesca Astudillo",
+      },
+      {
+        estado: "atendida",
+        haceDias: 0,
+        hora: "17:05",
+        responsable: "Franchesca Astudillo",
+      },
     ],
   },
   {
@@ -146,8 +196,19 @@ export const CITAS: Cita[] = [
     creadaOffsetDias: -3,
     creadaHora: "09:30",
     historial: [
-      { estado: "confirmada", haceDias: -3, hora: "09:30", responsable: "Franchesca Astudillo" },
-      { estado: "no_asistida", haceDias: 0, hora: "17:35", responsable: "Franchesca Astudillo", motivo: "El paciente no se presentó ni avisó." },
+      {
+        estado: "confirmada",
+        haceDias: -3,
+        hora: "09:30",
+        responsable: "Franchesca Astudillo",
+      },
+      {
+        estado: "no_asistida",
+        haceDias: 0,
+        hora: "17:35",
+        responsable: "Franchesca Astudillo",
+        motivo: "El paciente no se presentó ni avisó.",
+      },
     ],
   },
   {
@@ -165,8 +226,19 @@ export const CITAS: Cita[] = [
     webpayTransaccionId: "WP-6612094",
     montoAnticipo: 10000,
     historial: [
-      { estado: "confirmada", haceDias: -7, hora: "14:40", responsable: "Sistema (pago Webpay)" },
-      { estado: "cancelada", haceDias: -1, hora: "19:10", responsable: "Franchesca Astudillo", motivo: "El paciente solicitó reagendar por motivos laborales." },
+      {
+        estado: "confirmada",
+        haceDias: -7,
+        hora: "14:40",
+        responsable: "Sistema (pago Webpay)",
+      },
+      {
+        estado: "cancelada",
+        haceDias: -1,
+        hora: "19:10",
+        responsable: "Franchesca Astudillo",
+        motivo: "El paciente solicitó reagendar por motivos laborales.",
+      },
     ],
   },
   {
@@ -182,8 +254,18 @@ export const CITAS: Cita[] = [
     creadaOffsetDias: 0,
     creadaHora: "07:55",
     historial: [
-      { estado: "pendiente_pago", haceDias: 0, hora: "07:55", responsable: "Sistema (Webpay en curso)" },
-      { estado: "expirada", haceDias: 0, hora: "08:25", responsable: "Sistema (sesión de pago vencida)" },
+      {
+        estado: "pendiente_pago",
+        haceDias: 0,
+        hora: "07:55",
+        responsable: "Sistema (Webpay en curso)",
+      },
+      {
+        estado: "expirada",
+        haceDias: 0,
+        hora: "08:25",
+        responsable: "Sistema (sesión de pago vencida)",
+      },
     ],
   },
 
@@ -205,8 +287,18 @@ export const CITAS: Cita[] = [
     webpayTransaccionId: "WP-5590211",
     montoAnticipo: 10000,
     historial: [
-      { estado: "confirmada", haceDias: -12, hora: "20:00", responsable: "Sistema (pago Webpay)" },
-      { estado: "atendida", haceDias: -7, hora: "16:35", responsable: "Franchesca Astudillo" },
+      {
+        estado: "confirmada",
+        haceDias: -12,
+        hora: "20:00",
+        responsable: "Sistema (pago Webpay)",
+      },
+      {
+        estado: "atendida",
+        haceDias: -7,
+        hora: "16:35",
+        responsable: "Franchesca Astudillo",
+      },
     ],
   },
   {
@@ -222,8 +314,18 @@ export const CITAS: Cita[] = [
     creadaOffsetDias: -16,
     creadaHora: "09:00",
     historial: [
-      { estado: "confirmada", haceDias: -16, hora: "09:00", responsable: "Franchesca Astudillo" },
-      { estado: "atendida", haceDias: -14, hora: "11:05", responsable: "Franchesca Astudillo" },
+      {
+        estado: "confirmada",
+        haceDias: -16,
+        hora: "09:00",
+        responsable: "Franchesca Astudillo",
+      },
+      {
+        estado: "atendida",
+        haceDias: -14,
+        hora: "11:05",
+        responsable: "Franchesca Astudillo",
+      },
     ],
   },
   {
@@ -241,8 +343,18 @@ export const CITAS: Cita[] = [
     webpayTransaccionId: "WP-4471820",
     montoAnticipo: 10000,
     historial: [
-      { estado: "confirmada", haceDias: -25, hora: "12:00", responsable: "Sistema (pago Webpay)" },
-      { estado: "no_asistida", haceDias: -21, hora: "17:35", responsable: "Franchesca Astudillo" },
+      {
+        estado: "confirmada",
+        haceDias: -25,
+        hora: "12:00",
+        responsable: "Sistema (pago Webpay)",
+      },
+      {
+        estado: "no_asistida",
+        haceDias: -21,
+        hora: "17:35",
+        responsable: "Franchesca Astudillo",
+      },
     ],
   },
 
@@ -260,8 +372,19 @@ export const CITAS: Cita[] = [
     creadaOffsetDias: -13,
     creadaHora: "15:00",
     historial: [
-      { estado: "por_confirmar", haceDias: -13, hora: "15:00", responsable: "Franchesca Astudillo" },
-      { estado: "cancelada", haceDias: -11, hora: "09:00", responsable: "Franchesca Astudillo", motivo: "Paciente reagendó para otra semana." },
+      {
+        estado: "por_confirmar",
+        haceDias: -13,
+        hora: "15:00",
+        responsable: "Franchesca Astudillo",
+      },
+      {
+        estado: "cancelada",
+        haceDias: -11,
+        hora: "09:00",
+        responsable: "Franchesca Astudillo",
+        motivo: "Paciente reagendó para otra semana.",
+      },
     ],
   },
 
@@ -279,8 +402,18 @@ export const CITAS: Cita[] = [
     creadaOffsetDias: 0,
     creadaHora: "10:00",
     historial: [
-      { estado: "por_confirmar", haceDias: 0, hora: "10:00", responsable: "Franchesca Astudillo" },
-      { estado: "confirmada", haceDias: 0, hora: "10:30", responsable: "Franchesca Astudillo" },
+      {
+        estado: "por_confirmar",
+        haceDias: 0,
+        hora: "10:00",
+        responsable: "Franchesca Astudillo",
+      },
+      {
+        estado: "confirmada",
+        haceDias: 0,
+        hora: "10:30",
+        responsable: "Franchesca Astudillo",
+      },
     ],
   },
   {
@@ -296,7 +429,12 @@ export const CITAS: Cita[] = [
     creadaOffsetDias: 0,
     creadaHora: "10:05",
     historial: [
-      { estado: "por_confirmar", haceDias: 0, hora: "10:05", responsable: "Franchesca Astudillo" },
+      {
+        estado: "por_confirmar",
+        haceDias: 0,
+        hora: "10:05",
+        responsable: "Franchesca Astudillo",
+      },
     ],
   },
 ];

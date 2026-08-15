@@ -1,14 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useHoyPanel } from "@/lib/panel/reloj";
-import { Modal } from "@/components/panel/primitives/Modal";
+
 import { Button } from "@/components/panel/primitives/Button";
 import { EmptyState } from "@/components/panel/primitives/EmptyState";
-import { listBloqueosEspecialista, crearBloqueo, revertirBloqueo } from "@/lib/panel/data/bloqueos";
-import { BloqueoResuelto } from "@/lib/panel/data/citas";
+import { Modal } from "@/components/panel/primitives/Modal";
 import { ESPECIALISTAS } from "@/lib/panel/data/_seed/especialistas";
-import { formatearFechaExtensa, formatearRangoHorario, fechaISO } from "@/lib/panel/domain/formato";
+import {
+  crearBloqueo,
+  listBloqueosEspecialista,
+  revertirBloqueo,
+} from "@/lib/panel/data/bloqueos";
+import { BloqueoResuelto } from "@/lib/panel/data/citas";
+import {
+  fechaISO,
+  formatearFechaExtensa,
+  formatearRangoHorario,
+} from "@/lib/panel/domain/formato";
+import { useHoyPanel } from "@/lib/panel/reloj";
 
 interface GestionBloqueosModalProps {
   abierto: boolean;
@@ -16,9 +25,14 @@ interface GestionBloqueosModalProps {
   onBloqueoCreado?: () => void;
 }
 
-export function GestionBloqueosModal({ abierto, onClose, onBloqueoCreado }: GestionBloqueosModalProps) {
+export function GestionBloqueosModal({
+  abierto,
+  onClose,
+  onBloqueoCreado,
+}: GestionBloqueosModalProps) {
   const hoy = useHoyPanel();
-  const [especialistaFiltro, setEspecialistaFiltro] = useState<string>("esp-franchesca");
+  const [especialistaFiltro, setEspecialistaFiltro] =
+    useState<string>("esp-franchesca");
   const [bloqueos, setBloqueos] = useState<BloqueoResuelto[]>([]);
 
   // Formulario de creación
@@ -100,13 +114,15 @@ export function GestionBloqueosModal({ abierto, onClose, onBloqueoCreado }: Gest
         <div className="p-6 space-y-4 font-sans text-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">Filtrar:</span>
+              <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
+                Filtrar:
+              </span>
               <select
                 value={especialistaFiltro}
-                onChange={(e) => setEspecialistaFiltro(e.target.value)}
+                onChange={e => setEspecialistaFiltro(e.target.value)}
                 className="rounded-none border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               >
-                {ESPECIALISTAS.map((esp) => (
+                {ESPECIALISTAS.map(esp => (
                   <option key={esp.id} value={esp.id}>
                     {esp.nombre} ({esp.cargo})
                   </option>
@@ -127,20 +143,25 @@ export function GestionBloqueosModal({ abierto, onClose, onBloqueoCreado }: Gest
 
           {/* Formulario de registro de bloqueo */}
           {mostrarForm && (
-            <form onSubmit={handleGuardarBloqueo} className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none">
+            <form
+              onSubmit={handleGuardarBloqueo}
+              className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none"
+            >
               <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-200 pb-2">
                 Registrar Nuevo Bloqueo
               </h4>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Especialista</label>
+                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                    Especialista
+                  </label>
                   <select
                     value={especialistaForm}
-                    onChange={(e) => setEspecialistaForm(e.target.value)}
+                    onChange={e => setEspecialistaForm(e.target.value)}
                     className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                   >
-                    {ESPECIALISTAS.map((esp) => (
+                    {ESPECIALISTAS.map(esp => (
                       <option key={esp.id} value={esp.id}>
                         {esp.nombre} ({esp.cargo})
                       </option>
@@ -149,21 +170,25 @@ export function GestionBloqueosModal({ abierto, onClose, onBloqueoCreado }: Gest
                 </div>
 
                 <div>
-                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Fecha del Bloqueo</label>
+                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                    Fecha del Bloqueo
+                  </label>
                   <input
                     type="date"
                     value={fechaForm}
-                    onChange={(e) => setFechaForm(e.target.value)}
+                    onChange={e => setFechaForm(e.target.value)}
                     required
                     className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Hora Inicio</label>
+                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                    Hora Inicio
+                  </label>
                   <select
                     value={horaInicioForm}
-                    onChange={(e) => setHoraInicioForm(e.target.value)}
+                    onChange={e => setHoraInicioForm(e.target.value)}
                     className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                   >
                     <option value="09:00">09:00 AM</option>
@@ -181,10 +206,12 @@ export function GestionBloqueosModal({ abierto, onClose, onBloqueoCreado }: Gest
                 </div>
 
                 <div>
-                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Hora Término</label>
+                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                    Hora Término
+                  </label>
                   <select
                     value={horaTerminoForm}
-                    onChange={(e) => setHoraTerminoForm(e.target.value)}
+                    onChange={e => setHoraTerminoForm(e.target.value)}
                     className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                   >
                     <option value="10:00">10:00 AM</option>
@@ -203,12 +230,14 @@ export function GestionBloqueosModal({ abierto, onClose, onBloqueoCreado }: Gest
               </div>
 
               <div>
-                <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Motivo del Bloqueo</label>
+                <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                  Motivo del Bloqueo
+                </label>
                 <input
                   type="text"
                   placeholder="Ej. Capacitación técnica, Feriado nacional, Cierre por emergencia"
                   value={motivoForm}
-                  onChange={(e) => setMotivoForm(e.target.value)}
+                  onChange={e => setMotivoForm(e.target.value)}
                   required
                   className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                 />
@@ -240,23 +269,33 @@ export function GestionBloqueosModal({ abierto, onClose, onBloqueoCreado }: Gest
                 descripcion="No hay bloqueos registrados para esta especialista."
               />
             ) : (
-              bloqueos.map((b) => {
+              bloqueos.map(b => {
                 const esActivo = b.activo !== false;
                 return (
-                  <div key={b.id} className="p-4 flex flex-wrap justify-between items-center gap-3">
+                  <div
+                    key={b.id}
+                    className="p-4 flex flex-wrap justify-between items-center gap-3"
+                  >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className={`font-sans font-medium text-sm ${esActivo ? "text-slate-900" : "text-slate-400 line-through"}`}>
+                        <span
+                          className={`font-sans font-medium text-sm ${esActivo ? "text-slate-900" : "text-slate-400 line-through"}`}
+                        >
                           {b.motivo}
                         </span>
-                        <span className={`border px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none ${
-                          esActivo ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-slate-200 bg-slate-50 text-slate-500"
-                        }`}>
+                        <span
+                          className={`border px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none ${
+                            esActivo
+                              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                              : "border-slate-200 bg-slate-50 text-slate-500"
+                          }`}
+                        >
                           {esActivo ? "Activo" : "Inactivo"}
                         </span>
                       </div>
                       <span className="font-sans text-xs text-slate-500 block mt-0.5">
-                        {formatearFechaExtensa(b.fecha)} · {formatearRangoHorario(b.horaInicio, b.horaTermino)}
+                        {formatearFechaExtensa(b.fecha)} ·{" "}
+                        {formatearRangoHorario(b.horaInicio, b.horaTermino)}
                       </span>
                     </div>
 

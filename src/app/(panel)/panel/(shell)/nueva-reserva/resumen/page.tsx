@@ -1,18 +1,19 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
-import { fechaISO, formatearFechaExtensa } from "@/lib/panel/domain/formato";
-import { citaService } from "@/lib/services/cita.service";
-import { agendaService } from "@/lib/services/agenda.service";
-import { Card } from "@/components/panel/primitives/Card";
+import { useState } from "react";
+
+import { InfoBadge, InvertedBadge } from "@/components/panel/primitives/Badge";
+import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
 import { Button } from "@/components/panel/primitives/Button";
 import { TextAreaField } from "@/components/panel/primitives/CamposFormulario";
-import { InfoBadge, InvertedBadge } from "@/components/panel/primitives/Badge";
-import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
-import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
+import { Card } from "@/components/panel/primitives/Card";
 import { Modal } from "@/components/panel/primitives/Modal";
+import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
+import { fechaISO, formatearFechaExtensa } from "@/lib/panel/domain/formato";
+import { agendaService } from "@/lib/services/agenda.service";
+import { citaService } from "@/lib/services/cita.service";
+import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
 
 const PASOS = [
   { etiqueta: "Servicio" },
@@ -65,11 +66,31 @@ export default function NuevaReservaResumenPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const filasResumen = [
-    { etiqueta: "Servicio", valor: servicio ? NOMBRE_SERVICIO[servicio] : undefined, editar: "/panel/nueva-reserva/servicio" },
-    { etiqueta: "Fecha", valor: fecha ? formatearFechaExtensa(fecha) : undefined, editar: "/panel/nueva-reserva/horario" },
-    { etiqueta: "Horario", valor: hora || undefined, editar: "/panel/nueva-reserva/horario" },
-    { etiqueta: "Especialista", valor: especialistaNombre || undefined, editar: "/panel/nueva-reserva/especialista" },
-    { etiqueta: "Paciente", valor: pacienteNombre || undefined, editar: "/panel/nueva-reserva/paciente" },
+    {
+      etiqueta: "Servicio",
+      valor: servicio ? NOMBRE_SERVICIO[servicio] : undefined,
+      editar: "/panel/nueva-reserva/servicio",
+    },
+    {
+      etiqueta: "Fecha",
+      valor: fecha ? formatearFechaExtensa(fecha) : undefined,
+      editar: "/panel/nueva-reserva/horario",
+    },
+    {
+      etiqueta: "Horario",
+      valor: hora || undefined,
+      editar: "/panel/nueva-reserva/horario",
+    },
+    {
+      etiqueta: "Especialista",
+      valor: especialistaNombre || undefined,
+      editar: "/panel/nueva-reserva/especialista",
+    },
+    {
+      etiqueta: "Paciente",
+      valor: pacienteNombre || undefined,
+      editar: "/panel/nueva-reserva/paciente",
+    },
   ];
 
   async function handleConfirmarReserva() {
@@ -83,24 +104,36 @@ export default function NuevaReservaResumenPage() {
 
     try {
       const numPacienteId = parseInt(pacienteId.replace(/\D/g, ""), 10) || 1;
-      const numEspecialistaId = especialistaId ? parseInt(especialistaId.replace(/\D/g, ""), 10) || 1 : 1;
+      const numEspecialistaId = especialistaId
+        ? parseInt(especialistaId.replace(/\D/g, ""), 10) || 1
+        : 1;
       const numServicioId = MAPA_SERVICIO_ID[servicio] || 2;
       const fechaStr = fechaISO(fecha);
 
       let targetBloqueId = bloqueHorarioId;
 
       if (!targetBloqueId) {
-        const agendaRes = await agendaService.getAgenda([numEspecialistaId], fechaStr, fechaStr);
-        const dataArr = (agendaRes as any)?.data || (Array.isArray(agendaRes) ? agendaRes : []);
+        const agendaRes = await agendaService.getAgenda(
+          [numEspecialistaId],
+          fechaStr,
+          fechaStr
+        );
+        const dataArr =
+          (agendaRes as any)?.data ||
+          (Array.isArray(agendaRes) ? agendaRes : []);
         const hBuscada = hora.substring(0, 5);
-        const bloqueHallado = dataArr.find((b: any) => b.horaInicio && b.horaInicio.substring(0, 5) === hBuscada);
+        const bloqueHallado = dataArr.find(
+          (b: any) => b.horaInicio && b.horaInicio.substring(0, 5) === hBuscada
+        );
         if (bloqueHallado) {
           targetBloqueId = bloqueHallado.id;
         }
       }
 
       if (!targetBloqueId) {
-        throw new Error("No se encontró el bloque horario seleccionado para esa fecha y hora. Re-selecciona el horario.");
+        throw new Error(
+          "No se encontró el bloque horario seleccionado para esa fecha y hora. Re-selecciona el horario."
+        );
       }
 
       await citaService.createManual({
@@ -115,7 +148,10 @@ export default function NuevaReservaResumenPage() {
       router.push("/panel/nueva-reserva/listo");
     } catch (err: unknown) {
       console.error("Error al registrar la cita en Backend:", err);
-      const msg = err instanceof Error ? err.message : "Ocurrió un error al guardar la cita.";
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Ocurrió un error al guardar la cita.";
       setErrorMsg(msg);
     } finally {
       setGuardando(false);
@@ -142,26 +178,32 @@ export default function NuevaReservaResumenPage() {
         <div className="space-y-4">
           <div>
             <div className="mb-1.5 flex items-center gap-2">
-              <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">Nota para el paciente</span>
+              <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
+                Nota para el paciente
+              </span>
               <InfoBadge>El paciente la verá en su confirmación</InfoBadge>
             </div>
             <TextAreaField
               etiqueta=""
               value={notaPaciente}
-              onChange={(e) => setNotaPaciente(e.target.value)}
+              onChange={e => setNotaPaciente(e.target.value)}
               placeholder="Ej: Recuerde traer ropa cómoda para la sesión..."
             />
           </div>
 
           <div>
             <div className="mb-1.5 flex items-center gap-2">
-              <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">Nota interna</span>
-              <InvertedBadge>Visible solo para el personal de KineFit</InvertedBadge>
+              <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
+                Nota interna
+              </span>
+              <InvertedBadge>
+                Visible solo para el personal de KineFit
+              </InvertedBadge>
             </div>
             <TextAreaField
               etiqueta=""
               value={notaInterna}
-              onChange={(e) => setNotaInterna(e.target.value)}
+              onChange={e => setNotaInterna(e.target.value)}
               placeholder="Ej: Paciente prefiere ser atendido por Kinesiólogo hombre..."
             />
           </div>
@@ -172,11 +214,18 @@ export default function NuevaReservaResumenPage() {
             Revisión final
           </p>
           <dl className="divide-y divide-slate-200">
-            {filasResumen.map((fila) => (
-              <div key={fila.etiqueta} className="flex items-center justify-between py-2.5 text-xs">
-                <dt className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">{fila.etiqueta}</dt>
+            {filasResumen.map(fila => (
+              <div
+                key={fila.etiqueta}
+                className="flex items-center justify-between py-2.5 text-xs"
+              >
+                <dt className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
+                  {fila.etiqueta}
+                </dt>
                 <div className="flex items-center gap-3">
-                  <dd className="font-sans font-medium text-sm text-slate-900">{fila.valor ?? "—"}</dd>
+                  <dd className="font-sans font-medium text-sm text-slate-900">
+                    {fila.valor ?? "—"}
+                  </dd>
                   <button
                     type="button"
                     onClick={() => router.push(fila.editar)}
@@ -201,19 +250,30 @@ export default function NuevaReservaResumenPage() {
             </button>
           }
           volver={
-            <Button variante="secundario" onClick={() => router.push("/panel/nueva-reserva/paciente")}>
+            <Button
+              variante="secundario"
+              onClick={() => router.push("/panel/nueva-reserva/paciente")}
+            >
               Volver
             </Button>
           }
           avanzar={
-            <Button variante="primario" onClick={handleConfirmarReserva} disabled={guardando}>
+            <Button
+              variante="primario"
+              onClick={handleConfirmarReserva}
+              disabled={guardando}
+            >
               {guardando ? "Registrando..." : "Confirmar reserva"}
             </Button>
           }
         />
       </Card>
 
-      <Modal abierto={confirmarDescarte} onCerrar={() => setConfirmarDescarte(false)} ancho="max-w-sm">
+      <Modal
+        abierto={confirmarDescarte}
+        onCerrar={() => setConfirmarDescarte(false)}
+        ancho="max-w-sm"
+      >
         <div className="bg-white p-6 font-sans shadow-none rounded-none space-y-4">
           <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
             ¿Descartar esta reserva?
@@ -222,7 +282,10 @@ export default function NuevaReservaResumenPage() {
             Se perderá todo lo seleccionado en los pasos anteriores.
           </p>
           <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
-            <Button variante="secundario" onClick={() => setConfirmarDescarte(false)}>
+            <Button
+              variante="secundario"
+              onClick={() => setConfirmarDescarte(false)}
+            >
               Volver
             </Button>
             <Button

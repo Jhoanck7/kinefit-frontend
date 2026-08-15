@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { Servicio } from "@/lib/panel/domain/tipos";
 
 /** Estado del asistente de nueva reserva: en memoria, sin persistencia. */
@@ -13,7 +14,11 @@ interface NuevaReservaState {
   servicio: Servicio | null;
   notaPaciente: string;
   notaInterna: string;
-  setHorario: (fecha: Date, hora: string, bloqueHorarioId?: number | null) => void;
+  setHorario: (
+    fecha: Date,
+    hora: string,
+    bloqueHorarioId?: number | null
+  ) => void;
   setPaciente: (id: string, nombre: string) => void;
   setEspecialista: (id: string, nombre: string) => void;
   setServicio: (servicio: Servicio) => void;
@@ -35,13 +40,16 @@ const ESTADO_INICIAL = {
   notaInterna: "",
 };
 
-export const useNuevaReservaStore = create<NuevaReservaState>()((set) => ({
+export const useNuevaReservaStore = create<NuevaReservaState>()(set => ({
   ...ESTADO_INICIAL,
-  setHorario: (fecha, hora, bloqueHorarioId = null) => set({ fecha, hora, bloqueHorarioId: bloqueHorarioId ?? null }),
-  setPaciente: (pacienteId, pacienteNombre) => set({ pacienteId, pacienteNombre }),
-  setEspecialista: (especialistaId, especialistaNombre) => set({ especialistaId, especialistaNombre }),
-  setServicio: (servicio) => set({ servicio }),
-  setNotaPaciente: (notaPaciente) => set({ notaPaciente }),
-  setNotaInterna: (notaInterna) => set({ notaInterna }),
+  setHorario: (fecha, hora, bloqueHorarioId = null) =>
+    set({ fecha, hora, bloqueHorarioId: bloqueHorarioId ?? null }),
+  setPaciente: (pacienteId, pacienteNombre) =>
+    set({ pacienteId, pacienteNombre }),
+  setEspecialista: (especialistaId, especialistaNombre) =>
+    set({ especialistaId, especialistaNombre }),
+  setServicio: servicio => set({ servicio }),
+  setNotaPaciente: notaPaciente => set({ notaPaciente }),
+  setNotaInterna: notaInterna => set({ notaInterna }),
   reiniciar: () => set(ESTADO_INICIAL),
 }));

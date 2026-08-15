@@ -1,6 +1,9 @@
-import { JetBrains_Mono } from "next/font/google";
-import type { Metadata } from "next";
 import "../globals.css";
+
+import type { Metadata } from "next";
+import { JetBrains_Mono } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
+
 import { RelojPanelProvider } from "@/lib/panel/reloj";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -23,10 +26,7 @@ export default function PanelRootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="es"
-      className={`${jetbrainsMono.variable} h-full antialiased`}
-    >
+    <html lang="es" className={`${jetbrainsMono.variable} h-full antialiased`}>
       <head>
         <link
           rel="stylesheet"
@@ -34,7 +34,9 @@ export default function PanelRootLayout({
         />
       </head>
       <body className="min-h-full font-sans">
-        <RelojPanelProvider>{children}</RelojPanelProvider>
+        <SessionProvider>
+          <RelojPanelProvider>{children}</RelojPanelProvider>
+        </SessionProvider>
       </body>
     </html>
   );

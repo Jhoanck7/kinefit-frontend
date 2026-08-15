@@ -15,7 +15,13 @@ const ETIQUETA_ORIGEN: Record<Origen, string> = {
   manual: "MANUAL",
 };
 
-export function OriginBadge({ origen, className = "" }: { origen: Origen; className?: string }) {
+export function OriginBadge({
+  origen,
+  className = "",
+}: {
+  origen: Origen;
+  className?: string;
+}) {
   return (
     <span
       className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${CLASES_ORIGEN[origen]} ${className}`}

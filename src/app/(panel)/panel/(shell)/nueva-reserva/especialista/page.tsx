@@ -1,15 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
+
+import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
+import { Button } from "@/components/panel/primitives/Button";
+import { Card } from "@/components/panel/primitives/Card";
+import { OptionSelector } from "@/components/panel/primitives/OptionSelector";
+import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
+import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
 import { ESPECIALISTAS } from "@/lib/panel/data/_seed/especialistas";
 import { formatearFechaExtensa } from "@/lib/panel/domain/formato";
-import { Card } from "@/components/panel/primitives/Card";
-import { Button } from "@/components/panel/primitives/Button";
-import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
-import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
-import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
-import { OptionSelector } from "@/components/panel/primitives/OptionSelector";
+import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
 
 const PASOS = [
   { etiqueta: "Servicio" },
@@ -31,21 +32,28 @@ const NOMBRE_SERVICIO: Record<string, string> = {
 
 export default function NuevaReservaEspecialistaPage() {
   const router = useRouter();
-  const { fecha, hora, pacienteNombre, servicio, especialistaId, especialistaNombre, setEspecialista } =
-    useNuevaReservaStore();
+  const {
+    fecha,
+    hora,
+    pacienteNombre,
+    servicio,
+    especialistaId,
+    especialistaNombre,
+    setEspecialista,
+  } = useNuevaReservaStore();
 
   const especialistasFiltradas = servicio
-    ? ESPECIALISTAS.filter((e) => e.servicios.includes(servicio))
+    ? ESPECIALISTAS.filter(e => e.servicios.includes(servicio))
     : ESPECIALISTAS;
 
-  const opciones = especialistasFiltradas.map((esp) => ({
+  const opciones = especialistasFiltradas.map(esp => ({
     id: esp.id,
     titulo: `${esp.nombre} (${esp.cargo})`,
     icono: (
       <span className="flex h-7 w-7 items-center justify-center rounded-none bg-slate-100 text-xs font-bold font-sans text-slate-800">
         {esp.nombre
           .split(" ")
-          .map((n) => n[0])
+          .map(n => n[0])
           .join("")}
       </span>
     ),
@@ -63,14 +71,18 @@ export default function NuevaReservaEspecialistaPage() {
             ¿Qué profesional atenderá?
           </h2>
           <p className="font-sans text-xs text-slate-500 mb-4">
-            Selecciona la especialista asignada para la atención de {servicio ? (NOMBRE_SERVICIO[servicio] ?? servicio) : "este servicio"}.
+            Selecciona la especialista asignada para la atención de{" "}
+            {servicio
+              ? (NOMBRE_SERVICIO[servicio] ?? servicio)
+              : "este servicio"}
+            .
           </p>
 
           <OptionSelector
             opciones={opciones}
             seleccionId={especialistaId}
-            onSeleccionar={(id) => {
-              const esp = ESPECIALISTAS.find((e) => e.id === id);
+            onSeleccionar={id => {
+              const esp = ESPECIALISTAS.find(e => e.id === id);
               if (esp) setEspecialista(esp.id, esp.nombre);
             }}
           />
@@ -86,7 +98,10 @@ export default function NuevaReservaEspecialistaPage() {
               </button>
             }
             volver={
-              <Button variante="secundario" onClick={() => router.push("/panel/nueva-reserva/horario")}>
+              <Button
+                variante="secundario"
+                onClick={() => router.push("/panel/nueva-reserva/horario")}
+              >
                 Volver
               </Button>
             }
@@ -104,10 +119,21 @@ export default function NuevaReservaEspecialistaPage() {
 
         <SummaryPanel
           filas={[
-            { etiqueta: "Servicio", valor: servicio ? (NOMBRE_SERVICIO[servicio] ?? servicio) : undefined },
-            { etiqueta: "Fecha", valor: fecha ? formatearFechaExtensa(fecha) : undefined },
+            {
+              etiqueta: "Servicio",
+              valor: servicio
+                ? (NOMBRE_SERVICIO[servicio] ?? servicio)
+                : undefined,
+            },
+            {
+              etiqueta: "Fecha",
+              valor: fecha ? formatearFechaExtensa(fecha) : undefined,
+            },
             { etiqueta: "Horario", valor: hora || undefined },
-            { etiqueta: "Especialista", valor: especialistaNombre || undefined },
+            {
+              etiqueta: "Especialista",
+              valor: especialistaNombre || undefined,
+            },
             { etiqueta: "Paciente", valor: pacienteNombre || undefined },
           ]}
         />

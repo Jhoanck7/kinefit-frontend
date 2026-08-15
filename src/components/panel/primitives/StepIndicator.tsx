@@ -5,7 +5,13 @@ export interface PasoIndicador {
 /**
  * Indicador de progreso con estilo Frameless Satoshi
  */
-export function StepIndicator({ pasos, pasoActivo }: { pasos: PasoIndicador[]; pasoActivo: number }) {
+export function StepIndicator({
+  pasos,
+  pasoActivo,
+}: {
+  pasos: PasoIndicador[];
+  pasoActivo: number;
+}) {
   return (
     <ol className="flex items-start w-full font-sans">
       {pasos.map((paso, indice) => {
@@ -13,7 +19,10 @@ export function StepIndicator({ pasos, pasoActivo }: { pasos: PasoIndicador[]; p
         const completado = numero < pasoActivo;
         const activo = numero === pasoActivo;
         return (
-          <li key={paso.etiqueta} className="flex-1 flex flex-col items-center relative">
+          <li
+            key={paso.etiqueta}
+            className="flex-1 flex flex-col items-center relative"
+          >
             {indice > 0 && (
               <span
                 className={`absolute top-3.5 right-1/2 w-full h-[1px] -z-10 ${

@@ -15,9 +15,15 @@ export const specialistService = {
     data: { nombre: string; cargo: string; servicioId?: number; email?: string; descripcion?: string; fotoUrl?: string },
     apiKey = 'KineFitSecretTokenDev2026'
   ): Promise<BackendSpecialist> {
+    const payload = {
+      ...data,
+      servicioIds: data.servicioId ? [data.servicioId] : []
+    };
+    delete (payload as any).servicioId;
+
     const response = await apiClient.post<{ data: BackendSpecialist }>(
       '/especialistas',
-      data,
+      payload,
       undefined,
       undefined,
       apiKey
@@ -41,9 +47,15 @@ export const specialistService = {
     data: { nombre: string; cargo: string; servicioId?: number; email?: string; descripcion?: string; fotoUrl?: string },
     apiKey = 'KineFitSecretTokenDev2026'
   ): Promise<BackendSpecialist> {
+    const payload = {
+      ...data,
+      servicioIds: data.servicioId ? [data.servicioId] : []
+    };
+    delete (payload as any).servicioId;
+
     const response = await apiClient.put<{ data: BackendSpecialist }>(
       `/especialistas/${id}`,
-      data,
+      payload,
       undefined,
       undefined,
       apiKey

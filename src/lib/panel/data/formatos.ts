@@ -1,5 +1,6 @@
-import { Formato } from "../domain/tipos";
 import { fichaService } from "@/lib/services/ficha.service";
+
+import { Formato } from "../domain/tipos";
 
 export interface FormatoResuelto extends Omit<Formato, "modificadoHaceDias"> {
   modificadoEn: Date;
@@ -23,7 +24,7 @@ export function guardarFormato(formato: Formato): void {
   if (typeof window === "undefined") return;
   try {
     const existentes = getFormatosGuardados();
-    const indice = existentes.findIndex((f) => f.id === formato.id);
+    const indice = existentes.findIndex(f => f.id === formato.id);
     if (indice >= 0) {
       existentes[indice] = formato;
     } else {
@@ -42,11 +43,11 @@ export async function listFormatos(_hoy?: Date): Promise<FormatoResuelto[]> {
     return [];
   }
 
-  let countFichasMap: Record<string, number> = {};
+  const countFichasMap: Record<string, number> = {};
   try {
     const res = await fichaService.getAll();
     const fichas = res?.data || [];
-    fichas.forEach((f) => {
+    fichas.forEach(f => {
       const fId = f.formatoId || f.tipo || "general";
       countFichasMap[fId] = (countFichasMap[fId] || 0) + 1;
     });
@@ -54,7 +55,7 @@ export async function listFormatos(_hoy?: Date): Promise<FormatoResuelto[]> {
     // Fallback silencioso
   }
 
-  return formatosLocales.map((f) => ({
+  return formatosLocales.map(f => ({
     id: f.id,
     nombre: f.nombre,
     secciones: f.secciones,
@@ -63,16 +64,19 @@ export async function listFormatos(_hoy?: Date): Promise<FormatoResuelto[]> {
   }));
 }
 
-export async function getFormato(id: string, hoy: Date): Promise<FormatoResuelto | undefined> {
+export async function getFormato(
+  id: string,
+  hoy: Date
+): Promise<FormatoResuelto | undefined> {
   const lista = await listFormatos(hoy);
-  return lista.find((f) => f.id === id);
+  return lista.find(f => f.id === id);
 }
 
 export function obtenerEtiquetaCampo(campoId: string): string {
   const todosFormatos = getFormatosGuardados();
   for (const fmt of todosFormatos) {
     for (const sec of fmt.secciones) {
-      const campo = sec.campos.find((c) => c.id === campoId);
+      const campo = sec.campos.find(c => c.id === campoId);
       if (campo && campo.nombre && campo.nombre.trim()) {
         return campo.nombre.trim();
       }

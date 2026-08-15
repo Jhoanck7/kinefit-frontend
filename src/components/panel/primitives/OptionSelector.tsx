@@ -21,8 +21,10 @@ export function OptionSelector({
   orientacion?: "horizontal" | "vertical";
 }) {
   return (
-    <div className={`grid gap-2.5 font-sans ${orientacion === "horizontal" ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}>
-      {opciones.map((opcion) => {
+    <div
+      className={`grid gap-2.5 font-sans ${orientacion === "horizontal" ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}
+    >
+      {opciones.map(opcion => {
         const seleccionado = opcion.id === seleccionId;
         return (
           <button
@@ -39,11 +41,15 @@ export function OptionSelector({
           >
             <span className="flex items-center gap-2.5">
               {opcion.icono}
-              <span className="text-xs font-semibold uppercase tracking-wider">{opcion.titulo}</span>
+              <span className="text-xs font-semibold uppercase tracking-wider">
+                {opcion.titulo}
+              </span>
             </span>
             <span
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-none border ${
-                seleccionado ? "border-[#003366] bg-[#003366] text-white" : "border-slate-300 bg-white"
+                seleccionado
+                  ? "border-[#003366] bg-[#003366] text-white"
+                  : "border-slate-300 bg-white"
               }`}
               aria-hidden
             >

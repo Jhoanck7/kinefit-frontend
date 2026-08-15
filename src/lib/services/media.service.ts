@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api/apiClient';
+import { apiClient } from "@/lib/api/apiClient";
 
 export interface ImageUploadResponse {
   publicId: string;
@@ -10,9 +10,12 @@ export interface ImageUploadResponse {
 }
 
 export const mediaService = {
-  async uploadImage(file: File, folder: string = 'kinefit'): Promise<ImageUploadResponse> {
+  async uploadImage(
+    file: File,
+    folder: string = "kinefit"
+  ): Promise<ImageUploadResponse> {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     const response = await apiClient.post<{ data: ImageUploadResponse }>(
       `/media/upload?folder=${encodeURIComponent(folder)}`,
@@ -21,9 +24,13 @@ export const mediaService = {
     return response.data;
   },
 
-  async replaceImage(publicId: string, file: File, folder: string = 'kinefit'): Promise<ImageUploadResponse> {
+  async replaceImage(
+    publicId: string,
+    file: File,
+    folder: string = "kinefit"
+  ): Promise<ImageUploadResponse> {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     const response = await apiClient.put<{ data: ImageUploadResponse }>(
       `/media/${encodeURIComponent(publicId)}?folder=${encodeURIComponent(folder)}`,
@@ -37,5 +44,5 @@ export const mediaService = {
       `/media/${encodeURIComponent(publicId)}`
     );
     return response.data;
-  }
+  },
 };

@@ -1,23 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useHoyPanel } from "@/lib/panel/reloj";
-import { usePanelSessionStore, USUARIO_SESION_PANEL } from "@/lib/store/usePanelSessionStore";
-import { listBloqueosEspecialista, crearBloqueo } from "@/lib/panel/data/bloqueos";
-import { BloqueoResuelto } from "@/lib/panel/data/citas";
-import { ESPECIALISTAS } from "@/lib/panel/data/_seed/especialistas";
-import { formatearFechaExtensa, formatearRangoHorario, fechaISO } from "@/lib/panel/domain/formato";
-import { Card } from "@/components/panel/primitives/Card";
+import { useEffect, useState } from "react";
+
 import { Button } from "@/components/panel/primitives/Button";
+import { Card } from "@/components/panel/primitives/Card";
 import { EmptyState } from "@/components/panel/primitives/EmptyState";
+import { ESPECIALISTAS } from "@/lib/panel/data/_seed/especialistas";
+import {
+  crearBloqueo,
+  listBloqueosEspecialista,
+} from "@/lib/panel/data/bloqueos";
+import { BloqueoResuelto } from "@/lib/panel/data/citas";
+import {
+  fechaISO,
+  formatearFechaExtensa,
+  formatearRangoHorario,
+} from "@/lib/panel/domain/formato";
+import { useHoyPanel } from "@/lib/panel/reloj";
+import {
+  usePanelSessionStore,
+  USUARIO_SESION_PANEL,
+} from "@/lib/store/usePanelSessionStore";
 
 export default function BloqueosPage() {
   const router = useRouter();
   const hoy = useHoyPanel();
-  const usuario = usePanelSessionStore((s) => s.usuario) ?? USUARIO_SESION_PANEL;
+  const usuario = usePanelSessionStore(s => s.usuario) ?? USUARIO_SESION_PANEL;
 
-  const [especialistaFiltro, setEspecialistaFiltro] = useState<string>("esp-franchesca");
+  const [especialistaFiltro, setEspecialistaFiltro] =
+    useState<string>("esp-franchesca");
   const [bloqueos, setBloqueos] = useState<BloqueoResuelto[] | null>(null);
 
   // Formulario de creación de bloqueo
@@ -74,18 +86,18 @@ export default function BloqueosPage() {
           >
             ← Volver a la Agenda
           </button>
-          <h2 className="text-xl font-bold text-panel-sidebar">Gestión de Bloqueos de Agenda</h2>
+          <h2 className="text-xl font-bold text-panel-sidebar">
+            Gestión de Bloqueos de Agenda
+          </h2>
           <p className="text-sm text-brand-muted">
-            Administración de feriados, cierres de emergencia y bloqueos de disponibilidad
+            Administración de feriados, cierres de emergencia y bloqueos de
+            disponibilidad
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           {!mostrarForm && (
-            <Button
-              variante="primario"
-              onClick={() => setMostrarForm(true)}
-            >
+            <Button variante="primario" onClick={() => setMostrarForm(true)}>
               + Registrar Bloqueo
             </Button>
           )}
@@ -94,20 +106,25 @@ export default function BloqueosPage() {
 
       {/* Formulario Interactivo de Registro de Bloqueo */}
       {mostrarForm && (
-        <form onSubmit={handleGuardarBloqueo} className="rounded-xl border border-brand-border bg-panel-fondo p-6 space-y-4 shadow-sm">
+        <form
+          onSubmit={handleGuardarBloqueo}
+          className="rounded-xl border border-brand-border bg-panel-fondo p-6 space-y-4 shadow-sm"
+        >
           <h3 className="font-bold text-panel-sidebar text-base border-b border-brand-border pb-2">
             Registrar Nuevo Bloqueo de Agenda
           </h3>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-semibold text-brand-muted mb-1">Especialista</label>
+              <label className="block text-xs font-semibold text-brand-muted mb-1">
+                Especialista
+              </label>
               <select
                 value={especialistaForm}
-                onChange={(e) => setEspecialistaForm(e.target.value)}
+                onChange={e => setEspecialistaForm(e.target.value)}
                 className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
               >
-                {ESPECIALISTAS.map((esp) => (
+                {ESPECIALISTAS.map(esp => (
                   <option key={esp.id} value={esp.id}>
                     {esp.nombre} ({esp.cargo})
                   </option>
@@ -116,21 +133,25 @@ export default function BloqueosPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-brand-muted mb-1">Fecha del Bloqueo</label>
+              <label className="block text-xs font-semibold text-brand-muted mb-1">
+                Fecha del Bloqueo
+              </label>
               <input
                 type="date"
                 value={fechaForm}
-                onChange={(e) => setFechaForm(e.target.value)}
+                onChange={e => setFechaForm(e.target.value)}
                 required
                 className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-brand-muted mb-1">Hora Inicio</label>
+              <label className="block text-xs font-semibold text-brand-muted mb-1">
+                Hora Inicio
+              </label>
               <select
                 value={horaInicioForm}
-                onChange={(e) => setHoraInicioForm(e.target.value)}
+                onChange={e => setHoraInicioForm(e.target.value)}
                 className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
               >
                 <option value="09:00">09:00 AM</option>
@@ -148,10 +169,12 @@ export default function BloqueosPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-brand-muted mb-1">Hora Término</label>
+              <label className="block text-xs font-semibold text-brand-muted mb-1">
+                Hora Término
+              </label>
               <select
                 value={horaTerminoForm}
-                onChange={(e) => setHoraTerminoForm(e.target.value)}
+                onChange={e => setHoraTerminoForm(e.target.value)}
                 className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
               >
                 <option value="10:00">10:00 AM</option>
@@ -170,12 +193,14 @@ export default function BloqueosPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-brand-muted mb-1">Motivo del Bloqueo</label>
+            <label className="block text-xs font-semibold text-brand-muted mb-1">
+              Motivo del Bloqueo
+            </label>
             <input
               type="text"
               placeholder="Ej. Capacitación técnica, Feriado nacional, Cierre por emergencia"
               value={motivoForm}
-              onChange={(e) => setMotivoForm(e.target.value)}
+              onChange={e => setMotivoForm(e.target.value)}
               required
               className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
             />
@@ -199,13 +224,15 @@ export default function BloqueosPage() {
       {/* Selector de filtro por Especialista */}
       <div className="flex items-center justify-between border-b border-brand-border pb-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-brand-muted">Filtrar por Especialista:</span>
+          <span className="text-sm font-semibold text-brand-muted">
+            Filtrar por Especialista:
+          </span>
           <select
             value={especialistaFiltro}
-            onChange={(e) => setEspecialistaFiltro(e.target.value)}
+            onChange={e => setEspecialistaFiltro(e.target.value)}
             className="rounded-lg border border-brand-border bg-white px-3 py-1.5 text-sm font-medium text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
           >
-            {ESPECIALISTAS.map((esp) => (
+            {ESPECIALISTAS.map(esp => (
               <option key={esp.id} value={esp.id}>
                 {esp.nombre} ({esp.cargo})
               </option>
@@ -227,17 +254,26 @@ export default function BloqueosPage() {
           />
         ) : (
           <ul className="divide-y divide-brand-border text-sm">
-            {bloqueos.map((bloqueo) => (
-              <li key={bloqueo.id} className="flex items-center justify-between px-6 py-4">
+            {bloqueos.map(bloqueo => (
+              <li
+                key={bloqueo.id}
+                className="flex items-center justify-between px-6 py-4"
+              >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-panel-sidebar">{bloqueo.motivo}</span>
+                    <span className="font-bold text-panel-sidebar">
+                      {bloqueo.motivo}
+                    </span>
                     <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
                       {bloqueo.especialista.nombre}
                     </span>
                   </div>
                   <p className="text-sm text-brand-muted mt-1">
-                    {formatearFechaExtensa(bloqueo.fecha)} · {formatearRangoHorario(bloqueo.horaInicio, bloqueo.horaTermino)}
+                    {formatearFechaExtensa(bloqueo.fecha)} ·{" "}
+                    {formatearRangoHorario(
+                      bloqueo.horaInicio,
+                      bloqueo.horaTermino
+                    )}
                   </p>
                 </div>
               </li>

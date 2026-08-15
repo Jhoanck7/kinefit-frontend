@@ -14,9 +14,12 @@ export const FICHAS: Ficha[] = [
       estatura: "178",
       peso: "82",
       enfermedades_base: "Hipertensión controlada.",
-      motivo_descripcion: "Dolor lumbar de tres semanas de evolución, sin antecedente traumático claro.",
-      antecedentes_relevantes: "Trabajo de oficina, jornadas prolongadas sentado.",
-      observaciones_sesion: "Buena tolerancia al tratamiento kinésico. Se indica pauta de ejercicios kinesiológicos en casa.",
+      motivo_descripcion:
+        "Dolor lumbar de tres semanas de evolución, sin antecedente traumático claro.",
+      antecedentes_relevantes:
+        "Trabajo de oficina, jornadas prolongadas sentado.",
+      observaciones_sesion:
+        "Buena tolerancia al tratamiento kinésico. Se indica pauta de ejercicios kinesiológicos en casa.",
     },
     adjuntos: ["radiografia_lumbar.pdf"],
   },
@@ -33,9 +36,11 @@ export const FICHAS: Ficha[] = [
       estatura: "165",
       peso: "60",
       enfermedades_base: "Sin antecedentes relevantes.",
-      motivo_descripcion: "Tensión cervical y limitación funcional de columna cervical.",
+      motivo_descripcion:
+        "Tensión cervical y limitación funcional de columna cervical.",
       antecedentes_relevantes: "Sin atenciones previas en el centro.",
-      observaciones_sesion: "Se aplican técnicas de movilización kinésica. Notable mejoría al término de la sesión.",
+      observaciones_sesion:
+        "Se aplican técnicas de movilización kinésica. Notable mejoría al término de la sesión.",
     },
     adjuntos: ["orden_medica_kinesiologia.pdf"],
   },
@@ -52,7 +57,8 @@ export const FICHAS: Ficha[] = [
       estatura: "165",
       peso: "60",
       enfermedades_base: "Sin antecedentes relevantes.",
-      motivo_descripcion: "Control de seguimiento por evaluación kinésica cervical.",
+      motivo_descripcion:
+        "Control de seguimiento por evaluación kinésica cervical.",
       antecedentes_relevantes: "Ver ficha anterior del 7 jul.",
       observaciones_sesion: "Evolución favorable, se espacían las sesiones.",
     },

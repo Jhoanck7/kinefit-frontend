@@ -1,27 +1,22 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { usePanelSessionStore } from "@/lib/store/usePanelSessionStore";
-import { authService } from "@/lib/services/auth.service";
-import { TextField } from "@/components/panel/primitives/CamposFormulario";
+import { signIn } from "next-auth/react";
+import { FormEvent, useState } from "react";
+
 import { Button } from "@/components/panel/primitives/Button";
+import { TextField } from "@/components/panel/primitives/CamposFormulario";
+import { authService } from "@/lib/services/auth.service";
+import { usePanelSessionStore } from "@/lib/store/usePanelSessionStore";
 
 export default function AccesoPage() {
   const router = useRouter();
-  const entrar = usePanelSessionStore((s) => s.entrar);
+  const entrar = usePanelSessionStore(s => s.entrar);
   const [cargando, setCargando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("kinefit_token");
-      if (token) {
-        router.replace("/panel/agenda");
-      }
-    }
-  }, [router]);
+  // La redirección si ya hay sesión la maneja middleware.ts en el servidor.
 
   async function alEnviar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
@@ -39,20 +34,45 @@ export default function AccesoPage() {
       });
 
       if (res?.usuario && res?.token) {
+        const sesion = await signIn("credentials", {
+          email: res.usuario.email,
+          token: res.token,
+          redirect: false,
+        });
+
+        if (sesion?.error) {
+          setErrorMsg(
+            "No se pudo establecer la sesión del panel. Intenta nuevamente."
+          );
+          return;
+        }
+
         entrar({
           nombre: res.usuario.nombre,
-          rol: res.usuario.rol === "Administrador" ? "Administrador" : "Especialista",
-          cargo: res.usuario.rol === "Administrador" ? "Administrador General" : "Especialista",
-          especialistaId: res.usuario.especialistaId ? String(res.usuario.especialistaId) : undefined,
+          rol:
+            res.usuario.rol === "Administrador"
+              ? "Administrador"
+              : "Especialista",
+          cargo:
+            res.usuario.rol === "Administrador"
+              ? "Administrador General"
+              : "Especialista",
+          especialistaId: res.usuario.especialistaId
+            ? String(res.usuario.especialistaId)
+            : undefined,
         });
         router.push("/panel/agenda");
         return;
       } else {
-        setErrorMsg("Credenciales incorrectas o usuario no encontrado en la base de datos.");
+        setErrorMsg(
+          "Credenciales incorrectas o usuario no encontrado en la base de datos."
+        );
       }
     } catch (err: unknown) {
       console.error("Error al iniciar sesión en Backend:", err);
-      setErrorMsg("No se pudo iniciar sesión. Verifica el correo y contraseña (ej: admin@kinefit.cl / KineFit2026!).");
+      setErrorMsg(
+        "No se pudo iniciar sesión. Verifica el correo y contraseña (ej: admin@kinefit.cl / KineFit2026!)."
+      );
     } finally {
       setCargando(false);
     }
@@ -96,7 +116,12 @@ export default function AccesoPage() {
             placeholder="••••••••"
             required
           />
-          <Button type="submit" variante="primario" className="w-full mt-2" disabled={cargando}>
+          <Button
+            type="submit"
+            variante="primario"
+            className="w-full mt-2"
+            disabled={cargando}
+          >
             {cargando ? "INICIANDO SESIÓN..." : "INGRESAR AL PANEL"}
           </Button>
         </form>

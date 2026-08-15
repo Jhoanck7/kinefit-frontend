@@ -37,19 +37,19 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 src/
 ├── app/
-│   ├── layout.tsx
-│   └── page.tsx
+│ ├── layout.tsx
+│ └── page.tsx
 ├── components/
-│   ├── sections/
-│   └── ui/
+│ ├── sections/
+│ └── ui/
 ├── lib/
-│   ├── api/
-│   │   └── apiClient.ts      # Instancia base con fetch (Configuración global)
-│   ├── services/             # ← AQUÍ VIVEN TUS SERVICIOS DE NEGOCIO
-│   │   ├── appointment.service.ts  # Lógica para hablar con tu API de .NET (Citas)
-│   │   └── sanity.service.ts       # Lógica para hablar con Sanity (Blog/Contenido)
-│   ├── store/
-│   │   └── useBookingStore.ts# Zustand
-│   └── metadata.ts
+│ ├── api/
+│ │ └── apiClient.ts # Instancia base con fetch (Configuración global)
+│ ├── services/ # ← AQUÍ VIVEN TUS SERVICIOS DE NEGOCIO
+│ │ ├── appointment.service.ts # Lógica para hablar con tu API de .NET (Citas)
+│ │ └── sanity.service.ts # Lógica para hablar con Sanity (Blog/Contenido)
+│ ├── store/
+│ │ └── useBookingStore.ts# Zustand
+│ └── metadata.ts
 └── types/
-    └── index.ts              # Tus interfaces de TypeScript
+└── index.ts # Tus interfaces de TypeScript

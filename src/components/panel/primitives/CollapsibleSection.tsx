@@ -26,7 +26,7 @@ export function CollapsibleSection({
       <div className="flex items-center justify-between bg-slate-50 px-4 py-2.5 border-b border-slate-200">
         <button
           type="button"
-          onClick={() => setAbierta((v) => !v)}
+          onClick={() => setAbierta(v => !v)}
           aria-expanded={abierta}
           aria-controls={contenidoId}
           className="flex flex-1 items-center gap-2 text-left font-sans text-xs font-bold uppercase tracking-wider text-slate-800 focus-visible:outline-none"
@@ -39,10 +39,18 @@ export function CollapsibleSection({
             strokeWidth={2.5}
             aria-hidden
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M8.25 4.5l7.5 7.5-7.5 7.5"
+            />
           </svg>
           <span>{titulo}</span>
-          {contador && <span className="font-sans text-[11px] font-normal text-slate-500">({contador})</span>}
+          {contador && (
+            <span className="font-sans text-[11px] font-normal text-slate-500">
+              ({contador})
+            </span>
+          )}
         </button>
         {accion}
       </div>

@@ -16,7 +16,7 @@ const DOT_COLOR: Record<string, string> = {
 export function Legend() {
   return (
     <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border border-slate-200 bg-white px-5 py-2.5 text-xs text-slate-600 rounded-md shadow-none font-sans">
-      {ORDEN_ESTADOS.map((codigo) => {
+      {ORDEN_ESTADOS.map(codigo => {
         const definicion = CATALOGO_ESTADOS[codigo];
         const dotBg = DOT_COLOR[definicion.colorRol] ?? "bg-slate-400";
         return (

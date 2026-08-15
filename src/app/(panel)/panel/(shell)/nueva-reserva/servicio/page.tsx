@@ -1,14 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
-import { Servicio } from "@/lib/panel/domain/tipos";
-import { formatearFechaExtensa } from "@/lib/panel/domain/formato";
-import { Card } from "@/components/panel/primitives/Card";
-import { Button } from "@/components/panel/primitives/Button";
-import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
-import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
+
 import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
+import { Button } from "@/components/panel/primitives/Button";
+import { Card } from "@/components/panel/primitives/Card";
+import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
+import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
+import { formatearFechaExtensa } from "@/lib/panel/domain/formato";
+import { Servicio } from "@/lib/panel/domain/tipos";
+import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
 
 const PASOS = [
   { etiqueta: "Servicio" },
@@ -36,7 +37,14 @@ export const CATALAGO_SERVICIOS: OpcionServicio[] = [
 
 export default function NuevaReservaServicioPage() {
   const router = useRouter();
-  const { fecha, hora, pacienteNombre, especialistaNombre, servicio, setServicio } = useNuevaReservaStore();
+  const {
+    fecha,
+    hora,
+    pacienteNombre,
+    especialistaNombre,
+    servicio,
+    setServicio,
+  } = useNuevaReservaStore();
 
   return (
     <div className="mx-auto max-w-5xl font-sans shadow-none">
@@ -54,7 +62,7 @@ export default function NuevaReservaServicioPage() {
           </p>
 
           <div className="grid grid-cols-1 gap-2">
-            {CATALAGO_SERVICIOS.map((item) => {
+            {CATALAGO_SERVICIOS.map(item => {
               const seleccionado = servicio === item.id;
 
               return (
@@ -76,7 +84,9 @@ export default function NuevaReservaServicioPage() {
                         : "border-slate-300 bg-white"
                     }`}
                   >
-                    {seleccionado && <span className="text-[10px] font-bold">✓</span>}
+                    {seleccionado && (
+                      <span className="text-[10px] font-bold">✓</span>
+                    )}
                   </div>
                 </div>
               );
@@ -94,7 +104,11 @@ export default function NuevaReservaServicioPage() {
               </button>
             }
             avanzar={
-              <Button variante="primario" disabled={!servicio} onClick={() => router.push("/panel/nueva-reserva/horario")}>
+              <Button
+                variante="primario"
+                disabled={!servicio}
+                onClick={() => router.push("/panel/nueva-reserva/horario")}
+              >
                 Continuar
               </Button>
             }
@@ -103,10 +117,21 @@ export default function NuevaReservaServicioPage() {
 
         <SummaryPanel
           filas={[
-            { etiqueta: "Servicio", valor: servicio ? CATALAGO_SERVICIOS.find((s) => s.id === servicio)?.titulo : undefined },
-            { etiqueta: "Fecha", valor: fecha ? formatearFechaExtensa(fecha) : undefined },
+            {
+              etiqueta: "Servicio",
+              valor: servicio
+                ? CATALAGO_SERVICIOS.find(s => s.id === servicio)?.titulo
+                : undefined,
+            },
+            {
+              etiqueta: "Fecha",
+              valor: fecha ? formatearFechaExtensa(fecha) : undefined,
+            },
             { etiqueta: "Horario", valor: hora || undefined },
-            { etiqueta: "Especialista", valor: especialistaNombre || undefined },
+            {
+              etiqueta: "Especialista",
+              valor: especialistaNombre || undefined,
+            },
             { etiqueta: "Paciente", valor: pacienteNombre || undefined },
           ]}
         />

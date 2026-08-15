@@ -1,11 +1,17 @@
-import { CitaResuelta, BloqueoResuelto } from "@/lib/panel/data/citas";
+import { BloqueoResuelto, CitaResuelta } from "@/lib/panel/data/citas";
+
 import { AppointmentCard } from "./AppointmentCard";
 
 const ALTURA_FILA_PX = 56;
 
 type ItemFila =
   | { tipo: "cita"; inicio: string; bloques: number; cita: CitaResuelta }
-  | { tipo: "bloqueo"; inicio: string; bloques: number; bloqueo: BloqueoResuelto }
+  | {
+      tipo: "bloqueo";
+      inicio: string;
+      bloques: number;
+      bloqueo: BloqueoResuelto;
+    }
   | { tipo: "vacio"; inicio: string; termino: string; bloques: number };
 
 function construirFilas(
@@ -17,22 +23,30 @@ function construirFilas(
   let i = 0;
   while (i < rejilla.length) {
     const bloque = rejilla[i];
-    const cita = citas.find((c) => c.horaInicio === bloque.inicio);
+    const cita = citas.find(c => c.horaInicio === bloque.inicio);
     if (cita) {
       let k = 0;
       let horaActual = cita.horaInicio;
       const horaTerminoCita = cita.horaTermino || "";
-      while (i + k < rejilla.length && (horaTerminoCita ? horaActual < horaTerminoCita : k < 1)) {
+      while (
+        i + k < rejilla.length &&
+        (horaTerminoCita ? horaActual < horaTerminoCita : k < 1)
+      ) {
         horaActual = rejilla[i + k].termino;
         k += 1;
       }
       const numBloques = Math.max(1, k);
-      items.push({ tipo: "cita", inicio: bloque.inicio, bloques: numBloques, cita });
+      items.push({
+        tipo: "cita",
+        inicio: bloque.inicio,
+        bloques: numBloques,
+        cita,
+      });
       i += numBloques;
       continue;
     }
 
-    const bloqueo = bloqueos.find((b) => b.horaInicio === bloque.inicio);
+    const bloqueo = bloqueos.find(b => b.horaInicio === bloque.inicio);
     if (bloqueo) {
       let k = 0;
       let horaActual = bloqueo.horaInicio;
@@ -41,12 +55,22 @@ function construirFilas(
         k += 1;
       }
       const numBloques = Math.max(1, k);
-      items.push({ tipo: "bloqueo", inicio: bloque.inicio, bloques: numBloques, bloqueo });
+      items.push({
+        tipo: "bloqueo",
+        inicio: bloque.inicio,
+        bloques: numBloques,
+        bloqueo,
+      });
       i += numBloques;
       continue;
     }
 
-    items.push({ tipo: "vacio", inicio: bloque.inicio, termino: bloque.termino, bloques: 1 });
+    items.push({
+      tipo: "vacio",
+      inicio: bloque.inicio,
+      termino: bloque.termino,
+      bloques: 1,
+    });
     i += 1;
   }
   return items;
@@ -57,7 +81,10 @@ function minutosDe(hora: string): number {
   return h * 60 + m;
 }
 
-function offsetHoraActual(rejilla: { inicio: string; termino: string }[], horaActual: string): number | null {
+function offsetHoraActual(
+  rejilla: { inicio: string; termino: string }[],
+  horaActual: string
+): number | null {
   const minutosActual = minutosDe(horaActual);
   for (let idx = 0; idx < rejilla.length; idx++) {
     const inicioMin = minutosDe(rejilla[idx].inicio);
@@ -93,13 +120,15 @@ export function TimeGrid({
   ocultarHoras?: boolean;
 }) {
   const filas = construirFilas(rejilla, citas, bloqueos);
-  const lineaHoraActual = horaActual ? offsetHoraActual(rejilla, horaActual) : null;
+  const lineaHoraActual = horaActual
+    ? offsetHoraActual(rejilla, horaActual)
+    : null;
 
   return (
     <div className="flex w-full select-none shadow-none font-sans">
       {!ocultarHoras && (
         <div className="w-12 shrink-0">
-          {rejilla.map((bloque) => (
+          {rejilla.map(bloque => (
             <div
               key={bloque.inicio}
               style={{ height: ALTURA_FILA_PX }}
@@ -111,15 +140,20 @@ export function TimeGrid({
         </div>
       )}
 
-      <div className={`relative flex-1 ${!ocultarHoras ? "border-l border-slate-100" : ""}`}>
-        {filas.map((item) => (
+      <div
+        className={`relative flex-1 ${!ocultarHoras ? "border-l border-slate-100" : ""}`}
+      >
+        {filas.map(item => (
           <div
             key={item.inicio}
             style={{ height: item.bloques * ALTURA_FILA_PX }}
             className="border-b border-slate-100"
           >
             {item.tipo === "cita" && (
-              <AppointmentCard cita={item.cita} onClick={() => onSeleccionarCita(item.cita.id)} />
+              <AppointmentCard
+                cita={item.cita}
+                onClick={() => onSeleccionarCita(item.cita.id)}
+              />
             )}
             {item.tipo === "bloqueo" && (
               <div className="flex h-full w-full items-center justify-center border-b border-slate-100 bg-slate-100/70 p-1 text-center font-sans text-xs font-semibold uppercase tracking-wider text-slate-600 rounded-none shadow-none">

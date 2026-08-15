@@ -31,7 +31,9 @@ export function EmptyState({
         </svg>
       )}
       <p className="text-sm font-semibold text-panel-sidebar">{titulo}</p>
-      {descripcion && <p className="text-sm text-brand-muted max-w-sm">{descripcion}</p>}
+      {descripcion && (
+        <p className="text-sm text-brand-muted max-w-sm">{descripcion}</p>
+      )}
       {accion}
     </div>
   );

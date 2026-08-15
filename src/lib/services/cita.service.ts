@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api/apiClient';
+import { apiClient } from "@/lib/api/apiClient";
 
 export interface CitaBackendDto {
   id: number;
@@ -16,7 +16,7 @@ export interface CitaBackendDto {
   horaTermino?: string;
   horaFin?: string;
   estado: string;
-  origen?: 'Web' | 'Manual';
+  origen?: "Web" | "Manual";
   notas?: string | null;
   notaPaciente?: string | null;
   notaInterna?: string | null;
@@ -58,15 +58,18 @@ export const citaService = {
     pageSize?: number;
   }): Promise<{ data: CitaBackendDto[]; total: number }> {
     const params = new URLSearchParams();
-    if (filtros?.especialistaId) params.append('especialistaId', String(filtros.especialistaId));
-    if (filtros?.estado) params.append('estado', filtros.estado);
-    if (filtros?.fechaDesde) params.append('fechaDesde', filtros.fechaDesde);
-    if (filtros?.fechaHasta) params.append('fechaHasta', filtros.fechaHasta);
-    if (filtros?.page) params.append('page', String(filtros.page));
-    if (filtros?.pageSize) params.append('pageSize', String(filtros.pageSize));
+    if (filtros?.especialistaId)
+      params.append("especialistaId", String(filtros.especialistaId));
+    if (filtros?.estado) params.append("estado", filtros.estado);
+    if (filtros?.fechaDesde) params.append("fechaDesde", filtros.fechaDesde);
+    if (filtros?.fechaHasta) params.append("fechaHasta", filtros.fechaHasta);
+    if (filtros?.page) params.append("page", String(filtros.page));
+    if (filtros?.pageSize) params.append("pageSize", String(filtros.pageSize));
 
     const query = params.toString();
-    const res = await apiClient.get<unknown>(`/citas${query ? `?${query}` : ''}`);
+    const res = await apiClient.get<unknown>(
+      `/citas${query ? `?${query}` : ""}`
+    );
 
     const raw = (res as { data?: unknown })?.data ?? res;
 
@@ -74,9 +77,11 @@ export const citaService = {
       return { data: raw as CitaBackendDto[], total: raw.length };
     }
 
-    if (raw && typeof raw === 'object') {
+    if (raw && typeof raw === "object") {
       const items = (raw as { items?: CitaBackendDto[] }).items || [];
-      const total = (raw as { totalItems?: number; totalCount?: number }).totalItems ?? items.length;
+      const total =
+        (raw as { totalItems?: number; totalCount?: number }).totalItems ??
+        items.length;
       return { data: items, total };
     }
 
@@ -89,7 +94,7 @@ export const citaService = {
   },
 
   async createManual(dto: CreateCitaManualDto): Promise<CitaBackendDto> {
-    const res = await apiClient.post<unknown>('/citas/manual', dto);
+    const res = await apiClient.post<unknown>("/citas/manual", dto);
     return ((res as { data?: CitaBackendDto })?.data ?? res) as CitaBackendDto;
   },
 
@@ -102,14 +107,21 @@ export const citaService = {
     const res = await apiClient.patch<unknown>(`/citas/${id}/estado`, {
       estadoNuevo,
       motivo,
-      confirmadoPor: confirmadoPor || (estadoNuevo === 'Confirmada' ? 'Profesional' : undefined),
+      confirmadoPor:
+        confirmadoPor ||
+        (estadoNuevo === "Confirmada" ? "Profesional" : undefined),
     });
     return ((res as { data?: CitaBackendDto })?.data ?? res) as CitaBackendDto;
   },
 
-  async getImpactoCancelacion(id: number | string): Promise<{ afectaAfectaciones: boolean; mensaje: string }> {
-    const res = await apiClient.get<unknown>(`/citas/${id}/impacto-cancelacion`);
-    return ((res as { data?: { afectaAfectaciones: boolean; mensaje: string } })?.data ?? res) as {
+  async getImpactoCancelacion(
+    id: number | string
+  ): Promise<{ afectaAfectaciones: boolean; mensaje: string }> {
+    const res = await apiClient.get<unknown>(
+      `/citas/${id}/impacto-cancelacion`
+    );
+    return ((res as { data?: { afectaAfectaciones: boolean; mensaje: string } })
+      ?.data ?? res) as {
       afectaAfectaciones: boolean;
       mensaje: string;
     };

@@ -1,22 +1,26 @@
-import { 
-  BlogPost, 
-  SanityServiceItem, 
-  SanityTeamMemberItem, 
-  SanityTestimonialItem, 
-  SanityGalleryItem 
-} from '@/types';
+import {
+  BlogPost,
+  SanityGalleryItem,
+  SanityServiceItem,
+  SanityTeamMemberItem,
+  SanityTestimonialItem,
+} from "@/types";
 
-const SANITY_PROJECT_ID = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'raa0ia92';
-const SANITY_DATASET = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
-const SANITY_API_VERSION = 'v2021-10-21';
+const SANITY_PROJECT_ID =
+  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "raa0ia92";
+const SANITY_DATASET = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
+const SANITY_API_VERSION = "v2021-10-21";
 
 const BASE_URL = `https://${SANITY_PROJECT_ID}.api.sanity.io/${SANITY_API_VERSION}`;
 
 export const sanityService = {
-  async query<T>(groqQuery: string, params: Record<string, unknown> = {}): Promise<T> {
+  async query<T>(
+    groqQuery: string,
+    params: Record<string, unknown> = {}
+  ): Promise<T> {
     const url = new URL(`${BASE_URL}/data/query/${SANITY_DATASET}`);
-    url.searchParams.append('query', groqQuery);
-    
+    url.searchParams.append("query", groqQuery);
+
     for (const [key, value] of Object.entries(params)) {
       url.searchParams.append(`$${key}`, JSON.stringify(value));
     }
@@ -25,7 +29,7 @@ export const sanityService = {
     if (!response.ok) {
       throw new Error(`Sanity query failed: ${response.statusText}`);
     }
-    
+
     const data = await response.json();
     return data.result as T;
   },
@@ -138,5 +142,5 @@ export const sanityService = {
     } catch {
       return null;
     }
-  }
+  },
 };

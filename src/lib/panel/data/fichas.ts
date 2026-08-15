@@ -1,11 +1,15 @@
+import { FichaBackendDto, fichaService } from "@/lib/services/ficha.service";
+
 import { Ficha } from "../domain/tipos";
 import { FICHAS } from "./_seed/fichas";
-import { PacienteResuelto, getPaciente } from "./pacientes";
 import { CitaResuelta, getCita } from "./citas";
+import { getPaciente, PacienteResuelto } from "./pacientes";
 import { fechaDesdeOffset } from "./resolver";
-import { fichaService, FichaBackendDto } from "@/lib/services/ficha.service";
 
-export interface FichaResuelta extends Omit<Ficha, "pacienteId" | "citaId" | "creadaOffsetDias"> {
+export interface FichaResuelta extends Omit<
+  Ficha,
+  "pacienteId" | "citaId" | "creadaOffsetDias"
+> {
   creadaEn: Date;
   paciente: PacienteResuelto;
   cita: CitaResuelta;
@@ -14,21 +18,36 @@ export interface FichaResuelta extends Omit<Ficha, "pacienteId" | "citaId" | "cr
 function mapBackendDtoToResuelta(dto: FichaBackendDto): FichaResuelta {
   const fechaCita = dto.citaFecha ? new Date(dto.citaFecha) : new Date();
   const fechaCreacionRaw = dto.createdAt || dto.creadaEn;
-  const fechaCreacion = fechaCreacionRaw ? new Date(fechaCreacionRaw) : fechaCita;
-  const nombreCreador = dto.creadoPorNombre || dto.registradaPor || (dto.creadoPorUsuarioId ? `Usuario #${dto.creadoPorUsuarioId}` : "Personal de Salud");
+  const fechaCreacion = fechaCreacionRaw
+    ? new Date(fechaCreacionRaw)
+    : fechaCita;
+  const nombreCreador =
+    dto.creadoPorNombre ||
+    dto.registradaPor ||
+    (dto.creadoPorUsuarioId
+      ? `Usuario #${dto.creadoPorUsuarioId}`
+      : "Personal de Salud");
 
   return {
     id: String(dto.id),
     formatoId: dto.formatoId || "general",
-    tipo: dto.tipoFicha || (dto.tipo === "Recomendacion" ? "Recomendación de Masoterapia" : "Ficha Clínica"),
+    tipo:
+      dto.tipoFicha ||
+      (dto.tipo === "Recomendacion"
+        ? "Recomendación de Masoterapia"
+        : "Ficha Clínica"),
     registradaPor: nombreCreador,
     creadaEn: fechaCreacion,
     contenido: dto.contenido || {},
-    adjuntos: dto.adjuntos ? dto.adjuntos.map((a) => a.nombreOriginal) : [],
+    adjuntos: dto.adjuntos ? dto.adjuntos.map(a => a.nombreOriginal) : [],
     paciente: {
       id: String(dto.pacienteId || 1),
-      nombre: dto.pacienteNombre ? dto.pacienteNombre.split(" ")[0] : "Paciente",
-      apellido: dto.pacienteNombre ? dto.pacienteNombre.split(" ").slice(1).join(" ") : "",
+      nombre: dto.pacienteNombre
+        ? dto.pacienteNombre.split(" ")[0]
+        : "Paciente",
+      apellido: dto.pacienteNombre
+        ? dto.pacienteNombre.split(" ").slice(1).join(" ")
+        : "",
       rut: dto.pacienteRut || "",
       correo: "",
       telefono: "",
@@ -37,7 +56,9 @@ function mapBackendDtoToResuelta(dto: FichaBackendDto): FichaResuelta {
     },
     cita: {
       id: String(dto.citaId),
-      servicio: dto.servicioNombre?.toLowerCase().includes("kinesiol") ? "kinesiologia" : "masajes",
+      servicio: dto.servicioNombre?.toLowerCase().includes("kinesiol")
+        ? "kinesiologia"
+        : "masajes",
       horaInicio: dto.citaHoraInicio || "09:00",
       horaTermino: dto.citaHoraTermino || "10:00",
       estado: "atendida",
@@ -46,8 +67,12 @@ function mapBackendDtoToResuelta(dto: FichaBackendDto): FichaResuelta {
       creadaEn: fechaCita,
       paciente: {
         id: String(dto.pacienteId || 1),
-        nombre: dto.pacienteNombre ? dto.pacienteNombre.split(" ")[0] : "Paciente",
-        apellido: dto.pacienteNombre ? dto.pacienteNombre.split(" ").slice(1).join(" ") : "",
+        nombre: dto.pacienteNombre
+          ? dto.pacienteNombre.split(" ")[0]
+          : "Paciente",
+        apellido: dto.pacienteNombre
+          ? dto.pacienteNombre.split(" ").slice(1).join(" ")
+          : "",
         rut: dto.pacienteRut || "",
         correo: "",
         telefono: "",
@@ -72,7 +97,10 @@ export interface FiltroFichas {
   hasta?: Date;
 }
 
-async function resolverFichaSeed(ficha: Ficha, hoy: Date): Promise<FichaResuelta> {
+async function resolverFichaSeed(
+  ficha: Ficha,
+  hoy: Date
+): Promise<FichaResuelta> {
   const { pacienteId, citaId, creadaOffsetDias, ...resto } = ficha;
   const paciente = (await getPaciente(pacienteId)) || {
     id: pacienteId,
@@ -112,15 +140,22 @@ async function resolverFichaSeed(ficha: Ficha, hoy: Date): Promise<FichaResuelta
   };
 }
 
-export async function listFichas(_hoy?: Date, filtro: FiltroFichas = {}): Promise<FichaResuelta[]> {
+export async function listFichas(
+  _hoy?: Date,
+  filtro: FiltroFichas = {}
+): Promise<FichaResuelta[]> {
   const refHoy = _hoy ?? new Date();
 
   try {
     const res = await fichaService.getAll({
       busqueda: filtro.termino,
       tipoFicha: filtro.tipo,
-      fechaDesde: filtro.desde ? filtro.desde.toISOString().split("T")[0] : undefined,
-      fechaHasta: filtro.hasta ? filtro.hasta.toISOString().split("T")[0] : undefined,
+      fechaDesde: filtro.desde
+        ? filtro.desde.toISOString().split("T")[0]
+        : undefined,
+      fechaHasta: filtro.hasta
+        ? filtro.hasta.toISOString().split("T")[0]
+        : undefined,
     });
     if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
       return res.data.map(mapBackendDtoToResuelta);
@@ -130,8 +165,10 @@ export async function listFichas(_hoy?: Date, filtro: FiltroFichas = {}): Promis
   }
 
   // Fallback a seed data
-  const todas = await Promise.all(FICHAS.map((f) => resolverFichaSeed(f, refHoy)));
-  return todas.filter((f) => {
+  const todas = await Promise.all(
+    FICHAS.map(f => resolverFichaSeed(f, refHoy))
+  );
+  return todas.filter(f => {
     if (filtro.termino) {
       const t = filtro.termino.toLowerCase();
       const match =
@@ -145,7 +182,10 @@ export async function listFichas(_hoy?: Date, filtro: FiltroFichas = {}): Promis
   });
 }
 
-export async function getFicha(id: string, hoy?: Date): Promise<FichaResuelta | undefined> {
+export async function getFicha(
+  id: string,
+  hoy?: Date
+): Promise<FichaResuelta | undefined> {
   const refHoy = hoy ?? new Date();
 
   try {
@@ -161,12 +201,15 @@ export async function getFicha(id: string, hoy?: Date): Promise<FichaResuelta | 
     // Error
   }
 
-  const seed = FICHAS.find((f) => f.id === id);
+  const seed = FICHAS.find(f => f.id === id);
   if (seed) return resolverFichaSeed(seed, refHoy);
   return undefined;
 }
 
-export async function fichasDelPaciente(pacienteId: string, _hoy?: Date): Promise<FichaResuelta[]> {
+export async function fichasDelPaciente(
+  pacienteId: string,
+  _hoy?: Date
+): Promise<FichaResuelta[]> {
   const refHoy = _hoy ?? new Date();
 
   try {
@@ -178,25 +221,30 @@ export async function fichasDelPaciente(pacienteId: string, _hoy?: Date): Promis
     // Error backend
   }
 
-  const todas = await Promise.all(FICHAS.map((f) => resolverFichaSeed(f, refHoy)));
-  return todas.filter((f) => f.paciente.id === pacienteId);
+  const todas = await Promise.all(
+    FICHAS.map(f => resolverFichaSeed(f, refHoy))
+  );
+  return todas.filter(f => f.paciente.id === pacienteId);
 }
 
-export async function fichaDeLaCita(citaId: string, _hoy?: Date): Promise<FichaResuelta | undefined> {
+export async function fichaDeLaCita(
+  citaId: string,
+  _hoy?: Date
+): Promise<FichaResuelta | undefined> {
   const refHoy = _hoy ?? new Date();
 
   try {
     const numId = parseInt(citaId.replace(/\D/g, ""), 10);
     if (!isNaN(numId)) {
       const res = await fichaService.getAll();
-      const hallada = res?.data?.find((f) => f.citaId === numId);
+      const hallada = res?.data?.find(f => f.citaId === numId);
       if (hallada) return mapBackendDtoToResuelta(hallada);
     }
   } catch {
     // Error backend
   }
 
-  const seed = FICHAS.find((f) => f.citaId === citaId);
+  const seed = FICHAS.find(f => f.citaId === citaId);
   if (seed) return resolverFichaSeed(seed, refHoy);
   return undefined;
 }
@@ -205,7 +253,8 @@ export async function totalFichas(): Promise<number> {
   try {
     const res = await fichaService.getAll();
     if (res?.total !== undefined && res.total > 0) return res.total;
-    if (res?.data && Array.isArray(res.data) && res.data.length > 0) return res.data.length;
+    if (res?.data && Array.isArray(res.data) && res.data.length > 0)
+      return res.data.length;
   } catch {
     // Error backend
   }

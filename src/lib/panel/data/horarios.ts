@@ -7,18 +7,19 @@ export interface HorarioEspecialista {
 }
 
 export async function listHorarios(): Promise<HorarioEspecialista[]> {
-  return ESPECIALISTAS.map((especialista) => ({
+  return ESPECIALISTAS.map(especialista => ({
     especialista,
-    plantilla:
-      PLANTILLAS_HORARIO.find((p) => p.especialistaId === especialista.id) ?? {
-        especialistaId: especialista.id,
-        dias: {},
-      },
+    plantilla: PLANTILLAS_HORARIO.find(
+      p => p.especialistaId === especialista.id
+    ) ?? {
+      especialistaId: especialista.id,
+      dias: {},
+    },
   }));
 }
 
 export async function getPlantillaEspecialista(
   especialistaId: string
 ): Promise<PlantillaHorarioEspecialista | undefined> {
-  return PLANTILLAS_HORARIO.find((p) => p.especialistaId === especialistaId);
+  return PLANTILLAS_HORARIO.find(p => p.especialistaId === especialistaId);
 }

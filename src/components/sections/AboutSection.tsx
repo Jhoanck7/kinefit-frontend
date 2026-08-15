@@ -1,17 +1,32 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { landingConfigService, LandingConfigData, defaultLandingConfig } from '@/lib/services/landingConfig.service';
+import React, { useEffect, useState } from "react";
 
-export default function AboutSection({ config }: { config: LandingConfigData }) {
-  const videoUrl = config.aboutVideoUrl || "https://www.instagram.com/kinefit.chile";
+import {
+  defaultLandingConfig,
+  LandingConfigData,
+  landingConfigService,
+} from "@/lib/services/landingConfig.service";
+
+export default function AboutSection({
+  config,
+}: {
+  config: LandingConfigData;
+}) {
+  const videoUrl =
+    config.aboutVideoUrl || "https://www.instagram.com/kinefit.chile";
 
   // Helper para detectar formato de la URL de Instagram / Reel / MP4
-  const getEmbedUrl = (rawUrl: string): { isDirectVideo: boolean; embedSrc: string } => {
+  const getEmbedUrl = (
+    rawUrl: string
+  ): { isDirectVideo: boolean; embedSrc: string } => {
     if (!rawUrl) return { isDirectVideo: false, embedSrc: "" };
-    
+
     // MP4 o archivo de video directo
-    if (rawUrl.match(/\.(mp4|webm|mov)(\?.*)?$/i) || (rawUrl.includes("cloudinary.com") && rawUrl.includes("/video/"))) {
+    if (
+      rawUrl.match(/\.(mp4|webm|mov)(\?.*)?$/i) ||
+      (rawUrl.includes("cloudinary.com") && rawUrl.includes("/video/"))
+    ) {
       return { isDirectVideo: true, embedSrc: rawUrl };
     }
 
@@ -20,7 +35,10 @@ export default function AboutSection({ config }: { config: LandingConfigData }) 
     if (match) {
       const type = match[1];
       const shortcode = match[2];
-      return { isDirectVideo: false, embedSrc: `https://www.instagram.com/${type}/${shortcode}/embed` };
+      return {
+        isDirectVideo: false,
+        embedSrc: `https://www.instagram.com/${type}/${shortcode}/embed`,
+      };
     }
 
     return { isDirectVideo: false, embedSrc: rawUrl };
@@ -29,25 +47,26 @@ export default function AboutSection({ config }: { config: LandingConfigData }) 
   const { isDirectVideo, embedSrc } = getEmbedUrl(videoUrl);
 
   return (
-    <section id="about" className="py-20 sm:py-28 bg-white text-slate-900 border-b border-slate-200/60 overflow-hidden w-full">
+    <section
+      id="about"
+      className="py-20 sm:py-28 bg-white text-slate-900 border-b border-slate-200/60 overflow-hidden w-full"
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
         {/* Contenedor de 2 Columnas (Texto e Instagram Video) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          
           {/* Columna Izquierda: Texto de Quiénes Somos */}
           <div className="lg:col-span-7 space-y-6 text-left">
             <div>
-
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                {config.aboutTitle || "Un Enfoque Integral para tu Cuerpo y Salud"}
+                {config.aboutTitle ||
+                  "Un Enfoque Integral para tu Cuerpo y Salud"}
               </h2>
             </div>
 
             <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
-              {config.aboutDescription || "En Kinefit Chile combinamos kinesiología clínica ortopédica, entrenamiento de readaptación funcional y masoterapia de alta gama. Nuestro equipo trabaja de forma personalizada para diagnosticar, tratar y prevenir lesiones, acompañándote paso a paso en tu proceso de recuperación."}
+              {config.aboutDescription ||
+                "En Kinefit Chile combinamos kinesiología clínica ortopédica, entrenamiento de readaptación funcional y masoterapia de alta gama. Nuestro equipo trabaja de forma personalizada para diagnosticar, tratar y prevenir lesiones, acompañándote paso a paso en tu proceso de recuperación."}
             </p>
-
 
             <div className="pt-4 flex flex-wrap items-center gap-4">
               <a
@@ -62,7 +81,6 @@ export default function AboutSection({ config }: { config: LandingConfigData }) 
           {/* Columna Derecha: Reproductor de Video / Reel de Instagram */}
           <div className="lg:col-span-5 flex justify-center w-full">
             <div className="relative w-full max-w-[420px] rounded-3xl overflow-hidden border-4 border-white shadow-2xl bg-slate-950 group">
-              
               {/* Marco Superior Estilo Smartphone / Reel Player */}
               <div className="bg-slate-900 px-4 py-3 flex items-center justify-between border-b border-slate-800 text-white text-xs font-semibold">
                 <div className="flex items-center gap-2">
@@ -110,7 +128,8 @@ export default function AboutSection({ config }: { config: LandingConfigData }) 
                       Ver Video en Instagram
                     </h4>
                     <p className="text-xs text-slate-400 max-w-[260px] mb-6">
-                      Conoce nuestras instalaciones y testimonios reales de rehabilitación directamente en nuestro perfil oficial.
+                      Conoce nuestras instalaciones y testimonios reales de
+                      rehabilitación directamente en nuestro perfil oficial.
                     </p>
                     <a
                       href={videoUrl}
@@ -123,12 +142,9 @@ export default function AboutSection({ config }: { config: LandingConfigData }) 
                   </div>
                 )}
               </div>
-
             </div>
           </div>
-
         </div>
-
       </div>
     </section>
   );

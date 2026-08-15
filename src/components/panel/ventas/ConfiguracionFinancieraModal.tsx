@@ -1,26 +1,42 @@
 "use client";
 
 import { useState } from "react";
-import { Modal } from "@/components/panel/primitives/Modal";
+
 import { Button } from "@/components/panel/primitives/Button";
-import { TERMINALES_MOCK, ACUERDOS_REPARTO_MOCK, TASAS_IVA_MOCK, TerminalPOS, AcuerdoReparto } from "@/lib/mock/ventas";
+import { Modal } from "@/components/panel/primitives/Modal";
+import {
+  AcuerdoReparto,
+  ACUERDOS_REPARTO_MOCK,
+  TASAS_IVA_MOCK,
+  TERMINALES_MOCK,
+  TerminalPOS,
+} from "@/lib/mock/ventas";
 
 interface ConfiguracionFinancieraModalProps {
   abierto: boolean;
   onClose: () => void;
 }
 
-export function ConfiguracionFinancieraModal({ abierto, onClose }: ConfiguracionFinancieraModalProps) {
-  const [tab, setTab] = useState<"terminales" | "repartos" | "iva">("terminales");
+export function ConfiguracionFinancieraModal({
+  abierto,
+  onClose,
+}: ConfiguracionFinancieraModalProps) {
+  const [tab, setTab] = useState<"terminales" | "repartos" | "iva">(
+    "terminales"
+  );
 
   // Estado local de lista
   const [terminales, setTerminales] = useState<TerminalPOS[]>(TERMINALES_MOCK);
-  const [acuerdos, setAcuerdos] = useState<AcuerdoReparto[]>(ACUERDOS_REPARTO_MOCK);
+  const [acuerdos, setAcuerdos] = useState<AcuerdoReparto[]>(
+    ACUERDOS_REPARTO_MOCK
+  );
   const [tasasIva, setTasasIva] = useState(TASAS_IVA_MOCK);
 
   // Estado de edición / creación para Terminales POS
   const [mostrarFormTerminal, setMostrarFormTerminal] = useState(false);
-  const [terminalEditandoId, setTerminalEditandoId] = useState<string | null>(null);
+  const [terminalEditandoId, setTerminalEditandoId] = useState<string | null>(
+    null
+  );
   const [nombreTerminal, setNombreTerminal] = useState("");
   const [plazoAbono, setPlazoAbono] = useState(1);
   const [pctDebito, setPctDebito] = useState(1.23);
@@ -30,10 +46,15 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
 
   // Estado de edición / creación para Acuerdos de Reparto
   const [mostrarFormReparto, setMostrarFormReparto] = useState(false);
-  const [repartoEditandoId, setRepartoEditandoId] = useState<string | null>(null);
-  const [especialistaNombre, setEspecialistaNombre] = useState("Francesca Astudillo");
+  const [repartoEditandoId, setRepartoEditandoId] = useState<string | null>(
+    null
+  );
+  const [especialistaNombre, setEspecialistaNombre] = useState(
+    "Francesca Astudillo"
+  );
   const [pctProf, setPctProf] = useState(50);
-  const [fechaVigenciaReparto, setFechaVigenciaReparto] = useState("2026-08-01");
+  const [fechaVigenciaReparto, setFechaVigenciaReparto] =
+    useState("2026-08-01");
 
   // Estado para Tasa IVA
   const [mostrarFormIva, setMostrarFormIva] = useState(false);
@@ -58,8 +79,8 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
     setNombreTerminal(t.nombre);
     setPlazoAbono(t.plazoAbonoDias);
 
-    const deb = t.comisiones.find((c) => c.metodoPago === "Debito");
-    const cred = t.comisiones.find((c) => c.metodoPago === "Credito");
+    const deb = t.comisiones.find(c => c.metodoPago === "Debito");
+    const cred = t.comisiones.find(c => c.metodoPago === "Credito");
 
     setPctDebito(deb ? deb.porcentaje : t.comisionPorcentaje);
     setCargoFijoDebito(deb ? deb.cargoFijo : t.cargoFijo);
@@ -72,7 +93,7 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
   // Eliminar / Desactivar terminal
   function handleEliminarTerminal(id: string) {
     if (confirm("¿Estás seguro de eliminar esta terminal POS?")) {
-      setTerminales(terminales.filter((t) => t.id !== id));
+      setTerminales(terminales.filter(t => t.id !== id));
     }
   }
 
@@ -89,13 +110,25 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
       comisionPorcentaje: pctDebito,
       cargoFijo: cargoFijoDebito,
       comisiones: [
-        { metodoPago: "Debito", porcentaje: pctDebito, cargoFijo: cargoFijoDebito },
-        { metodoPago: "Credito", porcentaje: pctCredito, cargoFijo: cargoFijoCredito },
+        {
+          metodoPago: "Debito",
+          porcentaje: pctDebito,
+          cargoFijo: cargoFijoDebito,
+        },
+        {
+          metodoPago: "Credito",
+          porcentaje: pctCredito,
+          cargoFijo: cargoFijoCredito,
+        },
       ],
     };
 
     if (terminalEditandoId) {
-      setTerminales(terminales.map((t) => (t.id === terminalEditandoId ? terminalActualizada : t)));
+      setTerminales(
+        terminales.map(t =>
+          t.id === terminalEditandoId ? terminalActualizada : t
+        )
+      );
     } else {
       setTerminales([...terminales, terminalActualizada]);
     }
@@ -124,7 +157,7 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
   // Eliminar acuerdo de reparto
   function handleEliminarReparto(id: string) {
     if (confirm("¿Estás seguro de eliminar este acuerdo de reparto?")) {
-      setAcuerdos(acuerdos.filter((a) => a.id !== id));
+      setAcuerdos(acuerdos.filter(a => a.id !== id));
     }
   }
 
@@ -142,7 +175,9 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
     };
 
     if (repartoEditandoId) {
-      setAcuerdos(acuerdos.map((a) => (a.id === repartoEditandoId ? acuerdoActualizado : a)));
+      setAcuerdos(
+        acuerdos.map(a => (a.id === repartoEditandoId ? acuerdoActualizado : a))
+      );
     } else {
       setAcuerdos([acuerdoActualizado, ...acuerdos]);
     }
@@ -248,31 +283,42 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
               </div>
 
               {mostrarFormTerminal && (
-                <form onSubmit={handleGuardarTerminal} className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none">
+                <form
+                  onSubmit={handleGuardarTerminal}
+                  className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none"
+                >
                   <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
-                    {terminalEditandoId ? "Editar Terminal POS" : "Registrar Nueva Terminal POS"}
+                    {terminalEditandoId
+                      ? "Editar Terminal POS"
+                      : "Registrar Nueva Terminal POS"}
                   </h4>
 
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Nombre Terminal</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                        Nombre Terminal
+                      </label>
                       <input
                         type="text"
                         placeholder="Ej. Tuu POS Transbank, Redelcom"
                         value={nombreTerminal}
-                        onChange={(e) => setNombreTerminal(e.target.value)}
+                        onChange={e => setNombreTerminal(e.target.value)}
                         required
                         className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Plazo de Abono (Días)</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                        Plazo de Abono (Días)
+                      </label>
                       <input
                         type="number"
                         min="0"
                         value={plazoAbono}
-                        onChange={(e) => setPlazoAbono(parseInt(e.target.value) || 0)}
+                        onChange={e =>
+                          setPlazoAbono(parseInt(e.target.value) || 0)
+                        }
                         className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
@@ -284,23 +330,31 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
                     </span>
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
-                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">% Débito</label>
+                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          % Débito
+                        </label>
                         <input
                           type="number"
                           step="0.01"
                           min="0"
                           value={pctDebito}
-                          onChange={(e) => setPctDebito(parseFloat(e.target.value) || 0)}
+                          onChange={e =>
+                            setPctDebito(parseFloat(e.target.value) || 0)
+                          }
                           className="w-full rounded-none border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                         />
                       </div>
                       <div>
-                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Cargo Fijo (CLP)</label>
+                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          Cargo Fijo (CLP)
+                        </label>
                         <input
                           type="number"
                           min="0"
                           value={cargoFijoDebito}
-                          onChange={(e) => setCargoFijoDebito(parseInt(e.target.value) || 0)}
+                          onChange={e =>
+                            setCargoFijoDebito(parseInt(e.target.value) || 0)
+                          }
                           className="w-full rounded-none border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                         />
                       </div>
@@ -313,23 +367,31 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
                     </span>
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
-                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">% Crédito</label>
+                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          % Crédito
+                        </label>
                         <input
                           type="number"
                           step="0.01"
                           min="0"
                           value={pctCredito}
-                          onChange={(e) => setPctCredito(parseFloat(e.target.value) || 0)}
+                          onChange={e =>
+                            setPctCredito(parseFloat(e.target.value) || 0)
+                          }
                           className="w-full rounded-none border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                         />
                       </div>
                       <div>
-                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Cargo Fijo (CLP)</label>
+                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          Cargo Fijo (CLP)
+                        </label>
                         <input
                           type="number"
                           min="0"
                           value={cargoFijoCredito}
-                          onChange={(e) => setCargoFijoCredito(parseInt(e.target.value) || 0)}
+                          onChange={e =>
+                            setCargoFijoCredito(parseInt(e.target.value) || 0)
+                          }
                           className="w-full rounded-none border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                         />
                       </div>
@@ -355,32 +417,63 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
               )}
 
               <div className="divide-y divide-slate-200 border border-slate-200 bg-white rounded-none">
-                {terminales.map((t) => {
-                  const comDebito = t.comisiones?.find((c) => c.metodoPago === "Debito");
-                  const comCredito = t.comisiones?.find((c) => c.metodoPago === "Credito");
+                {terminales.map(t => {
+                  const comDebito = t.comisiones?.find(
+                    c => c.metodoPago === "Debito"
+                  );
+                  const comCredito = t.comisiones?.find(
+                    c => c.metodoPago === "Credito"
+                  );
 
-                  const pctDeb = comDebito ? comDebito.porcentaje : t.comisionPorcentaje;
+                  const pctDeb = comDebito
+                    ? comDebito.porcentaje
+                    : t.comisionPorcentaje;
                   const fixDeb = comDebito ? comDebito.cargoFijo : t.cargoFijo;
 
-                  const pctCred = comCredito ? comCredito.porcentaje : t.comisionPorcentaje + 0.6;
+                  const pctCred = comCredito
+                    ? comCredito.porcentaje
+                    : t.comisionPorcentaje + 0.6;
                   const fixCred = comCredito ? comCredito.cargoFijo : 0;
 
                   return (
-                    <div key={t.id} className="p-4 flex flex-wrap justify-between items-center gap-3">
+                    <div
+                      key={t.id}
+                      className="p-4 flex flex-wrap justify-between items-center gap-3"
+                    >
                       <div>
-                        <span className="font-sans font-medium text-sm text-slate-900 block">{t.nombre}</span>
-                        <span className="font-sans text-xs text-slate-500">Abono en {t.plazoAbonoDias} día(s)</span>
+                        <span className="font-sans font-medium text-sm text-slate-900 block">
+                          {t.nombre}
+                        </span>
+                        <span className="font-sans text-xs text-slate-500">
+                          Abono en {t.plazoAbonoDias} día(s)
+                        </span>
                       </div>
 
                       <div className="flex items-center gap-4">
                         <div className="text-right text-xs">
                           <div className="font-sans text-slate-800">
-                            Débito: <span className="font-medium text-slate-900">{pctDeb}%</span>
-                            {fixDeb > 0 && <span className="text-slate-400"> (+${fixDeb})</span>}
+                            Débito:{" "}
+                            <span className="font-medium text-slate-900">
+                              {pctDeb}%
+                            </span>
+                            {fixDeb > 0 && (
+                              <span className="text-slate-400">
+                                {" "}
+                                (+${fixDeb})
+                              </span>
+                            )}
                           </div>
                           <div className="font-sans text-slate-800">
-                            Crédito: <span className="font-medium text-slate-900">{pctCred}%</span>
-                            {fixCred > 0 && <span className="text-slate-400"> (+${fixCred})</span>}
+                            Crédito:{" "}
+                            <span className="font-medium text-slate-900">
+                              {pctCred}%
+                            </span>
+                            {fixCred > 0 && (
+                              <span className="text-slate-400">
+                                {" "}
+                                (+${fixCred})
+                              </span>
+                            )}
                           </div>
                         </div>
 
@@ -430,22 +523,33 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
               </div>
 
               {mostrarFormReparto && (
-                <form onSubmit={handleGuardarReparto} className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none">
+                <form
+                  onSubmit={handleGuardarReparto}
+                  className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none"
+                >
                   <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
                     {repartoEditandoId ? "Editar Acuerdo" : "Definir Acuerdo"}
                   </h4>
 
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <div>
-                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Especialista</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                        Especialista
+                      </label>
                       <select
                         value={especialistaNombre}
-                        onChange={(e) => setEspecialistaNombre(e.target.value)}
+                        onChange={e => setEspecialistaNombre(e.target.value)}
                         className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       >
-                        <option value="Francesca Astudillo">Francesca Astudillo</option>
-                        <option value="Valeria Sepúlveda">Valeria Sepúlveda</option>
-                        <option value="Constanza Morales">Constanza Morales</option>
+                        <option value="Francesca Astudillo">
+                          Francesca Astudillo
+                        </option>
+                        <option value="Valeria Sepúlveda">
+                          Valeria Sepúlveda
+                        </option>
+                        <option value="Constanza Morales">
+                          Constanza Morales
+                        </option>
                         <option value="Ignacio Soto">Ignacio Soto</option>
                       </select>
                     </div>
@@ -459,17 +563,21 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
                         min="0"
                         max="100"
                         value={pctProf}
-                        onChange={(e) => setPctProf(parseInt(e.target.value) || 0)}
+                        onChange={e =>
+                          setPctProf(parseInt(e.target.value) || 0)
+                        }
                         className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Vigente Desde</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                        Vigente Desde
+                      </label>
                       <input
                         type="date"
                         value={fechaVigenciaReparto}
-                        onChange={(e) => setFechaVigenciaReparto(e.target.value)}
+                        onChange={e => setFechaVigenciaReparto(e.target.value)}
                         className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
@@ -494,11 +602,18 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
               )}
 
               <div className="divide-y divide-slate-200 border border-slate-200 bg-white rounded-none">
-                {acuerdos.map((a) => (
-                  <div key={a.id} className="p-4 flex justify-between items-center gap-3">
+                {acuerdos.map(a => (
+                  <div
+                    key={a.id}
+                    className="p-4 flex justify-between items-center gap-3"
+                  >
                     <div>
-                      <span className="font-sans font-medium text-sm text-slate-900 block">{a.especialistaNombre}</span>
-                      <span className="font-sans text-xs text-slate-500">Vigente desde: {a.vigenteDesde}</span>
+                      <span className="font-sans font-medium text-sm text-slate-900 block">
+                        {a.especialistaNombre}
+                      </span>
+                      <span className="font-sans text-xs text-slate-500">
+                        Vigente desde: {a.vigenteDesde}
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -539,7 +654,8 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <p className="font-sans text-xs text-slate-500">
-                  Tasa de Impuesto al Valor Agregado (IVA) para prestaciones afectas:
+                  Tasa de Impuesto al Valor Agregado (IVA) para prestaciones
+                  afectas:
                 </p>
                 {!mostrarFormIva && (
                   <button
@@ -553,28 +669,39 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
               </div>
 
               {mostrarFormIva && (
-                <form onSubmit={handleGuardarIva} className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none">
-                  <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">Definir Nueva Tasa de IVA</h4>
+                <form
+                  onSubmit={handleGuardarIva}
+                  className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none"
+                >
+                  <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+                    Definir Nueva Tasa de IVA
+                  </h4>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">% IVA</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                        % IVA
+                      </label>
                       <input
                         type="number"
                         step="0.01"
                         min="0"
                         max="100"
                         value={pctIva}
-                        onChange={(e) => setPctIva(parseFloat(e.target.value) || 0)}
+                        onChange={e =>
+                          setPctIva(parseFloat(e.target.value) || 0)
+                        }
                         className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">Vigente Desde</label>
+                      <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                        Vigente Desde
+                      </label>
                       <input
                         type="date"
                         value={fechaVigenciaIva}
-                        onChange={(e) => setFechaVigenciaIva(e.target.value)}
+                        onChange={e => setFechaVigenciaIva(e.target.value)}
                         className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                       />
                     </div>
@@ -606,16 +733,22 @@ export function ConfiguracionFinancieraModal({ abierto, onClose }: Configuracion
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-sans font-medium text-sm text-slate-900">IVA Débito Fiscal Chile</span>
+                        <span className="font-sans font-medium text-sm text-slate-900">
+                          IVA Débito Fiscal Chile
+                        </span>
                         {idx === 0 && (
                           <span className="border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider text-emerald-800 rounded-none">
                             Vigente
                           </span>
                         )}
                       </div>
-                      <span className="font-sans text-xs text-slate-500 block mt-0.5">Vigente desde: {item.vigenteDesde}</span>
+                      <span className="font-sans text-xs text-slate-500 block mt-0.5">
+                        Vigente desde: {item.vigenteDesde}
+                      </span>
                     </div>
-                    <span className="font-sans font-medium text-lg text-slate-900">{item.porcentaje}%</span>
+                    <span className="font-sans font-medium text-lg text-slate-900">
+                      {item.porcentaje}%
+                    </span>
                   </div>
                 ))}
               </div>

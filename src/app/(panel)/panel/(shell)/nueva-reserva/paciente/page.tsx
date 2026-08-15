@@ -1,16 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
-import { buscarPacientes, getPaciente, PacienteResuelto } from "@/lib/panel/data/pacientes";
-import { formatearFechaExtensa } from "@/lib/panel/domain/formato";
-import { Card } from "@/components/panel/primitives/Card";
+import { useEffect, useState } from "react";
+
+import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
 import { Button } from "@/components/panel/primitives/Button";
 import { SearchInput } from "@/components/panel/primitives/CamposFormulario";
-import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
+import { Card } from "@/components/panel/primitives/Card";
 import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
-import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
+import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
+import {
+  buscarPacientes,
+  getPaciente,
+  PacienteResuelto,
+} from "@/lib/panel/data/pacientes";
+import { formatearFechaExtensa } from "@/lib/panel/domain/formato";
+import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
 
 const PASOS = [
   { etiqueta: "Servicio" },
@@ -32,13 +37,21 @@ const NOMBRE_SERVICIO: Record<string, string> = {
 
 export default function NuevaReservaPacientePage() {
   const router = useRouter();
-  const { fecha, hora, pacienteId, pacienteNombre, especialistaNombre, servicio, setPaciente } =
-    useNuevaReservaStore();
+  const {
+    fecha,
+    hora,
+    pacienteId,
+    pacienteNombre,
+    especialistaNombre,
+    servicio,
+    setPaciente,
+  } = useNuevaReservaStore();
 
   const [busqueda, setBusqueda] = useState("");
   const [resultados, setResultados] = useState<PacienteResuelto[]>([]);
   const [buscado, setBuscado] = useState(false);
-  const [pacienteConfirmado, setPacienteConfirmado] = useState<PacienteResuelto | null>(null);
+  const [pacienteConfirmado, setPacienteConfirmado] =
+    useState<PacienteResuelto | null>(null);
 
   const handleBusquedaChange = (val: string) => {
     setBusqueda(val);
@@ -50,7 +63,7 @@ export default function NuevaReservaPacientePage() {
 
   useEffect(() => {
     if (!busqueda.trim()) return;
-    buscarPacientes(busqueda).then((r) => {
+    buscarPacientes(busqueda).then(r => {
       setResultados(r);
       setBuscado(true);
     });
@@ -58,7 +71,7 @@ export default function NuevaReservaPacientePage() {
 
   useEffect(() => {
     if (pacienteId && !pacienteId.startsWith("temp-")) {
-      getPaciente(pacienteId).then((p) => setPacienteConfirmado(p ?? null));
+      getPaciente(pacienteId).then(p => setPacienteConfirmado(p ?? null));
     }
   }, [pacienteId]);
 
@@ -83,13 +96,25 @@ export default function NuevaReservaPacientePage() {
 
           {pacienteId ? (
             <div className="border border-slate-200 bg-slate-50/60 p-4 rounded-none space-y-1.5">
-              <p className="font-sans font-medium text-sm text-slate-900">{pacienteNombre}</p>
+              <p className="font-sans font-medium text-sm text-slate-900">
+                {pacienteNombre}
+              </p>
               {pacienteConfirmado && (
                 <div className="space-y-0.5 text-xs text-slate-600">
-                  <p>RUT: <span className="text-slate-900 font-medium">{pacienteConfirmado.rut}</span></p>
+                  <p>
+                    RUT:{" "}
+                    <span className="text-slate-900 font-medium">
+                      {pacienteConfirmado.rut}
+                    </span>
+                  </p>
                   <p>{pacienteConfirmado.telefono}</p>
                   <p>{pacienteConfirmado.correo}</p>
-                  <p>Convenio: <span className="text-slate-900 font-medium">{pacienteConfirmado.convenio?.nombre ?? "Particular"}</span></p>
+                  <p>
+                    Convenio:{" "}
+                    <span className="text-slate-900 font-medium">
+                      {pacienteConfirmado.convenio?.nombre ?? "Particular"}
+                    </span>
+                  </p>
                 </div>
               )}
               <button
@@ -119,11 +144,12 @@ export default function NuevaReservaPacientePage() {
                   </p>
                   {resultados.length === 0 ? (
                     <p className="font-sans text-xs text-slate-400">
-                      No se encontraron pacientes que coincidan con la búsqueda. Puedes registrar uno nuevo.
+                      No se encontraron pacientes que coincidan con la búsqueda.
+                      Puedes registrar uno nuevo.
                     </p>
                   ) : (
                     <ul className="divide-y divide-slate-200 border border-slate-200 rounded-none bg-white">
-                      {resultados.map((paciente) => (
+                      {resultados.map(paciente => (
                         <li key={paciente.id}>
                           <button
                             type="button"
@@ -133,7 +159,9 @@ export default function NuevaReservaPacientePage() {
                             <span className="font-medium text-slate-900">
                               {paciente.nombre} {paciente.apellido}
                             </span>
-                            <span className="text-slate-500">{paciente.rut} ›</span>
+                            <span className="text-slate-500">
+                              {paciente.rut} ›
+                            </span>
                           </button>
                         </li>
                       ))}
@@ -151,7 +179,11 @@ export default function NuevaReservaPacientePage() {
               <Button
                 variante="secundario"
                 className="w-full text-xs"
-                onClick={() => router.push("/panel/pacientes/nuevo?retorno=/panel/nueva-reserva/paciente")}
+                onClick={() =>
+                  router.push(
+                    "/panel/pacientes/nuevo?retorno=/panel/nueva-reserva/paciente"
+                  )
+                }
               >
                 Registrar paciente nuevo
               </Button>
@@ -169,12 +201,19 @@ export default function NuevaReservaPacientePage() {
               </button>
             }
             volver={
-              <Button variante="secundario" onClick={() => router.push("/panel/nueva-reserva/especialista")}>
+              <Button
+                variante="secundario"
+                onClick={() => router.push("/panel/nueva-reserva/especialista")}
+              >
                 Volver
               </Button>
             }
             avanzar={
-              <Button variante="primario" disabled={!pacienteId} onClick={() => router.push("/panel/nueva-reserva/resumen")}>
+              <Button
+                variante="primario"
+                disabled={!pacienteId}
+                onClick={() => router.push("/panel/nueva-reserva/resumen")}
+              >
                 Continuar
               </Button>
             }
@@ -183,10 +222,21 @@ export default function NuevaReservaPacientePage() {
 
         <SummaryPanel
           filas={[
-            { etiqueta: "Servicio", valor: servicio ? (NOMBRE_SERVICIO[servicio] ?? servicio) : undefined },
-            { etiqueta: "Fecha", valor: fecha ? formatearFechaExtensa(fecha) : undefined },
+            {
+              etiqueta: "Servicio",
+              valor: servicio
+                ? (NOMBRE_SERVICIO[servicio] ?? servicio)
+                : undefined,
+            },
+            {
+              etiqueta: "Fecha",
+              valor: fecha ? formatearFechaExtensa(fecha) : undefined,
+            },
             { etiqueta: "Horario", valor: hora || undefined },
-            { etiqueta: "Especialista", valor: especialistaNombre || undefined },
+            {
+              etiqueta: "Especialista",
+              valor: especialistaNombre || undefined,
+            },
             { etiqueta: "Paciente", valor: pacienteNombre || undefined },
           ]}
         />

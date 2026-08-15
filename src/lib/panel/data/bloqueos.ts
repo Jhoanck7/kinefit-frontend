@@ -1,6 +1,7 @@
-import { getEspecialista } from "./especialistas";
-import { BloqueoResuelto } from "./citas";
 import { agendaService } from "@/lib/services/agenda.service";
+
+import { BloqueoResuelto } from "./citas";
+import { getEspecialista } from "./especialistas";
 
 export interface CrearBloqueoInput {
   especialistaId: string;
@@ -10,7 +11,9 @@ export interface CrearBloqueoInput {
   motivo: string;
 }
 
-export async function crearBloqueo(input: CrearBloqueoInput): Promise<BloqueoResuelto> {
+export async function crearBloqueo(
+  input: CrearBloqueoInput
+): Promise<BloqueoResuelto> {
   const espId = parseInt(input.especialistaId.replace(/\D/g, ""), 10) || 1;
   const fechaIso = input.fecha.toISOString().split("T")[0];
   const res = await agendaService.createBloqueo({
@@ -28,7 +31,12 @@ export async function crearBloqueo(input: CrearBloqueoInput): Promise<BloqueoRes
     horaTermino: res.horaFin,
     motivo: res.motivo,
     fecha: new Date(res.fechaInicio),
-    especialista: especialista || { id: input.especialistaId, nombre: res.especialistaNombre || "Especialista", cargo: "Profesional", servicios: ["kinesiologia"] },
+    especialista: especialista || {
+      id: input.especialistaId,
+      nombre: res.especialistaNombre || "Especialista",
+      cargo: "Profesional",
+      servicios: ["kinesiologia"],
+    },
     activo: !res.revertido,
   };
 }
@@ -52,13 +60,18 @@ export async function listBloqueosEspecialista(
       const res = await agendaService.getBloqueos(espId);
       if (res && Array.isArray(res)) {
         const especialista = await getEspecialista(especialistaId);
-        return res.map((b) => ({
+        return res.map(b => ({
           id: String(b.id),
           horaInicio: b.horaInicio,
           horaTermino: b.horaFin,
           motivo: b.motivo,
           fecha: new Date(b.fechaInicio),
-          especialista: especialista || { id: especialistaId, nombre: b.especialistaNombre || "Especialista", cargo: "Profesional", servicios: ["kinesiologia"] },
+          especialista: especialista || {
+            id: especialistaId,
+            nombre: b.especialistaNombre || "Especialista",
+            cargo: "Profesional",
+            servicios: ["kinesiologia"],
+          },
           activo: !b.revertido,
         }));
       }

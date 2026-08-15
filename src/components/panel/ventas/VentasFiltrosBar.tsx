@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/panel/primitives/Button";
-import { Card } from "@/components/panel/primitives/Card";
 import { SearchInput } from "@/components/panel/primitives/CamposFormulario";
+import { Card } from "@/components/panel/primitives/Card";
 
 interface VentasFiltrosBarProps {
   rangoFecha: string;
@@ -41,10 +41,12 @@ export function VentasFiltrosBar({
 
         {/* Rango de Fecha */}
         <div className="flex items-center gap-1.5">
-          <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">Fecha:</span>
+          <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+            Fecha:
+          </span>
           <select
             value={rangoFecha}
-            onChange={(e) => setRangoFecha(e.target.value)}
+            onChange={e => setRangoFecha(e.target.value)}
             className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
           >
             <option value="hoy">HOY</option>
@@ -57,10 +59,12 @@ export function VentasFiltrosBar({
 
         {/* Método de Pago */}
         <div className="flex items-center gap-1.5">
-          <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">Pago:</span>
+          <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+            Pago:
+          </span>
           <select
             value={metodoPago}
-            onChange={(e) => setMetodoPago(e.target.value)}
+            onChange={e => setMetodoPago(e.target.value)}
             className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
           >
             <option value="todos">TODOS LOS MÉTODOS</option>
@@ -73,15 +77,27 @@ export function VentasFiltrosBar({
 
         {/* Botones de Acción */}
         <div className="flex flex-wrap items-center gap-2">
-          <Button variante="secundario" className="px-3.5 py-2 text-xs" onClick={onAbrirConfiguracion}>
+          <Button
+            variante="secundario"
+            className="px-3.5 py-2 text-xs"
+            onClick={onAbrirConfiguracion}
+          >
             TARIFAS / POS
           </Button>
 
-          <Button variante="secundario" className="px-3.5 py-2 text-xs" onClick={onExportar}>
+          <Button
+            variante="secundario"
+            className="px-3.5 py-2 text-xs"
+            onClick={onExportar}
+          >
             EXPORTAR
           </Button>
 
-          <Button variante="primario" className="px-4 py-2 text-xs" onClick={onAbrirNuevaVenta}>
+          <Button
+            variante="primario"
+            className="px-4 py-2 text-xs"
+            onClick={onAbrirNuevaVenta}
+          >
             REGISTRAR VENTA
           </Button>
         </div>

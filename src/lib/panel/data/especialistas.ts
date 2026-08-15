@@ -1,6 +1,10 @@
+import {
+  catalogosService,
+  EspecialistaBackendDto,
+} from "@/lib/services/catalogos.service";
+
 import { Especialista, Servicio } from "../domain/tipos";
 import { ESPECIALISTAS } from "./_seed/especialistas";
-import { catalogosService, EspecialistaBackendDto } from "@/lib/services/catalogos.service";
 
 function mapBackendDtoToDomain(dto: EspecialistaBackendDto): Especialista {
   const serviciosDefault: Servicio[] = [
@@ -32,16 +36,18 @@ export async function listEspecialistas(): Promise<Especialista[]> {
   return ESPECIALISTAS;
 }
 
-export async function getEspecialista(id: string): Promise<Especialista | undefined> {
+export async function getEspecialista(
+  id: string
+): Promise<Especialista | undefined> {
   try {
     const espId = parseInt(id.replace(/\D/g, ""), 10);
     if (!isNaN(espId)) {
       const res = await catalogosService.getEspecialistas();
-      const hallado = res.find((e) => e.id === espId);
+      const hallado = res.find(e => e.id === espId);
       if (hallado) return mapBackendDtoToDomain(hallado);
     }
   } catch {
     // Fallback
   }
-  return ESPECIALISTAS.find((e) => e.id === id);
+  return ESPECIALISTAS.find(e => e.id === id);
 }

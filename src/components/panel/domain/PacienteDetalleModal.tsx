@@ -1,12 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import {
+  CitaResuelta,
+  contadoresPaciente,
+  historialPaciente,
+} from "@/lib/panel/data/citas";
+import { FichaResuelta, fichasDelPaciente } from "@/lib/panel/data/fichas";
 import { getPaciente, PacienteResuelto } from "@/lib/panel/data/pacientes";
-import { historialPaciente, contadoresPaciente, CitaResuelta } from "@/lib/panel/data/citas";
-import { fichasDelPaciente, FichaResuelta } from "@/lib/panel/data/fichas";
 import { definicionEstado } from "@/lib/panel/domain/estados";
-import { formatearFechaCorta, formatearRangoHorario } from "@/lib/panel/domain/formato";
+import {
+  formatearFechaCorta,
+  formatearRangoHorario,
+} from "@/lib/panel/domain/formato";
+
 import { Modal } from "../primitives/Modal";
 
 interface PacienteDetalleModalProps {
@@ -35,13 +44,22 @@ const TEXTO_COLOR: Record<string, string> = {
   gris: "text-slate-600",
 };
 
-export function PacienteDetalleModal({ pacienteId, hoy, onCerrar }: PacienteDetalleModalProps) {
+export function PacienteDetalleModal({
+  pacienteId,
+  hoy,
+  onCerrar,
+}: PacienteDetalleModalProps) {
   const router = useRouter();
   const [paciente, setPaciente] = useState<PacienteResuelto | null>(null);
   const [historial, setHistorial] = useState<CitaResuelta[]>([]);
-  const [contadores, setContadores] = useState({ atendidas: 0, canceladas: 0, noAsistidas: 0 });
+  const [contadores, setContadores] = useState({
+    atendidas: 0,
+    canceladas: 0,
+    noAsistidas: 0,
+  });
   const [fichas, setFichas] = useState<FichaResuelta[]>([]);
-  const [pestanaActiva, setPestanaActiva] = useState<PestanaPaciente>("contacto");
+  const [pestanaActiva, setPestanaActiva] =
+    useState<PestanaPaciente>("contacto");
 
   useEffect(() => {
     if (!pacienteId || !hoy) {
@@ -49,7 +67,7 @@ export function PacienteDetalleModal({ pacienteId, hoy, onCerrar }: PacienteDeta
       setPestanaActiva("contacto");
       return;
     }
-    getPaciente(pacienteId).then((p) => setPaciente(p ?? null));
+    getPaciente(pacienteId).then(p => setPaciente(p ?? null));
     historialPaciente(pacienteId, hoy).then(setHistorial);
     contadoresPaciente(pacienteId, hoy).then(setContadores);
     fichasDelPaciente(pacienteId, hoy).then(setFichas);
@@ -58,7 +76,9 @@ export function PacienteDetalleModal({ pacienteId, hoy, onCerrar }: PacienteDeta
   return (
     <Modal abierto={Boolean(pacienteId)} onCerrar={onCerrar} ancho="max-w-3xl">
       {!paciente ? (
-        <div className="p-10 text-center font-sans text-xs text-slate-500">Cargando paciente…</div>
+        <div className="p-10 text-center font-sans text-xs text-slate-500">
+          Cargando paciente…
+        </div>
       ) : (
         <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
           {/* Encabezado Formal */}
@@ -68,7 +88,10 @@ export function PacienteDetalleModal({ pacienteId, hoy, onCerrar }: PacienteDeta
                 Ficha del Paciente
               </h2>
               <p className="font-sans text-xs text-slate-500 mt-0.5">
-                {paciente.nombre} {paciente.apellido} · RUT <span className="text-slate-700 font-medium">{paciente.rut || "—"}</span>
+                {paciente.nombre} {paciente.apellido} · RUT{" "}
+                <span className="text-slate-700 font-medium">
+                  {paciente.rut || "—"}
+                </span>
               </p>
             </div>
             <button
@@ -120,7 +143,6 @@ export function PacienteDetalleModal({ pacienteId, hoy, onCerrar }: PacienteDeta
 
           {/* Cuerpo en Layout de 2 Columnas */}
           <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-            
             {/* COLUMNA IZQUIERDA PRINCIPAL (2/3) */}
             <div className="md:col-span-2 p-6 space-y-4">
               {/* PESTAÑA 1: DATOS PERSONALES */}
@@ -131,24 +153,44 @@ export function PacienteDetalleModal({ pacienteId, hoy, onCerrar }: PacienteDeta
                   </h3>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Nombre</span>
-                      <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">{paciente.nombre}</p>
+                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                        Nombre
+                      </span>
+                      <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                        {paciente.nombre}
+                      </p>
                     </div>
                     <div>
-                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Apellido</span>
-                      <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">{paciente.apellido}</p>
+                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                        Apellido
+                      </span>
+                      <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                        {paciente.apellido}
+                      </p>
                     </div>
                     <div>
-                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">RUT</span>
-                      <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">{paciente.rut || "—"}</p>
+                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                        RUT
+                      </span>
+                      <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                        {paciente.rut || "—"}
+                      </p>
                     </div>
                     <div>
-                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Teléfono</span>
-                      <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">{paciente.telefono || "—"}</p>
+                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                        Teléfono
+                      </span>
+                      <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                        {paciente.telefono || "—"}
+                      </p>
                     </div>
                     <div className="sm:col-span-2">
-                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Correo Electrónico</span>
-                      <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">{paciente.correo || "—"}</p>
+                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                        Correo Electrónico
+                      </span>
+                      <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                        {paciente.correo || "—"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -161,26 +203,42 @@ export function PacienteDetalleModal({ pacienteId, hoy, onCerrar }: PacienteDeta
                     HISTORIAL DE ATENCIONES
                   </h3>
                   {historial.length === 0 ? (
-                    <p className="font-sans text-xs text-slate-400 py-4 text-center">Sin citas registradas.</p>
+                    <p className="font-sans text-xs text-slate-400 py-4 text-center">
+                      Sin citas registradas.
+                    </p>
                   ) : (
                     <ul className="divide-y divide-slate-200 max-h-[260px] overflow-y-auto pr-1">
-                      {historial.map((cita) => {
+                      {historial.map(cita => {
                         const definicion = definicionEstado(cita.estado);
-                        const dotColor = DOT_COLOR[definicion.colorRol] ?? "bg-slate-400";
-                        const textoColor = TEXTO_COLOR[definicion.colorRol] ?? "text-slate-600";
+                        const dotColor =
+                          DOT_COLOR[definicion.colorRol] ?? "bg-slate-400";
+                        const textoColor =
+                          TEXTO_COLOR[definicion.colorRol] ?? "text-slate-600";
                         return (
-                          <li key={cita.id} className="flex items-center justify-between py-2.5">
+                          <li
+                            key={cita.id}
+                            className="flex items-center justify-between py-2.5"
+                          >
                             <div>
                               <p className="font-sans font-medium text-sm text-slate-900">
-                                {formatearFechaCorta(cita.fecha)} · {formatearRangoHorario(cita.horaInicio, cita.horaTermino)}
+                                {formatearFechaCorta(cita.fecha)} ·{" "}
+                                {formatearRangoHorario(
+                                  cita.horaInicio,
+                                  cita.horaTermino
+                                )}
                               </p>
                               <p className="font-sans text-xs text-slate-500 capitalize mt-0.5">
                                 {cita.servicio} · {cita.especialista.nombre}
                               </p>
                             </div>
                             <div className="flex items-center gap-1.5">
-                              <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} aria-hidden />
-                              <span className={`font-sans text-[10px] font-bold uppercase tracking-wider ${textoColor}`}>
+                              <span
+                                className={`h-1.5 w-1.5 rounded-full ${dotColor}`}
+                                aria-hidden
+                              />
+                              <span
+                                className={`font-sans text-[10px] font-bold uppercase tracking-wider ${textoColor}`}
+                              >
                                 {definicion.etiqueta}
                               </span>
                             </div>
@@ -199,14 +257,23 @@ export function PacienteDetalleModal({ pacienteId, hoy, onCerrar }: PacienteDeta
                     FICHAS CLÍNICAS
                   </h3>
                   {fichas.length === 0 ? (
-                    <p className="font-sans text-xs text-slate-400 py-4 text-center">Sin fichas clínicas registradas.</p>
+                    <p className="font-sans text-xs text-slate-400 py-4 text-center">
+                      Sin fichas clínicas registradas.
+                    </p>
                   ) : (
                     <ul className="divide-y divide-slate-200 max-h-[260px] overflow-y-auto pr-1">
-                      {fichas.map((ficha) => (
-                        <li key={ficha.id} className="flex justify-between items-center py-2.5">
+                      {fichas.map(ficha => (
+                        <li
+                          key={ficha.id}
+                          className="flex justify-between items-center py-2.5"
+                        >
                           <div>
-                            <span className="font-sans font-medium text-sm text-slate-900 block">{ficha.tipo}</span>
-                            <span className="font-sans text-xs text-slate-500">{formatearFechaCorta(ficha.cita.fecha)}</span>
+                            <span className="font-sans font-medium text-sm text-slate-900 block">
+                              {ficha.tipo}
+                            </span>
+                            <span className="font-sans text-xs text-slate-500">
+                              {formatearFechaCorta(ficha.cita.fecha)}
+                            </span>
                           </div>
                           <button
                             type="button"
@@ -234,36 +301,55 @@ export function PacienteDetalleModal({ pacienteId, hoy, onCerrar }: PacienteDeta
                 </h3>
 
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Convenio</span>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    Convenio
+                  </span>
                   <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                    {paciente.convenio ? paciente.convenio.nombre : "Sin convenio / Particular"}
+                    {paciente.convenio
+                      ? paciente.convenio.nombre
+                      : "Sin convenio / Particular"}
                   </p>
                 </div>
 
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Origen Registro</span>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    Origen Registro
+                  </span>
                   <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                    {paciente.origenRegistro === "web" ? "Web autoagendado" : "Registro manual"}
+                    {paciente.origenRegistro === "web"
+                      ? "Web autoagendado"
+                      : "Registro manual"}
                   </p>
                 </div>
 
                 <div className="pt-2 border-t border-slate-200/80 space-y-2">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">Atendidas</span>
-                    <span className="font-sans font-medium text-sm text-slate-900">{contadores.atendidas}</span>
+                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                      Atendidas
+                    </span>
+                    <span className="font-sans font-medium text-sm text-slate-900">
+                      {contadores.atendidas}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">Canceladas</span>
-                    <span className="font-sans font-medium text-sm text-slate-900">{contadores.canceladas}</span>
+                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                      Canceladas
+                    </span>
+                    <span className="font-sans font-medium text-sm text-slate-900">
+                      {contadores.canceladas}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">No Asistidas</span>
-                    <span className="font-sans font-medium text-sm text-slate-900">{contadores.noAsistidas}</span>
+                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                      No Asistidas
+                    </span>
+                    <span className="font-sans font-medium text-sm text-slate-900">
+                      {contadores.noAsistidas}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
 
           {/* Pie de Acciones */}
