@@ -3,7 +3,7 @@ name: Deploy Frontend (GHCR)
 on:
   push:
     branches:
-      - merge-branch
+      - test-production
 
 
 jobs:
