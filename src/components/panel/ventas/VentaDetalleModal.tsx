@@ -1,10 +1,10 @@
 "use client";
 
 import { Modal } from "@/components/panel/primitives/Modal";
-import { VentaMock } from "@/lib/mock/ventas";
+import { VentaResuelta } from "@/lib/panel/data/ventas";
 
 interface VentaDetalleModalProps {
-  venta: VentaMock | null;
+  venta: VentaResuelta | null;
   onClose: () => void;
 }
 
@@ -63,7 +63,7 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
 
                 <div className="flex justify-between items-center text-sm">
                   <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
-                    IVA ({primerItem?.afectoIva ? "19% Afecto" : "Exento"})
+                    IVA ({venta.ivaMonto > 0 ? "Afecto" : "Exento"})
                   </span>
                   <span className="font-sans font-medium text-sm text-slate-700">
                     -${venta.ivaMonto.toLocaleString("es-CL")} CLP
@@ -165,14 +165,16 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
                 </p>
               </div>
 
-              <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                  Profesional
-                </span>
-                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                  {venta.especialistaNombre}
-                </p>
-              </div>
+              {venta.registradaPor && (
+                <div>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    Registrada por
+                  </span>
+                  <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                    {venta.registradaPor}
+                  </p>
+                </div>
+              )}
 
               <div>
                 <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">

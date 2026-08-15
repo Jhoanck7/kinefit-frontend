@@ -1,10 +1,54 @@
 "use client";
 
-import { Card } from "@/components/panel/primitives/Card";
-import { REPORTE_COMISIONES_MOCK } from "@/lib/mock/reportes";
+import { useEffect, useState } from "react";
 
-export function ReporteComisionesView() {
-  const data = REPORTE_COMISIONES_MOCK;
+import { Card } from "@/components/panel/primitives/Card";
+import {
+  getReporteComisiones,
+  ReporteComisionesResuelto,
+} from "@/lib/panel/data/reportes";
+
+interface ReporteComisionesViewProps {
+  fechaDesde?: string;
+  fechaHasta?: string;
+}
+
+export function ReporteComisionesView({
+  fechaDesde,
+  fechaHasta,
+}: ReporteComisionesViewProps) {
+  const [data, setData] = useState<ReporteComisionesResuelto>({
+    generadoEl: "",
+    profesionales: [],
+  });
+  const [cargando, setCargando] = useState(true);
+
+  useEffect(() => {
+    getReporteComisiones({ fechaDesde, fechaHasta }).then(res => {
+      setData(res);
+      setCargando(false);
+    });
+  }, [fechaDesde, fechaHasta]);
+
+  if (cargando) {
+    return (
+      <Card>
+        <p className="py-8 text-center text-sm text-brand-muted">
+          Cargando liquidación de comisiones...
+        </p>
+      </Card>
+    );
+  }
+
+  if (data.profesionales.length === 0) {
+    return (
+      <Card>
+        <p className="py-8 text-center text-sm text-brand-muted">
+          Sin ventas registradas en el período seleccionado.
+        </p>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6 text-sm text-panel-sidebar">
@@ -89,6 +133,11 @@ export function ReporteComisionesView() {
                       ? `-$${p.comisionTerminal.toLocaleString("es-CL")}`
                       : "$0"}
                   </span>
+                  {p.ventasSinTasaVigente > 0 && (
+                    <span className="text-xs text-amber-700 block mt-1">
+                      {p.ventasSinTasaVigente} sin tasa POS vigente
+                    </span>
+                  )}
                 </div>
 
                 <div className="bg-panel-fondo p-3 rounded-xl border border-brand-border">

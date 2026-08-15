@@ -3,7 +3,12 @@
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 
-import { mediaService } from "@/lib/services/media.service";
+import {
+  useDeleteImageMutation,
+  useReplaceImageMutation,
+  useUploadImageMutation,
+} from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
 
 interface ImageUploaderProps {
   etiqueta?: string;
@@ -20,9 +25,16 @@ export function ImageUploader({
   onChange,
   folder = "kinefit",
 }: ImageUploaderProps) {
-  const [subiendo, setSubiendo] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadMutation = useUploadImageMutation();
+  const replaceMutation = useReplaceImageMutation();
+  const deleteMutation = useDeleteImageMutation();
+  const subiendo =
+    uploadMutation.isPending ||
+    replaceMutation.isPending ||
+    deleteMutation.isPending;
 
   async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
@@ -33,39 +45,27 @@ export function ImageUploader({
   }
 
   async function subirImagen(file: File) {
-    setSubiendo(true);
     setErrorMsg(null);
     try {
-      let resultado;
-      if (publicId) {
-        resultado = await mediaService.replaceImage(publicId, file, folder);
-      } else {
-        resultado = await mediaService.uploadImage(file, folder);
-      }
+      const resultado = publicId
+        ? await replaceMutation.mutateAsync({ publicId, file, folder })
+        : await uploadMutation.mutateAsync({ file, folder });
       onChange(resultado.secureUrl, resultado.publicId);
     } catch (err: unknown) {
-      console.error("Error al subir archivo:", err);
-      const msg =
-        err instanceof Error ? err.message : "Error al subir la imagen.";
-      setErrorMsg(msg);
-    } finally {
-      setSubiendo(false);
+      setErrorMsg(handleApiError(err).message);
     }
   }
 
   async function handleEliminar() {
     if (!value) return;
-    setSubiendo(true);
     setErrorMsg(null);
     try {
       if (publicId) {
-        await mediaService.deleteImage(publicId);
+        await deleteMutation.mutateAsync(publicId);
       }
       onChange("", "");
     } catch (err: unknown) {
-      console.error("Error al eliminar:", err);
-    } finally {
-      setSubiendo(false);
+      setErrorMsg(handleApiError(err).message);
     }
   }
 

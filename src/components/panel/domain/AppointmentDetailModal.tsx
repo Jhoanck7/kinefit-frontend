@@ -10,7 +10,7 @@ import {
   formatearFechaHora,
   formatearRangoHorario,
 } from "@/lib/panel/domain/formato";
-import { citaService } from "@/lib/services/cita.service";
+import { citaService } from "@/services";
 
 import { Modal } from "../primitives/Modal";
 
@@ -88,12 +88,10 @@ export function AppointmentDetailModal({
     setErrorMsg(null);
 
     try {
-      await citaService.updateEstado(
-        cita.id,
+      await citaService.updateEstado(Number(cita.id), {
         estadoNuevo,
-        undefined,
-        estadoNuevo === "Confirmada" ? "Profesional" : undefined
-      );
+        confirmadoPor: estadoNuevo === "Confirmada" ? "Profesional" : undefined,
+      });
 
       const actualizada = await getCita(cita.id, hoy);
       if (actualizada) setCita(actualizada);

@@ -3,62 +3,49 @@
 import { useEffect, useState } from "react";
 
 import { Card } from "@/components/panel/primitives/Card";
-import { REPORTE_RESERVAS_MOCK } from "@/lib/mock/reportes";
-import { reporteService } from "@/lib/services/reporte.service";
+import {
+  getReporteReservas,
+  ReporteReservasResuelto,
+} from "@/lib/panel/data/reportes";
 
-export function ReporteReservasView() {
-  const [data, setData] = useState(REPORTE_RESERVAS_MOCK);
+const REPORTE_VACIO: ReporteReservasResuelto = {
+  kpi: { reservasTotales: 0, porcentajeOcupacion: 0, tasaInasistencias: 0 },
+  evolucionTemporal: [],
+  distribucionPorHora: [],
+  distribucionPorDiaSemana: [],
+  distribucionPorEstado: [],
+  origen: [],
+  rankingServicios: [],
+  rankingProfesionales: [],
+  rankingClientes: [],
+  retencion: {
+    nuevos: 0,
+    recurrentes: 0,
+    porcentajeNuevos: 0,
+    porcentajeRecurrentes: 0,
+  },
+};
+
+interface ReporteReservasViewProps {
+  fechaDesde?: string;
+  fechaHasta?: string;
+  compararCon?: boolean;
+}
+
+export function ReporteReservasView({
+  fechaDesde,
+  fechaHasta,
+  compararCon,
+}: ReporteReservasViewProps) {
+  const [data, setData] = useState<ReporteReservasResuelto>(REPORTE_VACIO);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    async function cargarReporte() {
-      try {
-        const res = await reporteService.getReporteReservas();
-        if (res) {
-          setData(prev => ({
-            ...prev,
-            kpi: {
-              ...prev.kpi,
-              reservasTotales: res.totalReservas || prev.kpi.reservasTotales,
-              porcentajeOcupacion:
-                res.tasaOcupacionPorcentaje || prev.kpi.porcentajeOcupacion,
-              tasaInasistencias:
-                Math.round(
-                  ((res.canceladas + res.noAsistidas) /
-                    (res.totalReservas || 1)) *
-                    100
-                ) || prev.kpi.tasaInasistencias,
-            },
-            distribucionPorEstado: [
-              {
-                estado: "Atendidas",
-                cantidad: res.atendidas || 0,
-                porcentaje: Math.round(
-                  ((res.atendidas || 0) / (res.totalReservas || 1)) * 100
-                ),
-              },
-              {
-                estado: "Canceladas",
-                cantidad: res.canceladas || 0,
-                porcentaje: Math.round(
-                  ((res.canceladas || 0) / (res.totalReservas || 1)) * 100
-                ),
-              },
-              {
-                estado: "No asistidas",
-                cantidad: res.noAsistidas || 0,
-                porcentaje: Math.round(
-                  ((res.noAsistidas || 0) / (res.totalReservas || 1)) * 100
-                ),
-              },
-            ],
-          }));
-        }
-      } catch {
-        // Fallback a REPORTE_RESERVAS_MOCK
-      }
-    }
-    cargarReporte();
-  }, []);
+    getReporteReservas({ fechaDesde, fechaHasta, compararCon }).then(res => {
+      setData(res);
+      setCargando(false);
+    });
+  }, [fechaDesde, fechaHasta, compararCon]);
 
   const {
     kpi,
@@ -80,6 +67,26 @@ export function ReporteReservasView() {
   const maxHora = Math.max(...distribucionPorHora.map(p => p.cantidad), 1);
   const maxDia = Math.max(...distribucionPorDiaSemana.map(p => p.cantidad), 1);
 
+  if (cargando) {
+    return (
+      <Card>
+        <p className="py-8 text-center text-sm text-brand-muted">
+          Cargando reporte de reservas...
+        </p>
+      </Card>
+    );
+  }
+
+  if (kpi.reservasTotales === 0) {
+    return (
+      <Card>
+        <p className="py-8 text-center text-sm text-brand-muted">
+          Sin reservas registradas en el período seleccionado.
+        </p>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6 text-sm text-panel-sidebar">
       {/* 1. KPIs principales con Variación */}
@@ -92,7 +99,8 @@ export function ReporteReservasView() {
             </span>
             {kpi.variacionReservasTotales !== undefined && (
               <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-sm font-bold text-emerald-800">
-                +{kpi.variacionReservasTotales}% vs anterior
+                {kpi.variacionReservasTotales >= 0 ? "+" : ""}
+                {kpi.variacionReservasTotales}% vs anterior
               </span>
             )}
           </div>
@@ -112,7 +120,8 @@ export function ReporteReservasView() {
             </span>
             {kpi.variacionPorcentajeOcupacion !== undefined && (
               <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-sm font-bold text-emerald-800">
-                +{kpi.variacionPorcentajeOcupacion}% vs anterior
+                {kpi.variacionPorcentajeOcupacion >= 0 ? "+" : ""}
+                {kpi.variacionPorcentajeOcupacion}% vs anterior
               </span>
             )}
           </div>
@@ -132,7 +141,7 @@ export function ReporteReservasView() {
             </span>
             {kpi.variacionTasaInasistencias !== undefined && (
               <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-sm font-bold text-emerald-800">
-                {kpi.variacionTasaInasistencias}% mejora
+                {kpi.variacionTasaInasistencias}% vs anterior
               </span>
             )}
           </div>
@@ -146,57 +155,59 @@ export function ReporteReservasView() {
       </div>
 
       {/* 2. Gráfico de Evolución Temporal */}
-      <Card>
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
-          <div>
-            <h3 className="text-sm font-bold text-panel-sidebar">
-              Evolución Temporal de Reservas e Ingresos
-            </h3>
-            <p className="text-sm text-brand-muted">
-              Comportamiento diario/semanal durante el rango seleccionado
-            </p>
+      {evolucionTemporal.length > 0 && (
+        <Card>
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+            <div>
+              <h3 className="text-sm font-bold text-panel-sidebar">
+                Evolución Temporal de Reservas e Ingresos
+              </h3>
+              <p className="text-sm text-brand-muted">
+                Comportamiento diario/semanal durante el rango seleccionado
+              </p>
+            </div>
+            <div className="flex items-center gap-4 text-sm font-semibold text-panel-sidebar">
+              <span className="flex items-center gap-1.5">
+                <span className="h-3 w-3 rounded-full bg-panel-sidebar inline-block" />{" "}
+                Reservas (N°)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-3 w-3 rounded-full bg-slate-400 inline-block" />{" "}
+                Ingresos ($ CLP)
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-4 text-sm font-semibold text-panel-sidebar">
-            <span className="flex items-center gap-1.5">
-              <span className="h-3 w-3 rounded-full bg-panel-sidebar inline-block" />{" "}
-              Reservas (N°)
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-3 w-3 rounded-full bg-slate-400 inline-block" />{" "}
-              Ingresos ($ CLP)
-            </span>
-          </div>
-        </div>
 
-        <div className="h-48 flex items-end justify-between gap-2 pt-6 border-b border-brand-border pb-2">
-          {evolucionTemporal.map(item => {
-            const alturaPct = Math.round(
-              (item.reservas / maxReservasEvolucion) * 100
-            );
-            return (
-              <div
-                key={item.periodo}
-                className="flex-1 flex flex-col items-center gap-2 group relative"
-              >
-                <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-panel-sidebar text-white text-xs py-1 px-2 rounded pointer-events-none whitespace-nowrap z-10">
-                  {item.reservas} citas | $
-                  {item.ingresos.toLocaleString("es-CL")}
-                </div>
-                <span className="text-xs font-bold text-panel-sidebar">
-                  {item.reservas}
-                </span>
+          <div className="h-48 flex items-end justify-between gap-2 pt-6 border-b border-brand-border pb-2">
+            {evolucionTemporal.map(item => {
+              const alturaPct = Math.round(
+                (item.reservas / maxReservasEvolucion) * 100
+              );
+              return (
                 <div
-                  style={{ height: `${alturaPct}%` }}
-                  className="w-full max-w-[36px] rounded-t-lg bg-panel-sidebar transition-all group-hover:opacity-80"
-                />
-                <span className="text-xs font-semibold text-brand-muted mt-1">
-                  {item.periodo}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </Card>
+                  key={item.periodo}
+                  className="flex-1 flex flex-col items-center gap-2 group relative"
+                >
+                  <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-panel-sidebar text-white text-xs py-1 px-2 rounded pointer-events-none whitespace-nowrap z-10">
+                    {item.reservas} citas | $
+                    {item.ingresos.toLocaleString("es-CL")}
+                  </div>
+                  <span className="text-xs font-bold text-panel-sidebar">
+                    {item.reservas}
+                  </span>
+                  <div
+                    style={{ height: `${alturaPct}%` }}
+                    className="w-full max-w-[36px] rounded-t-lg bg-panel-sidebar transition-all group-hover:opacity-80"
+                  />
+                  <span className="text-xs font-semibold text-brand-muted mt-1">
+                    {item.periodo}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
 
       {/* 3. Distribuciones */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

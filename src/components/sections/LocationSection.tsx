@@ -5,8 +5,7 @@ import React, { useEffect, useState } from "react";
 import {
   defaultLandingConfig,
   LandingConfigData,
-  landingConfigService,
-} from "@/lib/services/landingConfig.service";
+} from "@/lib/panel/data/landing-config";
 
 export default function LocationSection({
   config,

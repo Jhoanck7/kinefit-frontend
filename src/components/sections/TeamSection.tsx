@@ -6,10 +6,8 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   defaultLandingConfig,
   LandingConfigData,
-  landingConfigService,
-} from "@/lib/services/landingConfig.service";
-import { specialistService } from "@/lib/services/specialist.service";
-import { BackendSpecialist, SanityTeamMemberItem } from "@/types";
+} from "@/lib/panel/data/landing-config";
+import { SanityTeamMemberItem } from "@/types";
 
 interface TeamSectionProps {
   initialTeam?: SanityTeamMemberItem[] | null;
@@ -48,8 +46,8 @@ export default function TeamSection({
           role: s.cargo || "Kinesiólogo",
           specialty:
             s.descripcion ||
-            (s.servicio?.nombre
-              ? `Especialista en ${s.servicio.nombre}`
+            (s.servicios?.length
+              ? `Especialista en ${s.servicios.map((sv: { nombre: string }) => sv.nombre).join(", ")}`
               : "Kinesiólogo(a) Clínico(a)"),
           email: s.email || "contacto@kinefitchile.com",
           image: s.fotoUrl || s.imageUrl || defaultImg,

@@ -1,0 +1,19 @@
+export { AgendaService, agendaService } from "./agenda-service";
+export { AppointmentService, appointmentService } from "./appointment-service";
+export { AuthService, authService } from "./auth-service";
+export { BaseApiService } from "./base-api-service";
+export { CitaService, citaService } from "./cita-service";
+export {
+  EspecialistaService,
+  especialistaService,
+} from "./especialista-service";
+export { FichaService, fichaService } from "./ficha-service";
+export {
+  LandingConfigService,
+  landingConfigService,
+} from "./landing-config-service";
+export { MediaService, mediaService } from "./media-service";
+export { PacienteService, pacienteService } from "./paciente-service";
+export { ReporteService, reporteService } from "./reporte-service";
+export { TransaccionService, transaccionService } from "./transaccion-service";
+export { VentaService, ventaService } from "./venta-service";

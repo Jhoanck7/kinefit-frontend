@@ -5,6 +5,7 @@ import { JetBrains_Mono } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 
 import { RelojPanelProvider } from "@/lib/panel/reloj";
+import { ReactQueryProvider } from "@/providers";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
@@ -35,7 +36,9 @@ export default function PanelRootLayout({
       </head>
       <body className="min-h-full font-sans">
         <SessionProvider>
-          <RelojPanelProvider>{children}</RelojPanelProvider>
+          <ReactQueryProvider>
+            <RelojPanelProvider>{children}</RelojPanelProvider>
+          </ReactQueryProvider>
         </SessionProvider>
       </body>
     </html>

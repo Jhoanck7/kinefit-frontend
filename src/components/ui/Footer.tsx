@@ -6,9 +6,9 @@ import React, { useEffect, useState } from "react";
 import { NAV_LINKS } from "@/lib/constants";
 import {
   defaultLandingConfig,
+  getLandingConfig,
   LandingConfigData,
-  landingConfigService,
-} from "@/lib/services/landingConfig.service";
+} from "@/lib/panel/data/landing-config";
 
 export default function Footer() {
   const [config, setConfig] = useState<LandingConfigData>(defaultLandingConfig);
@@ -16,7 +16,7 @@ export default function Footer() {
   useEffect(() => {
     async function loadConfig() {
       try {
-        const data = await landingConfigService.getConfig();
+        const data = await getLandingConfig();
         if (data) setConfig(data);
       } catch (err) {
         console.warn("Error cargando configuración en Footer:", err);

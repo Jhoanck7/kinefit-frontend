@@ -1,4 +1,5 @@
-import { FichaBackendDto, fichaService } from "@/lib/services/ficha.service";
+import { FichaResponse, FichaResumenResponse } from "@/models/responses";
+import { fichaService } from "@/services";
 
 import { Ficha } from "../domain/tipos";
 import { FICHAS } from "./_seed/fichas";
@@ -15,78 +16,93 @@ export interface FichaResuelta extends Omit<
   cita: CitaResuelta;
 }
 
-function mapBackendDtoToResuelta(dto: FichaBackendDto): FichaResuelta {
-  const fechaCita = dto.citaFecha ? new Date(dto.citaFecha) : new Date();
-  const fechaCreacionRaw = dto.createdAt || dto.creadaEn;
-  const fechaCreacion = fechaCreacionRaw
-    ? new Date(fechaCreacionRaw)
-    : fechaCita;
-  const nombreCreador =
-    dto.creadoPorNombre ||
-    dto.registradaPor ||
-    (dto.creadoPorUsuarioId
-      ? `Usuario #${dto.creadoPorUsuarioId}`
-      : "Personal de Salud");
+function tipoLegible(dto: { tipo: string; tipoNombre?: string }): string {
+  return (
+    dto.tipoNombre ||
+    (dto.tipo === "Recomendacion"
+      ? "Recomendación de Masoterapia"
+      : "Ficha Clínica")
+  );
+}
 
+function pacienteVacio(id: string): PacienteResuelto {
+  return {
+    id,
+    nombre: "Paciente",
+    apellido: "",
+    rut: "",
+    correo: "",
+    telefono: "",
+    origenRegistro: "manual",
+    creadoHaceDias: 0,
+  };
+}
+
+function citaVacia(id: string, paciente: PacienteResuelto): CitaResuelta {
+  return {
+    id,
+    servicio: "kinesiologia",
+    horaInicio: "09:00",
+    horaTermino: "10:00",
+    estado: "atendida",
+    origen: "manual",
+    fecha: new Date(),
+    creadaEn: new Date(),
+    paciente,
+    especialista: {
+      id: "1",
+      nombre: "Especialista",
+      cargo: "Profesional",
+      servicios: [],
+    },
+    historial: [],
+  };
+}
+
+// El listado (FichaResumenResponse) trae datos de paciente/fecha pero no
+// contenido ni adjuntos; el detalle (FichaResponse) es al revés. Se arman
+// vistas resueltas distintas según cuál llegó.
+function mapResumenAResuelta(dto: FichaResumenResponse): FichaResuelta {
+  const paciente: PacienteResuelto = {
+    id: String(dto.pacienteId),
+    nombre: dto.pacienteNombre.split(" ")[0] || "Paciente",
+    apellido: dto.pacienteNombre.split(" ").slice(1).join(" "),
+    rut: dto.pacienteRut || "",
+    correo: "",
+    telefono: "",
+    origenRegistro: "manual",
+    creadoHaceDias: 0,
+  };
   return {
     id: String(dto.id),
-    formatoId: dto.formatoId || "general",
-    tipo:
-      dto.tipoFicha ||
-      (dto.tipo === "Recomendacion"
-        ? "Recomendación de Masoterapia"
-        : "Ficha Clínica"),
-    registradaPor: nombreCreador,
-    creadaEn: fechaCreacion,
+    formatoId: "general",
+    tipo: tipoLegible(dto),
+    registradaPor: dto.creadoPorNombre || `Usuario #${dto.creadoPorUsuarioId}`,
+    creadaEn: new Date(dto.createdAt),
+    contenido: {},
+    adjuntos: [],
+    paciente,
+    cita: {
+      ...citaVacia(String(dto.citaId), paciente),
+      fecha: new Date(dto.fechaAtencion),
+      creadaEn: new Date(dto.createdAt),
+    },
+  };
+}
+
+async function mapDetalleAResuelta(dto: FichaResponse): Promise<FichaResuelta> {
+  const citaId = String(dto.citaId);
+  const cita = (await getCita(citaId)) || citaVacia(citaId, pacienteVacio("1"));
+  return {
+    id: String(dto.id),
+    formatoId: "general",
+    tipo: tipoLegible(dto),
+    registradaPor: `Usuario #${dto.creadoPorUsuarioId}`,
+    creadaEn: new Date(dto.createdAt),
     contenido: dto.contenido || {},
     adjuntos: dto.adjuntos ? dto.adjuntos.map(a => a.nombreOriginal) : [],
-    paciente: {
-      id: String(dto.pacienteId || 1),
-      nombre: dto.pacienteNombre
-        ? dto.pacienteNombre.split(" ")[0]
-        : "Paciente",
-      apellido: dto.pacienteNombre
-        ? dto.pacienteNombre.split(" ").slice(1).join(" ")
-        : "",
-      rut: dto.pacienteRut || "",
-      correo: "",
-      telefono: "",
-      origenRegistro: "manual",
-      creadoHaceDias: 0,
-    },
-    cita: {
-      id: String(dto.citaId),
-      servicio: dto.servicioNombre?.toLowerCase().includes("kinesiol")
-        ? "kinesiologia"
-        : "masajes",
-      horaInicio: dto.citaHoraInicio || "09:00",
-      horaTermino: dto.citaHoraTermino || "10:00",
-      estado: "atendida",
-      origen: "manual",
-      fecha: fechaCita,
-      creadaEn: fechaCita,
-      paciente: {
-        id: String(dto.pacienteId || 1),
-        nombre: dto.pacienteNombre
-          ? dto.pacienteNombre.split(" ")[0]
-          : "Paciente",
-        apellido: dto.pacienteNombre
-          ? dto.pacienteNombre.split(" ").slice(1).join(" ")
-          : "",
-        rut: dto.pacienteRut || "",
-        correo: "",
-        telefono: "",
-        origenRegistro: "manual",
-        creadoHaceDias: 0,
-      },
-      especialista: {
-        id: String(dto.especialistaId || 1),
-        nombre: nombreCreador,
-        cargo: "Especialista",
-        servicios: [],
-      },
-      historial: [],
-    },
+    paciente: cita.paciente,
+    cita,
   };
 }
 
@@ -102,35 +118,8 @@ async function resolverFichaSeed(
   hoy: Date
 ): Promise<FichaResuelta> {
   const { pacienteId, citaId, creadaOffsetDias, ...resto } = ficha;
-  const paciente = (await getPaciente(pacienteId)) || {
-    id: pacienteId,
-    nombre: "Paciente",
-    apellido: "",
-    rut: "12.345.678-9",
-    correo: "",
-    telefono: "",
-    origenRegistro: "manual",
-    creadoHaceDias: 0,
-  };
-
-  const cita = (await getCita(citaId, hoy)) || {
-    id: citaId,
-    servicio: "kinesiologia",
-    horaInicio: "10:00",
-    horaTermino: "10:45",
-    estado: "atendida",
-    origen: "manual",
-    fecha: hoy,
-    creadaEn: hoy,
-    paciente,
-    especialista: {
-      id: "esp-valeria",
-      nombre: "Valeria Araneda",
-      cargo: "Kinesióloga",
-      servicios: ["kinesiologia"],
-    },
-    historial: [],
-  };
+  const paciente = (await getPaciente(pacienteId)) || pacienteVacio(pacienteId);
+  const cita = (await getCita(citaId, hoy)) || citaVacia(citaId, paciente);
 
   return {
     ...resto,
@@ -157,14 +146,14 @@ export async function listFichas(
         ? filtro.hasta.toISOString().split("T")[0]
         : undefined,
     });
-    if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-      return res.data.map(mapBackendDtoToResuelta);
+    const items = res.data.data.items;
+    if (items.length > 0) {
+      return items.map(mapResumenAResuelta);
     }
   } catch {
     // Error backend
   }
 
-  // Fallback a seed data
   const todas = await Promise.all(
     FICHAS.map(f => resolverFichaSeed(f, refHoy))
   );
@@ -191,11 +180,8 @@ export async function getFicha(
   try {
     const numId = parseInt(id.replace(/\D/g, ""), 10);
     if (!isNaN(numId)) {
-      const apiData = await fichaService.getById(numId);
-      if (apiData) {
-        const resuelta = mapBackendDtoToResuelta(apiData);
-        return resuelta;
-      }
+      const res = await fichaService.getById(numId);
+      return await mapDetalleAResuelta(res.data.data);
     }
   } catch {
     // Error
@@ -213,9 +199,13 @@ export async function fichasDelPaciente(
   const refHoy = _hoy ?? new Date();
 
   try {
-    const apiData = await fichaService.getHistorialPorPaciente(pacienteId);
-    if (apiData && Array.isArray(apiData) && apiData.length > 0) {
-      return apiData.map(mapBackendDtoToResuelta);
+    const numId = parseInt(pacienteId.replace(/\D/g, ""), 10);
+    if (!isNaN(numId)) {
+      const res = await fichaService.getHistorialPorPaciente(numId);
+      const data = res.data.data;
+      if (data.length > 0) {
+        return Promise.all(data.map(mapDetalleAResuelta));
+      }
     }
   } catch {
     // Error backend
@@ -237,8 +227,8 @@ export async function fichaDeLaCita(
     const numId = parseInt(citaId.replace(/\D/g, ""), 10);
     if (!isNaN(numId)) {
       const res = await fichaService.getAll();
-      const hallada = res?.data?.find(f => f.citaId === numId);
-      if (hallada) return mapBackendDtoToResuelta(hallada);
+      const hallada = res.data.data.items.find(f => f.citaId === numId);
+      if (hallada) return mapResumenAResuelta(hallada);
     }
   } catch {
     // Error backend
@@ -252,9 +242,7 @@ export async function fichaDeLaCita(
 export async function totalFichas(): Promise<number> {
   try {
     const res = await fichaService.getAll();
-    if (res?.total !== undefined && res.total > 0) return res.total;
-    if (res?.data && Array.isArray(res.data) && res.data.length > 0)
-      return res.data.length;
+    return res.data.data.total;
   } catch {
     // Error backend
   }

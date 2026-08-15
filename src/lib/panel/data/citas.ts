@@ -1,4 +1,5 @@
-import { CitaBackendDto, citaService } from "@/lib/services/cita.service";
+import { CitaDetalleResponse, CitaResumenResponse } from "@/models/responses";
+import { citaService, pacienteService } from "@/services";
 
 import { fechaISO } from "../domain/formato";
 import {
@@ -70,6 +71,26 @@ function mapEstadoBackendToDomain(estadoBackend: string): CodigoEstadoCita {
   return "por_confirmar";
 }
 
+function servicioDominio(nombre: string): Servicio {
+  return nombre.toLowerCase().includes("kinesiol") ? "kinesiologia" : "masajes";
+}
+
+// El backend no informa horaFin en el resumen de listado; se estima con la
+// misma heurística (+60 min) que usan los servicios de sesión larga.
+function estimarHoraFin(horaInicio: string, servicioNombre: string): string {
+  const esLargo =
+    servicioNombre.toLowerCase().includes("premium") ||
+    servicioNombre.toLowerCase().includes("pareja") ||
+    servicioNombre.toLowerCase().includes("reductiv") ||
+    servicioNombre.toLowerCase().includes("kinesiolog");
+  const [h, m] = horaInicio.split(":").map(Number);
+  if (isNaN(h) || isNaN(m)) return horaInicio;
+  const totalMin = h * 60 + m + (esLargo ? 60 : 45);
+  const hFin = Math.floor(totalMin / 60);
+  const mFin = totalMin % 60;
+  return `${hFin.toString().padStart(2, "0")}:${mFin.toString().padStart(2, "0")}`;
+}
+
 function resolverPaciente(id: string): PacienteResuelto {
   const paciente = PACIENTES.find(p => p.id === id);
   if (!paciente) {
@@ -135,171 +156,91 @@ function resolverCita(cita: Cita, hoy: Date): CitaResuelta {
   };
 }
 
-// Mapper flexible y robusto para CitaResumenDTO (getAll) y CitaDetalleDTO (getById)
-function mapBackendCitaToResuelta(dto: CitaBackendDto): CitaResuelta {
-  const fechaCita = dto.fecha ? new Date(dto.fecha) : new Date();
-
-  // 1. Especialista
-  let espId = "1";
-  let espNombre = "Especialista";
-  let espCargo = "Profesional";
-
-  if (dto.especialista && typeof dto.especialista === "object") {
-    const objEsp = dto.especialista as {
-      id?: number;
-      nombre?: string;
-      cargo?: string;
-    };
-    espId = String(objEsp.id || 1);
-    espNombre = objEsp.nombre || "Especialista";
-    espCargo = objEsp.cargo || "Profesional";
-  } else {
-    const nombreStr =
-      typeof dto.especialista === "string"
-        ? dto.especialista
-        : dto.especialistaNombre || "";
-    espNombre = nombreStr || "Especialista";
-    if (dto.especialistaId) {
-      espId = String(dto.especialistaId);
-    } else if (nombreStr.toLowerCase().includes("franchesca")) {
-      espId = "1";
-    } else if (nombreStr.toLowerCase().includes("valeria")) {
-      espId = "2";
-    } else if (nombreStr.toLowerCase().includes("constanza")) {
-      espId = "3";
-    }
-  }
-
-  // 2. Servicio
-  let servNombre = "";
-  if (dto.servicio && typeof dto.servicio === "object") {
-    servNombre = (dto.servicio as { nombre?: string }).nombre || "";
-  } else if (typeof dto.servicio === "string") {
-    servNombre = dto.servicio;
-  } else if (dto.servicioNombre) {
-    servNombre = dto.servicioNombre;
-  }
-  const servDomain: Servicio = servNombre.toLowerCase().includes("kinesiol")
-    ? "kinesiologia"
-    : "masajes";
-
-  // 3. Paciente
-  let pId = "1";
-  let pNombre = "Paciente";
-  let pApellido = "";
-  let pRut = "";
-  let pEmail = "";
-  let pTelefono = "";
-  let pConvenioNombre: string | undefined = undefined;
-  let pConvenioId: string | undefined = undefined;
-
-  if (dto.paciente && typeof dto.paciente === "object") {
-    pId = dto.paciente.id
-      ? String(dto.paciente.id)
-      : String(dto.pacienteId || 1);
-    pNombre = dto.paciente.nombre || "Paciente";
-    pApellido = dto.paciente.apellido || "";
-    pRut = dto.paciente.rut || dto.pacienteRut || "";
-    pEmail = dto.paciente.email || "";
-    pTelefono = dto.paciente.telefono || "";
-    const pObj = dto.paciente as Record<string, unknown>;
-    if (pObj.convenioNombre) pConvenioNombre = String(pObj.convenioNombre);
-    else if (pObj.empresaNombre) pConvenioNombre = String(pObj.empresaNombre);
-    if (pObj.convenioId) pConvenioId = String(pObj.convenioId);
-  } else {
-    pId = String(dto.pacienteId || 1);
-    const full = dto.pacienteNombre || "Paciente";
-    const partes = full.split(" ");
-    pNombre = partes[0] || "Paciente";
-    pApellido = partes.slice(1).join(" ") || "";
-    pRut = dto.pacienteRut || "";
-  }
-
-  // 4. Tiempos
-  const horaIni = dto.horaInicio
-    ? String(dto.horaInicio).substring(0, 5)
-    : "09:00";
-  let horaFin =
-    dto.horaTermino || dto.horaFin
-      ? String(dto.horaTermino || dto.horaFin).substring(0, 5)
-      : "10:00";
-
-  const esServicioLargo =
-    servNombre.toLowerCase().includes("premium") ||
-    servNombre.toLowerCase().includes("pareja") ||
-    servNombre.toLowerCase().includes("reductiv") ||
-    servNombre.toLowerCase().includes("kinesiolog");
-
-  if (esServicioLargo && horaIni) {
-    const [h, m] = horaIni.split(":").map(Number);
-    if (!isNaN(h) && !isNaN(m)) {
-      const totalMin = h * 60 + m + 60;
-      const hFin = Math.floor(totalMin / 60);
-      const mFin = totalMin % 60;
-      horaFin = `${hFin.toString().padStart(2, "0")}:${mFin.toString().padStart(2, "0")}`;
-    }
-  }
-
-  // 5. Notas
-  let notaPac: string | undefined = undefined;
-  let notaInt: string | undefined = undefined;
-  if (typeof dto.notas === "string" && dto.notas.trim()) {
-    const partes = dto.notas.split("|");
-    notaPac = partes[0]?.trim();
-    notaInt = partes[1]?.trim();
-  }
-
-  // 6. Transacción
-  let montoAnticipo: number | undefined = undefined;
-  let webpayTransaccionId: string | undefined = undefined;
-  if (dto.transaccion && typeof dto.transaccion === "object") {
-    montoAnticipo = (dto.transaccion as { monto?: number }).monto;
-    webpayTransaccionId = (dto.transaccion as { buyOrder?: string }).buyOrder;
-  }
-
-  const fechaCreada = dto.creadaEn || dto.createdAt;
+// GET /citas (listado) trae paciente y especialista como datos livianos
+// (sin rut/telefono/convenio ni cargo real por id). Suficiente para tarjetas
+// de agenda; el detalle completo se enriquece en mapDetalleToResuelta.
+function mapResumenToResuelta(
+  dto: CitaResumenResponse,
+  especialistaIdConocido?: number
+): CitaResuelta {
+  const horaIni = dto.horaInicio.substring(0, 5);
+  const horaFin = dto.horaFin
+    ? dto.horaFin.substring(0, 5)
+    : estimarHoraFin(horaIni, dto.servicio);
 
   return {
     id: String(dto.id),
-    servicio: servDomain,
-    servicioNombre:
-      servNombre ||
-      (servDomain === "kinesiologia"
-        ? "Kinesiología"
-        : "Masajes (masoterapia)"),
+    servicio: servicioDominio(dto.servicio),
+    servicioNombre: dto.servicio,
+    horaInicio: horaIni,
+    horaTermino: horaFin,
+    estado: mapEstadoBackendToDomain(dto.estado),
+    origen: "manual",
+    fecha: new Date(dto.fecha),
+    creadaEn: new Date(dto.createdAt),
+    paciente: {
+      id: String(dto.paciente.id),
+      nombre: dto.paciente.nombre,
+      apellido: dto.paciente.apellido,
+      rut: "",
+      correo: dto.paciente.email,
+      telefono: "",
+      origenRegistro: "manual",
+      creadoHaceDias: 0,
+    },
+    especialista: {
+      id: String(especialistaIdConocido ?? "0"),
+      nombre: dto.especialista,
+      cargo: "Profesional",
+      servicios: [],
+    },
+    historial: [],
+  };
+}
+
+// GET /citas/{id} trae la relación completa (bloque, transacción, montos)
+// pero solo id/nombre/apellido/email del paciente; el resto se enriquece
+// con getPaciente(). El backend nunca devuelve NotaPaciente/NotaInterna en
+// ninguna respuesta de citas aunque las persiste (gap de API, no se inventa).
+async function mapDetalleToResuelta(
+  dto: CitaDetalleResponse
+): Promise<CitaResuelta> {
+  const horaIni = dto.horaInicio.substring(0, 5);
+  const horaFin = dto.horaFin.substring(0, 5);
+  const pacienteCompleto = await getPaciente(String(dto.paciente.id));
+
+  return {
+    id: String(dto.id),
+    servicio: servicioDominio(dto.servicio.nombre),
+    servicioNombre: dto.servicio.nombre,
     horaInicio: horaIni,
     horaTermino: horaFin,
     estado: mapEstadoBackendToDomain(dto.estado),
     origen: dto.origen === "Web" ? "web" : "manual",
-    fecha: fechaCita,
-    creadaEn: fechaCreada ? new Date(fechaCreada) : fechaCita,
-    paciente: {
-      id: pId,
-      nombre: pNombre,
-      apellido: pApellido,
-      rut: pRut,
-      correo: pEmail,
-      telefono: pTelefono,
+    fecha: new Date(dto.fecha),
+    creadaEn: new Date(dto.createdAt),
+    paciente: pacienteCompleto ?? {
+      id: String(dto.paciente.id),
+      nombre: dto.paciente.nombre,
+      apellido: dto.paciente.apellido,
+      rut: "",
+      correo: dto.paciente.email,
+      telefono: "",
       origenRegistro: "manual",
       creadoHaceDias: 0,
-      convenio: pConvenioNombre
-        ? { id: pConvenioId || "1", nombre: pConvenioNombre }
-        : undefined,
     },
     especialista: {
-      id: espId,
-      nombre: espNombre,
-      cargo: espCargo,
-      servicios: ["kinesiologia"],
+      id: String(dto.especialista.id),
+      nombre: dto.especialista.nombre,
+      cargo: dto.especialista.cargo,
+      servicios: [],
     },
-    montoAnticipo,
-    webpayTransaccionId,
-    notas:
-      notaPac || notaInt ? { paciente: notaPac, interna: notaInt } : undefined,
+    montoAnticipo: dto.transaccion?.monto,
+    webpayTransaccionId: dto.transaccion?.buyOrder,
     historial: [
       {
         estado: mapEstadoBackendToDomain(dto.estado),
-        fecha: fechaCreada ? new Date(fechaCreada) : fechaCita,
+        fecha: new Date(dto.createdAt),
         responsable: dto.origen === "Web" ? "Sistema Web" : "Personal",
       },
     ],
@@ -326,7 +267,9 @@ export async function getAgendaDia(
       fechaHasta: fechaObjetivo,
     });
 
-    const citasApi = (res?.data || []).map(mapBackendCitaToResuelta);
+    const citasApi = res.data.data.items.map(dto =>
+      mapResumenToResuelta(dto, targetEspId)
+    );
 
     const todosBloqueos = await listBloqueosEspecialista(
       especialistaId,
@@ -371,21 +314,8 @@ export async function getCita(
   try {
     const numId = parseInt(id.replace(/\D/g, ""), 10);
     if (!isNaN(numId)) {
-      const apiData = await citaService.getById(numId);
-      if (apiData) {
-        const citaRes = mapBackendCitaToResuelta(apiData);
-        if (!citaRes.paciente.convenio && citaRes.paciente.id) {
-          try {
-            const pac = await getPaciente(citaRes.paciente.id);
-            if (pac?.convenio) {
-              citaRes.paciente.convenio = pac.convenio;
-            }
-          } catch {
-            // Ignorar
-          }
-        }
-        return citaRes;
-      }
+      const res = await citaService.getById(numId);
+      return await mapDetalleToResuelta(res.data.data);
     }
   } catch {
     // Error al obtener de backend, buscar en semilla
@@ -395,6 +325,10 @@ export async function getCita(
   return citaSeed ? resolverCita(citaSeed, refHoy) : undefined;
 }
 
+// El backend no expone un filtro por pacienteId en GET /citas (ni un endpoint
+// equivalente); usar ese parámetro devolvía citas de otros pacientes
+// mezcladas (bug real, reportado). En su lugar se usa GET /pacientes/{id},
+// que ya trae contadores e historial correctamente acotados a ese paciente.
 export async function historialPaciente(
   pacienteId: string,
   _hoy?: Date
@@ -404,13 +338,36 @@ export async function historialPaciente(
   try {
     const numId = parseInt(pacienteId.replace(/\D/g, ""), 10);
     if (!isNaN(numId)) {
-      const res = await citaService.getAll({ pacienteId: numId } as Record<
-        string,
-        unknown
-      >);
-      if (res?.data && res.data.length > 0) {
-        return res.data
-          .map(mapBackendCitaToResuelta)
+      const [perfilRes, paciente] = await Promise.all([
+        pacienteService.getById(numId, 1, 100),
+        getPaciente(pacienteId),
+      ]);
+      const historial = perfilRes.data.data.historial;
+      if (historial.length > 0 && paciente) {
+        return historial
+          .map(h => {
+            const horaIni = h.horaInicio.substring(0, 5);
+            return {
+              id: String(h.id),
+              servicio: servicioDominio(h.servicio),
+              servicioNombre: h.servicio,
+              horaInicio: horaIni,
+              horaTermino: estimarHoraFin(horaIni, h.servicio),
+              estado: mapEstadoBackendToDomain(h.estado),
+              origen:
+                h.origen === "Web" ? ("web" as const) : ("manual" as const),
+              fecha: new Date(h.fecha),
+              creadaEn: new Date(h.fecha),
+              paciente,
+              especialista: {
+                id: "0",
+                nombre: h.especialista,
+                cargo: "Profesional",
+                servicios: [],
+              },
+              historial: [],
+            };
+          })
           .sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
       }
     }
@@ -427,6 +384,21 @@ export async function contadoresPaciente(
   pacienteId: string,
   _hoy?: Date
 ): Promise<{ atendidas: number; canceladas: number; noAsistidas: number }> {
+  try {
+    const numId = parseInt(pacienteId.replace(/\D/g, ""), 10);
+    if (!isNaN(numId)) {
+      const res = await pacienteService.getById(numId);
+      const c = res.data.data.contadores;
+      return {
+        atendidas: c.citasAtendidas,
+        canceladas: c.citasCanceladas,
+        noAsistidas: c.citasNoAsistidas,
+      };
+    }
+  } catch {
+    // Fallback
+  }
+
   const historial = await historialPaciente(pacienteId, _hoy);
   return {
     atendidas: historial.filter(c => c.estado === "atendida").length,
@@ -454,8 +426,8 @@ export async function listCitasDelDia(
       fechaDesde: fechaObjetivo,
       fechaHasta: fechaObjetivo,
     });
-    if (res?.data && res.data.length > 0) {
-      return res.data.map(mapBackendCitaToResuelta);
+    if (res.data.data.items.length > 0) {
+      return res.data.data.items.map(dto => mapResumenToResuelta(dto));
     }
   } catch {
     // Fallback

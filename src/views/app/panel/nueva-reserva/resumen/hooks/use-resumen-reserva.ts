@@ -1,0 +1,185 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import { fechaISO, formatearFechaExtensa } from "@/lib/panel/domain/formato";
+import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
+import { agendaService, citaService } from "@/services";
+
+export const PASOS_NUEVA_RESERVA = [
+  { etiqueta: "Servicio" },
+  { etiqueta: "Horario" },
+  { etiqueta: "Especialista" },
+  { etiqueta: "Paciente" },
+  { etiqueta: "Notas y resumen" },
+];
+
+export const NOMBRE_SERVICIO: Record<string, string> = {
+  embarazadas: "Embarazadas",
+  masajes_pareja: "Masajes en pareja (masoterapia)",
+  masajes: "Masajes (masoterapia)",
+  masajes_premium: "Masajes Premium (masoterapia premium)",
+  masajes_reductivos: "Masajes Reductivos",
+  voucher_regalo: "Voucher para Regalo",
+  kinesiologia: "Kinesiología",
+};
+
+// Mismo mapeo dominio→id real usado en la selección de especialista; el enum
+// de Servicio del dominio aún no tiene una fuente única compartida con el
+// catálogo real de servicios del backend.
+const MAPA_SERVICIO_ID: Record<string, number> = {
+  masajes: 1,
+  kinesiologia: 2,
+  embarazadas: 3,
+  masajes_pareja: 4,
+  masajes_premium: 5,
+  masajes_reductivos: 6,
+  voucher_regalo: 7,
+};
+
+export const useResumenReserva = () => {
+  const router = useRouter();
+  const {
+    fecha,
+    hora,
+    bloqueHorarioId,
+    pacienteId,
+    pacienteNombre,
+    especialistaId,
+    especialistaNombre,
+    servicio,
+    notaPaciente,
+    notaInterna,
+    setNotaPaciente,
+    setNotaInterna,
+    reiniciar,
+  } = useNuevaReservaStore();
+
+  const [confirmarDescarte, setConfirmarDescarte] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const nombreServicio = servicio ? NOMBRE_SERVICIO[servicio] : undefined;
+
+  const filasResumen = [
+    {
+      etiqueta: "Servicio",
+      valor: nombreServicio,
+      editar: "/panel/nueva-reserva/servicio",
+    },
+    {
+      etiqueta: "Fecha",
+      valor: fecha ? formatearFechaExtensa(fecha) : undefined,
+      editar: "/panel/nueva-reserva/horario",
+    },
+    {
+      etiqueta: "Horario",
+      valor: hora || undefined,
+      editar: "/panel/nueva-reserva/horario",
+    },
+    {
+      etiqueta: "Especialista",
+      valor: especialistaNombre || undefined,
+      editar: "/panel/nueva-reserva/especialista",
+    },
+    {
+      etiqueta: "Paciente",
+      valor: pacienteNombre || undefined,
+      editar: "/panel/nueva-reserva/paciente",
+    },
+  ];
+
+  // Actions
+  const handleConfirmarReserva = async () => {
+    if (!fecha || !hora || !pacienteId || !servicio) {
+      setErrorMsg("Faltan datos obligatorios para registrar la reserva.");
+      return;
+    }
+
+    setGuardando(true);
+    setErrorMsg(null);
+
+    try {
+      const numPacienteId = parseInt(pacienteId.replace(/\D/g, ""), 10) || 1;
+      const numEspecialistaId = especialistaId
+        ? parseInt(especialistaId.replace(/\D/g, ""), 10) || 1
+        : 1;
+      const numServicioId = MAPA_SERVICIO_ID[servicio] || 2;
+      const fechaStr = fechaISO(fecha);
+
+      let targetBloqueId = bloqueHorarioId;
+
+      if (!targetBloqueId) {
+        const agendaRes = await agendaService.getAgenda(
+          [numEspecialistaId],
+          fechaStr,
+          fechaStr
+        );
+        const dataArr = agendaRes.data.data;
+        const hBuscada = hora.substring(0, 5);
+        const bloqueHallado = dataArr.find(
+          b => b.horaInicio && b.horaInicio.substring(0, 5) === hBuscada
+        );
+        if (bloqueHallado) {
+          targetBloqueId = bloqueHallado.id;
+        }
+      }
+
+      if (!targetBloqueId) {
+        throw new Error(
+          "No se encontró el bloque horario seleccionado para esa fecha y hora. Re-selecciona el horario."
+        );
+      }
+
+      await citaService.createManual({
+        pacienteId: numPacienteId,
+        especialistaId: numEspecialistaId,
+        servicioId: numServicioId,
+        bloqueHorarioId: targetBloqueId,
+        notaPaciente: notaPaciente || undefined,
+        notaInterna: notaInterna || undefined,
+      });
+
+      router.push("/panel/nueva-reserva/listo");
+    } catch (err: unknown) {
+      console.error("Error al registrar la cita en Backend:", err);
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Ocurrió un error al guardar la cita.";
+      setErrorMsg(msg);
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  const handleAbrirConfirmarDescarte = () => setConfirmarDescarte(true);
+  const handleCerrarConfirmarDescarte = () => setConfirmarDescarte(false);
+  const handleVolver = () => router.push("/panel/nueva-reserva/paciente");
+  const handleDescartar = () => {
+    reiniciar();
+    router.push("/panel/agenda");
+  };
+
+  return {
+    // Data
+    notaPaciente,
+    notaInterna,
+    filasResumen,
+    confirmarDescarte,
+    guardando,
+    errorMsg,
+
+    // Actions
+    actions: {
+      setNotaPaciente,
+      setNotaInterna,
+      handleConfirmarReserva,
+      handleAbrirConfirmarDescarte,
+      handleCerrarConfirmarDescarte,
+      handleVolver,
+      handleDescartar,
+    },
+  };
+};

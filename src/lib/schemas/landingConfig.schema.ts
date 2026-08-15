@@ -1,4 +1,4 @@
-import { LandingConfigData } from "@/lib/services/landingConfig.service";
+import { LandingConfigData } from "@/lib/panel/data/landing-config";
 
 export type FieldType = "text" | "email" | "password" | "textarea" | "image";
 

@@ -1,8 +1,10 @@
 import { create } from "zustand";
 
-import { appointmentService } from "@/lib/services/appointment.service";
-import { authService } from "@/lib/services/auth.service";
-import { transactionService } from "@/lib/services/transaction.service";
+import {
+  appointmentService,
+  authService,
+  transaccionService,
+} from "@/services";
 import {
   BackendService,
   BackendSpecialist,
@@ -96,7 +98,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     try {
       const response = await appointmentService.getServices(true);
       set({
-        services: response.data || [],
+        services: response.data.data || [],
         isLoading: false,
         backendConnected: true,
       });
@@ -122,7 +124,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         true
       );
       set({
-        specialists: response.data || [],
+        specialists: response.data.data || [],
         isLoading: false,
         backendConnected: true,
       });
@@ -148,7 +150,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         date
       );
       set({
-        availableSlots: response.data || [],
+        availableSlots: response.data.data || [],
         isLoading: false,
         backendConnected: true,
       });
@@ -220,7 +222,8 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   authenticateWithGoogle: async (idToken: string) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await authService.loginWithGoogleToken(idToken);
+      const respuesta = await authService.loginWithGoogleToken(idToken);
+      const res = respuesta.data;
       const token = res.data.token;
       set({
         authToken: token,
@@ -316,8 +319,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
       try {
         await authService.updatePerfil(
-          rutFormatted,
-          phoneFormatted,
+          { rut: rutFormatted, telefono: phoneFormatted },
           tokenToUse
         );
       } catch (perfilErr: unknown) {
@@ -342,16 +344,16 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         tokenToUse
       );
 
-      const citaId = citaRes.data.citaId;
+      const citaId = citaRes.data.data.citaId;
       set({ createdCitaId: citaId });
 
       // 3. Iniciar Transacción real con Webpay
-      const transRes = await transactionService.iniciarTransaccion(
+      const transRes = await transaccionService.iniciarTransaccion(
         citaId,
         tokenToUse
       );
       set({
-        webpayData: transRes.data,
+        webpayData: transRes.data.data,
         isSubmitting: false,
         success: true,
       });

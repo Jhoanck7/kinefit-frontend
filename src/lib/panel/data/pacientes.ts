@@ -1,7 +1,5 @@
-import {
-  PacienteBackendDto,
-  pacienteService,
-} from "@/lib/services/paciente.service";
+import { PacienteResponse } from "@/models/responses";
+import { pacienteService } from "@/services";
 
 import { Convenio, Paciente } from "../domain/tipos";
 import { CONVENIOS } from "./_seed/convenios";
@@ -11,27 +9,28 @@ export interface PacienteResuelto extends Paciente {
   convenio?: Convenio;
 }
 
-function mapBackendDtoToResuelto(dto: PacienteBackendDto): PacienteResuelto {
+function mapBackendDtoToResuelto(dto: PacienteResponse): PacienteResuelto {
   return {
     id: String(dto.id),
     nombre: dto.nombre,
     apellido: dto.apellido,
-    rut: dto.rut,
-    correo: dto.correo || dto.email || "",
+    rut: dto.rut || "",
+    correo: dto.email || "",
     telefono: dto.telefono || "",
-    convenioId: dto.convenioId ? String(dto.convenioId) : undefined,
+    convenioId: undefined,
     origenRegistro: dto.origenRegistro === "web" ? "web" : "manual",
     creadoHaceDias: 0,
-    convenio: dto.convenioId
-      ? { id: String(dto.convenioId), nombre: dto.convenioNombre || "Convenio" }
+    convenio: dto.convenio
+      ? { id: dto.convenio, nombre: dto.convenio }
       : undefined,
   };
 }
 
 export async function listPacientes(filtro = ""): Promise<PacienteResuelto[]> {
   try {
-    const apiData = await pacienteService.getAll(filtro);
-    if (apiData && Array.isArray(apiData) && apiData.length > 0) {
+    const res = await pacienteService.getAll(filtro);
+    const apiData = res.data.data;
+    if (apiData.length > 0) {
       return apiData.map(mapBackendDtoToResuelto);
     }
   } catch {
@@ -40,10 +39,7 @@ export async function listPacientes(filtro = ""): Promise<PacienteResuelto[]> {
 
   // Fallback a seed data
   const normalizar = (s: string) =>
-    s
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
+    s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const termino = normalizar(filtro.trim());
 
   return PACIENTES.map(p => ({
@@ -71,8 +67,8 @@ export async function getPaciente(
   try {
     const numId = parseInt(id.replace(/\D/g, ""), 10);
     if (!isNaN(numId)) {
-      const apiData = await pacienteService.getById(numId);
-      if (apiData) return mapBackendDtoToResuelto(apiData);
+      const res = await pacienteService.getById(numId);
+      if (res.data.data) return mapBackendDtoToResuelto(res.data.data);
     }
   } catch {
     // Error backend
@@ -95,8 +91,8 @@ export async function pacienteConRut(
 ): Promise<PacienteResuelto | undefined> {
   try {
     const res = await pacienteService.verificarRut(rut);
-    if (res?.existe && res.paciente) {
-      return mapBackendDtoToResuelto(res.paciente);
+    if (res.data.data.existe && res.data.data.paciente) {
+      return mapBackendDtoToResuelto(res.data.data.paciente);
     }
   } catch {
     // Error backend
@@ -111,8 +107,8 @@ export const RUT_DEMO_YA_EXISTENTE = "19.876.543-2";
 
 export async function totalPacientes(): Promise<number> {
   try {
-    const todos = await pacienteService.getAll();
-    if (todos && Array.isArray(todos) && todos.length > 0) return todos.length;
+    const res = await pacienteService.getAll();
+    if (res.data.data.length > 0) return res.data.data.length;
   } catch {
     // Error backend
   }

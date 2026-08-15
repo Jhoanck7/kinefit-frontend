@@ -7,8 +7,7 @@ import {
   defaultLandingConfig,
   GoogleReviewItem,
   LandingConfigData,
-  landingConfigService,
-} from "@/lib/services/landingConfig.service";
+} from "@/lib/panel/data/landing-config";
 
 interface SanityTestimonial {
   nombre: string;

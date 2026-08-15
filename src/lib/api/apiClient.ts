@@ -3,6 +3,18 @@ import { getSession } from "next-auth/react";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5147/api";
 
+export class ApiError extends Error {
+  status: number;
+  data: unknown;
+
+  constructor(message: string, status: number, data: unknown) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.data = data;
+  }
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -52,12 +64,12 @@ class ApiClient {
     const response = await fetch(url, { ...options, headers, body });
 
     if (!response.ok) {
-      const errorJson = await response.json().catch(() => ({ message: null }));
+      const errorJson = await response.json().catch(() => null);
       const errorMessage =
         errorJson?.message ||
         errorJson?.error ||
         `Error en el servidor backend (Código HTTP ${response.status})`;
-      throw new Error(errorMessage);
+      throw new ApiError(errorMessage, response.status, errorJson);
     }
 
     if (response.status === 204) {

@@ -1,4 +1,4 @@
-import { fichaService } from "@/lib/services/ficha.service";
+import { fichaService } from "@/services";
 
 import { Formato } from "../domain/tipos";
 
@@ -43,13 +43,13 @@ export async function listFormatos(_hoy?: Date): Promise<FormatoResuelto[]> {
     return [];
   }
 
+  // El backend no asocia una ficha a un formatoId (los formatos son un
+  // constructo solo-frontend en localStorage); se agrupa por tipo, que sí existe.
   const countFichasMap: Record<string, number> = {};
   try {
     const res = await fichaService.getAll();
-    const fichas = res?.data || [];
-    fichas.forEach(f => {
-      const fId = f.formatoId || f.tipo || "general";
-      countFichasMap[fId] = (countFichasMap[fId] || 0) + 1;
+    res.data.data.items.forEach(f => {
+      countFichasMap[f.tipo] = (countFichasMap[f.tipo] || 0) + 1;
     });
   } catch {
     // Fallback silencioso

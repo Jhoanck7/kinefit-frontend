@@ -7,9 +7,8 @@ import {
   defaultLandingConfig,
   defaultProcessSteps,
   LandingConfigData,
-  landingConfigService,
   ProcessStepItem,
-} from "@/lib/services/landingConfig.service";
+} from "@/lib/panel/data/landing-config";
 
 export default function ProcessSection({
   config,

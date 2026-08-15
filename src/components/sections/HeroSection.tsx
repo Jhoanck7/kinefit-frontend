@@ -7,8 +7,7 @@ import { HERO_COPY } from "@/lib/constants";
 import {
   defaultLandingConfig,
   LandingConfigData,
-  landingConfigService,
-} from "@/lib/services/landingConfig.service";
+} from "@/lib/panel/data/landing-config";
 import { useBookingStore } from "@/lib/store/useBookingStore";
 
 import BookingCard from "../ui/BookingCard";

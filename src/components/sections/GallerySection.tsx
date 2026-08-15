@@ -7,8 +7,7 @@ import { CAROUSEL_SLIDES } from "@/lib/constants";
 import {
   GallerySlideItem,
   LandingConfigData,
-  landingConfigService,
-} from "@/lib/services/landingConfig.service";
+} from "@/lib/panel/data/landing-config";
 
 interface SanityGalleryItem {
   title: string;

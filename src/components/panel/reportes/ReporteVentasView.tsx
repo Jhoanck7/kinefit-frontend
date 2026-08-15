@@ -9,8 +9,11 @@ import {
   Paginacion,
   Table,
 } from "@/components/panel/primitives/Table";
-import { REPORTE_VENTAS_MOCK } from "@/lib/mock/reportes";
-import { reporteService } from "@/lib/services/reporte.service";
+import {
+  descargarReporteVentasCsv,
+  getReporteVentas,
+  ReporteVentasResuelto,
+} from "@/lib/panel/data/reportes";
 
 const TAMANO_PAGINA = 8;
 
@@ -22,55 +25,50 @@ const COLUMNAS_REPORTE_VENTAS = [
   { titulo: "Monto Total ($)", className: "text-right" },
 ];
 
-export function ReporteVentasView() {
-  const [data, setData] = useState(REPORTE_VENTAS_MOCK);
+interface ReporteVentasViewProps {
+  fechaDesde?: string;
+  fechaHasta?: string;
+}
+
+export function ReporteVentasView({
+  fechaDesde,
+  fechaHasta,
+}: ReporteVentasViewProps) {
+  const [data, setData] = useState<ReporteVentasResuelto>({
+    totalVentas: 0,
+    montoTotalPeriodo: 0,
+    page: 1,
+    pageSize: TAMANO_PAGINA,
+    movimientos: [],
+  });
   const [pagina, setPagina] = useState(1);
+  const [cargando, setCargando] = useState(true);
+  const [descargando, setDescargando] = useState(false);
 
   useEffect(() => {
-    async function cargarReporte() {
-      try {
-        const res = await reporteService.getReporteVentas();
-        if (res) {
-          setData({
-            montoTotalPeriodo: res.montoTotalVendido || 0,
-            totalVentas: res.totalTransacciones || 0,
-            movimientos: (res.movimientos || []).map(m => ({
-              id: String(m.id),
-              codigo: `VTA-${String(m.id).padStart(4, "0")}`,
-              fecha: m.fecha
-                ? new Date(m.fecha).toLocaleDateString("es-CL")
-                : "Hoy",
-              pacienteId: String(m.pacienteId || "1"),
-              pacienteNombre: m.pacienteNombre || "Cliente",
-              metodoPago: m.metodoPago || "Efectivo",
-              monto: m.monto || 0,
-            })),
-          });
-        }
-      } catch {
-        // Fallback a REPORTE_VENTAS_MOCK
-      }
-    }
-    cargarReporte();
-  }, []);
+    getReporteVentas({
+      fechaDesde,
+      fechaHasta,
+      page: pagina,
+      pageSize: TAMANO_PAGINA,
+    }).then(res => {
+      setData(res);
+      setCargando(false);
+    });
+  }, [fechaDesde, fechaHasta, pagina]);
 
-  const total = data.movimientos.length;
+  const total = data.totalVentas;
   const inicio = (pagina - 1) * TAMANO_PAGINA;
-  const visibles = data.movimientos.slice(inicio, inicio + TAMANO_PAGINA);
 
   async function handleDescargarCsv() {
+    setDescargando(true);
     try {
-      await reporteService.getReporteVentas({ formato: "csv" });
-      alert("Descarga de reporte CSV enviada desde el backend.");
+      await descargarReporteVentasCsv({ fechaDesde, fechaHasta });
     } catch {
-      alert("Iniciando descarga directa en formato CSV (.csv)...");
+      alert("No se pudo generar el archivo CSV.");
+    } finally {
+      setDescargando(false);
     }
-  }
-
-  function handleDescargarExcel() {
-    alert(
-      "Iniciando descarga de reporte de ventas en formato Excel (.xlsx)..."
-    );
   }
 
   return (
@@ -103,7 +101,7 @@ export function ReporteVentasView() {
         </Card>
       </div>
 
-      {/* Acciones y Exportación (Centrado) */}
+      {/* Exportación */}
       <Card className="flex flex-wrap items-center justify-center gap-4 text-center text-sm text-panel-sidebar">
         <div>
           <h3 className="text-sm font-bold uppercase tracking-wider text-brand-muted">
@@ -113,22 +111,14 @@ export function ReporteVentasView() {
             Descarga directa para contabilidad y conciliación bancaria
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variante="secundario"
-            className="px-4 py-2 text-sm"
-            onClick={handleDescargarCsv}
-          >
-            Exportar CSV
-          </Button>
-          <Button
-            variante="primario"
-            className="px-4 py-2 text-sm"
-            onClick={handleDescargarExcel}
-          >
-            Descargar Excel
-          </Button>
-        </div>
+        <Button
+          variante="primario"
+          className="px-4 py-2 text-sm"
+          onClick={handleDescargarCsv}
+          disabled={descargando}
+        >
+          {descargando ? "Generando..." : "Exportar CSV"}
+        </Button>
       </Card>
 
       {/* Tabla de Movimientos usando la primitiva Table canónica */}
@@ -136,7 +126,7 @@ export function ReporteVentasView() {
         columnas={COLUMNAS_REPORTE_VENTAS}
         encabezado={
           <p className="font-bold text-panel-sidebar">
-            Historial de Movimientos
+            {cargando ? "Cargando..." : "Historial de Movimientos"}
           </p>
         }
         pie={
@@ -155,7 +145,7 @@ export function ReporteVentasView() {
           ) : undefined
         }
       >
-        {visibles.map(m => (
+        {data.movimientos.map(m => (
           <FilaTabla key={m.id}>
             <td className="px-4 py-3 font-bold text-panel-sidebar">
               {m.codigo}

@@ -5,18 +5,19 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/panel/primitives/Button";
 import { EmptyState } from "@/components/panel/primitives/EmptyState";
 import { Modal } from "@/components/panel/primitives/Modal";
-import { ESPECIALISTAS } from "@/lib/panel/data/_seed/especialistas";
 import {
   crearBloqueo,
   listBloqueosEspecialista,
   revertirBloqueo,
 } from "@/lib/panel/data/bloqueos";
 import { BloqueoResuelto } from "@/lib/panel/data/citas";
+import { listEspecialistas } from "@/lib/panel/data/especialistas";
 import {
   fechaISO,
   formatearFechaExtensa,
   formatearRangoHorario,
 } from "@/lib/panel/domain/formato";
+import { Especialista } from "@/lib/panel/domain/tipos";
 import { useHoyPanel } from "@/lib/panel/reloj";
 
 interface GestionBloqueosModalProps {
@@ -31,23 +32,34 @@ export function GestionBloqueosModal({
   onBloqueoCreado,
 }: GestionBloqueosModalProps) {
   const hoy = useHoyPanel();
-  const [especialistaFiltro, setEspecialistaFiltro] =
-    useState<string>("esp-franchesca");
+  const [especialistas, setEspecialistas] = useState<Especialista[]>([]);
+  const [especialistaFiltro, setEspecialistaFiltro] = useState<string>("");
   const [bloqueos, setBloqueos] = useState<BloqueoResuelto[]>([]);
 
   // Formulario de creación
   const [mostrarForm, setMostrarForm] = useState(false);
-  const [especialistaForm, setEspecialistaForm] = useState("esp-franchesca");
+  const [especialistaForm, setEspecialistaForm] = useState("");
   const [fechaForm, setFechaForm] = useState("");
   const [horaInicioForm, setHoraInicioForm] = useState("09:00");
   const [horaTerminoForm, setHoraTerminoForm] = useState("14:00");
   const [motivoForm, setMotivoForm] = useState("");
 
   async function cargarBloqueos() {
-    if (!hoy) return;
+    if (!hoy || !especialistaFiltro) return;
     const datos = await listBloqueosEspecialista(especialistaFiltro, hoy);
     setBloqueos(datos);
   }
+
+  useEffect(() => {
+    if (!abierto || especialistas.length > 0) return;
+    listEspecialistas().then(lista => {
+      setEspecialistas(lista);
+      if (lista.length > 0) {
+        setEspecialistaFiltro(lista[0].id);
+        setEspecialistaForm(lista[0].id);
+      }
+    });
+  }, [abierto, especialistas.length]);
 
   useEffect(() => {
     if (!hoy || !abierto) return;
@@ -122,7 +134,7 @@ export function GestionBloqueosModal({
                 onChange={e => setEspecialistaFiltro(e.target.value)}
                 className="rounded-none border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               >
-                {ESPECIALISTAS.map(esp => (
+                {especialistas.map(esp => (
                   <option key={esp.id} value={esp.id}>
                     {esp.nombre} ({esp.cargo})
                   </option>
@@ -161,7 +173,7 @@ export function GestionBloqueosModal({
                     onChange={e => setEspecialistaForm(e.target.value)}
                     className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                   >
-                    {ESPECIALISTAS.map(esp => (
+                    {especialistas.map(esp => (
                       <option key={esp.id} value={esp.id}>
                         {esp.nombre} ({esp.cargo})
                       </option>

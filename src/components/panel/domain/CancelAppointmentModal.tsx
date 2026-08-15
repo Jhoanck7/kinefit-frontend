@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { CitaResuelta, getCita } from "@/lib/panel/data/citas";
-import { citaService } from "@/lib/services/cita.service";
+import { citaService } from "@/services";
 
 import { Modal } from "../primitives/Modal";
 
@@ -48,7 +48,10 @@ export function CancelAppointmentModal({
     setErrorMsg(null);
 
     try {
-      await citaService.updateEstado(cita.id, "Cancelada", motivo.trim());
+      await citaService.updateEstado(Number(cita.id), {
+        estadoNuevo: "Cancelada",
+        motivo: motivo.trim(),
+      });
       onConfirmado();
     } catch (err: unknown) {
       console.error("Error al cancelar la cita en Backend:", err);

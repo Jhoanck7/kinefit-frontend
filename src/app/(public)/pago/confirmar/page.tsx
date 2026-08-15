@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 
-import { transactionService } from "@/lib/services/transaction.service";
+import { transaccionService } from "@/services";
 import { ConfirmarTransaccionResponseData } from "@/types";
 
 function ConfirmarPagoContent() {
@@ -26,8 +26,8 @@ function ConfirmarPagoContent() {
       }
 
       try {
-        const response = await transactionService.confirmarTransaccion(tokenWs);
-        setResult(response.data);
+        const response = await transaccionService.confirmarTransaccion(tokenWs);
+        setResult(response.data.data);
       } catch (err: unknown) {
         const msg =
           err instanceof Error
