@@ -35,7 +35,7 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_NAME }}
           build-args: |
-            NEXT_PUBLIC_API_URL=http://${{ secrets.VPS_IP }}:5147/api
+            NEXT_PUBLIC_API_URL=https://api.kinefitchile.com/api
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
