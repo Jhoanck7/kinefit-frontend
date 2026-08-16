@@ -12,7 +12,12 @@ export default async function Home() {
   // SSR: Obtener toda la configuración de la Landing Page desde el servidor
   // una sola vez antes de renderizar (evita múltiples peticiones desde el cliente)
   const config = await landingConfigService.getConfig();
-  const specialists = await specialistService.getEspecialistas(undefined, true);
+  let specialists: any[] = [];
+  try {
+    specialists = await specialistService.getEspecialistas(undefined, true);
+  } catch (error) {
+    console.warn("Backend indisponible para cargar especialistas durante build. Usando fallback local.");
+  }
 
   return (
     <main>
