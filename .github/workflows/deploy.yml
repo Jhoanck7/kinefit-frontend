@@ -61,4 +61,5 @@ jobs:
             # Levantar el contenedor nuevo
             docker run -d --name kinefit-frontend  \
             -e AUTH_TRUST_HOST=true \
+            -e AUTH_URL=https://test.kinefitchile.com \
             --restart always -p 3000:3000 $IMAGE
