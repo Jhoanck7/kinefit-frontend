@@ -64,7 +64,6 @@ export const authConfig = {
     strategy: "jwt",
     maxAge: 60 * 60,
   },
-  secret: process.env.NEXTAUTH_SECRET,
 } satisfies NextAuthConfig;
 
 export const { handlers } = NextAuth(authConfig);
