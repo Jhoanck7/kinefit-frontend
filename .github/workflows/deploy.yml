@@ -59,4 +59,6 @@ jobs:
             docker rm -f kinefit-frontend || true
             
             # Levantar el contenedor nuevo
-            docker run -d --name kinefit-frontend --restart always -p 3000:3000 $IMAGE
+            docker run -d --name kinefit-frontend  \
+            -e AUTH_TRUST_HOST=true \
+            --restart always -p 3000:3000 $IMAGE
