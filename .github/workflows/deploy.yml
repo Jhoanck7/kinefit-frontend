@@ -43,11 +43,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE: ${{ env.IMAGE_NAME }}
           ACTOR: ${{ github.actor }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
         with:
           host: ${{ secrets.VPS_IP }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: GH_TOKEN,IMAGE,ACTOR
+          envs: GH_TOKEN,IMAGE,ACTOR,AUTH_SECRET
           script: |
             # Iniciar sesión en el registro desde el VPS
             echo "$GH_TOKEN" | docker login ghcr.io -u "$ACTOR" --password-stdin
@@ -62,4 +63,5 @@ jobs:
             docker run -d --name kinefit-frontend  \
             -e AUTH_TRUST_HOST=true \
             -e AUTH_URL=https://test.kinefitchile.com \
+            -e AUTH_SECRET="$AUTH_SECRET" \
             --restart always -p 3000:3000 $IMAGE
