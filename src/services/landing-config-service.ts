@@ -29,9 +29,11 @@ export class LandingConfigService extends BaseApiService {
     );
   }
 
-  sincronizarGoogleReviews() {
+  sincronizarGoogleReviews(limite: number = 5) {
     return this.httpClient.post<ApiResponse<LandingConfigResponse>>(
-      `${this.baseURL}/sincronizar-google-reviews`
+      `${this.baseURL}/sincronizar-google-reviews`,
+      null,
+      { params: { limite } }
     );
   }
 }

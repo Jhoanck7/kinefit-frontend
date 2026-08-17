@@ -4,15 +4,12 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 import { HERO_COPY } from "@/lib/utils";
-import {
-  defaultLandingConfig,
-  LandingConfigData,
-} from "@/lib/panel/data/landing-config";
+import { LandingConfigResponse } from "@/models/responses";
 import { useBookingStore } from "@/stores";
 
 import BookingCard from "./booking-card";
 
-export default function HeroSection({ config }: { config: LandingConfigData }) {
+export default function HeroSection({ config }: { config: LandingConfigResponse }) {
   const currentStep = useBookingStore(state => state.currentStep);
   const [currentBg, setCurrentBg] = useState(0);
 

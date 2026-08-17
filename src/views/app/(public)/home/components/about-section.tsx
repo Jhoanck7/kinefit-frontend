@@ -2,15 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 
-import {
-  defaultLandingConfig,
-  LandingConfigData,
-} from "@/lib/panel/data/landing-config";
+import { LandingConfigResponse } from "@/models/responses";
 
 export default function AboutSection({
   config,
 }: {
-  config: LandingConfigData;
+  config: LandingConfigResponse;
 }) {
   const videoUrl =
     config.aboutVideoUrl || "https://www.instagram.com/kinefit.chile";

@@ -3,21 +3,13 @@
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 
-import {
-  defaultLandingConfig,
-  LandingConfigData,
-} from "@/lib/panel/data/landing-config";
-import { SanityTeamMemberItem } from "@/types";
-
-interface TeamSectionProps {
-  initialTeam?: SanityTeamMemberItem[] | null;
-}
+import { LandingConfigResponse } from "@/models/responses";
 
 export default function TeamSection({
   config,
   initialTeam,
 }: {
-  config: LandingConfigData;
+  config: LandingConfigResponse;
   initialTeam?: any[] | null;
 }) {
   const [teamMembers, setTeamMembers] = useState<

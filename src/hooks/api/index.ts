@@ -46,3 +46,9 @@ export {
   useUpdatePacienteEstadoMutation,
   useUpdatePacienteMutation,
 } from "./use-paciente-service";
+export {
+  useGetLandingConfig,
+  useSincronizarGoogleReviewsMutation,
+  useUpdateLandingConfigMutation,
+} from "./use-landing-config-service";
+

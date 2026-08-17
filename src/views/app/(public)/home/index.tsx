@@ -1,5 +1,4 @@
-import { LandingConfigData } from "@/lib/panel/data/landing-config";
-import { EspecialistaResponse } from "@/models/responses";
+import { EspecialistaResponse, LandingConfigResponse } from "@/models/responses";
 
 import {
   AboutSection,
@@ -12,7 +11,7 @@ import {
 } from "./components";
 
 interface HomeViewProps {
-  config: LandingConfigData;
+  config: LandingConfigResponse;
   specialists: EspecialistaResponse[];
 }
 
