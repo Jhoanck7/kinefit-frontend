@@ -44,6 +44,10 @@ export type {
 export type { LandingConfigResponse } from "./landing-config";
 export type { ImageUploadResponse } from "./media";
 export type {
+  HorarioCentroResponse,
+  PlantillaHorarioResponse,
+} from "./horario";
+export type {
   ContadoresPacienteResponse,
   HistorialCitaResponse,
   PacienteEstadoResponse,

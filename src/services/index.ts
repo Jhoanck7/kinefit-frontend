@@ -10,6 +10,12 @@ export {
 export type { FiltrosFichas } from "./ficha-service";
 export { FichaService, fichaService } from "./ficha-service";
 export {
+  HorarioCentroService,
+  horarioCentroService,
+  PlantillaHorarioService,
+  plantillaHorarioService,
+} from "./horario-service";
+export {
   LandingConfigService,
   landingConfigService,
 } from "./landing-config-service";

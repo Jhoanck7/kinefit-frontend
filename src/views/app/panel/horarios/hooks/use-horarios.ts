@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-import { HorarioEspecialista, listHorarios } from "@/lib/panel/data/horarios";
+import { useGetEspecialistas } from "@/hooks/api";
 
 export const useHorarios = () => {
-  const [horarios, setHorarios] = useState<HorarioEspecialista[] | null>(null);
+  const { data: especialistas = [], isLoading } = useGetEspecialistas(
+    undefined,
+    true
+  );
 
-  useEffect(() => {
-    listHorarios().then(setHorarios);
-  }, []);
-
-  return { horarios };
+  return {
+    especialistas,
+    isLoading,
+  };
 };

@@ -27,6 +27,14 @@ export {
   useSubirAdjuntoMutation,
 } from "./use-ficha-service";
 export {
+  useCreateHorarioCentroMutation,
+  useCreatePlantillaHorarioMutation,
+  useDeleteHorarioCentroMutation,
+  useDeletePlantillaHorarioMutation,
+  useGetHorarioCentro,
+  useGetPlantillaHorario,
+} from "./use-horario-service";
+export {
   useDeleteImageMutation,
   useReplaceImageMutation,
   useUploadImageMutation,

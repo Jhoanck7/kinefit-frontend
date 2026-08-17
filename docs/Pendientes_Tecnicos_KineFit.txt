@@ -6,15 +6,6 @@ presente y no reabrir por accidente ni dar por resuelto sin confirmar.
 
 1. Rotación de credenciales — pendiente, la hace Maxi antes de producción.
 
-2. Subida de medios / MediaController vs FileController — Cambiar a endpoint
-   con autorización (eliminar [AllowAnonymous]). Definir qué cosas mantener,
-   modificar o fusionar dependiendo de lo implementado por Maxi y por Jhoan.
-
-3. Duración de cita en nueva-reserva (30/60/90 min) — La solución debe permitir
-   que el usuario del personal pueda elegir un bloque de 30 minutos, 2 bloques
-   de 30 minutos consecutivos, o 3 bloques de 30 minutos consecutivos,
-   generando diferentes mensajes de alerta en caso de algún error en la
-   selección (ej: bloques discontinuos, cruce de horarios, etc.).
 
 4. DeleteBehavior.Restrict → 409 en DELETE /especialistas/{id} — bug real
    de backend confirmado con curl directo, no tocado.
@@ -113,10 +104,9 @@ docs/Auditoria_Backend_vs_Frontend_Services.txt
     Existe una vía de subida autenticada y correcta sin conectar, y
     se sigue usando la insegura.
 
-25. HorarioCentroController y PlantillaHorarioController sin ningún
-    service — ligados al módulo "Horarios" pendiente de migrar a
-    TanStack Query; no hay service, hay que crearlos desde cero (no es
-    solo conectar hooks).
+25. HorarioCentroController y PlantillaHorarioController — Migrados a
+    services/horario-service.ts y hooks/api/use-horario-service.ts con
+    TanStack Query (2026-08-17).
 
 26. NotificacionController, ServicioController (CRUD admin),
     UsuarioPersonalController — Analizar estos controladores y evaluar
