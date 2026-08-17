@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useHoyPanel } from "@/hooks/common";
 import { FormatoResuelto, listFormatos } from "@/lib/panel/data/formatos";
-import { useHoyPanel } from "@/lib/panel/reloj";
 
 export const useFormatos = () => {
   const router = useRouter();

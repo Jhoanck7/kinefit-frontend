@@ -2,12 +2,9 @@
 
 import { Suspense } from "react";
 
-import { FichaDetalleModal } from "@/components/panel/domain/FichaDetalleModal";
-import { NeutralBadge } from "@/components/panel/primitives/Badge";
-import { SearchInput } from "@/components/panel/primitives/CamposFormulario";
-import { EmptyState } from "@/components/panel/primitives/EmptyState";
-import { Paginacion } from "@/components/panel/primitives/Table";
+import { EmptyState, Paginacion, SearchInput } from "@/components/shared";
 import {
+  Badge,
   Button,
   Card,
   Table,
@@ -20,8 +17,9 @@ import {
 import {
   formatearFechaCorta,
   formatearRangoHorario,
-} from "@/lib/panel/domain/formato";
+} from "@/lib/formato";
 
+import { FichaDetalleModal } from "./components";
 import { TAMANO_PAGINA, useFichas } from "./hooks";
 
 const COLUMNAS = [
@@ -156,7 +154,9 @@ function FichasContenido() {
                   {ficha.paciente.rut || "—"}
                 </TableCell>
                 <TableCell className="px-4 py-3">
-                  <NeutralBadge>{ficha.tipo}</NeutralBadge>
+                  <Badge className="rounded-none border-slate-200 bg-slate-50 text-[11px] font-medium text-slate-700">
+                    {ficha.tipo}
+                  </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
                   {formatearFechaCorta(ficha.cita.fecha)}

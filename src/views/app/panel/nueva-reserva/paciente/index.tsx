@@ -1,11 +1,13 @@
 "use client";
 
-import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
-import { SearchInput } from "@/components/panel/primitives/CamposFormulario";
-import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
-import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
+import {
+  BottomActionBar,
+  SearchInput,
+  StepIndicator,
+  SummaryPanel,
+} from "@/components/shared";
 import { Button, Card } from "@/components/ui";
-import { formatearFechaExtensa } from "@/lib/panel/domain/formato";
+import { formatearFechaExtensa } from "@/lib/formato";
 
 import { PASOS_NUEVA_RESERVA, usePacienteReserva } from "./hooks";
 
@@ -50,11 +52,11 @@ export default function PacienteView() {
                     </span>
                   </p>
                   <p>{pacienteConfirmado.telefono}</p>
-                  <p>{pacienteConfirmado.correo}</p>
+                  <p>{pacienteConfirmado.email}</p>
                   <p>
                     Convenio:{" "}
                     <span className="text-slate-900 font-medium">
-                      {pacienteConfirmado.convenio?.nombre ?? "Particular"}
+                      {pacienteConfirmado.convenio ?? "Sin Convenio"}
                     </span>
                   </p>
                 </div>

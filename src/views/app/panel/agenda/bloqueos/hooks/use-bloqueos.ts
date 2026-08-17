@@ -3,21 +3,20 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useGetEspecialistas } from "@/hooks/api";
+import { useHoyPanel } from "@/hooks/common";
 import {
   crearBloqueo,
   listBloqueosEspecialista,
 } from "@/lib/panel/data/bloqueos";
 import { BloqueoResuelto } from "@/lib/panel/data/citas";
-import { listEspecialistas } from "@/lib/panel/data/especialistas";
-import { fechaISO } from "@/lib/panel/domain/formato";
-import { Especialista } from "@/lib/panel/domain/tipos";
-import { useHoyPanel } from "@/lib/panel/reloj";
+import { fechaISO } from "@/lib/formato";
 
 export const useBloqueos = () => {
   const router = useRouter();
   const hoy = useHoyPanel();
 
-  const [especialistas, setEspecialistas] = useState<Especialista[]>([]);
+  const { data: especialistas = [] } = useGetEspecialistas(undefined, true);
   const [especialistaFiltro, setEspecialistaFiltro] = useState<string>("");
   const [bloqueos, setBloqueos] = useState<BloqueoResuelto[] | null>(null);
 
@@ -31,14 +30,10 @@ export const useBloqueos = () => {
   const [guardando, setGuardando] = useState(false);
 
   useEffect(() => {
-    listEspecialistas().then(lista => {
-      setEspecialistas(lista);
-      if (lista.length > 0) {
-        setEspecialistaFiltro(lista[0].id);
-        setEspecialistaForm(lista[0].id);
-      }
-    });
-  }, []);
+    if (especialistaFiltro || especialistas.length === 0) return;
+    setEspecialistaFiltro(String(especialistas[0].id));
+    setEspecialistaForm(String(especialistas[0].id));
+  }, [especialistas, especialistaFiltro]);
 
   useEffect(() => {
     if (!hoy || !especialistaFiltro) return;

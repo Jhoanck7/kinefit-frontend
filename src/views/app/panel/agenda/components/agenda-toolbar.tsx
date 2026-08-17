@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui";
-import { fechaISO } from "@/lib/panel/domain/formato";
-import { Especialista } from "@/lib/panel/domain/tipos";
+import { fechaISO } from "@/lib/formato";
+import { EspecialistaResponse } from "@/models/responses";
 
 interface AgendaToolbarProps {
   dia: Date;
-  especialistas: Especialista[];
+  especialistas: EspecialistaResponse[];
   especialistaSeleccionado: string;
   onCambiarEspecialista: (id: string) => void;
   onIrADia: (delta: number) => void;

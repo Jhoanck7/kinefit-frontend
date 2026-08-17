@@ -1,4 +1,4 @@
-import { PanelShell } from "@/components/panel/chrome/PanelShell";
+import { PanelShell } from "@/components/layout/panel-shell";
 
 export default function PanelShellLayout({
   children,

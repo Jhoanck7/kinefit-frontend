@@ -2,12 +2,8 @@
 
 import { Suspense } from "react";
 
-import {
-  SelectField,
-  TextField,
-} from "@/components/panel/primitives/CamposFormulario";
-import { Card } from "@/components/panel/primitives/Card";
-import { Button } from "@/components/ui";
+import { SelectField, TextField } from "@/components/shared";
+import { Button, Card } from "@/components/ui";
 
 import { useRegistrarPaciente } from "./hooks";
 
@@ -28,7 +24,7 @@ function RegistrarPacienteContent() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Card>
+      <Card className="p-6">
         <h2 className="mb-6 text-lg font-bold text-panel-sidebar">
           Registrar paciente nuevo
         </h2>

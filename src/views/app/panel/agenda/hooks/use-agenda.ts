@@ -3,16 +3,15 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+import { useGetEspecialistas } from "@/hooks/api";
+import { useHoyPanel } from "@/hooks/common";
 import {
   BloqueoResuelto,
   CitaResuelta,
   getAgendaDia,
 } from "@/lib/panel/data/citas";
-import { listEspecialistas } from "@/lib/panel/data/especialistas";
-import { fechaISO } from "@/lib/panel/domain/formato";
-import { generarRejillaDia } from "@/lib/panel/domain/horario";
-import { DiaSemanaId, Especialista } from "@/lib/panel/domain/tipos";
-import { useHoyPanel } from "@/lib/panel/reloj";
+import { fechaISO } from "@/lib/formato";
+import { generarRejillaDia } from "@/lib/horario";
 
 export const useAgenda = () => {
   const router = useRouter();
@@ -33,17 +32,13 @@ export const useAgenda = () => {
   });
 
   const [horaActual, setHoraActual] = useState<string | null>(null);
-  const [especialistas, setEspecialistas] = useState<Especialista[]>([]);
+  const { data: especialistas = [] } = useGetEspecialistas(undefined, true);
   const [especialistaSeleccionado, setEspecialistaSeleccionado] =
     useState<string>("todas");
   const [agendaData, setAgendaData] = useState<
     Record<string, { citas: CitaResuelta[]; bloqueos: BloqueoResuelto[] }>
   >({});
   const [modalBloqueos, setModalBloqueos] = useState(false);
-
-  useEffect(() => {
-    listEspecialistas().then(setEspecialistas);
-  }, []);
 
   const fetchAgendaData = useCallback(async () => {
     if (!hoy || especialistas.length === 0) return null;
@@ -105,7 +100,7 @@ export const useAgenda = () => {
   const especialistasAMostrar =
     especialistaSeleccionado === "todas"
       ? especialistas
-      : especialistas.filter(e => e.id === especialistaSeleccionado);
+      : especialistas.filter(e => String(e.id) === especialistaSeleccionado);
 
   // Actions
   const abrirParametros = (params: Record<string, string | undefined>) => {

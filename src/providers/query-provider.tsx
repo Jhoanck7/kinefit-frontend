@@ -1,20 +1,16 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { ReactNode } from "react";
-
-import { ApiError } from "@/lib/api/apiClient";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error: unknown) => {
-        if (error instanceof ApiError) {
-          if (
-            error.status >= 400 &&
-            error.status < 500 &&
-            error.status !== 408
-          ) {
+        if (error instanceof AxiosError && error.response) {
+          const status = error.response.status;
+          if (status >= 400 && status < 500 && status !== 408) {
             return false;
           }
         }

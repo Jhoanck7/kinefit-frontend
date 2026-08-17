@@ -2,9 +2,9 @@ import "../globals.css";
 
 import { Inter, JetBrains_Mono } from "next/font/google";
 
-import Footer from "@/components/ui/Footer";
-import Navbar from "@/components/ui/Navbar";
-import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import Footer from "@/components/layout/footer";
+import Navbar from "@/components/layout/navbar";
+import { WhatsAppButton } from "@/components/shared";
 import { CLINIC_INFO } from "@/lib/constants";
 import { defaultMetadata } from "@/lib/metadata";
 

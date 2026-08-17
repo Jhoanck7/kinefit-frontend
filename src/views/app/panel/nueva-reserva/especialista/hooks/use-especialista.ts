@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import { useGetEspecialistas } from "@/hooks/api";
-import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
+import { useNuevaReservaStore } from "@/stores";
 
 export const PASOS_NUEVA_RESERVA = [
   { etiqueta: "Servicio" },

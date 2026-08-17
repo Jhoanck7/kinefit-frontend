@@ -3,14 +3,11 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useCreatePacienteMutation } from "@/hooks/api";
 import { listConvenios } from "@/lib/panel/data/convenios";
-import {
-  pacienteConRut,
-  RUT_DEMO_YA_EXISTENTE,
-} from "@/lib/panel/data/pacientes";
-import { Convenio } from "@/lib/panel/domain/tipos";
-import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
+import { Convenio } from "@/lib/tipos";
 import { pacienteService } from "@/services";
+import { useNuevaReservaStore } from "@/stores";
 
 export const useRegistrarPaciente = () => {
   const router = useRouter();
@@ -31,8 +28,8 @@ export const useRegistrarPaciente = () => {
   } | null>(null);
   const [convenios, setConvenios] = useState<Convenio[]>([]);
 
-  const [guardando, setGuardando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const createPacienteMutation = useCreatePacienteMutation();
 
   useEffect(() => {
     listConvenios().then(setConvenios);
@@ -41,30 +38,22 @@ export const useRegistrarPaciente = () => {
   // Actions
   const handleCambiarRut = async (valor: string) => {
     setRut(valor);
-    if (valor.trim() === RUT_DEMO_YA_EXISTENTE || valor.trim().length >= 8) {
-      try {
-        const res = await pacienteService.verificarRut(valor.trim());
-        const { existe, paciente } = res.data.data;
-        if (existe && paciente) {
-          setPacienteExistente({
-            id: String(paciente.id),
-            nombre: `${paciente.nombre} ${paciente.apellido}`,
-          });
-          return;
-        }
-      } catch {
-        // Fallback local
-      }
-      const existente = await pacienteConRut(valor.trim());
+    if (valor.trim().length < 8) {
+      setPacienteExistente(null);
+      return;
+    }
+    try {
+      const res = await pacienteService.verificarRut(valor.trim());
+      const { existe, paciente } = res.data.data;
       setPacienteExistente(
-        existente
+        existe && paciente
           ? {
-              id: existente.id,
-              nombre: `${existente.nombre} ${existente.apellido}`,
+              id: String(paciente.id),
+              nombre: `${paciente.nombre} ${paciente.apellido}`,
             }
           : null
       );
-    } else {
+    } catch {
       setPacienteExistente(null);
     }
   };
@@ -84,12 +73,11 @@ export const useRegistrarPaciente = () => {
       return;
     }
 
-    setGuardando(true);
     setErrorMsg(null);
 
     try {
       const numConvenioId = convenioId ? parseInt(convenioId, 10) : undefined;
-      const res = await pacienteService.create({
+      const creado = await createPacienteMutation.mutateAsync({
         nombre: nombre.trim(),
         apellido: apellido.trim(),
         rut: rut.trim(),
@@ -97,7 +85,6 @@ export const useRegistrarPaciente = () => {
         telefono: telefono.trim(),
         empresaId: isNaN(numConvenioId!) ? undefined : numConvenioId,
       });
-      const creado = res.data.data;
 
       if (retorno) {
         setPacienteReserva(
@@ -115,8 +102,6 @@ export const useRegistrarPaciente = () => {
           ? err.message
           : "No se pudo registrar el paciente en el backend.";
       setErrorMsg(msg);
-    } finally {
-      setGuardando(false);
     }
   };
 
@@ -130,7 +115,7 @@ export const useRegistrarPaciente = () => {
     convenioId,
     pacienteExistente,
     convenios,
-    guardando,
+    guardando: createPacienteMutation.isPending,
     errorMsg,
 
     // Actions

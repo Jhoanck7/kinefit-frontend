@@ -3,9 +3,9 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useHoyPanel } from "@/hooks/common";
 import { FichaResuelta, listFichas } from "@/lib/panel/data/fichas";
 import { FormatoResuelto, listFormatos } from "@/lib/panel/data/formatos";
-import { useHoyPanel } from "@/lib/panel/reloj";
 
 export const TAMANO_PAGINA = 8;
 

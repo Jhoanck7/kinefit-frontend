@@ -1,8 +1,7 @@
 "use client";
 
-import { Card } from "@/components/panel/primitives/Card";
-import { Modal } from "@/components/panel/primitives/Modal";
-import { Button } from "@/components/ui";
+import { Modal } from "@/components/shared";
+import { Button, Card } from "@/components/ui";
 
 import {
   CrearEspecialistaModal,
@@ -57,13 +56,13 @@ export default function EspecialistasView() {
 
       {/* Lista de Integrantes Existentes */}
       {cargando ? (
-        <Card>
+        <Card className="p-6">
           <p className="text-sm text-brand-muted py-8 text-center">
             Cargando equipo desde el servidor...
           </p>
         </Card>
       ) : especialistas.length === 0 ? (
-        <Card>
+        <Card className="p-6">
           <p className="text-sm text-brand-muted py-8 text-center">
             No hay integrantes registrados en el equipo.
           </p>

@@ -1,22 +1,21 @@
 "use client";
 
-import { NeutralBadge } from "@/components/panel/primitives/Badge";
-import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
 import {
+  BottomActionBar,
+  CollapsibleSection,
+  FileDropzone,
   NumberField,
+  OptionSelector,
+  StepIndicator,
+  SummaryPanel,
   TextAreaField,
   TextField,
-} from "@/components/panel/primitives/CamposFormulario";
-import { CollapsibleSection } from "@/components/panel/primitives/CollapsibleSection";
-import { FileDropzone } from "@/components/panel/primitives/FileDropzone";
-import { OptionSelector } from "@/components/panel/primitives/OptionSelector";
-import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
-import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
-import { Button, Card } from "@/components/ui";
+} from "@/components/shared";
+import { Badge, Button, Card } from "@/components/ui";
 import {
   formatearFechaExtensa,
   formatearRangoHorario,
-} from "@/lib/panel/domain/formato";
+} from "@/lib/formato";
 
 import { useNuevaFichaContenido } from "./hooks";
 
@@ -187,7 +186,9 @@ export default function NuevaFichaContenidoView() {
           {
             etiqueta: "TIPO DE FICHA",
             valor: nombreFormato ? (
-              <NeutralBadge>{nombreFormato}</NeutralBadge>
+              <Badge className="rounded-none border-slate-200 bg-slate-50 text-[11px] font-medium text-slate-700">
+                {nombreFormato}
+              </Badge>
             ) : undefined,
           },
         ]}

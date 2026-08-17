@@ -1,15 +1,17 @@
 "use client";
 
-import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
-import { SearchInput } from "@/components/panel/primitives/CamposFormulario";
-import { EmptyState } from "@/components/panel/primitives/EmptyState";
-import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
-import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
+import {
+  BottomActionBar,
+  EmptyState,
+  SearchInput,
+  StepIndicator,
+  SummaryPanel,
+} from "@/components/shared";
 import { Button, Card } from "@/components/ui";
 import {
   formatearFechaExtensa,
   formatearRangoHorario,
-} from "@/lib/panel/domain/formato";
+} from "@/lib/formato";
 
 import { useNuevaFichaReserva } from "./hooks";
 

@@ -2,13 +2,14 @@
 
 import { Suspense } from "react";
 
-import { AppointmentDetailModal } from "@/components/panel/domain/AppointmentDetailModal";
-import { CancelAppointmentModal } from "@/components/panel/domain/CancelAppointmentModal";
-import { GestionBloqueosModal } from "@/components/panel/domain/GestionBloqueosModal";
-import { Legend } from "@/components/panel/domain/Legend";
-import { TimeGrid } from "@/components/panel/domain/TimeGrid";
-
-import { AgendaToolbar } from "./components";
+import {
+  AgendaToolbar,
+  AppointmentDetailModal,
+  CancelAppointmentModal,
+  GestionBloqueosModal,
+  Legend,
+  TimeGrid,
+} from "./components";
 import { useAgenda } from "./hooks";
 
 function AgendaContent() {

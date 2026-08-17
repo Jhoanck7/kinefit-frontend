@@ -1,5 +1,12 @@
 export { useGetAgenda } from "./use-agenda-service";
 export {
+  useGetAvailableSlots,
+  useGetServices,
+  useGetSpecialists,
+  useSubmitBookingMutation,
+} from "./use-appointment-service";
+export { useAuthenticateWithGoogleMutation } from "./use-auth-service";
+export {
   useCreateEspecialistaMutation,
   useDeleteEspecialistaMutation,
   useGetEspecialistas,

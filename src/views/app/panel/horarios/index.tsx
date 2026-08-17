@@ -1,7 +1,7 @@
 "use client";
 
-import { Card } from "@/components/panel/primitives/Card";
-import { formatearRangoHorario } from "@/lib/panel/domain/formato";
+import { Card } from "@/components/ui";
+import { formatearRangoHorario } from "@/lib/formato";
 
 import { useHorarios } from "./hooks";
 

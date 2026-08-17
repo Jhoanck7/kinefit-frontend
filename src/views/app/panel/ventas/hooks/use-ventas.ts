@@ -8,7 +8,7 @@ import {
   TerminalResuelto,
   VentaResuelta,
 } from "@/lib/panel/data/ventas";
-import { fechaISO } from "@/lib/panel/domain/formato";
+import { fechaISO } from "@/lib/formato";
 
 export const TAMANO_PAGINA = 8;
 

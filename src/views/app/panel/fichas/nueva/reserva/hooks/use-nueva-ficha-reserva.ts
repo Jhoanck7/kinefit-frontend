@@ -3,12 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useHoyPanel } from "@/hooks/common";
 import { CitaResuelta, reservasDelPaciente } from "@/lib/panel/data/citas";
 import { fichaDeLaCita } from "@/lib/panel/data/fichas";
 import { buscarPacientes, PacienteResuelto } from "@/lib/panel/data/pacientes";
-import { useHoyPanel } from "@/lib/panel/reloj";
-import { useNuevaFichaStore } from "@/lib/store/useNuevaFichaStore";
 import { citaService } from "@/services";
+import { useNuevaFichaStore } from "@/stores";
 
 type ReservaConFicha = CitaResuelta & { conFicha: boolean; fichaId?: string };
 

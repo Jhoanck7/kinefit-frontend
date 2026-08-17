@@ -1,9 +1,8 @@
 "use client";
 
-import { UsageBadge } from "@/components/panel/primitives/Badge";
-import { EmptyState } from "@/components/panel/primitives/EmptyState";
-import { Button, Card } from "@/components/ui";
-import { formatearFechaExtensa } from "@/lib/panel/domain/formato";
+import { EmptyState } from "@/components/shared";
+import { Badge, Button, Card } from "@/components/ui";
+import { formatearFechaExtensa } from "@/lib/formato";
 
 import { useFormatos } from "./hooks";
 
@@ -63,9 +62,13 @@ export default function FormatosView() {
                         {formato.nombre}
                       </p>
                       {formato.fichasCreadas > 0 && (
-                        <UsageBadge>
+                        <Badge className="gap-1 rounded-none border-emerald-200 bg-emerald-50 text-[11px] font-bold uppercase tracking-wider text-emerald-800">
+                          <span
+                            className="h-1.5 w-1.5 rounded-full bg-emerald-600"
+                            aria-hidden
+                          />
                           En uso · {formato.fichasCreadas} fichas
-                        </UsageBadge>
+                        </Badge>
                       )}
                     </div>
                     <p className="mt-1 text-sm text-brand-muted">

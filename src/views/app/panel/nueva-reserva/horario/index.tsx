@@ -2,11 +2,13 @@
 
 import { Suspense } from "react";
 
-import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
-import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
-import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
+import {
+  BottomActionBar,
+  StepIndicator,
+  SummaryPanel,
+} from "@/components/shared";
 import { Button, Card } from "@/components/ui";
-import { fechaISO, formatearFechaExtensa } from "@/lib/panel/domain/formato";
+import { fechaISO, formatearFechaExtensa } from "@/lib/formato";
 
 import { BloquesSelector } from "./components";
 import { PASOS_NUEVA_RESERVA, useHorario } from "./hooks";

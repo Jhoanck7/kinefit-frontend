@@ -1,10 +1,10 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { listPacientes, PacienteResuelto } from "@/lib/panel/data/pacientes";
-import { useHoyPanel } from "@/lib/panel/reloj";
+import { useGetPacientes } from "@/hooks/api";
+import { useHoyPanel } from "@/hooks/common";
 
 export const TAMANO_PAGINA = 8;
 
@@ -13,20 +13,10 @@ export const usePacientes = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const hoy = useHoyPanel();
-
   const [busqueda, setBusqueda] = useState("");
-  const [pacientes, setPacientes] = useState<PacienteResuelto[] | null>(null);
   const [pagina, setPagina] = useState(1);
-
+  const { data: pacientes } = useGetPacientes(busqueda);
   const pacienteModalId = searchParams.get("paciente");
-
-  useEffect(() => {
-    listPacientes(busqueda).then(resultado => {
-      setPacientes(resultado);
-      setPagina(1);
-    });
-  }, [busqueda]);
-
   const total = pacientes?.length ?? 0;
   const inicio = (pagina - 1) * TAMANO_PAGINA;
   const visibles = pacientes?.slice(inicio, inicio + TAMANO_PAGINA) ?? [];
@@ -43,17 +33,21 @@ export const usePacientes = () => {
   };
 
   const handleNuevoPaciente = () => router.push("/panel/pacientes/nuevo");
-  const handleAbrirPaciente = (id: string) => abrirParametros({ paciente: id });
+  const handleAbrirPaciente = (id: number) =>
+    abrirParametros({ paciente: String(id) });
   const handleCerrarModal = () => abrirParametros({ paciente: undefined });
   const handlePaginaAnterior = () => setPagina(p => Math.max(1, p - 1));
   const handlePaginaSiguiente = () =>
     setPagina(p => (inicio + TAMANO_PAGINA < total ? p + 1 : p));
+  const handleBuscar = (valor: string) => {
+    setBusqueda(valor);
+    setPagina(1);
+  };
 
   return {
     // Data
     hoy,
     busqueda,
-    pacientes,
     pagina,
     total,
     inicio,
@@ -62,7 +56,7 @@ export const usePacientes = () => {
 
     // Actions
     actions: {
-      setBusqueda,
+      setBusqueda: handleBuscar,
       handleNuevoPaciente,
       handleAbrirPaciente,
       handleCerrarModal,

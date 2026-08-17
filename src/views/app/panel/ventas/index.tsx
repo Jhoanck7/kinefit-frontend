@@ -1,10 +1,6 @@
 "use client";
 
-import { Paginacion } from "@/components/panel/primitives/Table";
-import { ConfiguracionFinancieraModal } from "@/components/panel/ventas/ConfiguracionFinancieraModal";
-import { NuevaVentaModal } from "@/components/panel/ventas/NuevaVentaModal";
-import { VentaDetalleModal } from "@/components/panel/ventas/VentaDetalleModal";
-import { VentasFiltrosBar } from "@/components/panel/ventas/VentasFiltrosBar";
+import { Paginacion } from "@/components/shared";
 import {
   Card,
   Table,
@@ -15,6 +11,12 @@ import {
   TableRow,
 } from "@/components/ui";
 
+import {
+  ConfiguracionFinancieraModal,
+  NuevaVentaModal,
+  VentaDetalleModal,
+  VentasFiltrosBar,
+} from "./components";
 import { TAMANO_PAGINA, useVentas } from "./hooks";
 
 const COLUMNAS = [

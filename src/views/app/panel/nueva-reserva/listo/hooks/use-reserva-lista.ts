@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import { definicionEstado } from "@/lib/panel/domain/estados";
-import { fechaISO } from "@/lib/panel/domain/formato";
-import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
+import { fechaISO } from "@/lib/formato";
+import { useNuevaReservaStore } from "@/stores";
 
 export const NOMBRE_SERVICIO: Record<string, string> = {
   embarazadas: "Embarazadas",

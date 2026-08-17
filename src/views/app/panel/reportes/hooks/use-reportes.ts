@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 
-import { TabReporte } from "@/components/panel/reportes/ReportesTabSwitcher";
-import { fechaISO } from "@/lib/panel/domain/formato";
+import { fechaISO } from "@/lib/formato";
+
+import { TabReporte } from "../components";
 
 function rangoAFechas(rango: string): {
   fechaDesde?: string;

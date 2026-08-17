@@ -1,4 +1,4 @@
-import { formatearRangoHorario } from "@/lib/panel/domain/formato";
+import { formatearRangoHorario } from "@/lib/formato";
 
 export type EstadoBloque = "libre" | "ocupado" | "bloqueado";
 

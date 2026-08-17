@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { fechaISO, formatearFechaExtensa } from "@/lib/panel/domain/formato";
-import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
+import { fechaISO, formatearFechaExtensa } from "@/lib/formato";
 import { agendaService, citaService } from "@/services";
+import { useNuevaReservaStore } from "@/stores";
 
 export const PASOS_NUEVA_RESERVA = [
   { etiqueta: "Servicio" },

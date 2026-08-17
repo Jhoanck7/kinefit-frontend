@@ -1,11 +1,13 @@
 "use client";
 
-import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
-import { OptionSelector } from "@/components/panel/primitives/OptionSelector";
-import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
-import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
+import {
+  BottomActionBar,
+  OptionSelector,
+  StepIndicator,
+  SummaryPanel,
+} from "@/components/shared";
 import { Button, Card } from "@/components/ui";
-import { formatearFechaExtensa } from "@/lib/panel/domain/formato";
+import { formatearFechaExtensa } from "@/lib/formato";
 
 import { PASOS_NUEVA_RESERVA, useEspecialista } from "./hooks";
 

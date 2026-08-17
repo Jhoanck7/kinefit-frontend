@@ -5,12 +5,10 @@ import { signIn } from "next-auth/react";
 import { FormEvent, useState } from "react";
 
 import { handleApiError } from "@/lib/api";
-import { usePanelSessionStore } from "@/lib/store/usePanelSessionStore";
 import { authService } from "@/services";
 
 export const useAcceso = () => {
   const router = useRouter();
-  const entrar = usePanelSessionStore(s => s.entrar);
   const [cargando, setCargando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -46,20 +44,6 @@ export const useAcceso = () => {
           return;
         }
 
-        entrar({
-          nombre: res.usuario.nombre,
-          rol:
-            res.usuario.rol === "Administrador"
-              ? "Administrador"
-              : "Especialista",
-          cargo:
-            res.usuario.rol === "Administrador"
-              ? "Administrador General"
-              : "Especialista",
-          especialistaId: res.usuario.especialistaId
-            ? String(res.usuario.especialistaId)
-            : undefined,
-        });
         router.push("/panel/agenda");
         return;
       } else {

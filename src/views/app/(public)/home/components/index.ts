@@ -1,0 +1,9 @@
+export { default as AboutSection } from "./about-section";
+export { default as BookingCard } from "./booking-card";
+export { default as GallerySection } from "./gallery-section";
+export { default as HeroSection } from "./hero-section";
+export { default as LocationSection } from "./location-section";
+export { default as ProcessSection } from "./process-section";
+export { default as ServicesSection } from "./services-section";
+export { default as TeamSection } from "./team-section";
+export { default as TestimonialsSection } from "./testimonials-section";

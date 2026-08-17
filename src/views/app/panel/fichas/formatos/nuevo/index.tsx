@@ -2,13 +2,9 @@
 
 import { Suspense } from "react";
 
-import {
-  SwitchField,
-  TextField,
-} from "@/components/panel/primitives/CamposFormulario";
-import { Modal } from "@/components/panel/primitives/Modal";
+import { Modal, SwitchField, TextField } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
-import { TipoCampoFormato } from "@/lib/panel/domain/tipos";
+import { TipoCampoFormato } from "@/lib/tipos";
 
 import { TIPOS_CAMPO, useConstructorFormato } from "./hooks";
 

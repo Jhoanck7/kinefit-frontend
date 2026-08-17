@@ -1,7 +1,5 @@
-import { TextField } from "@/components/panel/primitives/CamposFormulario";
-import { Modal } from "@/components/panel/primitives/Modal";
+import { ImageUploader, Modal, TextField } from "@/components/shared";
 import { Button } from "@/components/ui";
-import { ImageUploader } from "@/components/ui/ImageUploader";
 import { BackendService } from "@/types";
 
 import { ServiciosSelector } from "./servicios-selector";

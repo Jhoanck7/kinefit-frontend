@@ -1,10 +1,7 @@
 "use client";
 
-import { TextField } from "@/components/panel/primitives/CamposFormulario";
-import { Card } from "@/components/panel/primitives/Card";
-import { Modal } from "@/components/panel/primitives/Modal";
-import { Button } from "@/components/ui";
-import { ImageUploader } from "@/components/ui/ImageUploader";
+import { ImageUploader, Modal, TextField } from "@/components/shared";
+import { Button, Card } from "@/components/ui";
 import {
   FieldDefinition,
   landingConfigSchema,
@@ -131,7 +128,7 @@ export default function LandingView() {
       </div>
 
       {cargando ? (
-        <Card>
+        <Card className="p-6">
           <p className="text-sm text-brand-muted py-8 text-center">
             Cargando configuración actual del servidor...
           </p>
@@ -142,7 +139,7 @@ export default function LandingView() {
             {landingConfigSchema.map(section => (
               <Card
                 key={section.id}
-                className="cursor-pointer hover:border-brand-primary/50 transition-all shadow-sm hover:shadow-md flex flex-col justify-between group"
+                className="p-6 cursor-pointer hover:border-brand-primary/50 transition-all shadow-sm hover:shadow-md flex flex-col justify-between group"
                 onClick={() => actions.setSeccionActiva(section.id)}
               >
                 <div>

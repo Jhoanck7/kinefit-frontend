@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 
-import { InfoBadge, InvertedBadge } from "@/components/panel/primitives/Badge";
-import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
-import { TextAreaField } from "@/components/panel/primitives/CamposFormulario";
-import { Modal } from "@/components/panel/primitives/Modal";
-import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
-import { Button, Card } from "@/components/ui";
+import {
+  BottomActionBar,
+  Modal,
+  StepIndicator,
+  TextAreaField,
+} from "@/components/shared";
+import { Badge, Button, Card } from "@/components/ui";
 
 import { PASOS_NUEVA_RESERVA, useResumenReserva } from "./hooks";
 
@@ -45,7 +46,9 @@ export default function ResumenView() {
               <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
                 Nota para el paciente
               </span>
-              <InfoBadge>El paciente la verá en su confirmación</InfoBadge>
+              <Badge className="gap-1.5 rounded-none border-blue-200 bg-blue-50 text-[11px] font-medium text-blue-950">
+                El paciente la verá en su confirmación
+              </Badge>
             </div>
             <TextAreaField
               etiqueta=""
@@ -60,9 +63,9 @@ export default function ResumenView() {
               <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
                 Nota interna
               </span>
-              <InvertedBadge>
+              <Badge className="gap-1.5 rounded-none border-transparent bg-slate-900 text-[11px] font-medium text-white">
                 Visible solo para el personal de KineFit
-              </InvertedBadge>
+              </Badge>
             </div>
             <TextAreaField
               etiqueta=""

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui";
 import {
   formatearFechaExtensa,
   formatearRangoHorario,
-} from "@/lib/panel/domain/formato";
+} from "@/lib/formato";
 
 import { useReservaLista } from "./hooks";
 

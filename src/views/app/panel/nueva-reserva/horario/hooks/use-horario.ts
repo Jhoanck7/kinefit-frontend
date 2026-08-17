@@ -1,17 +1,13 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useEffect, useMemo } from "react";
 
-import { useGetAgenda } from "@/hooks/api";
-import { getPaciente } from "@/lib/panel/data/pacientes";
-import { fechaISO } from "@/lib/panel/domain/formato";
-import { useHoyPanel } from "@/lib/panel/reloj";
-import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
-import {
-  usePanelSessionStore,
-  USUARIO_SESION_PANEL,
-} from "@/lib/store/usePanelSessionStore";
+import { useGetAgenda, useGetPacientePerfil } from "@/hooks/api";
+import { useHoyPanel } from "@/hooks/common";
+import { fechaISO } from "@/lib/formato";
+import { useNuevaReservaStore } from "@/stores";
 
 import { BloqueConId } from "../components";
 
@@ -55,7 +51,7 @@ export const useHorario = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const hoy = useHoyPanel();
-  const usuario = usePanelSessionStore(s => s.usuario) ?? USUARIO_SESION_PANEL;
+  const { data: session } = useSession();
   const {
     fecha,
     hora,
@@ -77,23 +73,36 @@ export const useHorario = () => {
 
     const fechaParam = searchParams.get("fecha");
     const horaParam = searchParams.get("hora");
-    const pacienteIdParam = searchParams.get("pacienteId");
 
     if (fechaParam && !fecha) {
       const [y, m, d] = fechaParam.split("-").map(Number);
       setHorario(new Date(y, m - 1, d), horaParam ?? "");
     }
-    if (pacienteIdParam) {
-      getPaciente(pacienteIdParam).then(p => {
-        if (p) setPaciente(p.id, `${p.nombre} ${p.apellido}`);
-      });
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hoy]);
 
+  const pacienteIdParam = searchParams.get("pacienteId");
+  const pacienteIdParamNum = pacienteIdParam
+    ? Number(pacienteIdParam)
+    : undefined;
+  const { data: pacientePorParam } = useGetPacientePerfil(
+    pacienteIdParamNum ?? 0,
+    Boolean(pacienteIdParamNum)
+  );
+
+  useEffect(() => {
+    if (pacientePorParam) {
+      setPaciente(
+        String(pacientePorParam.id),
+        `${pacientePorParam.nombre} ${pacientePorParam.apellido}`
+      );
+    }
+  }, [pacientePorParam, setPaciente]);
+
   const numEspId = especialistaId
     ? parseInt(especialistaId.replace(/\D/g, ""), 10) || 1
-    : parseInt(usuario.especialistaId?.replace(/\D/g, "") || "1", 10) || 1;
+    : parseInt(session?.user.especialistaId?.replace(/\D/g, "") || "1", 10) ||
+      1;
   const fechaIso = fecha ? fechaISO(fecha) : "";
 
   // API calls

@@ -1,10 +1,12 @@
 "use client";
 
-import { BottomActionBar } from "@/components/panel/primitives/BottomActionBar";
-import { StepIndicator } from "@/components/panel/primitives/StepIndicator";
-import { SummaryPanel } from "@/components/panel/primitives/SummaryPanel";
+import {
+  BottomActionBar,
+  StepIndicator,
+  SummaryPanel,
+} from "@/components/shared";
 import { Button, Card } from "@/components/ui";
-import { formatearFechaExtensa } from "@/lib/panel/domain/formato";
+import { formatearFechaExtensa } from "@/lib/formato";
 
 import { ServicioOption } from "./components";
 import { CATALOGO_SERVICIOS, PASOS_NUEVA_RESERVA, useServicio } from "./hooks";

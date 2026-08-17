@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import { TextField } from "@/components/panel/primitives/CamposFormulario";
+import { TextField } from "@/components/shared";
 import { Button } from "@/components/ui";
 
 import { useAcceso } from "./hooks";

@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { Modal } from "@/components/panel/primitives/Modal";
+import { Modal } from "@/components/shared";
 import { Button } from "@/components/ui";
 import { EspecialistaResponse } from "@/models/responses";
 

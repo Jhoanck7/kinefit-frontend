@@ -1,11 +1,11 @@
 "use client";
 
-import { EmptyState } from "@/components/panel/primitives/EmptyState";
+import { EmptyState } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
 import {
   formatearFechaExtensa,
   formatearRangoHorario,
-} from "@/lib/panel/domain/formato";
+} from "@/lib/formato";
 
 import { useBloqueos } from "./hooks";
 

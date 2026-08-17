@@ -3,12 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import {
-  buscarPacientes,
-  getPaciente,
-  PacienteResuelto,
-} from "@/lib/panel/data/pacientes";
-import { useNuevaReservaStore } from "@/lib/store/useNuevaReservaStore";
+import { useGetPacientePerfil, useGetPacientes } from "@/hooks/api";
+import { PacienteResponse } from "@/models/responses";
+import { useNuevaReservaStore } from "@/stores";
 
 export const PASOS_NUEVA_RESERVA = [
   { etiqueta: "Servicio" },
@@ -41,24 +38,29 @@ export const usePacienteReserva = () => {
   } = useNuevaReservaStore();
 
   const [busqueda, setBusqueda] = useState("");
-  const [resultados, setResultados] = useState<PacienteResuelto[]>([]);
-  const [buscado, setBuscado] = useState(false);
+  const busquedaTrim = busqueda.trim();
+  const { data: resultados = [] } = useGetPacientes(
+    busquedaTrim || undefined,
+    undefined,
+    Boolean(busquedaTrim)
+  );
+  const buscado = Boolean(busquedaTrim);
+
   const [pacienteConfirmado, setPacienteConfirmado] =
-    useState<PacienteResuelto | null>(null);
+    useState<PacienteResponse | null>(null);
+
+  const pacienteIdNum =
+    pacienteId && !pacienteId.startsWith("temp-")
+      ? Number(pacienteId)
+      : undefined;
+  const { data: perfilCargado } = useGetPacientePerfil(
+    pacienteIdNum ?? 0,
+    Boolean(pacienteIdNum)
+  );
 
   useEffect(() => {
-    if (!busqueda.trim()) return;
-    buscarPacientes(busqueda).then(r => {
-      setResultados(r);
-      setBuscado(true);
-    });
-  }, [busqueda]);
-
-  useEffect(() => {
-    if (pacienteId && !pacienteId.startsWith("temp-")) {
-      getPaciente(pacienteId).then(p => setPacienteConfirmado(p ?? null));
-    }
-  }, [pacienteId]);
+    if (perfilCargado) setPacienteConfirmado(perfilCargado);
+  }, [perfilCargado]);
 
   const nombreServicio = servicio
     ? (NOMBRE_SERVICIO[servicio] ?? servicio)
@@ -67,17 +69,12 @@ export const usePacienteReserva = () => {
   // Actions
   const handleBusquedaChange = (val: string) => {
     setBusqueda(val);
-    if (!val.trim()) {
-      setResultados([]);
-      setBuscado(false);
-    }
   };
 
-  const handleSeleccionar = (paciente: PacienteResuelto) => {
-    setPaciente(paciente.id, `${paciente.nombre} ${paciente.apellido}`);
+  const handleSeleccionar = (paciente: PacienteResponse) => {
+    setPaciente(String(paciente.id), `${paciente.nombre} ${paciente.apellido}`);
     setPacienteConfirmado(paciente);
     setBusqueda("");
-    setResultados([]);
   };
 
   const handleCambiarPaciente = () => {

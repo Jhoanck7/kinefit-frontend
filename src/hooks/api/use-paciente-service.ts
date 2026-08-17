@@ -6,11 +6,16 @@ import {
 } from "@/models/requests";
 import { pacienteService } from "@/services";
 
-export const useGetPacientes = (busqueda?: string, soloActivos?: boolean) => {
+export const useGetPacientes = (
+  busqueda?: string,
+  soloActivos?: boolean,
+  enabled = true
+) => {
   return useQuery({
     queryKey: ["pacientes", { busqueda, soloActivos }],
     queryFn: () =>
       pacienteService.getAll(busqueda, soloActivos).then(res => res.data.data),
+    enabled,
   });
 };
 

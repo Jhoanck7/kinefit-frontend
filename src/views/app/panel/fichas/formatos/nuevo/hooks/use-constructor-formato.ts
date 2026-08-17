@@ -3,9 +3,9 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useHoyPanel } from "@/hooks/common";
 import { getFormato, guardarFormato } from "@/lib/panel/data/formatos";
-import { TipoCampoFormato } from "@/lib/panel/domain/tipos";
-import { useHoyPanel } from "@/lib/panel/reloj";
+import { TipoCampoFormato } from "@/lib/tipos";
 
 export interface CampoBorrador {
   id: string;

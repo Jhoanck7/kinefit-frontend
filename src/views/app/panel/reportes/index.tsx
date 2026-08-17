@@ -1,9 +1,5 @@
 "use client";
 
-import { ReporteComisionesView } from "@/components/panel/reportes/ReporteComisionesView";
-import { ReporteReservasView } from "@/components/panel/reportes/ReporteReservasView";
-import { ReportesTabSwitcher } from "@/components/panel/reportes/ReportesTabSwitcher";
-import { ReporteVentasView } from "@/components/panel/reportes/ReporteVentasView";
 import {
   Card,
   Select,
@@ -14,6 +10,12 @@ import {
   Switch,
 } from "@/components/ui";
 
+import {
+  ReporteComisionesView,
+  ReporteReservasView,
+  ReportesTabSwitcher,
+  ReporteVentasView,
+} from "./components";
 import { useReportes } from "./hooks";
 
 const OPCIONES_PERIODO = [

@@ -3,15 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useHoyPanel } from "@/hooks/common";
 import { CitaResuelta, getCita } from "@/lib/panel/data/citas";
 import {
   FormatoResuelto,
   getFormato,
   listFormatos,
 } from "@/lib/panel/data/formatos";
-import { useHoyPanel } from "@/lib/panel/reloj";
-import { useNuevaFichaStore } from "@/lib/store/useNuevaFichaStore";
 import { fichaService } from "@/services";
+import { useNuevaFichaStore } from "@/stores";
 
 export const useNuevaFichaContenido = () => {
   const router = useRouter();
