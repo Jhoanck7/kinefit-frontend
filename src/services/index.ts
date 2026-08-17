@@ -15,6 +15,12 @@ export {
 } from "./landing-config-service";
 export { MediaService, mediaService } from "./media-service";
 export { PacienteService, pacienteService } from "./paciente-service";
+export type {
+  FiltrosReporteComisiones,
+  FiltrosReporteReservas,
+  FiltrosReporteVentas,
+} from "./reporte-service";
 export { ReporteService, reporteService } from "./reporte-service";
 export { TransaccionService, transaccionService } from "./transaccion-service";
+export type { FiltrosVentas } from "./venta-service";
 export { VentaService, ventaService } from "./venta-service";

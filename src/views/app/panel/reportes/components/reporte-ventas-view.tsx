@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Paginacion } from "@/components/shared";
 import {
@@ -13,11 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui";
-import {
-  descargarReporteVentasCsv,
-  getReporteVentas,
-  ReporteVentasResuelto,
-} from "@/lib/panel/data/reportes";
+import { useGetReporteVentas } from "@/hooks/api";
+import { reporteService } from "@/services";
 
 const TAMANO_PAGINA = 8;
 
@@ -38,36 +35,34 @@ export function ReporteVentasView({
   fechaDesde,
   fechaHasta,
 }: ReporteVentasViewProps) {
-  const [data, setData] = useState<ReporteVentasResuelto>({
-    totalVentas: 0,
-    montoTotalPeriodo: 0,
-    page: 1,
-    pageSize: TAMANO_PAGINA,
-    movimientos: [],
-  });
   const [pagina, setPagina] = useState(1);
-  const [cargando, setCargando] = useState(true);
   const [descargando, setDescargando] = useState(false);
 
-  useEffect(() => {
-    getReporteVentas({
-      fechaDesde,
-      fechaHasta,
-      page: pagina,
-      pageSize: TAMANO_PAGINA,
-    }).then(res => {
-      setData(res);
-      setCargando(false);
-    });
-  }, [fechaDesde, fechaHasta, pagina]);
+  const { data, isLoading: cargando } = useGetReporteVentas({
+    fechaDesde,
+    fechaHasta,
+    page: pagina,
+    pageSize: TAMANO_PAGINA,
+  });
 
-  const total = data.totalVentas;
+  const movimientos = data?.movimientos ?? [];
+  const total = data?.totalVentas ?? 0;
+  const montoTotalPeriodo = data?.montoTotalPeriodo ?? 0;
   const inicio = (pagina - 1) * TAMANO_PAGINA;
 
   async function handleDescargarCsv() {
     setDescargando(true);
     try {
-      await descargarReporteVentasCsv({ fechaDesde, fechaHasta });
+      const res = await reporteService.descargarReporteVentasCsv({
+        fechaDesde,
+        fechaHasta,
+      });
+      const url = URL.createObjectURL(res.data);
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = `reporte-ventas-${fechaDesde ?? "todo"}.csv`;
+      enlace.click();
+      URL.revokeObjectURL(url);
     } catch {
       alert("No se pudo generar el archivo CSV.");
     } finally {
@@ -84,7 +79,7 @@ export function ReporteVentasView({
             Monto Total del Período
           </span>
           <p className="mt-2 text-2xl font-bold text-emerald-800">
-            ${data.montoTotalPeriodo.toLocaleString("es-CL")}{" "}
+            ${montoTotalPeriodo.toLocaleString("es-CL")}{" "}
             <span className="text-sm font-normal text-brand-muted">CLP</span>
           </p>
           <p className="mt-1 text-sm text-brand-muted">
@@ -97,7 +92,7 @@ export function ReporteVentasView({
             Transacciones Registradas
           </span>
           <p className="mt-2 text-2xl font-bold text-panel-sidebar">
-            {data.totalVentas} ventas
+            {total} ventas
           </p>
           <p className="mt-1 text-sm text-brand-muted">
             Movimientos de caja procesados
@@ -148,10 +143,10 @@ export function ReporteVentasView({
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-slate-200 bg-white">
-            {data.movimientos.map(m => (
+            {movimientos.map(m => (
               <TableRow key={m.id} className="hover:bg-slate-50/70">
                 <TableCell className="px-4 py-3 font-bold text-panel-sidebar">
-                  {m.codigo}
+                  #{m.id}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-brand-muted">
                   {m.fecha}

@@ -10,7 +10,7 @@ import {
   formatearFechaHora,
   formatearRangoHorario,
 } from "@/lib/formato";
-import { obtenerEtiquetaCampo } from "@/lib/panel/data/formatos";
+import { obtenerEtiquetaCampo } from "@/lib/formatos-ficha";
 import { CitaDetalleResponse, FichaResponse } from "@/models/responses";
 import { citaService, fichaService } from "@/services";
 

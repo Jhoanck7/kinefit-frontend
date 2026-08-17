@@ -1,21 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Modal } from "@/components/shared";
-import { useGetEspecialistas } from "@/hooks/api";
 import {
-  crearReparto,
-  crearTasaIva,
-  crearTerminal,
-  listRepartos,
-  listTasasIva,
-  listTerminales,
-  RepartoResuelto,
-  TasaIvaResuelta,
-  TerminalResuelto,
-} from "@/lib/panel/data/ventas";
+  useCreateRepartoMutation,
+  useCreateTasaImpuestoMutation,
+  useCreateTerminalMutation,
+  useGetEspecialistas,
+  useGetRepartos,
+  useGetTasasImpuesto,
+  useGetTerminales,
+} from "@/hooks/api";
 import { fechaISO } from "@/lib/formato";
+import { RepartoProfesionalResponse } from "@/models/responses";
 
 interface ConfiguracionFinancieraModalProps {
   abierto: boolean;
@@ -30,24 +28,18 @@ export function ConfiguracionFinancieraModal({
     "terminales"
   );
 
-  const [terminales, setTerminales] = useState<TerminalResuelto[]>([]);
-  const [acuerdos, setAcuerdos] = useState<RepartoResuelto[]>([]);
-  const [tasasIva, setTasasIva] = useState<TasaIvaResuelta[]>([]);
+  const { data: terminales = [], isLoading: cargandoTerminales } =
+    useGetTerminales();
+  const { data: acuerdos = [], isLoading: cargandoRepartos } = useGetRepartos();
+  const { data: tasasIva = [], isLoading: cargandoTasas } =
+    useGetTasasImpuesto();
   const { data: especialistas = [] } = useGetEspecialistas(undefined, true);
-  const [cargando, setCargando] = useState(true);
+  const cargando = cargandoTerminales || cargandoRepartos || cargandoTasas;
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!abierto) return;
-    Promise.all([listTerminales(), listRepartos(), listTasasIva()]).then(
-      ([t, r, iva]) => {
-        setTerminales(t);
-        setAcuerdos(r);
-        setTasasIva(iva);
-        setCargando(false);
-      }
-    );
-  }, [abierto]);
+  const crearTerminalMutation = useCreateTerminalMutation();
+  const crearRepartoMutation = useCreateRepartoMutation();
+  const crearTasaIvaMutation = useCreateTasaImpuestoMutation();
 
   // Estado de creación de Terminal POS
   const [mostrarFormTerminal, setMostrarFormTerminal] = useState(false);
@@ -57,7 +49,6 @@ export function ConfiguracionFinancieraModal({
   const [cargoFijoDebito, setCargoFijoDebito] = useState(0);
   const [pctCredito, setPctCredito] = useState(1.89);
   const [cargoFijoCredito, setCargoFijoCredito] = useState(0);
-  const [guardandoTerminal, setGuardandoTerminal] = useState(false);
 
   function resetFormTerminal() {
     setNombreTerminal("");
@@ -72,25 +63,29 @@ export function ConfiguracionFinancieraModal({
   async function handleGuardarTerminal(e: React.FormEvent) {
     e.preventDefault();
     if (!nombreTerminal.trim()) return;
-    setGuardandoTerminal(true);
     setErrorMsg(null);
     try {
-      const creado = await crearTerminal({
+      await crearTerminalMutation.mutateAsync({
         nombre: nombreTerminal.trim(),
         plazoAbonoDias: plazoAbono,
-        comisionDebito: pctDebito,
-        cargoFijoDebito,
-        comisionCredito: pctCredito,
-        cargoFijoCredito,
+        comisiones: [
+          {
+            metodoPago: "Debito",
+            porcentaje: pctDebito,
+            cargoFijo: cargoFijoDebito,
+          },
+          {
+            metodoPago: "Credito",
+            porcentaje: pctCredito,
+            cargoFijo: cargoFijoCredito,
+          },
+        ],
       });
-      setTerminales(prev => [...prev, creado]);
       resetFormTerminal();
     } catch (err: unknown) {
       setErrorMsg(
         err instanceof Error ? err.message : "No se pudo registrar el terminal."
       );
-    } finally {
-      setGuardandoTerminal(false);
     }
   }
 
@@ -101,7 +96,6 @@ export function ConfiguracionFinancieraModal({
   const [fechaVigenciaReparto, setFechaVigenciaReparto] = useState(
     fechaISO(new Date())
   );
-  const [guardandoReparto, setGuardandoReparto] = useState(false);
 
   function resetFormReparto() {
     setEspecialistaIdReparto(String(especialistas[0]?.id ?? ""));
@@ -110,8 +104,8 @@ export function ConfiguracionFinancieraModal({
     setMostrarFormReparto(false);
   }
 
-  function handleEditarReparto(a: RepartoResuelto) {
-    setEspecialistaIdReparto(a.especialistaId);
+  function handleEditarReparto(a: RepartoProfesionalResponse) {
+    setEspecialistaIdReparto(String(a.especialistaId));
     setPctProf(a.porcentajeProfesional);
     setFechaVigenciaReparto(fechaISO(new Date()));
     setMostrarFormReparto(true);
@@ -119,20 +113,15 @@ export function ConfiguracionFinancieraModal({
 
   async function handleGuardarReparto(e: React.FormEvent) {
     e.preventDefault();
-    const numEspId = parseInt(especialistaIdReparto.replace(/\D/g, ""), 10);
-    if (isNaN(numEspId)) return;
-    setGuardandoReparto(true);
+    const numEspId = Number(especialistaIdReparto);
+    if (!numEspId) return;
     setErrorMsg(null);
     try {
-      const creado = await crearReparto({
+      await crearRepartoMutation.mutateAsync({
         especialistaId: numEspId,
         porcentajeProfesional: pctProf,
         vigenteDesde: fechaVigenciaReparto,
       });
-      setAcuerdos(prev => [
-        creado,
-        ...prev.filter(a => a.especialistaId !== creado.especialistaId),
-      ]);
       resetFormReparto();
     } catch (err: unknown) {
       setErrorMsg(
@@ -140,8 +129,6 @@ export function ConfiguracionFinancieraModal({
           ? err.message
           : "No se pudo registrar el acuerdo de reparto."
       );
-    } finally {
-      setGuardandoReparto(false);
     }
   }
 
@@ -151,18 +138,15 @@ export function ConfiguracionFinancieraModal({
   const [fechaVigenciaIva, setFechaVigenciaIva] = useState(
     fechaISO(new Date())
   );
-  const [guardandoIva, setGuardandoIva] = useState(false);
 
   async function handleGuardarIva(e: React.FormEvent) {
     e.preventDefault();
-    setGuardandoIva(true);
     setErrorMsg(null);
     try {
-      const creada = await crearTasaIva({
+      await crearTasaIvaMutation.mutateAsync({
         porcentaje: pctIva,
         vigenteDesde: fechaVigenciaIva,
       });
-      setTasasIva(prev => [creada, ...prev]);
       setMostrarFormIva(false);
     } catch (err: unknown) {
       setErrorMsg(
@@ -170,8 +154,6 @@ export function ConfiguracionFinancieraModal({
           ? err.message
           : "No se pudo registrar la tasa de IVA."
       );
-    } finally {
-      setGuardandoIva(false);
     }
   }
 
@@ -395,10 +377,12 @@ export function ConfiguracionFinancieraModal({
                         </button>
                         <button
                           type="submit"
-                          disabled={guardandoTerminal}
+                          disabled={crearTerminalMutation.isPending}
                           className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none disabled:opacity-50"
                         >
-                          {guardandoTerminal ? "Guardando..." : "Guardar"}
+                          {crearTerminalMutation.isPending
+                            ? "Guardando..."
+                            : "Guardar"}
                         </button>
                       </div>
                     </form>
@@ -410,36 +394,44 @@ export function ConfiguracionFinancieraModal({
                         Sin terminales registradas.
                       </p>
                     )}
-                    {terminales.map(t => (
-                      <div
-                        key={t.id}
-                        className="p-4 flex flex-wrap justify-between items-center gap-3"
-                      >
-                        <div>
-                          <span className="font-sans font-medium text-sm text-slate-900 block">
-                            {t.nombre}
-                          </span>
-                          <span className="font-sans text-xs text-slate-500">
-                            Abono en {t.plazoAbonoDias} día(s)
-                          </span>
-                        </div>
+                    {terminales.map(t => {
+                      const debito = t.comisiones.find(
+                        c => c.metodoPago === "Debito"
+                      );
+                      const credito = t.comisiones.find(
+                        c => c.metodoPago === "Credito"
+                      );
+                      return (
+                        <div
+                          key={t.id}
+                          className="p-4 flex flex-wrap justify-between items-center gap-3"
+                        >
+                          <div>
+                            <span className="font-sans font-medium text-sm text-slate-900 block">
+                              {t.nombre}
+                            </span>
+                            <span className="font-sans text-xs text-slate-500">
+                              Abono en {t.plazoAbonoDias} día(s)
+                            </span>
+                          </div>
 
-                        <div className="text-right text-xs">
-                          <div className="font-sans text-slate-800">
-                            Débito:{" "}
-                            <span className="font-medium text-slate-900">
-                              {t.comisionDebito ?? "—"}%
-                            </span>
-                          </div>
-                          <div className="font-sans text-slate-800">
-                            Crédito:{" "}
-                            <span className="font-medium text-slate-900">
-                              {t.comisionCredito ?? "—"}%
-                            </span>
+                          <div className="text-right text-xs">
+                            <div className="font-sans text-slate-800">
+                              Débito:{" "}
+                              <span className="font-medium text-slate-900">
+                                {debito?.porcentaje ?? "—"}%
+                              </span>
+                            </div>
+                            <div className="font-sans text-slate-800">
+                              Crédito:{" "}
+                              <span className="font-medium text-slate-900">
+                                {credito?.porcentaje ?? "—"}%
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -541,10 +533,12 @@ export function ConfiguracionFinancieraModal({
                         </button>
                         <button
                           type="submit"
-                          disabled={guardandoReparto}
+                          disabled={crearRepartoMutation.isPending}
                           className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none disabled:opacity-50"
                         >
-                          {guardandoReparto ? "Guardando..." : "Guardar"}
+                          {crearRepartoMutation.isPending
+                            ? "Guardando..."
+                            : "Guardar"}
                         </button>
                       </div>
                     </form>
@@ -662,10 +656,12 @@ export function ConfiguracionFinancieraModal({
                         </button>
                         <button
                           type="submit"
-                          disabled={guardandoIva}
+                          disabled={crearTasaIvaMutation.isPending}
                           className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none disabled:opacity-50"
                         >
-                          {guardandoIva ? "Guardando..." : "Actualizar"}
+                          {crearTasaIvaMutation.isPending
+                            ? "Guardando..."
+                            : "Actualizar"}
                         </button>
                       </div>
                     </form>

@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui";
+import { formatearFechaHora } from "@/lib/formato";
 
 import {
   ConfiguracionFinancieraModal,
@@ -90,34 +91,38 @@ export default function VentasView() {
           <TableBody className="divide-y divide-slate-200 bg-white">
             {ventasFiltradas.map(venta => {
               const primerItem = venta.items[0];
+              const montoNeto =
+                venta.desglose.montoTotal - (venta.desglose.impuesto ?? 0);
               return (
                 <TableRow
                   key={venta.id}
-                  onClick={() => actions.setVentaSeleccionada(venta)}
+                  onClick={() => actions.setVentaSeleccionada(venta.id)}
                   tabIndex={0}
                   role="button"
                   onKeyDown={e => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      actions.setVentaSeleccionada(venta);
+                      actions.setVentaSeleccionada(venta.id);
                     }
                   }}
                   className="cursor-pointer hover:bg-slate-50/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-slate-900"
                 >
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-900">
-                    {venta.codigoDisplay}
+                    #{venta.id}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                    {venta.fechaFormateada}
+                    {formatearFechaHora(new Date(venta.createdAt))}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                    {venta.pacienteNombre}
+                    {venta.pacienteNombre ?? "Cliente sin registrar"}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                    {primerItem?.servicioNombre ?? "Atención"}
+                    {primerItem?.servicioNombre ??
+                      primerItem?.descripcion ??
+                      "Atención"}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-900 whitespace-nowrap">
-                    ${venta.montoBruto.toLocaleString("es-CL")}
+                    ${venta.desglose.montoTotal.toLocaleString("es-CL")}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
                     {venta.metodoPago}
@@ -126,24 +131,24 @@ export default function VentasView() {
                     {venta.terminalNombre ?? "—"}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                    {venta.comisionPosMonto > 0
-                      ? `-$${venta.comisionPosMonto.toLocaleString("es-CL")}`
+                    {venta.desglose.comisionTerminal > 0
+                      ? `-$${venta.desglose.comisionTerminal.toLocaleString("es-CL")}`
                       : "$0"}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                    ${venta.ivaMonto.toLocaleString("es-CL")}
+                    ${(venta.desglose.impuesto ?? 0).toLocaleString("es-CL")}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                    ${venta.montoNeto.toLocaleString("es-CL")}
+                    ${montoNeto.toLocaleString("es-CL")}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                    {venta.pagoProfesional
-                      ? `$${venta.pagoProfesional.toLocaleString("es-CL")}`
+                    {venta.desglose.montoProfesional
+                      ? `$${venta.desglose.montoProfesional.toLocaleString("es-CL")}`
                       : "—"}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                    {venta.margenClinica
-                      ? `$${venta.margenClinica.toLocaleString("es-CL")}`
+                    {venta.desglose.montoCentro
+                      ? `$${venta.desglose.montoCentro.toLocaleString("es-CL")}`
                       : "—"}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-right">

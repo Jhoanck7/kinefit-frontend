@@ -4,10 +4,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Modal } from "@/components/shared";
-import { useGetPacientePerfil } from "@/hooks/api";
-import { formatearFechaCorta } from "@/lib/formato";
-import { FichaResuelta, fichasDelPaciente } from "@/lib/panel/data/fichas";
+import { useGetHistorialPorPaciente, useGetPacientePerfil } from "@/hooks/api";
 import { definicionEstado } from "@/lib/estados";
+import { formatearFechaCorta } from "@/lib/formato";
 import { CodigoEstadoCita } from "@/models/responses";
 
 interface PacienteDetalleModalProps {
@@ -42,7 +41,6 @@ export function PacienteDetalleModal({
   onCerrar,
 }: PacienteDetalleModalProps) {
   const router = useRouter();
-  const [fichas, setFichas] = useState<FichaResuelta[]>([]);
   const [pestanaActiva, setPestanaActiva] =
     useState<PestanaPaciente>("contacto");
 
@@ -50,20 +48,16 @@ export function PacienteDetalleModal({
     Number(pacienteId),
     Boolean(pacienteId) && Boolean(hoy)
   );
+  const { data: fichas = [] } = useGetHistorialPorPaciente(
+    Number(pacienteId),
+    Boolean(pacienteId)
+  );
 
   useEffect(() => {
     if (!pacienteId) {
       setPestanaActiva("contacto");
     }
   }, [pacienteId]);
-
-  useEffect(() => {
-    if (!pacienteId || !hoy) {
-      setFichas([]);
-      return;
-    }
-    fichasDelPaciente(pacienteId, hoy).then(setFichas);
-  }, [pacienteId, hoy]);
 
   return (
     <Modal abierto={Boolean(pacienteId)} onCerrar={onCerrar} ancho="max-w-3xl">
@@ -260,10 +254,10 @@ export function PacienteDetalleModal({
                         >
                           <div>
                             <span className="font-sans font-medium text-sm text-slate-900 block">
-                              {ficha.tipo}
+                              {ficha.tipoNombre}
                             </span>
                             <span className="font-sans text-xs text-slate-500">
-                              {formatearFechaCorta(ficha.cita.fecha)}
+                              {formatearFechaCorta(new Date(ficha.createdAt))}
                             </span>
                           </div>
                           <button

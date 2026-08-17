@@ -3,19 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useHoyPanel } from "@/hooks/common";
-import {
-  FormatoResuelto,
-  getFormato,
-  listFormatos,
-} from "@/lib/panel/data/formatos";
+import { useGetFormatos } from "@/hooks/api";
 import { CitaDetalleResponse } from "@/models/responses";
 import { citaService, fichaService } from "@/services";
 import { useNuevaFichaStore } from "@/stores";
 
 export const useNuevaFichaContenido = () => {
   const router = useRouter();
-  const hoy = useHoyPanel();
   const {
     pacienteNombre,
     citaId,
@@ -30,15 +24,10 @@ export const useNuevaFichaContenido = () => {
   } = useNuevaFichaStore();
 
   const [cita, setCita] = useState<CitaDetalleResponse | null>(null);
-  const [formato, setFormatoResuelto] = useState<FormatoResuelto | null>(null);
-  const [formatosDisponibles, setFormatosDisponibles] = useState<
-    FormatoResuelto[]
-  >([]);
-  const [opcionesFormato, setOpcionesFormato] = useState<
-    { id: string; titulo: string }[]
-  >([]);
   const [guardando, setGuardando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const { data: formatosDisponibles = [] } = useGetFormatos();
 
   useEffect(() => {
     if (!citaId) return;
@@ -46,36 +35,18 @@ export const useNuevaFichaContenido = () => {
   }, [citaId]);
 
   useEffect(() => {
-    if (!hoy) return;
-    listFormatos(hoy).then(lista => {
-      setFormatosDisponibles(lista);
-      const opciones = lista.map(f => ({ id: f.id, titulo: f.nombre }));
-      setOpcionesFormato(opciones);
-      if (lista.length > 0 && !formatoId) {
-        setFormato(lista[0].id);
-      }
-    });
-
+    if (formatosDisponibles.length > 0 && !formatoId) {
+      setFormato(formatosDisponibles[0].id);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hoy]);
+  }, [formatosDisponibles]);
 
-  useEffect(() => {
-    if (!formatoId) {
-      Promise.resolve().then(() => setFormatoResuelto(null));
-      return;
-    }
-    const hallado = formatosDisponibles.find(f => f.id === formatoId);
-    if (hallado) {
-      Promise.resolve().then(() => setFormatoResuelto(hallado));
-    } else if (hoy) {
-      getFormato(formatoId, hoy).then(resultado =>
-        setFormatoResuelto(resultado ?? null)
-      );
-    }
-  }, [formatoId, formatosDisponibles, hoy]);
-
-  const nombreFormato =
-    opcionesFormato.find(o => o.id === formatoId)?.titulo || formato?.nombre;
+  const opcionesFormato = formatosDisponibles.map(f => ({
+    id: f.id,
+    titulo: f.nombre,
+  }));
+  const formato = formatosDisponibles.find(f => f.id === formatoId) ?? null;
+  const nombreFormato = formato?.nombre;
 
   // Actions
   const handleCambiarCampo = (
@@ -141,7 +112,6 @@ export const useNuevaFichaContenido = () => {
 
   return {
     // Data
-    hoy,
     pacienteNombre,
     citaId,
     formatoId,

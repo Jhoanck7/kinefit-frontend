@@ -3,20 +3,17 @@
 import { useState } from "react";
 
 import { Modal } from "@/components/shared";
-import { useGetPacientes } from "@/hooks/api";
-import {
-  crearVenta,
-  MetodoPago,
-  TerminalResuelto,
-  VentaResuelta,
-} from "@/lib/panel/data/ventas";
-import { PacienteResponse } from "@/models/responses";
+import { useCreateVentaMutation, useGetPacientes } from "@/hooks/api";
+import { CreateVentaRequest } from "@/models/requests";
+import { PacienteResponse, TerminalPagoResponse } from "@/models/responses";
+
+type MetodoPago = CreateVentaRequest["metodoPago"];
 
 interface NuevaVentaModalProps {
   abierto: boolean;
   onClose: () => void;
-  onCrearVenta: (nuevaVenta: VentaResuelta) => void;
-  terminales: TerminalResuelto[];
+  onCrearVenta: () => void;
+  terminales: TerminalPagoResponse[];
 }
 
 export function NuevaVentaModal({
@@ -38,10 +35,10 @@ export function NuevaVentaModal({
   const [monto, setMonto] = useState(40000);
   const [metodoPago, setMetodoPago] = useState<MetodoPago>("Debito");
   const [terminalPagoId, setTerminalPagoId] = useState<string>(
-    terminales[0]?.id ?? ""
+    String(terminales[0]?.id ?? "")
   );
-  const [guardando, setGuardando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const crearVentaMutation = useCreateVentaMutation();
 
   const requiereTerminal = metodoPago === "Debito" || metodoPago === "Credito";
 
@@ -51,7 +48,7 @@ export function NuevaVentaModal({
     setDescripcion("");
     setMonto(40000);
     setMetodoPago("Debito");
-    setTerminalPagoId(terminales[0]?.id ?? "");
+    setTerminalPagoId(String(terminales[0]?.id ?? ""));
     setErrorMsg(null);
   }
 
@@ -64,28 +61,28 @@ export function NuevaVentaModal({
     e.preventDefault();
     if (!descripcion.trim() || monto <= 0) return;
 
-    setGuardando(true);
     setErrorMsg(null);
 
     try {
-      const nueva = await crearVenta({
+      await crearVentaMutation.mutateAsync({
         pacienteId: pacienteSeleccionado?.id,
         metodoPago,
-        terminalPagoId: requiereTerminal
-          ? parseInt(terminalPagoId.replace(/\D/g, ""), 10)
-          : undefined,
-        descripcion: descripcion.trim(),
-        monto,
+        terminalPagoId: requiereTerminal ? Number(terminalPagoId) : undefined,
+        items: [
+          {
+            tipo: "Servicio",
+            descripcion: descripcion.trim(),
+            monto,
+          },
+        ],
       });
-      onCrearVenta(nueva);
+      onCrearVenta();
       resetForm();
       onClose();
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "No se pudo registrar el cobro.";
       setErrorMsg(msg);
-    } finally {
-      setGuardando(false);
     }
   }
 
@@ -238,10 +235,13 @@ export function NuevaVentaModal({
             </button>
             <button
               type="submit"
-              disabled={guardando || (requiereTerminal && !terminalPagoId)}
+              disabled={
+                crearVentaMutation.isPending ||
+                (requiereTerminal && !terminalPagoId)
+              }
               className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none disabled:opacity-50"
             >
-              {guardando ? "Guardando..." : "Guardar Cobro"}
+              {crearVentaMutation.isPending ? "Guardando..." : "Guardar Cobro"}
             </button>
           </div>
         </form>

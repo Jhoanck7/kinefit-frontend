@@ -1,10 +1,5 @@
 const ZONA_HORARIA = "America/Santiago";
 
-/**
- * Suma días de calendario a una fecha, en la zona horaria del panel.
- * Se usa para resolver offsets de la semilla (§5.4 regla 3) contra el
- * "hoy" ya resuelto del lado del cliente.
- */
 export function sumarDias(base: Date, dias: number): Date {
   const resultado = new Date(base);
   resultado.setDate(resultado.getDate() + dias);

@@ -40,21 +40,21 @@ export const useLanding = () => {
           try {
             const parsed = JSON.parse(config.galleryJson);
             if (Array.isArray(parsed) && parsed.length > 0) setSlides(parsed);
-          } catch {}
+          } catch { }
         }
         if (config.processStepsJson) {
           try {
             const parsedSteps = JSON.parse(config.processStepsJson);
             if (Array.isArray(parsedSteps) && parsedSteps.length > 0)
               setProcessSteps(parsedSteps);
-          } catch {}
+          } catch { }
         }
         if (config.reviewsJson) {
           try {
             const parsedReviews = JSON.parse(config.reviewsJson);
             if (Array.isArray(parsedReviews) && parsedReviews.length > 0)
               setReviewsList(parsedReviews);
-          } catch {}
+          } catch { }
         }
       } catch {
         // El error se refleja al usuario únicamente si ocurre durante el guardado.
@@ -156,7 +156,7 @@ export const useLanding = () => {
         try {
           const parsedReviews = JSON.parse(data.reviewsJson);
           if (Array.isArray(parsedReviews)) setReviewsList(parsedReviews);
-        } catch {}
+        } catch { }
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

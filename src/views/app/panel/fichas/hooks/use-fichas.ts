@@ -3,9 +3,8 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useGetFichas } from "@/hooks/api";
+import { useGetFichas, useGetFormatos } from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
-import { FormatoResuelto, listFormatos } from "@/lib/panel/data/formatos";
 
 export const TAMANO_PAGINA = 8;
 
@@ -19,15 +18,11 @@ export const useFichas = () => {
   const [tipo, setTipo] = useState("");
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
-  const [formatos, setFormatos] = useState<FormatoResuelto[]>([]);
   const [pagina, setPagina] = useState(1);
 
   const fichaModalId = searchParams.get("ficha");
 
-  useEffect(() => {
-    if (!hoy) return;
-    listFormatos(hoy).then(setFormatos);
-  }, [hoy]);
+  const { data: formatos = [] } = useGetFormatos();
 
   useEffect(() => {
     setPagina(1);

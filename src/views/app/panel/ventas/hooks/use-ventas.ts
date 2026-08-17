@@ -2,12 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import {
-  listTerminales,
-  listVentas,
-  TerminalResuelto,
-  VentaResuelta,
-} from "@/lib/panel/data/ventas";
+import { useGetTerminales, useGetVentas } from "@/hooks/api";
 import { fechaISO } from "@/lib/formato";
 
 export const TAMANO_PAGINA = 8;
@@ -39,12 +34,9 @@ function rangoAFechas(rango: string): {
 }
 
 export const useVentas = () => {
-  const [ventas, setVentas] = useState<VentaResuelta[]>([]);
-  const [total, setTotal] = useState(0);
-  const [terminales, setTerminales] = useState<TerminalResuelto[]>([]);
-  const [cargando, setCargando] = useState(true);
-  const [ventaSeleccionada, setVentaSeleccionada] =
-    useState<VentaResuelta | null>(null);
+  const [ventaSeleccionadaId, setVentaSeleccionadaId] = useState<number | null>(
+    null
+  );
   const [pagina, setPagina] = useState(1);
 
   // Modales
@@ -56,44 +48,33 @@ export const useVentas = () => {
   const [metodoPago, setMetodoPago] = useState("todos");
   const [busquedaPaciente, setBusquedaPaciente] = useState("");
 
-  function fetchVentas() {
-    const { fechaDesde, fechaHasta } = rangoAFechas(rangoFecha);
-    return listVentas({
-      fechaDesde,
-      fechaHasta,
-      metodoPago: metodoPago !== "todos" ? metodoPago : undefined,
-      page: pagina,
-      pageSize: TAMANO_PAGINA,
-    });
-  }
-
-  function cargarVentas() {
-    fetchVentas().then(res => {
-      setVentas(res.ventas);
-      setTotal(res.total);
-      setCargando(false);
-    });
-  }
-
   useEffect(() => {
-    fetchVentas().then(res => {
-      setVentas(res.ventas);
-      setTotal(res.total);
-      setCargando(false);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rangoFecha, metodoPago, pagina]);
+    setPagina(1);
+  }, [rangoFecha, metodoPago]);
 
-  useEffect(() => {
-    listTerminales().then(setTerminales);
-  }, []);
+  const { fechaDesde, fechaHasta } = rangoAFechas(rangoFecha);
+  const { data, isLoading, refetch } = useGetVentas({
+    fechaDesde,
+    fechaHasta,
+    metodoPago: metodoPago !== "todos" ? metodoPago : undefined,
+    page: pagina,
+    pageSize: TAMANO_PAGINA,
+  });
+  const { data: terminales = [], refetch: refetchTerminales } =
+    useGetTerminales();
+
+  const ventas = data?.items ?? [];
+  const total = data?.total ?? 0;
 
   const ventasFiltradas = ventas.filter(v => {
     if (busquedaPaciente.trim() === "") return true;
-    return v.pacienteNombre
+    return (v.pacienteNombre ?? "")
       .toLowerCase()
       .includes(busquedaPaciente.toLowerCase());
   });
+
+  const ventaSeleccionada =
+    ventas.find(v => v.id === ventaSeleccionadaId) ?? null;
 
   const inicio = (pagina - 1) * TAMANO_PAGINA;
 
@@ -103,30 +84,24 @@ export const useVentas = () => {
   }
 
   function handleCambiarRango(v: string) {
-    setCargando(true);
     setRangoFecha(v);
-    setPagina(1);
   }
 
   function handleCambiarMetodoPago(v: string) {
-    setCargando(true);
     setMetodoPago(v);
-    setPagina(1);
   }
 
   function handlePaginaAnterior() {
-    setCargando(true);
     setPagina(p => Math.max(1, p - 1));
   }
 
   function handlePaginaSiguiente() {
-    setCargando(true);
     setPagina(p => (inicio + TAMANO_PAGINA < total ? p + 1 : p));
   }
 
   function handleCerrarConfig() {
     setModalConfig(false);
-    listTerminales().then(setTerminales);
+    refetchTerminales();
   }
 
   return {
@@ -134,7 +109,7 @@ export const useVentas = () => {
     ventasFiltradas,
     total,
     terminales,
-    cargando,
+    cargando: isLoading,
     ventaSeleccionada,
     pagina,
     inicio,
@@ -146,7 +121,7 @@ export const useVentas = () => {
 
     // Actions
     actions: {
-      setVentaSeleccionada,
+      setVentaSeleccionada: (id: number | null) => setVentaSeleccionadaId(id),
       setModalNuevaVenta,
       setModalConfig,
       setBusquedaPaciente,
@@ -156,7 +131,7 @@ export const useVentas = () => {
       handlePaginaAnterior,
       handlePaginaSiguiente,
       handleCerrarConfig,
-      cargarVentas,
+      cargarVentas: refetch,
     },
   };
 };

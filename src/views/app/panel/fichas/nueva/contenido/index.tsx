@@ -18,7 +18,6 @@ import { useNuevaFichaContenido } from "./hooks";
 
 export default function NuevaFichaContenidoView() {
   const {
-    hoy,
     pacienteNombre,
     citaId,
     formatoId,
@@ -33,7 +32,7 @@ export default function NuevaFichaContenidoView() {
     actions,
   } = useNuevaFichaContenido();
 
-  if (!hoy || !citaId) return <div aria-hidden />;
+  if (!citaId) return <div aria-hidden />;
 
   return (
     <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-[1fr_320px] font-sans shadow-none">

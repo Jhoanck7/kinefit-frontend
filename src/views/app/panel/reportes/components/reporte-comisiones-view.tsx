@@ -1,12 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { Card } from "@/components/ui";
-import {
-  getReporteComisiones,
-  ReporteComisionesResuelto,
-} from "@/lib/panel/data/reportes";
+import { useGetReporteComisiones } from "@/hooks/api";
 
 interface ReporteComisionesViewProps {
   fechaDesde?: string;
@@ -17,18 +12,11 @@ export function ReporteComisionesView({
   fechaDesde,
   fechaHasta,
 }: ReporteComisionesViewProps) {
-  const [data, setData] = useState<ReporteComisionesResuelto>({
-    generadoEl: "",
-    profesionales: [],
+  const { data, isLoading: cargando } = useGetReporteComisiones({
+    fechaDesde,
+    fechaHasta,
   });
-  const [cargando, setCargando] = useState(true);
-
-  useEffect(() => {
-    getReporteComisiones({ fechaDesde, fechaHasta }).then(res => {
-      setData(res);
-      setCargando(false);
-    });
-  }, [fechaDesde, fechaHasta]);
+  const profesionales = data?.profesionales ?? [];
 
   if (cargando) {
     return (
@@ -40,7 +28,7 @@ export function ReporteComisionesView({
     );
   }
 
-  if (data.profesionales.length === 0) {
+  if (profesionales.length === 0) {
     return (
       <Card className="p-6">
         <p className="py-8 text-center text-sm text-brand-muted">
@@ -64,13 +52,13 @@ export function ReporteComisionesView({
           </p>
         </div>
         <span className="rounded-xl bg-panel-seleccion px-3 py-1.5 text-sm font-semibold text-panel-sidebar">
-          Reporte generado: {data.generadoEl}
+          Reporte generado: {data?.generadoEl}
         </span>
       </Card>
 
       {/* Tarjetas de Liquidación por Profesional */}
       <div className="space-y-4">
-        {data.profesionales.map(p => {
+        {profesionales.map(p => {
           const tieneAcuerdo =
             p.montoProfesional !== undefined && p.montoCentro !== undefined;
           return (
@@ -120,7 +108,7 @@ export function ReporteComisionesView({
                     Retención IVA
                   </span>
                   <span className="text-sm font-semibold text-panel-sidebar mt-0.5 block">
-                    -${p.impuesto.toLocaleString("es-CL")}
+                    -${(p.impuesto ?? 0).toLocaleString("es-CL")}
                   </span>
                 </div>
 

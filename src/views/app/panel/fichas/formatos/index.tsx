@@ -7,9 +7,9 @@ import { formatearFechaExtensa } from "@/lib/formato";
 import { useFormatos } from "./hooks";
 
 export default function FormatosView() {
-  const { hoy, formatos, actions } = useFormatos();
+  const { formatos, actions } = useFormatos();
 
-  if (!hoy || formatos === null) return <div aria-hidden />;
+  if (!formatos) return <div aria-hidden />;
 
   return (
     <div className="mx-auto max-w-4xl space-y-4">

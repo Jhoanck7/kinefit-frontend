@@ -3,11 +3,8 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useHoyPanel } from "@/hooks/common";
-import { getFormato, guardarFormato } from "@/lib/panel/data/formatos";
-
-type TipoCampoFormato =
-  "texto_corto" | "texto_largo" | "numerico" | "fecha" | "seleccion";
+import { useGetFormatoById, useGuardarFormatoMutation } from "@/hooks/api";
+import { TipoCampoFormato } from "@/models/responses";
 
 export interface CampoBorrador {
   id: string;
@@ -83,33 +80,34 @@ export const useConstructorFormato = () => {
   );
 
   const searchParams = useSearchParams();
-  const hoy = useHoyPanel();
   const idEditado = searchParams.get("editar");
 
+  const { data: formatoEditado } = useGetFormatoById(
+    idEditado ?? "",
+    Boolean(idEditado)
+  );
+  const guardarFormatoMutation = useGuardarFormatoMutation();
+
   useEffect(() => {
-    if (!hoy || !idEditado) return;
-    getFormato(idEditado, hoy).then(formato => {
-      if (formato) {
-        setFichasDelFormatoEditado(formato.fichasCreadas);
-        setNombreFormato(formato.nombre);
-        if (formato.secciones && formato.secciones.length > 0) {
-          setSecciones(
-            formato.secciones.map(s => ({
-              id: s.id,
-              nombre: s.nombre,
-              campos: s.campos.map(c => ({
-                id: c.id,
-                nombre: c.nombre,
-                tipo: c.tipo,
-                obligatorio: c.obligatorio,
-                opciones: c.opciones || [],
-              })),
-            }))
-          );
-        }
-      }
-    });
-  }, [hoy, idEditado]);
+    if (!formatoEditado) return;
+    setFichasDelFormatoEditado(formatoEditado.fichasCreadas);
+    setNombreFormato(formatoEditado.nombre);
+    if (formatoEditado.secciones && formatoEditado.secciones.length > 0) {
+      setSecciones(
+        formatoEditado.secciones.map(s => ({
+          id: s.id,
+          nombre: s.nombre,
+          campos: s.campos.map(c => ({
+            id: c.id,
+            nombre: c.nombre,
+            tipo: c.tipo,
+            obligatorio: c.obligatorio,
+            opciones: c.opciones || [],
+          })),
+        }))
+      );
+    }
+  }, [formatoEditado]);
 
   function actualizarSeccion(id: string, cambios: Partial<SeccionBorrador>) {
     setSecciones(prev =>
@@ -213,7 +211,7 @@ export const useConstructorFormato = () => {
     setSecciones(prev => [...prev, seccionNueva()]);
   }
 
-  function alGuardar() {
+  async function alGuardar() {
     let valido = true;
     if (!nombreFormato.trim()) {
       setErrorNombre("El formato debe tener un nombre.");
@@ -237,7 +235,7 @@ export const useConstructorFormato = () => {
     }
     if (valido) {
       const formatoIdCalculado = idEditado || `fmt-${Date.now()}`;
-      guardarFormato({
+      await guardarFormatoMutation.mutateAsync({
         id: formatoIdCalculado,
         nombre: nombreFormato.trim(),
         secciones: secciones.map(s => ({
@@ -251,7 +249,6 @@ export const useConstructorFormato = () => {
             opciones: c.opciones,
           })),
         })),
-        modificadoHaceDias: 0,
       });
       router.push("/panel/fichas/formatos");
     }

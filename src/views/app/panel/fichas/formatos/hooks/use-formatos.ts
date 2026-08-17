@@ -1,20 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
-import { useHoyPanel } from "@/hooks/common";
-import { FormatoResuelto, listFormatos } from "@/lib/panel/data/formatos";
+import { useGetFormatos } from "@/hooks/api";
 
 export const useFormatos = () => {
   const router = useRouter();
-  const hoy = useHoyPanel();
-  const [formatos, setFormatos] = useState<FormatoResuelto[] | null>(null);
-
-  useEffect(() => {
-    if (!hoy) return;
-    listFormatos(hoy).then(setFormatos);
-  }, [hoy]);
+  const { data: formatos } = useGetFormatos();
 
   // Actions
   const handleVolver = () => router.push("/panel/fichas");
@@ -23,7 +15,6 @@ export const useFormatos = () => {
     router.push(`/panel/fichas/formatos/nuevo?editar=${formatoId}`);
 
   return {
-    hoy,
     formatos,
     actions: {
       handleVolver,
