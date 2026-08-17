@@ -139,7 +139,13 @@ export const useHorario = () => {
 
   // Actions
   const handleSeleccionarBloque = (bloque: BloqueConId) => {
-    if (fecha) setHorario(fecha, bloque.inicio, bloque.id);
+    if (!fecha) return;
+    const idxInicio = bloques.findIndex(b => b.id === bloque.id);
+    const ids: number[] = [];
+    for (let i = 0; i < bloquesRequeridos; i++) {
+      ids.push(bloques[idxInicio + i].id);
+    }
+    setHorario(fecha, bloque.inicio, ids);
   };
 
   const handleCambiarFecha = (valor: string) => {

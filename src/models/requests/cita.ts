@@ -2,7 +2,7 @@ export interface CreateCitaManualRequest {
   pacienteId: number;
   especialistaId: number;
   servicioId: number;
-  bloqueHorarioId: number;
+  bloqueHorarioIds: number[];
   empresaId?: number;
   notaPaciente?: string;
   notaInterna?: string;
