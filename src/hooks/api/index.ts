@@ -32,6 +32,14 @@ export {
   useGuardarFormatoMutation,
 } from "./use-formato-service";
 export {
+  useCreateHorarioCentroMutation,
+  useCreatePlantillaHorarioMutation,
+  useDeleteHorarioCentroMutation,
+  useDeletePlantillaHorarioMutation,
+  useGetHorarioCentro,
+  useGetPlantillaHorario,
+} from "./use-horario-service";
+export {
   useDeleteImageMutation,
   useReplaceImageMutation,
   useUploadImageMutation,

@@ -13,6 +13,10 @@ export type {
   UpdateEspecialistaRequest,
 } from "./especialista";
 export type { CreateFichaRequest, UpdateFichaRequest } from "./ficha";
+export type {
+  CreateHorarioCentroRequest,
+  CreatePlantillaHorarioRequest,
+} from "./horario";
 export type { UpdateLandingConfigRequest } from "./landing-config";
 export type {
   CreatePacienteManualRequest,
