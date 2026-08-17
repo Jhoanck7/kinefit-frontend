@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import { useCreatePacienteMutation } from "@/hooks/api";
 import { listConvenios } from "@/lib/panel/data/convenios";
-import { Convenio } from "@/lib/tipos";
+import { EmpresaResponse } from "@/models/responses";
 import { pacienteService } from "@/services";
 import { useNuevaReservaStore } from "@/stores";
 
@@ -26,7 +26,7 @@ export const useRegistrarPaciente = () => {
     id: string;
     nombre: string;
   } | null>(null);
-  const [convenios, setConvenios] = useState<Convenio[]>([]);
+  const [convenios, setConvenios] = useState<EmpresaResponse[]>([]);
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const createPacienteMutation = useCreatePacienteMutation();

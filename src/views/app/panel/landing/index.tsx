@@ -5,7 +5,7 @@ import { Button, Card } from "@/components/ui";
 import {
   FieldDefinition,
   landingConfigSchema,
-} from "@/lib/schemas/landingConfig.schema";
+} from "@/views/app/panel/landing/landing-config-schema";
 
 import { useLanding } from "./hooks";
 

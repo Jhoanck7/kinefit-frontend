@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-import { CAROUSEL_SLIDES } from "@/lib/constants";
+import { CAROUSEL_SLIDES } from "@/lib/utils";
 import {
   GallerySlideItem,
   LandingConfigData,

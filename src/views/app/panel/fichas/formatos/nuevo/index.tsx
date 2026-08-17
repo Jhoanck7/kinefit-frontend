@@ -4,7 +4,6 @@ import { Suspense } from "react";
 
 import { Modal, SwitchField, TextField } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
-import { TipoCampoFormato } from "@/lib/tipos";
 
 import { TIPOS_CAMPO, useConstructorFormato } from "./hooks";
 
@@ -201,7 +200,8 @@ function ConstructorFormatoContenido() {
                         value={campo.tipo}
                         onChange={e =>
                           actions.actualizarCampo(seccion.id, campo.id, {
-                            tipo: e.target.value as TipoCampoFormato,
+                            tipo: e.target
+                              .value as (typeof TIPOS_CAMPO)[number]["valor"],
                           })
                         }
                         aria-label="Tipo de dato"

@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { CLINIC_INFO } from "@/lib/constants";
+import { CLINIC_INFO } from "@/lib/utils";
 
 export default function WhatsAppButton() {
   const whatsappUrl = CLINIC_INFO.socials.whatsapp;

@@ -3,13 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useGetEspecialistas } from "@/hooks/api";
-import { useHoyPanel } from "@/hooks/common";
 import {
-  crearBloqueo,
-  listBloqueosEspecialista,
-} from "@/lib/panel/data/bloqueos";
-import { BloqueoResuelto } from "@/lib/panel/data/citas";
+  useCreateBloqueoMutation,
+  useGetBloqueos,
+  useGetEspecialistas,
+} from "@/hooks/api";
+import { useHoyPanel } from "@/hooks/common";
 import { fechaISO } from "@/lib/formato";
 
 export const useBloqueos = () => {
@@ -18,7 +17,14 @@ export const useBloqueos = () => {
 
   const { data: especialistas = [] } = useGetEspecialistas(undefined, true);
   const [especialistaFiltro, setEspecialistaFiltro] = useState<string>("");
-  const [bloqueos, setBloqueos] = useState<BloqueoResuelto[] | null>(null);
+
+  const especialistaFiltroNum = especialistaFiltro
+    ? Number(especialistaFiltro)
+    : undefined;
+  const { data: bloqueos } = useGetBloqueos(
+    especialistaFiltroNum,
+    Boolean(especialistaFiltroNum)
+  );
 
   // Formulario de creación de bloqueo
   const [mostrarForm, setMostrarForm] = useState(false);
@@ -27,7 +33,8 @@ export const useBloqueos = () => {
   const [horaInicioForm, setHoraInicioForm] = useState("09:00");
   const [horaTerminoForm, setHoraTerminoForm] = useState("14:00");
   const [motivoForm, setMotivoForm] = useState("");
-  const [guardando, setGuardando] = useState(false);
+
+  const crearBloqueoMutation = useCreateBloqueoMutation();
 
   useEffect(() => {
     if (especialistaFiltro || especialistas.length === 0) return;
@@ -36,41 +43,26 @@ export const useBloqueos = () => {
   }, [especialistas, especialistaFiltro]);
 
   useEffect(() => {
-    if (!hoy || !especialistaFiltro) return;
-    listBloqueosEspecialista(especialistaFiltro, hoy).then(datos => {
-      if (!fechaForm) setFechaForm(fechaISO(hoy));
-      setBloqueos(datos);
-    });
-  }, [hoy, especialistaFiltro, fechaForm]);
+    if (!hoy || fechaForm) return;
+    setFechaForm(fechaISO(hoy));
+  }, [hoy, fechaForm]);
 
   // Actions
   const handleGuardarBloqueo = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!hoy || !motivoForm.trim()) return;
+    if (!motivoForm.trim() || !especialistaForm) return;
 
-    setGuardando(true);
-    try {
-      const fechaObjeto = new Date(`${fechaForm}T00:00:00`);
+    await crearBloqueoMutation.mutateAsync({
+      especialistaId: Number(especialistaForm),
+      fecha: fechaForm,
+      horaInicio: horaInicioForm,
+      horaFin: horaTerminoForm,
+      motivo: motivoForm.trim(),
+    });
 
-      const nuevo = await crearBloqueo({
-        especialistaId: especialistaForm,
-        fecha: fechaObjeto,
-        horaInicio: horaInicioForm,
-        horaTermino: horaTerminoForm,
-        motivo: motivoForm.trim(),
-      });
-
-      if (especialistaFiltro === especialistaForm) {
-        setBloqueos(prev => [nuevo, ...(prev ?? [])]);
-      } else {
-        setEspecialistaFiltro(especialistaForm);
-      }
-
-      setMotivoForm("");
-      setMostrarForm(false);
-    } finally {
-      setGuardando(false);
-    }
+    setEspecialistaFiltro(especialistaForm);
+    setMotivoForm("");
+    setMostrarForm(false);
   };
 
   const handleVolver = () => router.push("/panel/agenda");
@@ -82,14 +74,14 @@ export const useBloqueos = () => {
     hoy,
     especialistas,
     especialistaFiltro,
-    bloqueos,
+    bloqueos: bloqueos ?? null,
     mostrarForm,
     especialistaForm,
     fechaForm,
     horaInicioForm,
     horaTerminoForm,
     motivoForm,
-    guardando,
+    guardando: crearBloqueoMutation.isPending,
 
     // Actions
     actions: {

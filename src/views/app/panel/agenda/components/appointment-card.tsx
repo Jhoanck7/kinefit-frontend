@@ -1,6 +1,6 @@
-import { CitaResuelta } from "@/lib/panel/data/citas";
-import { definicionEstado } from "@/lib/panel/domain/estados";
+import { definicionEstado } from "@/lib/estados";
 import { formatearRangoHorario } from "@/lib/formato";
+import { CitaEnAgendaResponse, CodigoEstadoCita } from "@/models/responses";
 
 const ESTILO_ESTADO: Record<
   string,
@@ -51,12 +51,16 @@ const ESTILO_ESTADO: Record<
  */
 export function AppointmentCard({
   cita,
+  horaInicio,
+  horaTermino,
   onClick,
 }: {
-  cita: CitaResuelta;
+  cita: CitaEnAgendaResponse;
+  horaInicio: string;
+  horaTermino: string;
   onClick: () => void;
 }) {
-  const definicion = definicionEstado(cita.estado);
+  const definicion = definicionEstado(cita.estado as CodigoEstadoCita);
   const config =
     ESTILO_ESTADO[definicion.colorRol] ?? ESTILO_ESTADO["azul-seleccion"];
 
@@ -76,14 +80,16 @@ export function AppointmentCard({
       {/* Nombre Paciente */}
       <div className="pr-10">
         <p className="font-sans text-xs font-bold leading-tight truncate">
-          {cita.paciente.nombre} {cita.paciente.apellido}
+          {cita.paciente
+            ? `${cita.paciente.nombre} ${cita.paciente.apellido}`
+            : "—"}
         </p>
       </div>
 
       {/* Horario en font-sans + Estado con Status Dot */}
       <div className="mt-1 flex flex-col gap-0.5">
         <p className="font-sans text-[11px] font-medium opacity-85 tracking-tight">
-          {formatearRangoHorario(cita.horaInicio, cita.horaTermino)}
+          {formatearRangoHorario(horaInicio, horaTermino)}
         </p>
 
         <div className="flex items-center gap-1.5">

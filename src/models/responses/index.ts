@@ -15,12 +15,14 @@ export type {
   CitaResumenResponse,
   CitasPaginadasResponse,
   CitaTransaccionResumenResponse,
+  CodigoEstadoCita,
   EspecialistaCitaResponse,
   ImpactoCancelacionResponse,
   PacienteCitaResponse,
   ServicioCitaResponse,
   TransaccionDetalleResponse,
 } from "./cita";
+export type { EmpresaResponse } from "./empresa";
 export type {
   EspecialistaAdminResponse,
   EspecialistaResponse,
@@ -32,6 +34,13 @@ export type {
   FichaResumenResponse,
   FichasPaginadasResponse,
 } from "./ficha";
+export type {
+  CampoFormato,
+  Formato,
+  FormatoResuelto,
+  SeccionFormato,
+  TipoCampoFormato,
+} from "./formato";
 export type { LandingConfigResponse } from "./landing-config";
 export type { ImageUploadResponse } from "./media";
 export type {

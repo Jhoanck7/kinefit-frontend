@@ -2,8 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { Servicio } from "@/lib/tipos";
-import { useNuevaReservaStore } from "@/stores";
+import { Servicio, useNuevaReservaStore } from "@/stores";
 
 export const PASOS_NUEVA_RESERVA = [
   { etiqueta: "Servicio" },

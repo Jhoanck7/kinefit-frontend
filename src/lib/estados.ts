@@ -1,4 +1,4 @@
-import { CodigoEstadoCita, Origen } from "./tipos";
+import { CodigoEstadoCita } from "@/models/responses";
 
 export type ColorRolEstado =
   "azul-seleccion" | "ambar" | "verde" | "azul-profundo" | "rojo" | "gris";
@@ -17,22 +17,17 @@ export interface DefinicionEstadoCita {
   etiqueta: string;
   colorRol: ColorRolEstado;
   conTrama?: boolean;
-  origenes: Origen[];
+  origenes: ("web" | "manual")[];
   soloLectura: boolean;
   expiraSola: boolean;
   acciones: AccionCita[];
   explicacionSinAcciones?: string;
 }
 
-/**
- * Catálogo único de los 7 estados de cita (DD-5). Todo componente que
- * muestre un estado, sus colores o sus acciones lee de aquí — nunca
- * decide su propio color, etiqueta o botones.
- */
 export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
   {
-    pendiente_pago: {
-      codigo: "pendiente_pago",
+    PendientePago: {
+      codigo: "PendientePago",
       etiqueta: "Pendiente de pago",
       colorRol: "azul-seleccion",
       origenes: ["web"],
@@ -42,8 +37,8 @@ export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
       explicacionSinAcciones:
         "Esta cita tiene una transacción de Webpay en curso. No es modificable manualmente: se confirma sola al completarse el pago, o expira automáticamente si la sesión de pago vence.",
     },
-    por_confirmar: {
-      codigo: "por_confirmar",
+    PorConfirmar: {
+      codigo: "PorConfirmar",
       etiqueta: "Por confirmar",
       colorRol: "ambar",
       origenes: ["manual"],
@@ -54,8 +49,8 @@ export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
         { id: "cancelar", etiqueta: "Cancelar cita", estilo: "peligro" },
       ],
     },
-    confirmada: {
-      codigo: "confirmada",
+    Confirmada: {
+      codigo: "Confirmada",
       etiqueta: "Confirmada",
       colorRol: "verde",
       origenes: ["web", "manual"],
@@ -75,8 +70,8 @@ export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
         { id: "cancelar", etiqueta: "Cancelar cita", estilo: "peligro" },
       ],
     },
-    atendida: {
-      codigo: "atendida",
+    Atendida: {
+      codigo: "Atendida",
       etiqueta: "Atendida",
       colorRol: "azul-profundo",
       origenes: ["web", "manual"],
@@ -84,8 +79,8 @@ export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
       expiraSola: false,
       acciones: [],
     },
-    no_asistida: {
-      codigo: "no_asistida",
+    NoAsistida: {
+      codigo: "NoAsistida",
       etiqueta: "No asistida",
       colorRol: "rojo",
       origenes: ["web", "manual"],
@@ -93,8 +88,8 @@ export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
       expiraSola: false,
       acciones: [],
     },
-    cancelada: {
-      codigo: "cancelada",
+    Cancelada: {
+      codigo: "Cancelada",
       etiqueta: "Cancelada",
       colorRol: "gris",
       origenes: ["web", "manual"],
@@ -102,8 +97,8 @@ export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
       expiraSola: false,
       acciones: [],
     },
-    expirada: {
-      codigo: "expirada",
+    Expirada: {
+      codigo: "Expirada",
       etiqueta: "Expirada",
       colorRol: "gris",
       conTrama: true,
@@ -115,13 +110,13 @@ export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
   };
 
 export const ORDEN_ESTADOS: CodigoEstadoCita[] = [
-  "pendiente_pago",
-  "por_confirmar",
-  "confirmada",
-  "atendida",
-  "no_asistida",
-  "cancelada",
-  "expirada",
+  "PendientePago",
+  "PorConfirmar",
+  "Confirmada",
+  "Atendida",
+  "NoAsistida",
+  "Cancelada",
+  "Expirada",
 ];
 
 export function definicionEstado(

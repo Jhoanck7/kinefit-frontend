@@ -5,8 +5,8 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
 import { WhatsAppButton } from "@/components/shared";
-import { CLINIC_INFO } from "@/lib/constants";
-import { defaultMetadata } from "@/lib/metadata";
+import { CLINIC_INFO } from "@/lib/utils";
+import { defaultMetadata } from "@/lib/utils";
 
 const interSans = Inter({
   variable: "--font-inter-sans",

@@ -46,7 +46,7 @@ function AgendaContent() {
       <div className="overflow-x-auto py-2">
         <div className="flex gap-6 min-w-[600px]">
           {especialistasAMostrar.map((esp, index) => {
-            const data = agendaData[esp.id] ?? { citas: [], bloqueos: [] };
+            const bloques = agendaData[esp.id] ?? [];
             return (
               <div key={esp.id} className="flex-1 min-w-[180px]">
                 <h3 className="mb-4 text-center font-sans font-semibold text-sm text-slate-800 tracking-wide">
@@ -54,8 +54,7 @@ function AgendaContent() {
                 </h3>
                 <TimeGrid
                   rejilla={rejilla}
-                  citas={data.citas}
-                  bloqueos={data.bloqueos}
+                  bloques={bloques}
                   horaActual={horaActual}
                   ocultarHoras={index > 0}
                   onSeleccionarCita={actions.handleSeleccionarCita}

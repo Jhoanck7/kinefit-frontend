@@ -1,17 +1,13 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { useGetEspecialistas } from "@/hooks/api";
+import { useGetAgenda, useGetEspecialistas } from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
-import {
-  BloqueoResuelto,
-  CitaResuelta,
-  getAgendaDia,
-} from "@/lib/panel/data/citas";
 import { fechaISO } from "@/lib/formato";
 import { generarRejillaDia } from "@/lib/horario";
+import { BloqueAgendaResponse } from "@/models/responses";
 
 export const useAgenda = () => {
   const router = useRouter();
@@ -35,67 +31,44 @@ export const useAgenda = () => {
   const { data: especialistas = [] } = useGetEspecialistas(undefined, true);
   const [especialistaSeleccionado, setEspecialistaSeleccionado] =
     useState<string>("todas");
-  const [agendaData, setAgendaData] = useState<
-    Record<string, { citas: CitaResuelta[]; bloqueos: BloqueoResuelto[] }>
-  >({});
   const [modalBloqueos, setModalBloqueos] = useState(false);
 
-  const fetchAgendaData = useCallback(async () => {
-    if (!hoy || especialistas.length === 0) return null;
+  const especialistaIds = especialistas.map(esp => esp.id);
+  const fechaIsoDia = fechaISO(dia);
+  const { data: bloquesAgenda = [], refetch: refetchAgenda } = useGetAgenda(
+    especialistaIds,
+    fechaIsoDia,
+    fechaIsoDia,
+    especialistaIds.length > 0
+  );
 
-    const resultados = await Promise.all(
-      especialistas.map(async esp => {
-        const res = await getAgendaDia(esp.id, dia, hoy);
-        return { espId: esp.id, data: res };
-      })
-    );
+  const agendaData: Record<number, BloqueAgendaResponse[]> = {};
+  bloquesAgenda.forEach(bloque => {
+    (agendaData[bloque.especialistaId] ??= []).push(bloque);
+  });
 
-    const mapa: Record<
-      string,
-      { citas: CitaResuelta[]; bloqueos: BloqueoResuelto[] }
-    > = {};
-    resultados.forEach(r => {
-      mapa[r.espId] = r.data;
-    });
-    return mapa;
-  }, [dia, hoy, especialistas]);
-
-  const cargarAgenda = useCallback(() => {
-    fetchAgendaData()
-      .then(mapa => {
-        if (mapa) setAgendaData(mapa);
-      })
-      .catch(err => console.error("Error al cargar la agenda:", err));
-  }, [fetchAgendaData]);
-
-  useEffect(() => {
-    fetchAgendaData()
-      .then(mapa => {
-        if (mapa) setAgendaData(mapa);
-      })
-      .catch(err => console.error("Error al cargar la agenda:", err));
-  }, [fetchAgendaData]);
+  const cargarAgenda = () => {
+    refetchAgenda();
+  };
 
   useEffect(() => {
     if (!hoy) return;
-    Promise.resolve().then(() => {
-      const ahora = new Date();
-      const esMismoDia =
-        ahora.getFullYear() === dia.getFullYear() &&
-        ahora.getMonth() === dia.getMonth() &&
-        ahora.getDate() === dia.getDate();
+    const ahora = new Date();
+    const esMismoDia =
+      ahora.getFullYear() === dia.getFullYear() &&
+      ahora.getMonth() === dia.getMonth() &&
+      ahora.getDate() === dia.getDate();
 
-      if (esMismoDia) {
-        const h = ahora.getHours().toString().padStart(2, "0");
-        const m = ahora.getMinutes().toString().padStart(2, "0");
-        setHoraActual(`${h}:${m}`);
-      } else {
-        setHoraActual(null);
-      }
-    });
+    if (esMismoDia) {
+      const h = ahora.getHours().toString().padStart(2, "0");
+      const m = ahora.getMinutes().toString().padStart(2, "0");
+      setHoraActual(`${h}:${m}`);
+    } else {
+      setHoraActual(null);
+    }
   }, [dia, hoy]);
 
-  const rejilla = generarRejillaDia(dia.getDay() as DiaSemanaId);
+  const rejilla = generarRejillaDia(dia.getDay());
 
   const especialistasAMostrar =
     especialistaSeleccionado === "todas"

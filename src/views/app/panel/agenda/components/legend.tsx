@@ -1,4 +1,4 @@
-import { CATALOGO_ESTADOS, ORDEN_ESTADOS } from "@/lib/panel/domain/estados";
+import { CATALOGO_ESTADOS, ORDEN_ESTADOS } from "@/lib/estados";
 
 const DOT_COLOR: Record<string, string> = {
   "azul-seleccion": "bg-blue-600",

@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 
 import { Modal } from "@/components/shared";
 import { useGetPacientePerfil } from "@/hooks/api";
-import { FichaResuelta, fichasDelPaciente } from "@/lib/panel/data/fichas";
-import { definicionEstado } from "@/lib/panel/domain/estados";
 import { formatearFechaCorta } from "@/lib/formato";
-import { CodigoEstadoCita } from "@/lib/tipos";
+import { FichaResuelta, fichasDelPaciente } from "@/lib/panel/data/fichas";
+import { definicionEstado } from "@/lib/estados";
+import { CodigoEstadoCita } from "@/models/responses";
 
 interface PacienteDetalleModalProps {
   pacienteId: string | null;

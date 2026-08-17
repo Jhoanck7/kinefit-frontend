@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { CAROUSEL_SLIDES } from "@/lib/constants";
+import { CAROUSEL_SLIDES } from "@/lib/utils";
 import {
   defaultGoogleReviews,
   defaultLandingConfig,

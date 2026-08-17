@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { definicionEstado } from "@/lib/panel/domain/estados";
 import { fechaISO } from "@/lib/formato";
+import { definicionEstado } from "@/lib/estados";
 import { useNuevaReservaStore } from "@/stores";
 
 export const NOMBRE_SERVICIO: Record<string, string> = {
@@ -22,7 +22,7 @@ export const useReservaLista = () => {
   const router = useRouter();
   const { fecha, hora, pacienteNombre, servicio, reiniciar } =
     useNuevaReservaStore();
-  const definicion = definicionEstado("por_confirmar");
+  const definicion = definicionEstado("PorConfirmar");
 
   useEffect(() => {
     if (!fecha || !hora || !pacienteNombre || !servicio) {

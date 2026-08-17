@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 
 import { Modal } from "@/components/shared";
-import { CitaResuelta, getCita } from "@/lib/panel/data/citas";
+import {
+  CitaDetalleResponse,
+  ImpactoCancelacionResponse,
+} from "@/models/responses";
 import { citaService } from "@/services";
 
 /**
@@ -11,7 +14,6 @@ import { citaService } from "@/services";
  */
 export function CancelAppointmentModal({
   citaId,
-  hoy,
   abierto,
   onVolver,
   onConfirmado,
@@ -22,21 +24,30 @@ export function CancelAppointmentModal({
   onVolver: () => void;
   onConfirmado: () => void;
 }) {
-  const [cita, setCita] = useState<CitaResuelta | null>(null);
+  const [cita, setCita] = useState<CitaDetalleResponse | null>(null);
+  const [impacto, setImpacto] = useState<ImpactoCancelacionResponse | null>(
+    null
+  );
   const [motivo, setMotivo] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!citaId || !abierto) return;
-    getCita(citaId, hoy).then(resultado => setCita(resultado ?? null));
-  }, [citaId, hoy, abierto]);
+    const id = Number(citaId);
+    citaService.getById(id).then(res => setCita(res.data.data));
+    citaService
+      .getImpactoCancelacion(id)
+      .then(res => setImpacto(res.data.data));
+  }, [citaId, abierto]);
 
   useEffect(() => {
     if (!abierto) {
       setMotivo("");
       setErrorMsg(null);
       setGuardando(false);
+      setCita(null);
+      setImpacto(null);
     }
   }, [abierto]);
 
@@ -47,7 +58,7 @@ export function CancelAppointmentModal({
     setErrorMsg(null);
 
     try {
-      await citaService.updateEstado(Number(cita.id), {
+      await citaService.updateEstado(cita.id, {
         estadoNuevo: "Cancelada",
         motivo: motivo.trim(),
       });
@@ -59,9 +70,6 @@ export function CancelAppointmentModal({
       setGuardando(false);
     }
   }
-
-  const tienePagoAsociado =
-    cita?.origen === "web" && cita.montoAnticipo !== undefined;
 
   return (
     <Modal abierto={abierto} onCerrar={onVolver} ancho="max-w-md">
@@ -84,10 +92,17 @@ export function CancelAppointmentModal({
           </div>
         )}
 
-        {tienePagoAsociado && (
+        {impacto?.tienePagoAsociado && (
           <div className="mt-4 border border-amber-300 bg-amber-50 p-3 font-sans text-xs text-amber-900 rounded-none">
-            Esta cita tiene un anticipo de <strong>$10.000 CLP</strong> pagado
-            vía Webpay. Se debe gestionar la devolución.
+            Esta cita tiene un anticipo de{" "}
+            <strong>${impacto.montoPagado.toLocaleString("es-CL")} CLP</strong>{" "}
+            pagado vía Webpay. Se debe gestionar la devolución.
+          </div>
+        )}
+
+        {impacto?.tieneFichaAsociada && (
+          <div className="mt-4 border border-amber-300 bg-amber-50 p-3 font-sans text-xs text-amber-900 rounded-none">
+            Esta cita ya tiene una ficha clínica asociada.
           </div>
         )}
 

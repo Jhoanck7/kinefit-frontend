@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-import { HERO_COPY } from "@/lib/constants";
+import { HERO_COPY } from "@/lib/utils";
 import {
   defaultLandingConfig,
   LandingConfigData,

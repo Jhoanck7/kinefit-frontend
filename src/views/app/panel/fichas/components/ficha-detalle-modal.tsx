@@ -6,20 +6,13 @@ import { useEffect, useState } from "react";
 import { Modal } from "@/components/shared";
 import { Badge } from "@/components/ui";
 import {
-  FichaResuelta,
-  fichasDelPaciente,
-  getFicha,
-} from "@/lib/panel/data/fichas";
-import {
-  FormatoResuelto,
-  getFormato,
-  obtenerEtiquetaCampo,
-} from "@/lib/panel/data/formatos";
-import {
   formatearFechaCorta,
   formatearFechaHora,
   formatearRangoHorario,
 } from "@/lib/formato";
+import { obtenerEtiquetaCampo } from "@/lib/panel/data/formatos";
+import { CitaDetalleResponse, FichaResponse } from "@/models/responses";
+import { citaService, fichaService } from "@/services";
 
 function OutOfScopeInlineLink({ etiqueta }: { etiqueta: string }) {
   const [mostrar, setMostrar] = useState(false);
@@ -48,7 +41,7 @@ interface FichaDetalleModalProps {
   fichaId: string | null;
   hoy: Date;
   onCerrar: () => void;
-  onSeleccionarFicha?: (nuevaFichaId: string) => void;
+  onSeleccionarFicha?: (nuevaFichaId: number) => void;
 }
 
 export function FichaDetalleModal({
@@ -58,39 +51,39 @@ export function FichaDetalleModal({
   onSeleccionarFicha,
 }: FichaDetalleModalProps) {
   const router = useRouter();
-  const [ficha, setFicha] = useState<FichaResuelta | null>(null);
-  const [formato, setFormato] = useState<FormatoResuelto | null>(null);
-  const [anteriores, setAnteriores] = useState<FichaResuelta[]>([]);
+  const [ficha, setFicha] = useState<FichaResponse | null>(null);
+  const [cita, setCita] = useState<CitaDetalleResponse | null>(null);
+  const [anteriores, setAnteriores] = useState<FichaResponse[]>([]);
   const [adjuntosLocales, setAdjuntosLocales] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!fichaId || !hoy) {
+    if (!fichaId) {
       setFicha(null);
-      setFormato(null);
+      setCita(null);
       setAnteriores([]);
       setAdjuntosLocales([]);
       return;
     }
-    getFicha(fichaId, hoy).then(resultado => {
-      setFicha(resultado ?? null);
-      if (resultado) {
-        setAdjuntosLocales(resultado.adjuntos);
-      }
+    fichaService.getById(Number(fichaId)).then(res => {
+      const resultado = res.data.data;
+      setFicha(resultado);
+      setAdjuntosLocales(resultado.adjuntos.map(a => a.nombreOriginal));
+      citaService.getById(resultado.citaId).then(citaRes => {
+        const citaResuelta = citaRes.data.data;
+        setCita(citaResuelta);
+        fichaService
+          .getHistorialPorPaciente(citaResuelta.paciente.id)
+          .then(historialRes => {
+            setAnteriores(
+              historialRes.data.data.filter(f => f.id !== resultado.id)
+            );
+          });
+      });
     });
-  }, [fichaId, hoy]);
-
-  useEffect(() => {
-    if (!hoy || !ficha) return;
-    getFormato(ficha.formatoId, hoy).then(resultado =>
-      setFormato(resultado ?? null)
-    );
-    fichasDelPaciente(ficha.paciente.id, hoy).then(todas =>
-      setAnteriores(todas.filter(f => f.id !== ficha.id))
-    );
-  }, [ficha, hoy]);
+  }, [fichaId]);
 
   function handleImprimirFicha() {
-    if (!ficha) return;
+    if (!ficha || !cita) return;
     const ventanaImpresion = window.open("", "_blank");
     if (!ventanaImpresion) return;
 
@@ -98,7 +91,7 @@ export function FichaDetalleModal({
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Ficha Clínica — ${ficha.paciente.nombre} ${ficha.paciente.apellido}</title>
+          <title>Ficha Clínica — ${cita.paciente.nombre} ${cita.paciente.apellido}</title>
           <style>
             body { font-family: system-ui, -apple-system, sans-serif; padding: 32px; color: #0f172a; line-height: 1.5; }
             .header { border-bottom: 2px solid #0f172a; padding-bottom: 16px; margin-bottom: 24px; }
@@ -114,9 +107,9 @@ export function FichaDetalleModal({
         </head>
         <body>
           <div class="header">
-            <h1 class="h1">KineFit — ${ficha.tipo}</h1>
-            <p class="sub">Paciente: <strong>${ficha.paciente.nombre} ${ficha.paciente.apellido}</strong> | RUT: ${ficha.paciente.rut || "—"}</p>
-            <p class="sub">Fecha de Atención: ${formatearFechaCorta(ficha.cita.fecha)} | Registrada por ${ficha.registradaPor}</p>
+            <h1 class="h1">KineFit — ${ficha.tipoNombre}</h1>
+            <p class="sub">Paciente: <strong>${cita.paciente.nombre} ${cita.paciente.apellido}</strong> | RUT: ${cita.paciente.rut || "—"}</p>
+            <p class="sub">Fecha de Atención: ${formatearFechaCorta(new Date(`${cita.fecha}T00:00:00`))} | Registrada por ${cita.especialista.nombre}</p>
           </div>
 
           ${Object.entries(ficha.contenido)
@@ -150,7 +143,7 @@ export function FichaDetalleModal({
 
   return (
     <Modal abierto={Boolean(fichaId)} onCerrar={onCerrar} ancho="max-w-4xl">
-      {!ficha ? (
+      {!ficha || !cita ? (
         <div className="p-10 text-center font-sans text-xs text-slate-500">
           Cargando ficha…
         </div>
@@ -164,13 +157,13 @@ export function FichaDetalleModal({
                   Detalle de Ficha Clínica
                 </h2>
                 <Badge className="rounded-none border-slate-200 bg-slate-50 text-[11px] font-medium text-slate-700">
-                  {ficha.tipo}
+                  {ficha.tipoNombre}
                 </Badge>
               </div>
               <p className="font-sans text-xs text-slate-500 mt-0.5">
-                {ficha.paciente.nombre} {ficha.paciente.apellido} · RUT{" "}
+                {cita.paciente.nombre} {cita.paciente.apellido} · RUT{" "}
                 <span className="text-slate-700 font-medium">
-                  {ficha.paciente.rut || "—"}
+                  {cita.paciente.rut || "—"}
                 </span>
               </p>
             </div>
@@ -270,7 +263,7 @@ export function FichaDetalleModal({
                     Paciente
                   </span>
                   <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                    {ficha.paciente.nombre} {ficha.paciente.apellido}
+                    {cita.paciente.nombre} {cita.paciente.apellido}
                   </p>
                 </div>
 
@@ -279,7 +272,7 @@ export function FichaDetalleModal({
                     RUT
                   </span>
                   <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                    {ficha.paciente.rut || "—"}
+                    {cita.paciente.rut || "—"}
                   </p>
                 </div>
 
@@ -288,11 +281,8 @@ export function FichaDetalleModal({
                     Atención Asociada
                   </span>
                   <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                    {formatearFechaCorta(ficha.cita.fecha)} ·{" "}
-                    {formatearRangoHorario(
-                      ficha.cita.horaInicio,
-                      ficha.cita.horaTermino
-                    )}
+                    {formatearFechaCorta(new Date(`${cita.fecha}T00:00:00`))} ·{" "}
+                    {formatearRangoHorario(cita.horaInicio, cita.horaFin)}
                   </p>
                 </div>
 
@@ -301,10 +291,10 @@ export function FichaDetalleModal({
                     Registrada Por
                   </span>
                   <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                    {ficha.registradaPor}
+                    {cita.especialista.nombre}
                   </p>
                   <p className="font-sans text-xs text-slate-500">
-                    {formatearFechaHora(ficha.creadaEn)}
+                    {formatearFechaHora(new Date(ficha.createdAt))}
                   </p>
                 </div>
 
@@ -320,7 +310,7 @@ export function FichaDetalleModal({
                           className="flex justify-between items-center py-2 text-xs"
                         >
                           <span className="font-sans font-medium text-slate-900">
-                            {anterior.tipo}
+                            {anterior.tipoNombre}
                           </span>
                           <button
                             type="button"

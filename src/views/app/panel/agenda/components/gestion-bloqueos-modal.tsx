@@ -3,14 +3,13 @@
 import { useEffect, useState } from "react";
 
 import { EmptyState, Modal } from "@/components/shared";
-import { useGetEspecialistas } from "@/hooks/api";
-import { useHoyPanel } from "@/hooks/common";
 import {
-  crearBloqueo,
-  listBloqueosEspecialista,
-  revertirBloqueo,
-} from "@/lib/panel/data/bloqueos";
-import { BloqueoResuelto } from "@/lib/panel/data/citas";
+  useCreateBloqueoMutation,
+  useGetBloqueos,
+  useGetEspecialistas,
+  useRevertirBloqueoMutation,
+} from "@/hooks/api";
+import { useHoyPanel } from "@/hooks/common";
 import {
   fechaISO,
   formatearFechaExtensa,
@@ -31,7 +30,13 @@ export function GestionBloqueosModal({
   const hoy = useHoyPanel();
   const { data: especialistas = [] } = useGetEspecialistas(undefined, true);
   const [especialistaFiltro, setEspecialistaFiltro] = useState<string>("");
-  const [bloqueos, setBloqueos] = useState<BloqueoResuelto[]>([]);
+  const especialistaFiltroNum = especialistaFiltro
+    ? Number(especialistaFiltro)
+    : undefined;
+  const { data: bloqueos = [] } = useGetBloqueos(
+    especialistaFiltroNum,
+    abierto && Boolean(especialistaFiltroNum)
+  );
 
   // Formulario de creación
   const [mostrarForm, setMostrarForm] = useState(false);
@@ -41,11 +46,8 @@ export function GestionBloqueosModal({
   const [horaTerminoForm, setHoraTerminoForm] = useState("14:00");
   const [motivoForm, setMotivoForm] = useState("");
 
-  async function cargarBloqueos() {
-    if (!hoy || !especialistaFiltro) return;
-    const datos = await listBloqueosEspecialista(especialistaFiltro, hoy);
-    setBloqueos(datos);
-  }
+  const crearBloqueoMutation = useCreateBloqueoMutation();
+  const revertirBloqueoMutation = useRevertirBloqueoMutation();
 
   useEffect(() => {
     if (!abierto || especialistaFiltro || especialistas.length === 0) return;
@@ -54,40 +56,33 @@ export function GestionBloqueosModal({
   }, [abierto, especialistas, especialistaFiltro]);
 
   useEffect(() => {
-    if (!hoy || !abierto) return;
-    if (!fechaForm) {
-      setFechaForm(fechaISO(hoy));
-    }
-    cargarBloqueos();
-  }, [hoy, abierto, especialistaFiltro, fechaForm]);
+    if (!hoy || !abierto || fechaForm) return;
+    setFechaForm(fechaISO(hoy));
+  }, [hoy, abierto, fechaForm]);
 
   async function handleGuardarBloqueo(e: React.FormEvent) {
     e.preventDefault();
-    if (!hoy || !motivoForm.trim()) return;
+    if (!motivoForm.trim() || !especialistaForm) return;
 
-    const fechaObjeto = new Date(`${fechaForm}T00:00:00`);
-
-    await crearBloqueo({
-      especialistaId: especialistaForm,
-      fecha: fechaObjeto,
+    await crearBloqueoMutation.mutateAsync({
+      especialistaId: Number(especialistaForm),
+      fecha: fechaForm,
       horaInicio: horaInicioForm,
-      horaTermino: horaTerminoForm,
+      horaFin: horaTerminoForm,
       motivo: motivoForm.trim(),
     });
 
     if (especialistaFiltro !== especialistaForm) {
       setEspecialistaFiltro(especialistaForm);
     }
-    await cargarBloqueos();
 
     setMotivoForm("");
     setMostrarForm(false);
     if (onBloqueoCreado) onBloqueoCreado();
   }
 
-  async function handleToggleActivo(id: string) {
-    await revertirBloqueo(id);
-    await cargarBloqueos();
+  async function handleToggleActivo(id: number) {
+    await revertirBloqueoMutation.mutateAsync(id);
     if (onBloqueoCreado) onBloqueoCreado();
   }
 
@@ -298,8 +293,8 @@ export function GestionBloqueosModal({
                         </span>
                       </div>
                       <span className="font-sans text-xs text-slate-500 block mt-0.5">
-                        {formatearFechaExtensa(b.fecha)} ·{" "}
-                        {formatearRangoHorario(b.horaInicio, b.horaTermino)}
+                        {formatearFechaExtensa(new Date(`${b.fecha}T00:00:00`))}{" "}
+                        · {formatearRangoHorario(b.horaInicio, b.horaFin)}
                       </span>
                     </div>
 

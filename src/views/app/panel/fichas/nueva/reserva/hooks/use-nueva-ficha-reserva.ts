@@ -1,64 +1,71 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { useHoyPanel } from "@/hooks/common";
-import { CitaResuelta, reservasDelPaciente } from "@/lib/panel/data/citas";
-import { fichaDeLaCita } from "@/lib/panel/data/fichas";
-import { buscarPacientes, PacienteResuelto } from "@/lib/panel/data/pacientes";
+import {
+  useGetHistorialPorPaciente,
+  useGetPacientePerfil,
+  useGetPacientes,
+} from "@/hooks/api";
+import { HistorialCitaResponse, PacienteResponse } from "@/models/responses";
 import { citaService } from "@/services";
 import { useNuevaFichaStore } from "@/stores";
 
-type ReservaConFicha = CitaResuelta & { conFicha: boolean; fichaId?: string };
-
-async function cargarReservasConFicha(pacienteId: string, hoy: Date) {
-  const citas = await reservasDelPaciente(pacienteId, hoy);
-  return Promise.all(
-    citas.map(async cita => {
-      const ficha = await fichaDeLaCita(cita.id, hoy);
-      return { ...cita, conFicha: Boolean(ficha), fichaId: ficha?.id };
-    })
-  );
-}
-
 export const useNuevaFichaReserva = () => {
   const router = useRouter();
-  const hoy = useHoyPanel();
   const { pacienteId, pacienteNombre, citaId, setReserva, reiniciar } =
     useNuevaFichaStore();
 
   const [busqueda, setBusqueda] = useState("");
-  const [resultados, setResultados] = useState<PacienteResuelto[]>([]);
-  const [reservas, setReservas] = useState<ReservaConFicha[]>([]);
-  const [cambiandoEstadoId, setCambiandoEstadoId] = useState<string | null>(
+  const [cambiandoEstadoId, setCambiandoEstadoId] = useState<number | null>(
     null
   );
 
-  useEffect(() => {
-    buscarPacientes(busqueda).then(setResultados);
-  }, [busqueda]);
+  const busquedaTrim = busqueda.trim();
+  const { data: resultados = [] } = useGetPacientes(
+    busquedaTrim || undefined,
+    undefined,
+    Boolean(busquedaTrim)
+  );
 
-  useEffect(() => {
-    if (!pacienteId || !hoy) return;
-    cargarReservasConFicha(pacienteId, hoy).then(setReservas);
-  }, [pacienteId, hoy]);
+  const pacienteIdNum = pacienteId ? Number(pacienteId) : undefined;
+  const { data: perfil, refetch: refetchPerfil } = useGetPacientePerfil(
+    pacienteIdNum ?? 0,
+    Boolean(pacienteIdNum)
+  );
+  const { data: fichasPaciente = [] } = useGetHistorialPorPaciente(
+    pacienteIdNum ?? 0,
+    Boolean(pacienteIdNum)
+  );
 
-  const citaSeleccionada = reservas.find(r => r.id === citaId);
+  const reservas = (perfil?.historial ?? []).map(cita => {
+    const ficha = fichasPaciente.find(f => f.citaId === cita.id);
+    return {
+      ...cita,
+      conFicha: Boolean(ficha),
+      fichaId: ficha?.id,
+    };
+  });
+
+  const citaSeleccionada = reservas.find(r => String(r.id) === citaId);
 
   // Actions
-  const handleSeleccionarPaciente = (paciente: PacienteResuelto) => {
-    setReserva(paciente.id, `${paciente.nombre} ${paciente.apellido}`, "");
+  const handleSeleccionarPaciente = (paciente: PacienteResponse) => {
+    setReserva(
+      String(paciente.id),
+      `${paciente.nombre} ${paciente.apellido}`,
+      ""
+    );
     setBusqueda("");
-    setResultados([]);
   };
 
-  const handleSeleccionarReserva = (cita: CitaResuelta) => {
-    setReserva(pacienteId!, pacienteNombre!, cita.id);
+  const handleSeleccionarReserva = (cita: HistorialCitaResponse) => {
+    setReserva(pacienteId!, pacienteNombre!, String(cita.id));
   };
 
-  const handleAbrirFichaExistente = (fichaId: string) => {
-    router.push(`/panel/fichas/${fichaId}`);
+  const handleAbrirFichaExistente = (fichaId: number) => {
+    router.push(`/panel/fichas?ficha=${fichaId}`);
   };
 
   const handleCancelar = () => {
@@ -70,18 +77,12 @@ export const useNuevaFichaReserva = () => {
     router.push("/panel/fichas/nueva/contenido");
   };
 
-  const handleMarcarComoAtendida = async (citaIdStr: string) => {
-    setCambiandoEstadoId(citaIdStr);
+  const handleMarcarComoAtendida = async (citaIdNum: number) => {
+    setCambiandoEstadoId(citaIdNum);
     try {
-      const numId = parseInt(citaIdStr.replace(/\D/g, ""), 10);
-      if (!isNaN(numId)) {
-        await citaService.updateEstado(numId, { estadoNuevo: "Atendida" });
-        if (pacienteId && hoy) {
-          const conFichas = await cargarReservasConFicha(pacienteId, hoy);
-          setReservas(conFichas);
-          setReserva(pacienteId, pacienteNombre!, citaIdStr);
-        }
-      }
+      await citaService.updateEstado(citaIdNum, { estadoNuevo: "Atendida" });
+      await refetchPerfil();
+      setReserva(pacienteId!, pacienteNombre!, String(citaIdNum));
     } catch {
       // Ignorar fallo individual
     } finally {
@@ -91,7 +92,6 @@ export const useNuevaFichaReserva = () => {
 
   return {
     // Data
-    hoy,
     pacienteId,
     pacienteNombre,
     citaId,

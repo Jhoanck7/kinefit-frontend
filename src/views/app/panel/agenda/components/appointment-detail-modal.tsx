@@ -1,16 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Modal } from "@/components/shared";
-import { CitaResuelta, getCita } from "@/lib/panel/data/citas";
-import { definicionEstado, IdAccionCita } from "@/lib/panel/domain/estados";
+import { definicionEstado, IdAccionCita } from "@/lib/estados";
 import {
   formatearFechaExtensa,
   formatearFechaHora,
   formatearRangoHorario,
 } from "@/lib/formato";
+import { CitaDetalleResponse, CodigoEstadoCita } from "@/models/responses";
 import { citaService } from "@/services";
 
 const MAPA_ESTADO_NUEVO: Record<string, string> = {
@@ -39,7 +38,6 @@ const TEXTO_COLOR: Record<string, string> = {
 
 export function AppointmentDetailModal({
   citaId,
-  hoy,
   onCerrar,
   onSolicitarCancelacion,
   onEstadoCambiar,
@@ -50,7 +48,7 @@ export function AppointmentDetailModal({
   onSolicitarCancelacion: () => void;
   onEstadoCambiar?: () => void;
 }) {
-  const [cita, setCita] = useState<CitaResuelta | null>(null);
+  const [cita, setCita] = useState<CitaDetalleResponse | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -61,13 +59,13 @@ export function AppointmentDetailModal({
       return;
     }
     let cancelado = false;
-    getCita(citaId, hoy).then(resultado => {
-      if (!cancelado) setCita(resultado ?? null);
+    citaService.getById(Number(citaId)).then(res => {
+      if (!cancelado) setCita(res.data.data);
     });
     return () => {
       cancelado = true;
     };
-  }, [citaId, hoy]);
+  }, [citaId]);
 
   function alCerrar() {
     setErrorMsg(null);
@@ -87,13 +85,13 @@ export function AppointmentDetailModal({
     setErrorMsg(null);
 
     try {
-      await citaService.updateEstado(Number(cita.id), {
+      await citaService.updateEstado(cita.id, {
         estadoNuevo,
         confirmadoPor: estadoNuevo === "Confirmada" ? "Profesional" : undefined,
       });
 
-      const actualizada = await getCita(cita.id, hoy);
-      if (actualizada) setCita(actualizada);
+      const actualizada = await citaService.getById(cita.id);
+      setCita(actualizada.data.data);
       onEstadoCambiar?.();
     } catch (err: unknown) {
       console.error("Error al actualizar el estado de la cita:", err);
@@ -129,13 +127,13 @@ function DetalleCita({
   onCerrar,
   onAccion,
 }: {
-  cita: CitaResuelta;
+  cita: CitaDetalleResponse;
   guardando: boolean;
   errorMsg: string | null;
   onCerrar: () => void;
   onAccion: (idAccion: IdAccionCita) => void;
 }) {
-  const definicion = definicionEstado(cita.estado);
+  const definicion = definicionEstado(cita.estado as CodigoEstadoCita);
   const dotColor = DOT_COLOR[definicion.colorRol] ?? "bg-slate-400";
   const textoColor = TEXTO_COLOR[definicion.colorRol] ?? "text-slate-600";
 
@@ -158,7 +156,7 @@ function DetalleCita({
           <p className="font-sans text-xs text-slate-500 mt-0.5">
             Creada el{" "}
             <span className="font-sans text-slate-700 font-medium">
-              {formatearFechaHora(cita.creadaEn)}
+              {formatearFechaHora(new Date(cita.createdAt))}
             </span>
           </p>
         </div>
@@ -193,7 +191,7 @@ function DetalleCita({
                   Servicio
                 </span>
                 <span className="font-sans font-medium text-sm text-slate-900 capitalize block mt-0.5">
-                  {cita.servicioNombre || cita.servicio}
+                  {cita.servicio.nombre}
                 </span>
               </div>
 
@@ -211,8 +209,8 @@ function DetalleCita({
                   Fecha y Horario
                 </span>
                 <span className="font-sans font-medium text-sm text-slate-900 block mt-0.5">
-                  {formatearFechaExtensa(cita.fecha)} ·{" "}
-                  {formatearRangoHorario(cita.horaInicio, cita.horaTermino)}
+                  {formatearFechaExtensa(new Date(`${cita.fecha}T00:00:00`))} ·{" "}
+                  {formatearRangoHorario(cita.horaInicio, cita.horaFin)}
                 </span>
               </div>
 
@@ -246,54 +244,23 @@ function DetalleCita({
                   Monto Anticipo
                 </span>
                 <span className="font-sans font-medium text-sm text-slate-900 mt-0.5 block">
-                  {cita.montoAnticipo !== undefined
-                    ? `$${cita.montoAnticipo.toLocaleString("es-CL")} CLP`
+                  {cita.transaccion
+                    ? `$${cita.transaccion.monto.toLocaleString("es-CL")} CLP`
                     : "Sin anticipo / Pago presencial"}
                 </span>
               </div>
-              {cita.webpayTransaccionId && (
+              {cita.transaccion && (
                 <div>
                   <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
                     N° Transacción Webpay
                   </span>
                   <span className="font-sans font-medium text-sm text-slate-900 mt-0.5 block">
-                    {cita.webpayTransaccionId}
+                    {cita.transaccion.buyOrder}
                   </span>
                 </div>
               )}
             </div>
           </div>
-
-          {/* NOTAS REGISTRADAS */}
-          {(cita.notas?.paciente || cita.notas?.interna) && (
-            <div>
-              <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
-                NOTAS REGISTRADAS
-              </h3>
-              <div className="space-y-2">
-                {cita.notas.paciente && (
-                  <div className="border border-slate-200 bg-slate-50/60 p-3 rounded-none">
-                    <span className="font-sans text-[10px] uppercase font-medium text-slate-400 block mb-1">
-                      Nota para Paciente
-                    </span>
-                    <span className="font-sans font-medium text-sm text-slate-900">
-                      {cita.notas.paciente}
-                    </span>
-                  </div>
-                )}
-                {cita.notas.interna && (
-                  <div className="border border-slate-200 bg-slate-50 p-3 rounded-none">
-                    <span className="font-sans text-[10px] uppercase font-medium text-slate-400 block mb-1">
-                      Nota Interna del Personal
-                    </span>
-                    <span className="font-sans font-medium text-sm text-slate-900">
-                      {cita.notas.interna}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* COLUMNA DERECHA SECUNDARIA (1/3) - FICHA RÁPIDA PACIENTE */}
@@ -336,9 +303,9 @@ function DetalleCita({
               </span>
               <p
                 className="font-sans font-medium text-sm text-slate-900 mt-0.5 truncate"
-                title={cita.paciente.correo}
+                title={cita.paciente.email}
               >
-                {cita.paciente.correo || "—"}
+                {cita.paciente.email}
               </p>
             </div>
 
@@ -347,7 +314,7 @@ function DetalleCita({
                 Convenio
               </span>
               <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                {cita.paciente.convenio?.nombre || "Sin convenio"}
+                Sin convenio
               </p>
             </div>
           </div>

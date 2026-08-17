@@ -2,10 +2,7 @@
 
 import { EmptyState } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
-import {
-  formatearFechaExtensa,
-  formatearRangoHorario,
-} from "@/lib/formato";
+import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/formato";
 
 import { useBloqueos } from "./hooks";
 
@@ -218,15 +215,17 @@ export default function BloqueosView() {
                       {bloqueo.motivo}
                     </span>
                     <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
-                      {bloqueo.especialista.nombre}
+                      {especialistas.find(
+                        esp => esp.id === bloqueo.especialistaId
+                      )?.nombre ?? "—"}
                     </span>
                   </div>
                   <p className="text-sm text-brand-muted mt-1">
-                    {formatearFechaExtensa(bloqueo.fecha)} ·{" "}
-                    {formatearRangoHorario(
-                      bloqueo.horaInicio,
-                      bloqueo.horaTermino
-                    )}
+                    {formatearFechaExtensa(
+                      new Date(`${bloqueo.fecha}T00:00:00`)
+                    )}{" "}
+                    ·{" "}
+                    {formatearRangoHorario(bloqueo.horaInicio, bloqueo.horaFin)}
                   </p>
                 </div>
               </li>

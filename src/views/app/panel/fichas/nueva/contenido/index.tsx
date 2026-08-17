@@ -12,10 +12,7 @@ import {
   TextField,
 } from "@/components/shared";
 import { Badge, Button, Card } from "@/components/ui";
-import {
-  formatearFechaExtensa,
-  formatearRangoHorario,
-} from "@/lib/formato";
+import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/formato";
 
 import { useNuevaFichaContenido } from "./hooks";
 
@@ -180,7 +177,7 @@ export default function NuevaFichaContenidoView() {
           {
             etiqueta: "FECHA Y HORA",
             valor: cita
-              ? `${formatearFechaExtensa(cita.fecha)} · ${formatearRangoHorario(cita.horaInicio, cita.horaTermino)}`
+              ? `${formatearFechaExtensa(new Date(`${cita.fecha}T00:00:00`))} | ${formatearRangoHorario(cita.horaInicio, cita.horaFin)}`
               : undefined,
           },
           {

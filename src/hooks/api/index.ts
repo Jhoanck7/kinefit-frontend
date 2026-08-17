@@ -1,4 +1,9 @@
-export { useGetAgenda } from "./use-agenda-service";
+export {
+  useCreateBloqueoMutation,
+  useGetAgenda,
+  useGetBloqueos,
+  useRevertirBloqueoMutation,
+} from "./use-agenda-service";
 export {
   useGetAvailableSlots,
   useGetServices,
@@ -13,6 +18,14 @@ export {
   useUpdateEspecialistaEstadoMutation,
   useUpdateEspecialistaMutation,
 } from "./use-especialista-service";
+export {
+  useCreateFichaMutation,
+  useEliminarAdjuntoMutation,
+  useGetFichaById,
+  useGetFichas,
+  useGetHistorialPorPaciente,
+  useSubirAdjuntoMutation,
+} from "./use-ficha-service";
 export {
   useDeleteImageMutation,
   useReplaceImageMutation,

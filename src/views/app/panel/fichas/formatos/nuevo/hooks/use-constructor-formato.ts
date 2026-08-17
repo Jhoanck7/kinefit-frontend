@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 
 import { useHoyPanel } from "@/hooks/common";
 import { getFormato, guardarFormato } from "@/lib/panel/data/formatos";
-import { TipoCampoFormato } from "@/lib/tipos";
+
+type TipoCampoFormato =
+  "texto_corto" | "texto_largo" | "numerico" | "fecha" | "seleccion";
 
 export interface CampoBorrador {
   id: string;

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-import { NAV_LINKS } from "@/lib/constants";
+import { NAV_LINKS } from "@/lib/utils";
 import {
   defaultLandingConfig,
   getLandingConfig,

@@ -4,13 +4,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useHoyPanel } from "@/hooks/common";
-import { CitaResuelta, getCita } from "@/lib/panel/data/citas";
 import {
   FormatoResuelto,
   getFormato,
   listFormatos,
 } from "@/lib/panel/data/formatos";
-import { fichaService } from "@/services";
+import { CitaDetalleResponse } from "@/models/responses";
+import { citaService, fichaService } from "@/services";
 import { useNuevaFichaStore } from "@/stores";
 
 export const useNuevaFichaContenido = () => {
@@ -29,7 +29,7 @@ export const useNuevaFichaContenido = () => {
     reiniciar,
   } = useNuevaFichaStore();
 
-  const [cita, setCita] = useState<CitaResuelta | null>(null);
+  const [cita, setCita] = useState<CitaDetalleResponse | null>(null);
   const [formato, setFormatoResuelto] = useState<FormatoResuelto | null>(null);
   const [formatosDisponibles, setFormatosDisponibles] = useState<
     FormatoResuelto[]
@@ -41,11 +41,9 @@ export const useNuevaFichaContenido = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!citaId || !hoy) return;
-    getCita(citaId, hoy).then(c => {
-      if (c) setCita(c);
-    });
-  }, [citaId, hoy]);
+    if (!citaId) return;
+    citaService.getById(Number(citaId)).then(res => setCita(res.data.data));
+  }, [citaId]);
 
   useEffect(() => {
     if (!hoy) return;
@@ -104,10 +102,8 @@ export const useNuevaFichaContenido = () => {
     setErrorMsg(null);
 
     try {
-      const numCitaId = parseInt(citaId.replace(/\D/g, ""), 10) || 1;
-
       const res = await fichaService.create({
-        citaId: numCitaId,
+        citaId: Number(citaId),
         tipo:
           formatoId === "fmt-masoterapia" ? "Recomendacion" : "FichaClinica",
         contenido: (contenido as Record<string, string>) || {},

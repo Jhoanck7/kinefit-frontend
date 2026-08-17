@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-import { CLINIC_PROCESS_STEPS } from "@/lib/constants";
+import { CLINIC_PROCESS_STEPS } from "@/lib/utils";
 import {
   defaultLandingConfig,
   defaultProcessSteps,

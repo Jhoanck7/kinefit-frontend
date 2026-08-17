@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { BOOKING_SERVICES, CLINIC_SERVICES_FEATURES } from "@/lib/constants";
+import { BOOKING_SERVICES, CLINIC_SERVICES_FEATURES } from "@/lib/utils";
 import { generarEnlaceWhatsApp } from "@/lib/whatsapp";
 import { useBookingStore } from "@/stores";
 

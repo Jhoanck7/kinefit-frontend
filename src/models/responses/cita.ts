@@ -3,7 +3,18 @@ export interface PacienteCitaResponse {
   nombre: string;
   apellido: string;
   email: string;
+  telefono?: string;
+  rut?: string;
 }
+
+export type CodigoEstadoCita =
+  | "PendientePago"
+  | "PorConfirmar"
+  | "Confirmada"
+  | "Atendida"
+  | "NoAsistida"
+  | "Cancelada"
+  | "Expirada";
 
 export interface CitaCreadaResponse {
   citaId: number;

@@ -7,6 +7,7 @@ export {
   EspecialistaService,
   especialistaService,
 } from "./especialista-service";
+export type { FiltrosFichas } from "./ficha-service";
 export { FichaService, fichaService } from "./ficha-service";
 export {
   LandingConfigService,

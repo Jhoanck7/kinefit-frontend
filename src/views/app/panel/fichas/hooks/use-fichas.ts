@@ -3,8 +3,8 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useGetFichas } from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
-import { FichaResuelta, listFichas } from "@/lib/panel/data/fichas";
 import { FormatoResuelto, listFormatos } from "@/lib/panel/data/formatos";
 
 export const TAMANO_PAGINA = 8;
@@ -19,7 +19,6 @@ export const useFichas = () => {
   const [tipo, setTipo] = useState("");
   const [desde, setDesde] = useState("");
   const [hasta, setHasta] = useState("");
-  const [fichas, setFichas] = useState<FichaResuelta[] | null>(null);
   const [formatos, setFormatos] = useState<FormatoResuelto[]>([]);
   const [pagina, setPagina] = useState(1);
 
@@ -31,21 +30,21 @@ export const useFichas = () => {
   }, [hoy]);
 
   useEffect(() => {
-    if (!hoy) return;
-    listFichas(hoy, {
-      termino: busqueda,
-      tipo: tipo || undefined,
-      desde: desde ? new Date(`${desde}T00:00:00`) : undefined,
-      hasta: hasta ? new Date(`${hasta}T23:59:59`) : undefined,
-    }).then(resultado => {
-      setFichas(resultado);
-      setPagina(1);
-    });
-  }, [hoy, busqueda, tipo, desde, hasta]);
+    setPagina(1);
+  }, [busqueda, tipo, desde, hasta]);
 
-  const total = fichas?.length ?? 0;
+  const { data } = useGetFichas({
+    busqueda: busqueda || undefined,
+    tipoFicha: tipo || undefined,
+    fechaDesde: desde || undefined,
+    fechaHasta: hasta || undefined,
+    page: pagina,
+    pageSize: TAMANO_PAGINA,
+  });
+
+  const total = data?.total ?? 0;
   const inicio = (pagina - 1) * TAMANO_PAGINA;
-  const visibles = fichas?.slice(inicio, inicio + TAMANO_PAGINA) ?? [];
+  const visibles = data?.items ?? [];
 
   // Actions
   const abrirParametros = (params: Record<string, string | undefined>) => {
@@ -60,7 +59,8 @@ export const useFichas = () => {
 
   const handleIrAFormatos = () => router.push("/panel/fichas/formatos");
   const handleNuevaFicha = () => router.push("/panel/fichas/nueva/reserva");
-  const handleAbrirFicha = (id: string) => abrirParametros({ ficha: id });
+  const handleAbrirFicha = (id: number) =>
+    abrirParametros({ ficha: String(id) });
   const handleCerrarModal = () => abrirParametros({ ficha: undefined });
   const handlePaginaAnterior = () => setPagina(p => Math.max(1, p - 1));
   const handlePaginaSiguiente = () =>

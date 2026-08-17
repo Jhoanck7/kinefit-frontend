@@ -1,6 +1,6 @@
 import { CollapsibleSection } from "@/components/shared";
 import { CambioEstadoResuelto } from "@/lib/panel/data/citas";
-import { definicionEstado } from "@/lib/panel/domain/estados";
+import { definicionEstado } from "@/lib/estados";
 import { formatearFechaHora } from "@/lib/formato";
 
 /** Traza de auditoría plegable al pie del detalle de cita */

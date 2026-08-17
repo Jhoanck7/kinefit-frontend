@@ -8,10 +8,7 @@ import {
   SummaryPanel,
 } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
-import {
-  formatearFechaExtensa,
-  formatearRangoHorario,
-} from "@/lib/formato";
+import { formatearFechaExtensa } from "@/lib/formato";
 
 import { useNuevaFichaReserva } from "./hooks";
 
@@ -83,8 +80,8 @@ export default function NuevaFichaReservaView() {
             ) : (
               <ul className="space-y-2">
                 {reservas.map(cita => {
-                  const seleccionada = cita.id === citaId;
-                  const esAtendida = cita.estado === "atendida";
+                  const seleccionada = String(cita.id) === citaId;
+                  const esAtendida = cita.estado === "Atendida";
                   const deshabilitada = cita.conFicha || !esAtendida;
 
                   return (
@@ -108,14 +105,13 @@ export default function NuevaFichaReservaView() {
                       >
                         <div>
                           <p className="font-sans font-medium text-sm text-slate-900">
-                            {formatearFechaExtensa(cita.fecha)} ·{" "}
-                            {formatearRangoHorario(
-                              cita.horaInicio,
-                              cita.horaTermino
-                            )}
+                            {formatearFechaExtensa(
+                              new Date(`${cita.fecha}T00:00:00`)
+                            )}{" "}
+                            · {cita.horaInicio}
                           </p>
                           <p className="font-sans text-xs text-slate-500 capitalize mt-0.5">
-                            {cita.servicio} · {cita.especialista.nombre}
+                            {cita.servicio} · {cita.especialista}
                           </p>
                         </div>
                         <span
@@ -189,7 +185,7 @@ export default function NuevaFichaReservaView() {
           avanzar={
             <Button
               disabled={
-                !citaSeleccionada || citaSeleccionada.estado !== "atendida"
+                !citaSeleccionada || citaSeleccionada.estado !== "Atendida"
               }
               onClick={actions.handleContinuar}
             >
@@ -205,7 +201,7 @@ export default function NuevaFichaReservaView() {
           {
             etiqueta: "RESERVA",
             valor: citaSeleccionada
-              ? `${formatearFechaExtensa(citaSeleccionada.fecha)} · ${formatearRangoHorario(citaSeleccionada.horaInicio, citaSeleccionada.horaTermino)}`
+              ? `${formatearFechaExtensa(new Date(`${citaSeleccionada.fecha}T00:00:00`))} · ${citaSeleccionada.horaInicio}`
               : undefined,
           },
           { etiqueta: "TIPO DE FICHA", valor: undefined },

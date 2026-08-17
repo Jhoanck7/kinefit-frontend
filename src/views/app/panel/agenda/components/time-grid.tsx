@@ -1,78 +1,86 @@
-import { BloqueoResuelto, CitaResuelta } from "@/lib/panel/data/citas";
+import { BloqueAgendaResponse, CitaEnAgendaResponse } from "@/models/responses";
 
 import { AppointmentCard } from "./appointment-card";
 
 const ALTURA_FILA_PX = 56;
 
 type ItemFila =
-  | { tipo: "cita"; inicio: string; bloques: number; cita: CitaResuelta }
   | {
-      tipo: "bloqueo";
+      tipo: "cita";
       inicio: string;
+      termino: string;
       bloques: number;
-      bloqueo: BloqueoResuelto;
+      cita: CitaEnAgendaResponse;
     }
+  | { tipo: "bloqueado"; inicio: string; bloques: number }
   | { tipo: "vacio"; inicio: string; termino: string; bloques: number };
 
 function construirFilas(
   rejilla: { inicio: string; termino: string }[],
-  citas: CitaResuelta[],
-  bloqueos: BloqueoResuelto[]
+  bloques: BloqueAgendaResponse[]
 ): ItemFila[] {
+  const porHora = new Map(
+    bloques.map(b => [b.horaInicio.substring(0, 5), b] as const)
+  );
   const items: ItemFila[] = [];
   let i = 0;
+
   while (i < rejilla.length) {
-    const bloque = rejilla[i];
-    const cita = citas.find(c => c.horaInicio === bloque.inicio);
-    if (cita) {
+    const slot = rejilla[i];
+    const bloque = porHora.get(slot.inicio);
+
+    if (!bloque || bloque.estado === "Disponible") {
+      items.push({
+        tipo: "vacio",
+        inicio: slot.inicio,
+        termino: slot.termino,
+        bloques: 1,
+      });
+      i += 1;
+      continue;
+    }
+
+    if (bloque.estado === "Ocupado" && bloque.cita) {
+      const citaId = bloque.cita.id;
       let k = 0;
-      let horaActual = cita.horaInicio;
-      const horaTerminoCita = cita.horaTermino || "";
-      while (
-        i + k < rejilla.length &&
-        (horaTerminoCita ? horaActual < horaTerminoCita : k < 1)
-      ) {
-        horaActual = rejilla[i + k].termino;
+      while (i + k < rejilla.length) {
+        const siguiente = porHora.get(rejilla[i + k].inicio);
+        if (
+          !siguiente ||
+          siguiente.estado !== "Ocupado" ||
+          siguiente.cita?.id !== citaId
+        )
+          break;
         k += 1;
       }
       const numBloques = Math.max(1, k);
       items.push({
         tipo: "cita",
-        inicio: bloque.inicio,
+        inicio: slot.inicio,
+        termino: rejilla[i + numBloques - 1].termino,
         bloques: numBloques,
-        cita,
+        cita: bloque.cita,
       });
       i += numBloques;
       continue;
     }
 
-    const bloqueo = bloqueos.find(b => b.horaInicio === bloque.inicio);
-    if (bloqueo) {
-      let k = 0;
-      let horaActual = bloqueo.horaInicio;
-      while (i + k < rejilla.length && horaActual < bloqueo.horaTermino) {
-        horaActual = rejilla[i + k].termino;
-        k += 1;
-      }
-      const numBloques = Math.max(1, k);
-      items.push({
-        tipo: "bloqueo",
-        inicio: bloque.inicio,
-        bloques: numBloques,
-        bloqueo,
-      });
-      i += numBloques;
-      continue;
+    // Bloqueado
+    let k = 0;
+    while (i + k < rejilla.length) {
+      const siguiente = porHora.get(rejilla[i + k].inicio);
+      if (!siguiente || siguiente.estado !== "Bloqueado") break;
+      k += 1;
     }
-
+    const numBloques = Math.max(1, k);
     items.push({
-      tipo: "vacio",
-      inicio: bloque.inicio,
-      termino: bloque.termino,
-      bloques: 1,
+      tipo: "bloqueado",
+      inicio: slot.inicio,
+      bloques: numBloques,
     });
-    i += 1;
+    i += numBloques;
   }
+
   return items;
 }
 
@@ -104,22 +112,20 @@ function offsetHoraActual(
  */
 export function TimeGrid({
   rejilla,
-  citas,
-  bloqueos,
+  bloques,
   horaActual,
   onSeleccionarCita,
   onSeleccionarBloqueVacio,
   ocultarHoras = false,
 }: {
   rejilla: { inicio: string; termino: string }[];
-  citas: CitaResuelta[];
-  bloqueos: BloqueoResuelto[];
+  bloques: BloqueAgendaResponse[];
   horaActual: string | null;
   onSeleccionarCita: (citaId: string) => void;
   onSeleccionarBloqueVacio: (hora: string) => void;
   ocultarHoras?: boolean;
 }) {
-  const filas = construirFilas(rejilla, citas, bloqueos);
+  const filas = construirFilas(rejilla, bloques);
   const lineaHoraActual = horaActual
     ? offsetHoraActual(rejilla, horaActual)
     : null;
@@ -152,12 +158,14 @@ export function TimeGrid({
             {item.tipo === "cita" && (
               <AppointmentCard
                 cita={item.cita}
-                onClick={() => onSeleccionarCita(item.cita.id)}
+                horaInicio={item.inicio}
+                horaTermino={item.termino}
+                onClick={() => onSeleccionarCita(String(item.cita.id))}
               />
             )}
-            {item.tipo === "bloqueo" && (
+            {item.tipo === "bloqueado" && (
               <div className="flex h-full w-full items-center justify-center border-b border-slate-100 bg-slate-100/70 p-1 text-center font-sans text-xs font-semibold uppercase tracking-wider text-slate-600 rounded-none shadow-none">
-                {item.bloqueo.motivo}
+                Bloqueado
               </div>
             )}
             {item.tipo === "vacio" && (

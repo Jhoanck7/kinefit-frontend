@@ -14,10 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui";
-import {
-  formatearFechaCorta,
-  formatearRangoHorario,
-} from "@/lib/formato";
+import { formatearFechaCorta } from "@/lib/formato";
 
 import { FichaDetalleModal } from "./components";
 import { TAMANO_PAGINA, useFichas } from "./hooks";
@@ -148,28 +145,26 @@ function FichasContenido() {
                 className="cursor-pointer hover:bg-slate-50/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-slate-900"
               >
                 <TableCell className="px-4 py-3 font-medium text-sm text-slate-900">
-                  {ficha.paciente.nombre} {ficha.paciente.apellido}
+                  {ficha.pacienteNombre}
                 </TableCell>
                 <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                  {ficha.paciente.rut || "—"}
+                  {ficha.pacienteRut || "—"}
                 </TableCell>
                 <TableCell className="px-4 py-3">
                   <Badge className="rounded-none border-slate-200 bg-slate-50 text-[11px] font-medium text-slate-700">
-                    {ficha.tipo}
+                    {ficha.tipoNombre}
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                  {formatearFechaCorta(ficha.cita.fecha)}
-                </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                  {formatearFechaCorta(ficha.cita.fecha)} ·{" "}
-                  {formatearRangoHorario(
-                    ficha.cita.horaInicio,
-                    ficha.cita.horaTermino
+                  {formatearFechaCorta(
+                    new Date(`${ficha.fechaAtencion}T00:00:00`)
                   )}
                 </TableCell>
                 <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                  {ficha.registradaPor}
+                  Cita #{ficha.citaId}
+                </TableCell>
+                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  {ficha.creadoPorNombre || "—"}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right">
                   <svg
