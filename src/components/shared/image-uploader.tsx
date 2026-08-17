@@ -50,7 +50,7 @@ export function ImageUploader({
       const resultado = publicId
         ? await replaceMutation.mutateAsync({ publicId, file, folder })
         : await uploadMutation.mutateAsync({ file, folder });
-      onChange(resultado.secureUrl, resultado.publicId);
+      onChange(resultado.url, resultado.publicId);
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
     }
