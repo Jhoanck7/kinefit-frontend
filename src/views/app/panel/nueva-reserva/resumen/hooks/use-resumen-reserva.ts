@@ -43,7 +43,7 @@ export const useResumenReserva = () => {
   const {
     fecha,
     hora,
-    bloqueHorarioId,
+    bloqueHorarioIds,
     pacienteId,
     pacienteNombre,
     especialistaId,
@@ -108,9 +108,9 @@ export const useResumenReserva = () => {
       const numServicioId = MAPA_SERVICIO_ID[servicio] || 2;
       const fechaStr = fechaISO(fecha);
 
-      let targetBloqueId = bloqueHorarioId;
+      let targetBloqueIds = bloqueHorarioIds;
 
-      if (!targetBloqueId) {
+      if (!targetBloqueIds || targetBloqueIds.length === 0) {
         const agendaRes = await agendaService.getAgenda(
           [numEspecialistaId],
           fechaStr,
@@ -118,15 +118,32 @@ export const useResumenReserva = () => {
         );
         const dataArr = agendaRes.data.data;
         const hBuscada = hora.substring(0, 5);
-        const bloqueHallado = dataArr.find(
+        const idx = dataArr.findIndex(
           b => b.horaInicio && b.horaInicio.substring(0, 5) === hBuscada
         );
-        if (bloqueHallado) {
-          targetBloqueId = bloqueHallado.id;
+        
+        const DURACION_MINUTOS_SERVICIO: Record<string, number> = {
+          embarazadas: 60,
+          masajes_pareja: 60,
+          masajes: 30,
+          masajes_premium: 60,
+          masajes_reductivos: 60,
+          voucher_regalo: 60,
+          kinesiologia: 45,
+        };
+        const duracionMin = servicio ? (DURACION_MINUTOS_SERVICIO[servicio] ?? 60) : 60;
+        const bloquesRequeridos = Math.ceil(duracionMin / 30);
+        
+        if (idx !== -1 && idx + bloquesRequeridos <= dataArr.length) {
+          const ids: number[] = [];
+          for (let i = 0; i < bloquesRequeridos; i++) {
+            ids.push(dataArr[idx + i].id);
+          }
+          targetBloqueIds = ids;
         }
       }
 
-      if (!targetBloqueId) {
+      if (!targetBloqueIds || targetBloqueIds.length === 0) {
         throw new Error(
           "No se encontró el bloque horario seleccionado para esa fecha y hora. Re-selecciona el horario."
         );
@@ -136,7 +153,7 @@ export const useResumenReserva = () => {
         pacienteId: numPacienteId,
         especialistaId: numEspecialistaId,
         servicioId: numServicioId,
-        bloqueHorarioId: targetBloqueId,
+        bloqueHorarioIds: targetBloqueIds,
         notaPaciente: notaPaciente || undefined,
         notaInterna: notaInterna || undefined,
       });
