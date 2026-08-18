@@ -30,6 +30,7 @@ function PacientesContent() {
   const {
     hoy,
     busqueda,
+    buscando,
     pagina,
     total,
     inicio,
@@ -48,6 +49,7 @@ function PacientesContent() {
             placeholder="Buscar por RUT, nombre o correo..."
             value={busqueda}
             onChange={actions.setBusqueda}
+            ayuda={buscando ? "Buscando…" : undefined}
           />
         </div>
         <Button onClick={actions.handleNuevoPaciente}>NUEVO PACIENTE</Button>

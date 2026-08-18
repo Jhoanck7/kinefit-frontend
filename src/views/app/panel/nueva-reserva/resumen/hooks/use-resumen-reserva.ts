@@ -8,13 +8,9 @@ import { handleApiError } from "@/lib/api";
 import { formatearFechaExtensa } from "@/lib/formato";
 import { useNuevaReservaStore } from "@/stores";
 
-export const PASOS_NUEVA_RESERVA = [
-  { etiqueta: "Servicio" },
-  { etiqueta: "Horario" },
-  { etiqueta: "Especialista" },
-  { etiqueta: "Paciente" },
-  { etiqueta: "Notas y resumen" },
-];
+import { PASOS_NUEVA_RESERVA } from "../../pasos";
+
+export { PASOS_NUEVA_RESERVA };
 
 export const useResumenReserva = () => {
   const router = useRouter();
@@ -73,6 +69,7 @@ export const useResumenReserva = () => {
       !fecha ||
       !hora ||
       !pacienteId ||
+      !especialistaId ||
       !servicioId ||
       !bloqueHorarioIds ||
       bloqueHorarioIds.length === 0
@@ -84,14 +81,9 @@ export const useResumenReserva = () => {
     setErrorMsg(null);
 
     try {
-      const numPacienteId = parseInt(pacienteId.replace(/\D/g, ""), 10) || 1;
-      const numEspecialistaId = especialistaId
-        ? parseInt(especialistaId.replace(/\D/g, ""), 10) || 1
-        : 1;
-
       await crearCitaMutation.mutateAsync({
-        pacienteId: numPacienteId,
-        especialistaId: numEspecialistaId,
+        pacienteId,
+        especialistaId,
         servicioId,
         bloqueHorarioIds,
         notaPaciente: notaPaciente || undefined,

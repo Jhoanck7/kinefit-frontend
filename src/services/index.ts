@@ -3,7 +3,15 @@ export { AppointmentService, appointmentService } from "./appointment-service";
 export { AuditoriaService, auditoriaService } from "./auditoria-service";
 export { AuthService, authService } from "./auth-service";
 export { BaseApiService } from "./base-api-service";
+export {
+  BloqueHorarioService,
+  bloqueHorarioService,
+} from "./bloque-horario-service";
 export { CitaService, citaService } from "./cita-service";
+export {
+  DisponibilidadService,
+  disponibilidadService,
+} from "./disponibilidad-service";
 export { EmpresaService, empresaService } from "./empresa-service";
 export {
   EspecialistaService,

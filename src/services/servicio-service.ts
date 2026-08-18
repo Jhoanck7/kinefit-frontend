@@ -9,10 +9,9 @@ export class ServicioService extends BaseApiService {
   }
 
   getAll(soloActivos = true) {
-    return this.httpClient.get<ApiResponse<ServicioResponse[]>>(
-      this.baseURL,
-      { params: { soloActivos } }
-    );
+    return this.httpClient.get<ApiResponse<ServicioResponse[]>>(this.baseURL, {
+      params: { soloActivos },
+    });
   }
 }
 

@@ -5,8 +5,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
 import { WhatsAppButton } from "@/components/shared";
-import { CLINIC_INFO } from "@/lib/utils";
-import { defaultMetadata } from "@/lib/utils";
+import { CLINIC_INFO, defaultMetadata } from "@/lib/utils";
 import { ReactQueryProvider } from "@/providers";
 
 const interSans = Inter({

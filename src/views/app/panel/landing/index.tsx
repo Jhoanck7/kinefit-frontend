@@ -9,6 +9,12 @@ import {
 
 import { useLanding } from "./hooks";
 
+const COL_SPAN_MD: Record<1 | 2 | 3, string> = {
+  1: "md:col-span-1",
+  2: "md:col-span-2",
+  3: "md:col-span-3",
+};
+
 export default function LandingView() {
   const {
     formData,
@@ -49,7 +55,7 @@ export default function LandingView() {
       return (
         <div
           key={f.key}
-          className={`col-span-1 md:col-span-${f.gridCols || 1}`}
+          className={`col-span-1 ${COL_SPAN_MD[f.gridCols ?? 1]}`}
         >
           <label className="mb-1 block text-xs font-medium text-panel-sidebar">
             {f.label} {f.required && <span className="text-red-600">*</span>}

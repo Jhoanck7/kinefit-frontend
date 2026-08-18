@@ -1,53 +1,40 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
-import { LandingConfigResponse } from "@/models/responses";
+import {
+  EspecialistaResponse,
+  LandingConfigResponse,
+} from "@/models/responses";
+
+function imagenPorDefecto(nombre: string): string {
+  const lowerName = nombre.toLowerCase();
+  if (lowerName.includes("franchesca")) return "/Franchesca.jpg";
+  if (lowerName.includes("valeria")) return "/Valeria.jpg";
+  if (lowerName.includes("constanza")) return "/Constanza.jpg";
+  if (lowerName.includes("diego")) return "/Diego.jpg";
+  return "/Kinefit foto perfil.png";
+}
 
 export default function TeamSection({
   config,
   initialTeam,
 }: {
   config: LandingConfigResponse;
-  initialTeam?: any[] | null;
+  initialTeam?: EspecialistaResponse[] | null;
 }) {
-  const [teamMembers, setTeamMembers] = useState<
-    Array<{
-      name: string;
-      role: string;
-      specialty: string;
-      email: string;
-      image: string;
-    }>
-  >(() => {
-    if (initialTeam && initialTeam.length > 0) {
-      return initialTeam.map((s: any) => {
-        let defaultImg = "/Kinefit foto perfil.png";
-        if (s.nombre) {
-          const lowerName = s.nombre.toLowerCase();
-          if (lowerName.includes("franchesca")) defaultImg = "/Franchesca.jpg";
-          else if (lowerName.includes("valeria")) defaultImg = "/Valeria.jpg";
-          else if (lowerName.includes("constanza"))
-            defaultImg = "/Constanza.jpg";
-          else if (lowerName.includes("diego")) defaultImg = "/Diego.jpg";
-        }
-
-        return {
-          name: s.nombre || "Especialista",
-          role: s.cargo || "Kinesiólogo",
-          specialty:
-            s.descripcion ||
-            (s.servicios?.length
-              ? `Especialista en ${s.servicios.map((sv: { nombre: string }) => sv.nombre).join(", ")}`
-              : "Kinesiólogo(a) Clínico(a)"),
-          email: s.email || "contacto@kinefitchile.com",
-          image: s.fotoUrl || s.imageUrl || defaultImg,
-        };
-      });
-    }
-    return [];
-  });
+  const teamMembers = (initialTeam ?? []).map(s => ({
+    name: s.nombre || "Especialista",
+    role: s.cargo || "Kinesiólogo",
+    specialty:
+      s.descripcion ||
+      (s.servicios?.length
+        ? `Especialista en ${s.servicios.map(sv => sv.nombre).join(", ")}`
+        : "Kinesiólogo(a) Clínico(a)"),
+    email: s.email || "contacto@kinefitchile.com",
+    image: s.fotoUrl || imagenPorDefecto(s.nombre || ""),
+  }));
 
   const scrollRef = useRef<HTMLDivElement>(null);
 

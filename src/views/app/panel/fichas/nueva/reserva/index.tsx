@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Alerta,
   BottomActionBar,
   EmptyState,
   SearchInput,
@@ -19,6 +20,8 @@ export default function NuevaFichaReservaView() {
     citaId,
     busqueda,
     resultados,
+    buscando,
+    mostrarHintMinimo,
     reservas,
     cambiandoEstadoId,
     citaSeleccionada,
@@ -53,6 +56,13 @@ export default function NuevaFichaReservaView() {
           placeholder="Buscar por nombre o RUT..."
           value={busqueda}
           onChange={actions.setBusqueda}
+          ayuda={
+            mostrarHintMinimo
+              ? "Escribe al menos 2 caracteres."
+              : buscando
+                ? "Buscando…"
+                : undefined
+          }
         />
 
         {resultados.length > 0 && (
@@ -151,7 +161,10 @@ export default function NuevaFichaReservaView() {
                       )}
 
                       {!esAtendida && !cita.conFicha && (
-                        <div className="flex flex-wrap items-center justify-between gap-2 border border-amber-200 bg-amber-50 p-2.5 font-sans text-xs text-amber-900 rounded-none">
+                        <Alerta
+                          tono="advertencia"
+                          className="flex flex-wrap items-center justify-between gap-2"
+                        >
                           <span>
                             Esta cita está en estado{" "}
                             <strong>&ldquo;{cita.estado}&rdquo;</strong>. Debe
@@ -169,7 +182,7 @@ export default function NuevaFichaReservaView() {
                               ? "Actualizando..."
                               : "Marcar como Atendida"}
                           </Button>
-                        </div>
+                        </Alerta>
                       )}
                     </li>
                   );

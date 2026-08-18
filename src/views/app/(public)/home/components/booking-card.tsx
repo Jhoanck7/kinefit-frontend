@@ -6,8 +6,8 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   useAuthenticateWithGoogleMutation,
   useGetAvailableSlots,
+  useGetEspecialistas,
   useGetServices,
-  useGetSpecialists,
   useSubmitBookingMutation,
 } from "@/hooks/api";
 import { useBookingStore } from "@/stores";
@@ -81,7 +81,7 @@ export default function BookingCard() {
 
   const { data: services = [], isLoading: loadingServices } = useGetServices();
   const { data: specialists = [], isLoading: loadingSpecialists } =
-    useGetSpecialists(selectedServiceId ?? undefined);
+    useGetEspecialistas(selectedServiceId ?? undefined, true);
   const { data: availableSlots = [], isLoading: loadingSlots } =
     useGetAvailableSlots(
       selectedSpecialistId ?? undefined,

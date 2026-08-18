@@ -8,15 +8,11 @@ import { useDebounce } from "@/hooks/common";
 import { PacienteResponse } from "@/models/responses";
 import { useNuevaReservaStore } from "@/stores";
 
-const MIN_CARACTERES_BUSQUEDA = 2;
+import { PASOS_NUEVA_RESERVA } from "../../pasos";
 
-export const PASOS_NUEVA_RESERVA = [
-  { etiqueta: "Servicio" },
-  { etiqueta: "Horario" },
-  { etiqueta: "Especialista" },
-  { etiqueta: "Paciente" },
-  { etiqueta: "Notas y resumen" },
-];
+export { PASOS_NUEVA_RESERVA };
+
+const MIN_CARACTERES_BUSQUEDA = 2;
 
 export const usePacienteReserva = () => {
   const router = useRouter();
@@ -43,13 +39,9 @@ export const usePacienteReserva = () => {
   const [pacienteConfirmado, setPacienteConfirmado] =
     useState<PacienteResponse | null>(null);
 
-  const pacienteIdNum =
-    pacienteId && !pacienteId.startsWith("temp-")
-      ? Number(pacienteId)
-      : undefined;
   const { data: perfilCargado } = useGetPacientePerfil(
-    pacienteIdNum ?? 0,
-    Boolean(pacienteIdNum)
+    pacienteId ?? 0,
+    Boolean(pacienteId)
   );
 
   useEffect(() => {
@@ -62,13 +54,13 @@ export const usePacienteReserva = () => {
   };
 
   const handleSeleccionar = (paciente: PacienteResponse) => {
-    setPaciente(String(paciente.id), `${paciente.nombre} ${paciente.apellido}`);
+    setPaciente(paciente.id, `${paciente.nombre} ${paciente.apellido}`);
     setPacienteConfirmado(paciente);
     setBusqueda("");
   };
 
   const handleCambiarPaciente = () => {
-    setPaciente("", "");
+    setPaciente(null, "");
     setPacienteConfirmado(null);
   };
 

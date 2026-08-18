@@ -46,9 +46,24 @@ ANEXO — Deuda técnica inventariada (se resuelve dentro de las fases o queda r
 
 ## Parte A — Correcciones funcionales y de estilo
 
+**Estado real (verificado, no supuesto):**
+
+| Sub-paso | Estado |
+|---|---|
+| A1 — Reconstruir paso Horario / eliminar 409 | ✅ hecho — verificado con backend real, 201 sin 409 |
+| A2 — Mensajes de error reales + `hooks/api` citas | ✅ hecho |
+| A3 — Buscador de pacientes | ✅ hecho (corregido: cubría 1 de 4 buscadores) |
+| A4 — Sistema unificado de alertas | ✅ hecho (corregido: 3 alertas fuera de la lista original) |
+| A5 — Unificar tamaño de modales | ✅ hecho |
+| A6 — Limpieza de deuda de nueva reserva | ✅ hecho |
+| A7 — Deuda técnica transversal | ✅ hecho — lint del proyecto 47 → 22 |
+
+**Parte A completa (A1–A7).** Pendiente de commitear (Maxi commitea, no la IA) antes de pasar a
+la Parte B.
+
 ---
 
-### A1. Reconstruir el paso "Horario" y eliminar el error 409
+### A1. Reconstruir el paso "Horario" y eliminar el error 409 — ✅ hecho
 
 #### Causa raíz (verificada, no es un bug del backend)
 
@@ -143,6 +158,68 @@ especialista, y el especialista solo aparece si tiene la cadena completa.
 Reservar 1, 2 y 3 bloques con un especialista **distinto** al de la sesión, y que la cita se
 registre. Los cuatro mensajes de error se disparan en su escenario correspondiente.
 
+#### Ejecución (verificada contra backend real corriendo en `localhost:5147`)
+
+Implementado siguiendo el enfoque recomendado: primero el service + hooks + modelos
+verificados contra el backend con `curl`, recién después la UI.
+
+- **Verificación de los 3 endpoints con `curl`** antes de escribir código de UI: `GET
+  /disponibilidad/fechas`, `/horas`, `/especialistas` — confirmados formato de fecha
+  (`yyyy-MM-dd`), horas (`HH:mm`), y que el DTO de especialista es **idéntico** al
+  `EspecialistaResponse` ya existente en el frontend (se reutilizó, sin duplicar modelo). El
+  gap 14:00–15:00 confirmado como dato real de colación, no artefacto del filtro viejo.
+- **Nuevos:** `services/disponibilidad-service.ts`, `services/bloque-horario-service.ts` (para
+  `GET /bloques`, que tampoco tenía wrapper en el frontend), `hooks/api/use-disponibilidad-service.ts`,
+  `hooks/api/use-bloque-horario-service.ts`, `models/responses/disponibilidad.ts`.
+- **`stores/useNuevaReservaStore.ts`** reescrito: `servicioDuracionMinutos` eliminado (no se
+  mostraba en ninguna UI, confirmado); `horasSeleccionadas: string[]` nuevo, fuente de verdad
+  de la selección. `hora` se conserva como derivado (primera hora seleccionada) para no tocar
+  los `SummaryPanel` de cada paso. `setHorario` ahora invalida especialista y bloques al
+  cambiar — evita arrastrar una selección de especialista que ya no aplica.
+- **`horario/hooks/use-horario.ts`** reescrito: selección acumulativa de horas (clic
+  selecciona/deselecciona), validación de máximo 3 y de consecutividad en el cliente antes de
+  llamar al paso siguiente, partición mañana/tarde por umbral fijo (13:00) que **no descarta
+  ningún dato** — a diferencia del filtro viejo `< "14:00" / >= "15:00"` que sí ocultaba la
+  franja intermedia.
+- **`especialista/hooks/use-especialista.ts`** reescrito: usa `/disponibilidad/especialistas`
+  con `horaInicio` + `duracionMinutos = nBloques×30`; al elegir especialista, resuelve
+  `bloqueHorarioIds` reales vía `/bloques?especialistaId&fecha`, matcheando cada hora
+  seleccionada contra un bloque `Disponible`. Distingue **cargando** de **error de resolución**
+  (caso borde: un bloque cambió de estado entre listar y confirmar) — antes ninguno de los dos
+  casos tenía manejo.
+- **`use-resumen-reserva.ts`**: quitados los `|| 1` de paciente y especialista, agregado el
+  guard faltante de `!especialistaId` (no estaba en la condición original — otro camino hacia
+  el mismo bug), reemplazado el `parseInt(...).replace(/\D/g, "")` defensivo por `Number()`
+  directo.
+- **Hallazgo no listado en el plan original, corregido igual:** `listo/hooks/use-reserva-lista.ts`
+  calculaba la hora de término sumando **30 minutos fijos**, ignorando bloques múltiples —
+  descubierto al verificar visualmente una reserva de 60 min, que mostraba "11:00 — 11:30" en
+  la pantalla de confirmación. Corregido a `horasSeleccionadas.length × 30`.
+
+#### Verificación end-to-end (no solo lint/tsc)
+
+Sin skill de proyecto para levantar la app; se usó el patrón `run` genérico de navegador
+(Playwright, ya que `chromium-cli` no estaba disponible). Backend real corriendo en local,
+login con credenciales de seed (`admin@kinefit.cl`, ver `DataSeeder.cs:352` — contraseña de
+desarrollo, no apta para producción). Flujo completo Servicio → Horario → Especialista →
+Paciente → Resumen → Confirmar, **con Constanza Maldonado** (especialista distinto al de la
+cuenta admin, y distinto del `id=1` que usaba el fallback viejo):
+
+```
+POST /api/citas/manual {"pacienteId":1,"especialistaId":3,"servicioId":1,"bloqueHorarioIds":[131,132]}
+201 {"cantidadBloques":2,"horaInicio":"15:00:00","horaFin":"16:00:00", ...}
+```
+
+201, sin 409, sin errores de consola, sin requests fallidos. Un primer intento con captura de
+pantalla mostró dos citas separadas de 30 min en vez de una de 60 — se aisló con captura de
+payload de red y se confirmó que fue un artefacto de volver a correr el script de prueba sobre
+el mismo horario ya reservado por una corrida anterior, no un bug de la app: una corrida limpia
+contra un horario nuevo mostró un único POST con ambos `bloqueHorarioIds` y una sola cita
+creada.
+
+**Deuda preexistente no tocada:** el `Continuar` de `nueva-reserva/paciente` sigue con el
+`react-hooks/set-state-in-effect` documentado en A3, sin relación con A1.
+
 ---
 
 ### A2. Recuperar el mensaje real del backend + capa `hooks/api` para citas — ✅ hecho
@@ -233,12 +310,27 @@ Cambios:
 **Criterio de aceptación:** escribir "lu" dispara **una** request tras 300 ms y lista solo
 coincidencias, ordenadas por apellido.
 
-**Ejecución:** implementado tal cual el diagnóstico. `hooks/common/use-debounce.ts` genérico
-(300 ms por defecto). `placeholderData: keepPreviousData` agregado en `useGetPacientes`
-(`hooks/api/use-paciente-service.ts`), compartido por los 4 consumidores del hook — beneficio
-directo, no solo para el paso Paciente. La prop `ayuda` de `SearchInput` dejó de ser texto
-estático duplicado y ahora comunica estado real: "Escribe al menos 2 caracteres." bajo el
-mínimo, "Buscando…" mientras `isFetching`, nada cuando no aplica. El
+**Ejecución (primera pasada, incompleta):** `hooks/common/use-debounce.ts` genérico (300 ms) y
+`placeholderData: keepPreviousData` en `useGetPacientes` (beneficia a los 4 consumidores).
+Pero el debounce y el mínimo de caracteres —el fondo real de A3— solo se aplicaron en
+`use-paciente-reserva.ts`. Verificado por Maxi: los otros 3 consumidores de `useGetPacientes`
+seguían disparando una request por tecla, y `pacientes/hooks/use-pacientes.ts` (la pantalla
+principal de listado) ni siquiera tenía mínimo de caracteres — con búsqueda vacía pedía la
+tabla completa al montar. Corregido en la misma sesión:
+- `pacientes/hooks/use-pacientes.ts`: es una pantalla de **listado** (no autocompletar), así
+  que con búsqueda vacía debe seguir trayendo todos los pacientes paginados client-side — no
+  se le aplicó el mínimo de 2 caracteres de los otros tres (rompería el listado por defecto).
+  Sí se le aplicó debounce de 300 ms sobre el valor de búsqueda para no disparar una request
+  por tecla.
+- `ventas/components/nueva-venta-modal.tsx`: ya tenía el mínimo de 2, le faltaba debounce —
+  agregado.
+- `fichas/nueva/reserva/hooks/use-nueva-ficha-reserva.ts`: no tenía ni debounce ni mínimo —
+  ambos agregados, igual que en `use-paciente-reserva.ts`.
+
+La prop `ayuda` de `SearchInput` dejó de ser texto estático duplicado y ahora comunica estado
+real: "Escribe al menos 2 caracteres." bajo el mínimo, "Buscando…" mientras `isFetching`, nada
+cuando no aplica (en `nueva-venta-modal.tsx`, que usa un `<input>` plano en vez de
+`SearchInput`, el mismo mensaje se agregó como texto simple bajo el campo). El
 `react-hooks/set-state-in-effect` que queda en `use-paciente-reserva.ts` (sincroniza
 `pacienteConfirmado` con `perfilCargado`) es preexistente, no tocado por A3.
 
@@ -307,6 +399,17 @@ Lint limpio en los 15 archivos tocados (componente + barrel + 13 vistas). Los 3
 `gestion-bloqueos-modal.tsx` son preexistentes, no tocados por A4 (efectos de inicialización de
 formulario y reset de UI, no de datos de TanStack Query).
 
+**Corrección posterior:** la lista de 12 del diagnóstico original estaba incompleta — se armó
+por checklist en vez de por grep sistemático del patrón "fondo claro + borde oscuro". Verificado
+por Maxi, quedaron 3 alertas dinámicas reales sin migrar, corregidas en la misma sesión:
+- `ventas/components/nueva-venta-modal.tsx:117` — idéntica byte a byte a las que A4 eliminó.
+- `components/shared/image-uploader.tsx:154` — mismo patrón, con `rounded-lg`.
+- `fichas/nueva/reserva/index.tsx:154` — aviso ámbar condicional
+  (`!esAtendida && !cita.conFicha`), ahora `<Alerta tono="advertencia">`.
+
+Lección para el resto del plan: cuando una tarea nace de un criterio de diseño ("evitar el
+patrón X"), cerrarla con un grep del patrón sobre `src/`, no con una lista armada a mano.
+
 ---
 
 ### A5. Unificar el tamaño de los modales — ✅ hecho
@@ -349,9 +452,17 @@ ancho heredado de `modal.tsx`.
 Lint limpio en los 16 archivos tocados; los 5 `set-state-in-effect` que aparecen al lintear son
 preexistentes (confirmado por diff — ninguno de los efectos modificados por A5).
 
+**Corrección posterior:** el header sticky (`bg-slate-50/80` sin blur) dejaba ver el contenido
+pasando por debajo al hacer scroll. Se agregó `backdrop-blur-sm` a los 7 headers sticky.
+**Pendiente de revisión visual, no corregido:** los diálogos de confirmación cortos
+(`eliminar-especialista-modal.tsx`, notificaciones de `especialistas/index.tsx`, etc.) ahora
+miden `max-w-6xl` igual que los modales de detalle — es la consecuencia directa de "todos al
+mismo ancho grande" que ya advertía la nota de diseño de A5, pero conviene verlo en pantalla
+antes de darlo por cerrado.
+
 ---
 
-### A6. Limpieza de deuda del asistente de nueva reserva
+### A6. Limpieza de deuda del asistente de nueva reserva — ✅ hecho
 
 - `PASOS_NUEVA_RESERVA` está **duplicado literal en 5 archivos** (servicio, horario,
   especialista, paciente, resumen). Se centraliza en un solo módulo.
@@ -362,9 +473,30 @@ preexistentes (confirmado por diff — ninguno de los efectos modificados por A5
 - `especialistaId` y `pacienteId` se guardan como `string` en el store y se parsean con
   regex en cada uso. Pasan a `number | null`, que es lo que el backend espera.
 
+**Ejecución:** los `|| 1` y el `console.error` de `use-resumen-reserva.ts` ya habían quedado
+resueltos como efecto colateral de A1 y A2 respectivamente — verificado, no quedaba nada ahí.
+Trabajo real de A6:
+- `PASOS_NUEVA_RESERVA` centralizado en `nueva-reserva/pasos.ts` (nuevo); los 5 hooks
+  re-exportan desde ahí en vez de declarar el array. Cero cambios en las vistas ni en los
+  barrels — mismo nombre de export, mismo path de import (`./hooks`).
+- `pacienteId` y `especialistaId` del store pasan de `string | null` a `number | null`.
+  Auditoría completa de consumidores antes de tocar el tipo: además de los 5 hooks del
+  asistente, apareció un sexto call site no listado en el plan —
+  `pacientes/nuevo/hooks/use-registrar-paciente.ts:85` (el flujo "Registrar paciente nuevo"
+  iniciado desde dentro del asistente) — corregido igual. De paso se eliminó un guard muerto:
+  `use-paciente-reserva.ts` comprobaba `!pacienteId.startsWith("temp-")`, un sentinel que
+  **ningún** código del repo llegó a asignar nunca (verificado por grep) — código defensivo
+  contra un caso que nunca ocurría, eliminado junto con el cambio de tipo.
+- `setPaciente` del store ahora acepta `id: number | null` (antes `string`, con `""` como
+  sentinel de "sin paciente") para poder limpiar la selección sin recurrir a un valor mágico.
+
+Typecheck y lint limpios en los 9 archivos tocados. El `set-state-in-effect` de
+`use-paciente-reserva.ts` y el `no-console` de `use-registrar-paciente.ts:93` son preexistentes
+(confirmados por diff), quedan para A7.
+
 ---
 
-### A7. Deuda técnica transversal del panel
+### A7. Deuda técnica transversal del panel — ✅ hecho
 
 - **3 archivos sin commitear** (`ui/dialog.tsx`, `ui/alert-dialog.tsx`, `ui/index.ts`)
   corrigen el casing de imports (`@/components/ui/button` → `Button`). **Es un bug de build
@@ -388,6 +520,53 @@ preexistentes (confirmado por diff — ninguno de los efectos modificados por A5
 - `components/ui/sonner.tsx` (Toaster) existe y está tematizado pero **no está montado en
   ningún layout** (pendiente #8). Se monta en A2 para que los errores de mutación tengan
   dónde mostrarse.
+
+**Ejecución:**
+- **Casing de imports:** ya commiteado al inicio de la sesión (commit `3235698`, sub-paso
+  A7 parcial ejecutado antes que A2).
+- **`landing/index.tsx:52`:** reemplazado por `COL_SPAN_MD: Record<1|2|3, string>` con las 3
+  clases literales (`md:col-span-1/2/3`), cubriendo los 3 valores reales de `gridCols` en el
+  schema (no solo 1, como el bug original hubiera necesitado).
+- **`appointment-service.ts` / duplicado de `getEspecialistas`:** confirmado que
+  `getEspecialistas` de `appointment-service.ts` (tipada con `BackendSpecialist`, legado) y
+  `especialista-service.ts` (tipada con `EspecialistaResponse`) pegan al mismo endpoint con los
+  mismos parámetros. Auditados los campos que consume el único consumidor real,
+  `booking-card.tsx` (`id`, `nombre`, `cargo`, `activo`, `fechasDisponibles`) — todos presentes
+  en `EspecialistaResponse`. Migrado `booking-card.tsx` a `useGetEspecialistas` (con
+  `soloActivos=true` explícito, que es lo que el booking público necesita); eliminados
+  `getEspecialistas` de `appointment-service.ts`, `useGetSpecialists` de
+  `use-appointment-service.ts`, y su export del barrel. `BackendSpecialist` en `@/types` quedó
+  sin usar — no se tocó el archivo de tipos legado, fuera de alcance de este sub-paso.
+- **`team-section.tsx`:** los dos `any` reemplazados tipando `initialTeam` como
+  `EspecialistaResponse[]` (verificado contra el único caller, `home/index.tsx`, que ya
+  declaraba `specialists: EspecialistaResponse[]`). `setTeamMembers` nunca se llamaba —
+  `teamMembers` pasó de `useState` con inicializador a una expresión derivada simple en cada
+  render, lo que de paso corrige un bug silencioso: si `initialTeam` cambiaba después del
+  montaje, el `useState` nunca lo reflejaba.
+- **`lib/api/apiClient.ts`:** confirmado que ya no existe en el árbol — el pendiente estaba
+  resuelto de antes, sin relación con `lib/api.ts` (que sí existe y es el que usa
+  `handleApiError`). Nada que eliminar.
+- **Toaster montado** en `app/(panel)/layout.tsx`. Antes de montarlo se resolvieron los dos
+  problemas que A2 había detectado:
+  - `sonner.tsx` retematizado con la paleta sólida de `Alerta` (rojo/ámbar/esmeralda/azul,
+    texto blanco, sin borde, `border-radius: 0`) en vez del tema claro+borde por defecto.
+  - Quitada la dependencia de `useTheme()` de `next-themes` (paquete sin `ThemeProvider`
+    montado en ningún lado — el panel no tiene modo oscuro): `theme="light"` fijo.
+  - Con el Toaster ya montado, se resolvió también el `console.error` de
+    `axios-provider.tsx:27` (el `TODO` del propio código decía "reemplazar por toast cuando se
+    instale un sistema de notificaciones") — ahora `toast.error(...)`.
+- **`no-console` restante** (`use-registrar-paciente.ts:93`): mismo patrón que A2 — mensaje de
+  error hardcodeado en vez de usar `handleApiError`. Corregido igual.
+
+**Lint del proyecto completo: 47 → 22** (13 `set-state-in-effect`, 9 `no-unused-vars`, 0
+`no-console`). Los 13 `set-state-in-effect` y los 9 `no-unused-vars` restantes son patrones
+dispersos en ~15 archivos fuera del alcance textual de A7 (no nombrados en ninguna de sus
+viñetas) — refactorizarlos uno por uno es trabajo real pero no estaba en este sub-paso;
+quedan registrados para una futura pasada dedicada si Maxi la pide.
+
+**Verificado visualmente** (Playwright, backend real): login + navegación a `/panel/agenda` y
+`/panel/landing` tras los cambios de layout — sin errores de consola, Toaster mudo pero
+montado (no se disparó ningún toast en la prueba, layout intacto).
 
 ---
 

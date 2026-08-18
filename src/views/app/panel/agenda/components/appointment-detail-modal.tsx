@@ -128,7 +128,7 @@ function DetalleCita({
   return (
     <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
       {/* Encabezado del Modal */}
-      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
         <div>
           <div className="flex items-center gap-2">
             <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">

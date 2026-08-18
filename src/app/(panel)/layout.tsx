@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 
+import { Toaster } from "@/components/ui";
 import { ReactQueryProvider, RelojPanelProvider } from "@/providers";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -39,6 +40,7 @@ export default function PanelRootLayout({
             <RelojPanelProvider>{children}</RelojPanelProvider>
           </ReactQueryProvider>
         </SessionProvider>
+        <Toaster />
       </body>
     </html>
   );

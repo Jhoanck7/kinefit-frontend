@@ -10,6 +10,8 @@ import {
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
 
+import { Alerta } from "./alerta";
+
 interface ImageUploaderProps {
   etiqueta?: string;
   value?: string;
@@ -150,11 +152,7 @@ export function ImageUploader({
         className="hidden"
       />
 
-      {errorMsg && (
-        <p className="text-xs font-semibold text-red-600 bg-red-50 p-2 rounded-lg border border-red-200">
-          {errorMsg}
-        </p>
-      )}
+      {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
     </div>
   );
 }

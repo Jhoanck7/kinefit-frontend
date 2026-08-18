@@ -1,9 +1,4 @@
-import {
-  BackendService,
-  BackendSpecialist,
-  BackendTimeSlot,
-  CreateCitaDto,
-} from "@/types";
+import { BackendService, BackendTimeSlot, CreateCitaDto } from "@/types";
 
 import { BaseApiService } from "./base-api-service";
 
@@ -16,13 +11,6 @@ export class AppointmentService extends BaseApiService {
     return this.httpClient.get<{ data: BackendService[] }>(
       `${this.baseURL}/servicios`,
       { params: { soloActivos } }
-    );
-  }
-
-  getEspecialistas(servicioId?: number, soloActivos = true) {
-    return this.httpClient.get<{ data: BackendSpecialist[] }>(
-      `${this.baseURL}/especialistas`,
-      { params: { servicioId, soloActivos } }
     );
   }
 

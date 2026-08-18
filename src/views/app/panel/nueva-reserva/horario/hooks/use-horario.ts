@@ -1,23 +1,24 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { useGetAgenda, useGetPacientePerfil } from "@/hooks/api";
+import {
+  useGetFechasDisponibles,
+  useGetHorasDisponibles,
+  useGetPacientePerfil,
+} from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
 import { fechaISO } from "@/lib/formato";
 import { useNuevaReservaStore } from "@/stores";
 
-import { BloqueConId } from "../components";
+import { PASOS_NUEVA_RESERVA } from "../../pasos";
 
-export const PASOS_NUEVA_RESERVA = [
-  { etiqueta: "Servicio" },
-  { etiqueta: "Horario" },
-  { etiqueta: "Especialista" },
-  { etiqueta: "Paciente" },
-  { etiqueta: "Notas y resumen" },
-];
+export { PASOS_NUEVA_RESERVA };
+
+const DURACION_BLOQUE_MIN = 30;
+const MAX_BLOQUES = 3;
+const LIMITE_MANANA = "13:00";
 
 function sumarMinutos(hora: string, minutos: number): string {
   const [h, m] = hora.split(":").map(Number);
@@ -27,25 +28,34 @@ function sumarMinutos(hora: string, minutos: number): string {
   return `${hFin.toString().padStart(2, "0")}:${mFin.toString().padStart(2, "0")}`;
 }
 
+function sonConsecutivas(horasOrdenadas: string[]): boolean {
+  for (let i = 1; i < horasOrdenadas.length; i++) {
+    if (
+      sumarMinutos(horasOrdenadas[i - 1], DURACION_BLOQUE_MIN) !==
+      horasOrdenadas[i]
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export const useHorario = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const hoy = useHoyPanel();
-  const { data: session } = useSession();
   const {
     fecha,
-    hora,
+    horasSeleccionadas,
     pacienteNombre,
     especialistaNombre,
-    especialistaId,
+    servicioId,
     servicioNombre,
     setHorario,
     setPaciente,
   } = useNuevaReservaStore();
 
-  const [bloquesRequeridos, setBloquesRequeridos] = useState(1);
   const [errorSeleccion, setErrorSeleccion] = useState<string | null>(null);
-  const duracionMin = bloquesRequeridos * 30;
 
   useEffect(() => {
     if (!hoy) return;
@@ -55,7 +65,7 @@ export const useHorario = () => {
 
     if (fechaParam && !fecha) {
       const [y, m, d] = fechaParam.split("-").map(Number);
-      setHorario(new Date(y, m - 1, d), horaParam ?? "");
+      setHorario(new Date(y, m - 1, d), horaParam ? [horaParam] : []);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hoy]);
@@ -72,107 +82,108 @@ export const useHorario = () => {
   useEffect(() => {
     if (pacientePorParam) {
       setPaciente(
-        String(pacientePorParam.id),
+        pacientePorParam.id,
         `${pacientePorParam.nombre} ${pacientePorParam.apellido}`
       );
     }
   }, [pacientePorParam, setPaciente]);
 
-  const numEspId = especialistaId
-    ? parseInt(especialistaId.replace(/\D/g, ""), 10) || 1
-    : parseInt(session?.user.especialistaId?.replace(/\D/g, "") || "1", 10) ||
-      1;
   const fechaIso = fecha ? fechaISO(fecha) : "";
 
   // API calls
-  const { data: agendaData, isLoading } = useGetAgenda(
-    [numEspId],
+  const { data: fechasDisponibles = [] } = useGetFechasDisponibles(
+    servicioId ?? 0,
+    DURACION_BLOQUE_MIN,
+    Boolean(servicioId)
+  );
+  const { data: horas = [], isLoading } = useGetHorasDisponibles(
+    servicioId ?? 0,
     fechaIso,
-    fechaIso,
-    Boolean(fecha)
+    DURACION_BLOQUE_MIN,
+    Boolean(servicioId) && Boolean(fecha)
   );
 
   // Computed values
-  const bloques: BloqueConId[] = useMemo(() => {
-    if (!agendaData) return [];
-    return agendaData.map(b => ({
-      id: b.id,
-      inicio: b.horaInicio.substring(0, 5),
-      termino: b.horaFin.substring(0, 5),
-      estado:
-        b.estado === "Disponible"
-          ? ("libre" as const)
-          : b.estado === "Bloqueado"
-            ? ("bloqueado" as const)
-            : ("ocupado" as const),
-      motivo: b.cita?.servicio,
-    }));
-  }, [agendaData]);
-
-  const manana = bloques.filter(b => b.inicio < "14:00");
-  const tarde = bloques.filter(b => b.inicio >= "15:00");
-  const horaTerminoCalculada = hora ? sumarMinutos(hora, duracionMin) : null;
+  const manana = horas.filter(h => h < LIMITE_MANANA);
+  const tarde = horas.filter(h => h >= LIMITE_MANANA);
+  const duracionMin = horasSeleccionadas.length * DURACION_BLOQUE_MIN;
+  const horaInicio = [...horasSeleccionadas].sort()[0] ?? null;
+  const horaTerminoCalculada = horaInicio
+    ? sumarMinutos(horaInicio, duracionMin)
+    : null;
+  const sinDisponibilidadEnFecha =
+    Boolean(fecha) && !isLoading && horas.length === 0;
 
   // Actions
-  const handleSeleccionarBloque = (bloque: BloqueConId) => {
+  const handleSeleccionarHora = (hora: string) => {
     if (!fecha) return;
-    const idxInicio = bloques.findIndex(b => b.id === bloque.id);
-    const ids: number[] = [];
-    for (let i = 0; i < bloquesRequeridos; i++) {
-      const siguiente = bloques[idxInicio + i];
-      if (!siguiente || siguiente.estado !== "libre") {
+
+    const yaSeleccionada = horasSeleccionadas.includes(hora);
+    let nuevas: string[];
+
+    if (yaSeleccionada) {
+      nuevas = horasSeleccionadas.filter(h => h !== hora);
+    } else {
+      if (horasSeleccionadas.length >= MAX_BLOQUES) {
         setErrorSeleccion(
-          `No hay ${bloquesRequeridos} bloques consecutivos disponibles desde las ${bloque.inicio}. Elige otro horario o reduce la duración.`
+          "Puedes reservar como máximo 3 bloques (90 minutos)."
         );
         return;
       }
-      ids.push(siguiente.id);
+      nuevas = [...horasSeleccionadas, hora].sort();
     }
-    setErrorSeleccion(null);
-    setHorario(fecha, bloque.inicio, ids);
-  };
 
-  const handleCambiarDuracion = (valor: number) => {
-    setBloquesRequeridos(valor);
+    if (nuevas.length > 1 && !sonConsecutivas(nuevas)) {
+      setErrorSeleccion(
+        "Los bloques deben ser consecutivos. Selecciona horarios seguidos."
+      );
+      return;
+    }
+
     setErrorSeleccion(null);
-    if (fecha) setHorario(fecha, "");
+    setHorario(fecha, nuevas);
   };
 
   const handleCambiarFecha = (valor: string) => {
     if (!valor) return;
     const [y, m, d] = valor.split("-").map(Number);
     setErrorSeleccion(null);
-    setHorario(new Date(y, m - 1, d), "");
+    setHorario(new Date(y, m - 1, d), []);
   };
 
   const handleVolver = () => router.push("/panel/nueva-reserva/servicio");
-  const handleContinuar = () =>
+  const handleContinuar = () => {
+    if (horasSeleccionadas.length === 0) {
+      setErrorSeleccion("Selecciona al menos un bloque de horario.");
+      return;
+    }
     router.push("/panel/nueva-reserva/especialista");
+  };
   const handleCancelar = () => router.push("/panel/agenda");
 
   return {
     // Data
     hoy,
     fecha,
-    hora,
+    horasSeleccionadas,
     duracionMin,
-    bloquesRequeridos,
+    horaInicio,
     horaTerminoCalculada,
     manana,
     tarde,
-    bloques,
+    fechasDisponibles,
     nombreServicio: servicioNombre,
     especialistaNombre,
     pacienteNombre,
     errorSeleccion,
+    sinDisponibilidadEnFecha,
 
     // Loading state
     isLoading,
 
     // Actions
     actions: {
-      handleSeleccionarBloque,
-      handleCambiarDuracion,
+      handleSeleccionarHora,
       handleCambiarFecha,
       handleVolver,
       handleContinuar,

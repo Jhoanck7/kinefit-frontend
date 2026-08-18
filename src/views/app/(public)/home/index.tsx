@@ -1,4 +1,7 @@
-import { EspecialistaResponse, LandingConfigResponse } from "@/models/responses";
+import {
+  EspecialistaResponse,
+  LandingConfigResponse,
+} from "@/models/responses";
 
 import {
   AboutSection,

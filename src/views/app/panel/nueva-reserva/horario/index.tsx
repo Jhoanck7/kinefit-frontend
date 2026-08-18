@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 
 import {
+  Alerta,
   BottomActionBar,
   StepIndicator,
   SummaryPanel,
@@ -17,17 +18,18 @@ function HorarioContent() {
   const {
     hoy,
     fecha,
-    hora,
+    horasSeleccionadas,
     duracionMin,
-    bloquesRequeridos,
+    horaInicio,
     horaTerminoCalculada,
     manana,
     tarde,
-    bloques,
     nombreServicio,
     especialistaNombre,
     pacienteNombre,
     errorSeleccion,
+    sinDisponibilidadEnFecha,
+    isLoading,
     actions,
   } = useHorario();
 
@@ -45,30 +47,11 @@ function HorarioContent() {
             ¿Cuándo será la atención?
           </h2>
 
-          <div className="mb-6 space-y-2">
-            <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
-              Duración de la Atención
-            </label>
-            <div className="flex gap-2">
-              {[1, 2, 3].map(n => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => actions.handleCambiarDuracion(n)}
-                  className={`flex-1 rounded-none border px-3 py-2 text-sm font-medium transition-colors ${
-                    bloquesRequeridos === n
-                      ? "border-slate-900 bg-slate-900 text-white"
-                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                  }`}
-                >
-                  {n * 30} min
-                </button>
-              ))}
-            </div>
-            {errorSeleccion && (
-              <p className="font-sans text-xs text-red-700">{errorSeleccion}</p>
-            )}
-          </div>
+          {errorSeleccion && (
+            <Alerta tono="error" className="mb-4">
+              {errorSeleccion}
+            </Alerta>
+          )}
 
           <div className="grid grid-cols-1 gap-6 divide-y divide-slate-200 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
             <div className="sm:pr-6 space-y-3">
@@ -91,19 +74,14 @@ function HorarioContent() {
                 </p>
               )}
 
-              {hora && horaTerminoCalculada && (
-                <div className="border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900 space-y-0.5 rounded-none">
-                  <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-emerald-800">
-                    Franja Horaria:
-                  </p>
-                  <p className="font-sans font-medium text-sm text-emerald-950">
-                    {hora} a {horaTerminoCalculada} hrs
-                  </p>
-                  <p className="font-sans text-[11px] text-emerald-700">
-                    ({duracionMin} minutos · {bloquesRequeridos} bloques de 30
-                    min)
-                  </p>
-                </div>
+              {horaInicio && horaTerminoCalculada && (
+                <p className="font-sans text-xs text-slate-700 pt-1">
+                  Horario seleccionado:{" "}
+                  <span className="font-medium text-slate-900">
+                    {horaInicio} a {horaTerminoCalculada} hrs
+                  </span>{" "}
+                  ({duracionMin} minutos)
+                </p>
               )}
             </div>
             <div className="sm:pl-6">
@@ -111,28 +89,32 @@ function HorarioContent() {
                 <p className="font-sans text-xs text-slate-400">
                   Selecciona primero una fecha para ver los horarios.
                 </p>
+              ) : isLoading ? (
+                <p className="font-sans text-xs text-slate-400">
+                  Cargando horarios disponibles...
+                </p>
+              ) : sinDisponibilidadEnFecha ? (
+                <p className="font-sans text-xs text-slate-400">
+                  Sin bloques disponibles para esta fecha. Prueba con otra.
+                </p>
               ) : (
                 <>
                   <p className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-2">
                     Mañana
                   </p>
                   <BloquesSelector
-                    bloques={manana}
-                    todosBloques={bloques}
-                    bloquesRequeridos={bloquesRequeridos}
-                    horaSeleccionada={hora}
-                    onSeleccionar={actions.handleSeleccionarBloque}
+                    horas={manana}
+                    horasSeleccionadas={horasSeleccionadas}
+                    onSeleccionar={actions.handleSeleccionarHora}
                   />
                   <div className="my-4 border-t border-slate-200" />
                   <p className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-2">
                     Tarde
                   </p>
                   <BloquesSelector
-                    bloques={tarde}
-                    todosBloques={bloques}
-                    bloquesRequeridos={bloquesRequeridos}
-                    horaSeleccionada={hora}
-                    onSeleccionar={actions.handleSeleccionarBloque}
+                    horas={tarde}
+                    horasSeleccionadas={horasSeleccionadas}
+                    onSeleccionar={actions.handleSeleccionarHora}
                   />
                 </>
               )}
@@ -156,7 +138,7 @@ function HorarioContent() {
             }
             avanzar={
               <Button
-                disabled={!fecha || !hora}
+                disabled={!fecha || horasSeleccionadas.length === 0}
                 onClick={actions.handleContinuar}
               >
                 Continuar
@@ -170,7 +152,9 @@ function HorarioContent() {
             { etiqueta: "Servicio", valor: nombreServicio },
             {
               etiqueta: "Duración",
-              valor: `${duracionMin} min (${bloquesRequeridos} bloques)`,
+              valor: duracionMin
+                ? `${duracionMin} min (${horasSeleccionadas.length} bloques)`
+                : undefined,
             },
             {
               etiqueta: "Fecha",
@@ -179,9 +163,9 @@ function HorarioContent() {
             {
               etiqueta: "Horario",
               valor:
-                hora && horaTerminoCalculada
-                  ? `${hora} a ${horaTerminoCalculada}`
-                  : hora || undefined,
+                horaInicio && horaTerminoCalculada
+                  ? `${horaInicio} a ${horaTerminoCalculada}`
+                  : horaInicio || undefined,
             },
             {
               etiqueta: "Especialista",

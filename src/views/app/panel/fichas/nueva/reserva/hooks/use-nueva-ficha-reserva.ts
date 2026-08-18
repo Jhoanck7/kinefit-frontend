@@ -9,9 +9,12 @@ import {
   useGetPacientes,
   useUpdateCitaEstadoMutation,
 } from "@/hooks/api";
+import { useDebounce } from "@/hooks/common";
 import { handleApiError } from "@/lib/api";
 import { HistorialCitaResponse, PacienteResponse } from "@/models/responses";
 import { useNuevaFichaStore } from "@/stores";
+
+const MIN_CARACTERES_BUSQUEDA = 2;
 
 export const useNuevaFichaReserva = () => {
   const router = useRouter();
@@ -25,11 +28,12 @@ export const useNuevaFichaReserva = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const actualizarEstadoMutation = useUpdateCitaEstadoMutation();
 
-  const busquedaTrim = busqueda.trim();
-  const { data: resultados = [] } = useGetPacientes(
-    busquedaTrim || undefined,
+  const busquedaDebounced = useDebounce(busqueda.trim(), 300);
+  const busquedaValida = busquedaDebounced.length >= MIN_CARACTERES_BUSQUEDA;
+  const { data: resultados = [], isFetching: buscando } = useGetPacientes(
+    busquedaValida ? busquedaDebounced : undefined,
     undefined,
-    Boolean(busquedaTrim)
+    busquedaValida
   );
 
   const pacienteIdNum = pacienteId ? Number(pacienteId) : undefined;
@@ -103,6 +107,10 @@ export const useNuevaFichaReserva = () => {
     citaId,
     busqueda,
     resultados,
+    buscando,
+    mostrarHintMinimo:
+      busqueda.trim().length > 0 &&
+      busqueda.trim().length < MIN_CARACTERES_BUSQUEDA,
     reservas,
     cambiandoEstadoId,
     citaSeleccionada,

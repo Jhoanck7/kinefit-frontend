@@ -55,7 +55,9 @@ export const useLanding = () => {
   const updateMutation = useUpdateLandingConfigMutation();
   const sincronizarMutation = useSincronizarGoogleReviewsMutation();
 
-  const [formData, setFormData] = useState<LandingConfigResponse>(DEFAULT_LANDING_CONFIG);
+  const [formData, setFormData] = useState<LandingConfigResponse>(
+    DEFAULT_LANDING_CONFIG
+  );
   const [seccionActiva, setSeccionActiva] = useState<string | null>(null);
   const [slides, setSlides] = useState<GallerySlideItem[]>([]);
   const [processSteps, setProcessSteps] = useState<ProcessStepItem[]>([]);
@@ -92,7 +94,11 @@ export const useLanding = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   }
 
-  function handleSlideChange(index: number, field: keyof GallerySlideItem, value: unknown) {
+  function handleSlideChange(
+    index: number,
+    field: keyof GallerySlideItem,
+    value: unknown
+  ) {
     setSlides(prev => {
       const copy = [...prev];
       copy[index] = { ...copy[index], [field]: value };
@@ -111,7 +117,11 @@ export const useLanding = () => {
     setSlides(prev => prev.filter((_, i) => i !== index));
   }
 
-  function handleProcessStepChange(index: number, field: keyof ProcessStepItem, value: string) {
+  function handleProcessStepChange(
+    index: number,
+    field: keyof ProcessStepItem,
+    value: string
+  ) {
     setProcessSteps(prev => {
       const copy = [...prev];
       copy[index] = { ...copy[index], [field]: value };
@@ -134,7 +144,11 @@ export const useLanding = () => {
     setProcessSteps(prev => prev.filter((_, i) => i !== index));
   }
 
-  function handleReviewChange(index: number, field: keyof GoogleReviewItem, value: unknown) {
+  function handleReviewChange(
+    index: number,
+    field: keyof GoogleReviewItem,
+    value: unknown
+  ) {
     setReviewsList(prev => {
       const copy = [...prev];
       copy[index] = { ...copy[index], [field]: value };

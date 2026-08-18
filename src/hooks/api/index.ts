@@ -7,17 +7,22 @@ export {
 export {
   useGetAvailableSlots,
   useGetServices,
-  useGetSpecialists,
   useSubmitBookingMutation,
 } from "./use-appointment-service";
 export { useGetAuditoriaCita } from "./use-auditoria-service";
 export { useAuthenticateWithGoogleMutation } from "./use-auth-service";
+export { useGetBloquesDisponibles } from "./use-bloque-horario-service";
 export {
   useCreateCitaManualMutation,
   useGetCita,
   useGetImpactoCancelacion,
   useUpdateCitaEstadoMutation,
 } from "./use-cita-service";
+export {
+  useGetEspecialistasDisponibles,
+  useGetFechasDisponibles,
+  useGetHorasDisponibles,
+} from "./use-disponibilidad-service";
 export { useGetEmpresas } from "./use-empresa-service";
 export {
   useCreateEspecialistaMutation,

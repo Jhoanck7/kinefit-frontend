@@ -9,7 +9,11 @@ import { useBookingStore } from "@/stores";
 
 import BookingCard from "./booking-card";
 
-export default function HeroSection({ config }: { config: LandingConfigResponse }) {
+export default function HeroSection({
+  config,
+}: {
+  config: LandingConfigResponse;
+}) {
   const currentStep = useBookingStore(state => state.currentStep);
   const [currentBg, setCurrentBg] = useState(0);
 
