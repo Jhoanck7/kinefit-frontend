@@ -1,0 +1,140 @@
+GUÍA PARA JHOAN — Migración de "Horarios" (Plantilla Horaria del Especialista
++ Horario del Centro) a TanStack Query
+Fecha: 2026-08-17
+Contexto: se decidió que este módulo lo implementas vos como parte del
+refactor de Especialistas → "Configuración" (CRUD de servicios,
+especialistas, convenios, etc.), ya que ahí planean agregar la edición del
+horario de cada especialista junto con su alta/edición.
+
+Este documento explica el patrón que sigue TODO el frontend después del
+refactor de esta semana, para que la implementación de Horarios quede
+consistente con el resto del panel. No es opcional seguirlo — es el mismo
+patrón aplicado en Especialistas, Pacientes, Citas, Fichas y Formatos.
+
+===========================================================================
+1. ARQUITECTURA EN 4 CAPAS (page → view → hook → hooks/api → service)
+===========================================================================
+
+  app/.../page.tsx          → wrapper delgado, solo importa la View
+  views/app/panel/<feature>/
+    index.tsx                → la View (JSX), consume su propio hook
+    hooks/use-<feature>.ts   → orquesta estado de UI + llama hooks/api
+  hooks/api/use-<x>-service.ts → hooks de TanStack Query (useQuery/useMutation)
+  services/<x>-service.ts   → clase con métodos, uno por endpoint, axios real
+  models/{requests,responses}/ → tipos que describen lo que entrega/espera
+                                   el backend
+
+Ejemplo ya hecho que podés copiar como plantilla exacta:
+  services/especialista-service.ts
+  hooks/api/use-especialista-service.ts
+  views/app/panel/especialistas/hooks/use-especialistas.ts
+
+===========================================================================
+2. REGLA CLAVE: qué va en lib/ y qué va en models/
+===========================================================================
+
+- lib/ = SOLO funciones puras. Cero interfaces, cero types exportados, cero
+  constantes de módulo. Si una función de lib/ necesita anotar un shape, se
+  hace inline en la firma, no con un tipo compartido.
+- models/{requests,responses}/ = ahí van los tipos que describen la forma de
+  datos que entrega o espera el backend. Si un tipo describe una respuesta
+  real de la API, va acá — nunca inventado en lib/ o duplicado en un hook.
+- Los hooks de views/*/hooks/ NUNCA exportan tipos (ni siquiera vía su
+  barrel index.ts) — solo exportan la función del hook. Si necesitás anotar
+  algo en el componente, lo importás de models/, no del hook.
+
+===========================================================================
+3. ENDPOINTS REALES DEL BACKEND (verificados contra el código, no supuestos)
+===========================================================================
+
+Hay DOS controladores distintos, sin service en el frontend todavía:
+
+--- 3.1 PlantillaHorarioController (horario semanal de UN especialista) ---
+Ruta base: /api/plantillas-horario
+Auth: SoloPersonal
+Archivo backend: Api/Controllers/PlantillaHorarioController.cs
+DTOs: Application/DTOs/HorarioDTO/PlantillaHorarioDTO.cs
+
+  GET  /api/plantillas-horario?especialistaId={id}
+       → PlantillaHorarioResponseDTO[]
+       { id: number, especialistaId: number, diaSemana: number,
+         horaInicio: string, horaFin: string }
+       diaSemana: 0=domingo .. 6=sábado (igual que JS Date.getDay())
+
+  POST /api/plantillas-horario
+       Body: CreatePlantillaHorarioDTO
+       { especialistaId: number, diaSemana: number (0-6),
+         horaInicio: string, horaFin: string }
+       → PlantillaHorarioResponseDTO (201)
+
+  DELETE /api/plantillas-horario/{id}
+       → borra un bloque de la plantilla del especialista
+
+--- 3.2 HorarioCentroController (horario general de atención del centro) ---
+Ruta base: /api/horario-centro
+Auth: SoloAdministrador
+Archivo backend: Api/Controllers/HorarioCentroController.cs
+DTOs: Application/DTOs/HorarioDTO/HorarioCentroDTO.cs
+
+  GET    /api/horario-centro           → HorarioCentroResponseDTO[]
+         { id: number, diaSemana: number, horaInicio: string, horaFin: string }
+
+  POST   /api/horario-centro
+         Body: CreateHorarioCentroDTO
+         { diaSemana: number (0-6), horaInicio: string, horaFin: string }
+         → HorarioCentroResponseDTO (201)
+
+  DELETE /api/horario-centro/{id}
+
+IMPORTANTE: ninguno de los dos tiene PUT/UPDATE — el patrón del backend es
+"crear nuevo bloque" + "borrar bloque existente", no editar in-place. Si la
+UI necesita "mover" un horario, hay que hacer DELETE del viejo + POST del
+nuevo, no inventar un PUT que no existe.
+
+===========================================================================
+4. QUÉ ARCHIVOS CREAR (mismo patrón que especialista-service.ts)
+===========================================================================
+
+1. models/responses/horario.ts
+   → PlantillaHorarioResponse, HorarioCentroResponse (mismos campos que los
+     DTOs de arriba, en camelCase — axios/el backend ya deserializa así).
+
+2. models/requests/horario.ts
+   → CreatePlantillaHorarioRequest, CreateHorarioCentroRequest.
+
+3. services/plantilla-horario-service.ts y services/horario-centro-service.ts
+   (o un solo services/horario-service.ts con dos clases, como se hizo en
+   venta-service.ts con VentaController + TerminalPagoController + ... —
+   ambos patrones son válidos, elegí el que se sienta más natural).
+
+4. hooks/api/use-horario-service.ts
+   → useGetPlantillaHorario(especialistaId), useCreatePlantillaHorarioMutation,
+     useDeletePlantillaHorarioMutation, useGetHorarioCentro,
+     useCreateHorarioCentroMutation, useDeleteHorarioCentroMutation.
+
+5. Registrar todo en los barrels: services/index.ts, hooks/api/index.ts,
+   models/responses/index.ts, models/requests/index.ts.
+
+===========================================================================
+5. ARCHIVOS VIEJOS A NO REABRIR SIN AVISAR
+===========================================================================
+
+- views/app/panel/horarios/ (la vista vieja del panel, con
+  lib/panel/data/horarios.ts) sigue rota — importaba de un mock que ya se
+  borró en este refactor. Si tu nueva pantalla de "Configuración" reemplaza
+  esa vista completa, avisá para que se borre en limpio en vez de dejarla
+  como código muerto.
+- No hay PlantillaHorarioEspecialista ni RangoHorario en lib/ ni en tipos
+  compartidos — se borraron por ser interfaces fantasma del mock viejo que
+  no coincidían con el DTO real. Los tipos reales van en
+  models/responses/horario.ts (punto 4.1 de esta guía).
+
+===========================================================================
+6. PENDIENTE RELACIONADO YA DOCUMENTADO
+===========================================================================
+Ver docs/Pendientes_Tecnicos_KineFit.txt, ítem #25:
+"HorarioCentroController y PlantillaHorarioController sin ningún service —
+ligados al módulo Horarios pendiente de migrar a TanStack Query; no hay
+service, hay que crearlos desde cero (no es solo conectar hooks)."
+Este documento es la resolución de ese pendiente — una vez que lo
+implementes, se puede marcar como cerrado ahí.

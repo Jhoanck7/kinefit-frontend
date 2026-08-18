@@ -65,6 +65,7 @@ export interface CreateCitaDto {
   especialistaId: number;
   servicioId: number;
   bloqueHorarioId: number;
+  duracionMinutos: number;
   empresaId?: number | null;
   notaPaciente?: string | null;
 }

@@ -2,11 +2,12 @@ import "../globals.css";
 
 import { Inter, JetBrains_Mono } from "next/font/google";
 
-import Footer from "@/components/ui/Footer";
-import Navbar from "@/components/ui/Navbar";
-import WhatsAppButton from "@/components/ui/WhatsAppButton";
-import { CLINIC_INFO } from "@/lib/constants";
-import { defaultMetadata } from "@/lib/metadata";
+import Footer from "@/components/layout/footer";
+import Navbar from "@/components/layout/navbar";
+import { WhatsAppButton } from "@/components/shared";
+import { CLINIC_INFO } from "@/lib/utils";
+import { defaultMetadata } from "@/lib/utils";
+import { ReactQueryProvider } from "@/providers";
 
 const interSans = Inter({
   variable: "--font-inter-sans",
@@ -74,10 +75,12 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-white font-sans">
-        <Navbar />
-        <div className="flex-grow">{children}</div>
-        <Footer />
-        <WhatsAppButton />
+        <ReactQueryProvider>
+          <Navbar />
+          <div className="flex-grow">{children}</div>
+          <Footer />
+          <WhatsAppButton />
+        </ReactQueryProvider>
       </body>
     </html>
   );

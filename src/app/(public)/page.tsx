@@ -1,33 +1,31 @@
-import AboutSection from "@/components/sections/AboutSection";
-import GallerySection from "@/components/sections/GallerySection";
-import HeroSection from "@/components/sections/HeroSection";
-import LocationSection from "@/components/sections/LocationSection";
-import ProcessSection from "@/components/sections/ProcessSection";
-import TeamSection from "@/components/sections/TeamSection";
-import TestimonialsSection from "@/components/sections/TestimonialsSection";
-import { landingConfigService } from "@/lib/services/landingConfig.service";
-import { specialistService } from "@/lib/services/specialist.service";
+import { especialistaService, landingConfigService } from "@/services";
+import { HomeView } from "@/views";
 
 export default async function Home() {
-  // SSR: Obtener toda la configuración de la Landing Page desde el servidor
-  // una sola vez antes de renderizar (evita múltiples peticiones desde el cliente)
-  const config = await landingConfigService.getConfig();
-  let specialists: any[] = [];
-  try {
-    specialists = await specialistService.getEspecialistas(undefined, true);
-  } catch (error) {
-    console.warn("Backend indisponible para cargar especialistas durante build. Usando fallback local.");
-  }
+  const landingRes = await landingConfigService.getConfig().catch(() => null);
+  const especialistasRes = await especialistaService
+    .getEspecialistas(undefined, true)
+    .catch(() => null);
 
-  return (
-    <main>
-      <HeroSection config={config} />
-      <AboutSection config={config} />
-      <TeamSection config={config} initialTeam={specialists} />
-      <TestimonialsSection config={config} />
-      <ProcessSection config={config} />
-      <GallerySection config={config} />
-      <LocationSection config={config} />
-    </main>
-  );
+  const config = landingRes?.data?.data ?? {
+    heroTagline: "",
+    heroBrandName: "KineFit",
+    heroDescription: "Centro de Kinesiología y Fisioterapia Especializada.",
+    heroCtaText: "Reservar Cita",
+    clinicName: "KineFit Clínica",
+    clinicEmail: "contacto@kinefit.cl",
+    clinicPhone: "+56 9 1234 5678",
+    clinicPhoneRaw: "+56912345678",
+    clinicAddress: "Av. Providencia 1234, Oficina 501, Santiago",
+    hoursWeekday: "Lunes a Viernes: 08:00 - 20:00",
+    hoursSaturday: "Sábados: 09:00 - 14:00",
+    socialInstagram: "https://instagram.com/kinefit",
+    socialFacebook: "https://facebook.com/kinefit",
+    socialWhatsApp: "https://wa.me/56912345678",
+    socialTikTok: "https://tiktok.com/@kinefit",
+  };
+
+  const specialists = especialistasRes?.data?.data ?? [];
+
+  return <HomeView config={config} specialists={specialists} />;
 }

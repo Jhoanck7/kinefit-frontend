@@ -1,0 +1,124 @@
+PENDIENTES TÉCNICOS — KineFit (frontend + backend)
+Lista verificada de pendientes abiertos, arrastrados de fases anteriores.
+No corregir nada de esto sin permiso explícito de Maxi — es para tener
+presente y no reabrir por accidente ni dar por resuelto sin confirmar.
+Última actualización: 2026-08-16
+
+1. Rotación de credenciales — pendiente, la hace Maxi antes de producción.
+
+
+4. DeleteBehavior.Restrict → 409 en DELETE /especialistas/{id} — bug real
+   de backend confirmado con curl directo, no tocado.
+
+5. Evaluar implementación de NotaPaciente / NotaInterna — O por lo menos
+   evaluación de NotaPaciente, debido a la dificultad de implementación
+   y retorno en DTOs del backend.
+
+6. Botón toggle Transbank/booking en gestión de landing page — pedido de
+   Jhoan, anotado para Fase E, nunca implementado.
+
+7. Migración apiClient.ts (fetch) → axios-provider.tsx (Axios) —
+   Resuelto/confirmado 2026-08-15: todos los services/*.ts ya usan
+   BaseApiService→axios. src/lib/api/apiClient.ts quedó como código
+   muerto (solo se importa el tipo ApiError, no la instancia). Candidato
+   a eliminar, pendiente de permiso explícito de Maxi.
+
+8. console.error/TODO en axios-provider.tsx:26 — placeholder de un
+   futuro toast. Corregido 2026-08-15: sonner SÍ está instalado y
+   components/ui/sonner.tsx (Toaster) existe tematizado y exportado,
+   pero NO está montado en ningún layout ni se usa toast(...) en ningún
+   lugar real del código todavía. Sigue pendiente como tarea explícita.
+
+9. KineFitJwtClaims definido localmente en lib/auth.ts en vez de
+   models/generics/ — candidato a resolverse ahora que el rollout de
+   servicios cerró, pero no verificado.
+
+10. getEspecialistas duplicado entre appointment-service.ts y
+    especialista-service.ts — limpieza menor, no crítica.
+
+11. Vulnerabilidades npm preexistentes (Next.js/nanoid/postcss/sharp) —
+    no tocadas, requieren salto de versión de Next.
+
+12. Fallos sistémicos de Unauthorized en tests de integración de backend
+    (Ventas, Fichas, Reservas) — atribuidos a entorno local del test
+    runner, sin confirmación de que se haya revisado.
+
+13. using reserva_citas_api.Api.Middlewares; sin uso en
+    EspecialistaController.cs — cosmético, nunca limpiado.
+
+14. Separación page→view→hook→component + React Hook Form + Zod para
+    todo el panel — es literalmente el trabajo de Fase E en curso ahora
+    mismo.
+
+15. Flujo de pago público — Eliminar src/app/(public)/pago/webpay/page.tsx
+    y analizar src/app/(public)/pago/confirmar/page.tsx.
+
+16. react-hooks/set-state-in-effect en ficha-detalle-modal.tsx y
+    paciente-detalle-modal.tsx, y no-console en use-registrar-paciente.ts
+    — deuda preexistente reconfirmada al renombrar esos archivos de
+    PascalCase a kebab-case. No se corrigió, solo se movió/renombró.
+
+===========================================================================
+AUDITORÍA BACKEND CONTROLLERS vs. FRONTEND services/ (2026-08-16)
+Inventario detallado completo en:
+docs/Auditoria_Backend_vs_Frontend_Services.txt
+===========================================================================
+
+17. FichaClinicaController: falta GET /fichas/adjuntos/{adjuntoId}
+    (descarga real del adjunto). El endpoint real existe en el
+    backend, nunca se conectó.
+
+18. TransaccionController: falta GET /transacciones/{citaId} (consulta
+    admin de una transacción) — sin cubrir en transaccion-service.ts.
+
+19. BloqueHorarioController: falta POST (crear bloque) y
+    PATCH {id}/estado — solo el GET está cubierto (vía
+    appointment-service.ts, flujo público).
+
+20. AuditoriaController (GET /auditoria/citas/{citaId}) sin ningún
+    service en frontend — es exactamente lo que necesita
+    audit-trail.tsx. No es un caso de "sin backend": el endpoint existe,
+    nadie lo conectó.
+
+21. ContenidoController + TestimonioController + ProcesoEtapaController
+    sin service — sistema de contenido normalizado para el landing,
+    paralelo al landing-config-service.ts actual (blobs JSON:
+    reviewsJson, processStepsJson, galleryJson). Parece una API más
+    nueva nunca adoptada por el frontend.
+
+22. DisponibilidadController (/api/disponibilidad: fechas/horas/
+    especialistas) sin service — endpoints paralelos a los que ya usa
+    appointment-service.ts (/servicios, /especialistas, /bloques).
+    Posible API duplicada o abandonada, revisar cuál es la vigente
+    antes de tocar nada.
+
+23. EmpresaController (Convenios) sin ningún service — confirmado:
+    lib/panel/data/convenios.ts (ya borrado en este refactor) nunca
+    tuvo backend real, era 100% mock/seed local. Hay que crear
+    convenio-service.ts desde cero cuando se migre ese módulo.
+
+24. FileController (/api/archivos, Cloudinary — el commit d06f21a9 de
+    Maxi) sin ningún service — la Fase B del protocolo nunca terminó de
+    auditarlo. El frontend usa en cambio MediaController (/api/media
+    vía media-service.ts), que es el que tiene [AllowAnonymous].
+    Existe una vía de subida autenticada y correcta sin conectar, y
+    se sigue usando la insegura.
+
+25. HorarioCentroController y PlantillaHorarioController — Migrados a
+    services/horario-service.ts y hooks/api/use-horario-service.ts con
+    TanStack Query (2026-08-17).
+
+26. NotificacionController, ServicioController (CRUD admin),
+    UsuarioPersonalController — Analizar estos controladores y evaluar
+    su uso en frontend.
+
+27. useBookingStore no persiste (sin localStorage) — si el paciente
+    recarga la página a mitad del wizard de reserva pública, se pierde
+    todo el progreso, incluido el authToken de Google ya logueado.
+    Detectado 2026-08-17 al revisar por qué authToken vive en este
+    store; no es mala práctica en sí (no hay sesión de paciente en
+    ningún otro lado del sitio), pero la falta de persistencia es un
+    gap de UX real. No tocar sin permiso explícito de Maxi.
+
+===========================================================================
+No implementar soluciones a estos puntos sin permiso explícito de Maxi.
