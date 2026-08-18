@@ -10,7 +10,9 @@ export {
   useGetSpecialists,
   useSubmitBookingMutation,
 } from "./use-appointment-service";
+export { useGetAuditoriaCita } from "./use-auditoria-service";
 export { useAuthenticateWithGoogleMutation } from "./use-auth-service";
+export { useGetEmpresas } from "./use-empresa-service";
 export {
   useCreateEspecialistaMutation,
   useDeleteEspecialistaMutation,
@@ -40,6 +42,11 @@ export {
   useGetPlantillaHorario,
 } from "./use-horario-service";
 export {
+  useGetLandingConfig,
+  useSincronizarGoogleReviewsMutation,
+  useUpdateLandingConfigMutation,
+} from "./use-landing-config-service";
+export {
   useDeleteImageMutation,
   useReplaceImageMutation,
   useUploadImageMutation,
@@ -56,6 +63,7 @@ export {
   useGetReporteReservas,
   useGetReporteVentas,
 } from "./use-reporte-service";
+export { useGetServicios } from "./use-servicio-service";
 export {
   useCreateRepartoMutation,
   useCreateTasaImpuestoMutation,

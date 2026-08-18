@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { BOOKING_SERVICES, CLINIC_SERVICES_FEATURES } from "@/lib/utils";
+import { BOOKING_SERVICES } from "@/lib/utils";
 import { generarEnlaceWhatsApp } from "@/lib/whatsapp";
 import { useBookingStore } from "@/stores";
 
@@ -38,7 +38,7 @@ export default function ServicesSection({
                 : "Servicio enfocado en deportistas de alto nivel y recreativos para el tratamiento ágil de esguinces, desgarros y tendinopatías.",
           price: s.price,
           duration: s.duration,
-          features: CLINIC_SERVICES_FEATURES[idx] || [],
+          features: [],
         }));
 
   // MANEJADOR CORREGIDO: Guarda el servicio actual y abre WhatsApp

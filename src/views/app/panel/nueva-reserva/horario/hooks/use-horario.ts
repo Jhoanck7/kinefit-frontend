@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useGetAgenda, useGetPacientePerfil } from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
@@ -18,26 +18,6 @@ export const PASOS_NUEVA_RESERVA = [
   { etiqueta: "Paciente" },
   { etiqueta: "Notas y resumen" },
 ];
-
-const NOMBRE_SERVICIO: Record<string, string> = {
-  embarazadas: "Embarazadas",
-  masajes_pareja: "Masajes en pareja",
-  masajes: "Masajes (masoterapia)",
-  masajes_premium: "Masajes Premium",
-  masajes_reductivos: "Masajes Reductivos",
-  voucher_regalo: "Voucher para Regalo",
-  kinesiologia: "Kinesiología",
-};
-
-const DURACION_MINUTOS_SERVICIO: Record<string, number> = {
-  embarazadas: 60,
-  masajes_pareja: 60,
-  masajes: 30,
-  masajes_premium: 60,
-  masajes_reductivos: 60,
-  voucher_regalo: 60,
-  kinesiologia: 45,
-};
 
 function sumarMinutos(hora: string, minutos: number): string {
   const [h, m] = hora.split(":").map(Number);
@@ -58,15 +38,14 @@ export const useHorario = () => {
     pacienteNombre,
     especialistaNombre,
     especialistaId,
-    servicio,
+    servicioNombre,
     setHorario,
     setPaciente,
   } = useNuevaReservaStore();
 
-  const duracionMin = servicio
-    ? (DURACION_MINUTOS_SERVICIO[servicio] ?? 60)
-    : 60;
-  const bloquesRequeridos = Math.ceil(duracionMin / 30);
+  const [bloquesRequeridos, setBloquesRequeridos] = useState(1);
+  const [errorSeleccion, setErrorSeleccion] = useState<string | null>(null);
+  const duracionMin = bloquesRequeridos * 30;
 
   useEffect(() => {
     if (!hoy) return;
@@ -133,9 +112,6 @@ export const useHorario = () => {
   const manana = bloques.filter(b => b.inicio < "14:00");
   const tarde = bloques.filter(b => b.inicio >= "15:00");
   const horaTerminoCalculada = hora ? sumarMinutos(hora, duracionMin) : null;
-  const nombreServicio = servicio
-    ? (NOMBRE_SERVICIO[servicio] ?? servicio)
-    : undefined;
 
   // Actions
   const handleSeleccionarBloque = (bloque: BloqueConId) => {
@@ -143,14 +119,29 @@ export const useHorario = () => {
     const idxInicio = bloques.findIndex(b => b.id === bloque.id);
     const ids: number[] = [];
     for (let i = 0; i < bloquesRequeridos; i++) {
-      ids.push(bloques[idxInicio + i].id);
+      const siguiente = bloques[idxInicio + i];
+      if (!siguiente || siguiente.estado !== "libre") {
+        setErrorSeleccion(
+          `No hay ${bloquesRequeridos} bloques consecutivos disponibles desde las ${bloque.inicio}. Elige otro horario o reduce la duración.`
+        );
+        return;
+      }
+      ids.push(siguiente.id);
     }
+    setErrorSeleccion(null);
     setHorario(fecha, bloque.inicio, ids);
+  };
+
+  const handleCambiarDuracion = (valor: number) => {
+    setBloquesRequeridos(valor);
+    setErrorSeleccion(null);
+    if (fecha) setHorario(fecha, "");
   };
 
   const handleCambiarFecha = (valor: string) => {
     if (!valor) return;
     const [y, m, d] = valor.split("-").map(Number);
+    setErrorSeleccion(null);
     setHorario(new Date(y, m - 1, d), "");
   };
 
@@ -170,9 +161,10 @@ export const useHorario = () => {
     manana,
     tarde,
     bloques,
-    nombreServicio,
+    nombreServicio: servicioNombre,
     especialistaNombre,
     pacienteNombre,
+    errorSeleccion,
 
     // Loading state
     isLoading,
@@ -180,6 +172,7 @@ export const useHorario = () => {
     // Actions
     actions: {
       handleSeleccionarBloque,
+      handleCambiarDuracion,
       handleCambiarFecha,
       handleVolver,
       handleContinuar,

@@ -1,35 +1,36 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
+import { useGetLandingConfig } from "@/hooks/api";
 import { NAV_LINKS } from "@/lib/utils";
-import {
-  defaultLandingConfig,
-  getLandingConfig,
-  LandingConfigData,
-} from "@/lib/panel/data/landing-config";
 
 export default function Footer() {
-  const [config, setConfig] = useState<LandingConfigData>(defaultLandingConfig);
+  const { data: config } = useGetLandingConfig();
 
-  useEffect(() => {
-    async function loadConfig() {
-      try {
-        const data = await getLandingConfig();
-        if (data) setConfig(data);
-      } catch (err) {
-        console.warn("Error cargando configuración en Footer:", err);
-      }
-    }
-    loadConfig();
-  }, []);
+  const heroDescription =
+    config?.heroDescription ||
+    "Centro especializado en kinesiología clínica avanzada, rehabilitación física y entrenamiento funcional a tu medida.";
+  const clinicAddress =
+    config?.clinicAddress || "Pje. Maximiliano Poblete 596, Antofagasta";
+  const clinicPhone = config?.clinicPhone || "+56 9 6207 2672";
+  const clinicPhoneRaw = config?.clinicPhoneRaw || "+56962072672";
+  const clinicEmail = config?.clinicEmail || "contacto@kinefitchile.com";
+  const hoursWeekday = config?.hoursWeekday || "Lunes a Viernes: 08:00 - 20:00";
+  const hoursSaturday = config?.hoursSaturday || "Sábados: 09:00 - 14:00";
+  const socialInstagram = config?.socialInstagram || "#";
+  const socialFacebook = config?.socialFacebook || "#";
+  const socialWhatsApp = config?.socialWhatsApp || "#";
+  const socialTikTok = config?.socialTikTok || "#";
+  const footerText =
+    config?.footerText ||
+    `© ${new Date().getFullYear()} Kinefit Chile. Todos los derechos reservados.`;
 
   return (
     <footer className="bg-slate-50 border-t border-slate-200/80 pt-16 pb-12 w-full text-slate-600">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 pb-12 border-b border-slate-200/60">
-          {/* Column 1: Brand & Description */}
           <div className="md:col-span-4 flex flex-col items-start gap-4">
             <div className="relative w-48 h-14 block">
               <Image
@@ -42,12 +43,10 @@ export default function Footer() {
               />
             </div>
             <p className="text-sm leading-relaxed text-slate-500 mt-2">
-              {config.heroDescription ||
-                "Centro especializado en kinesiología clínica avanzada, rehabilitación física y entrenamiento funcional a tu medida."}
+              {heroDescription}
             </p>
           </div>
 
-          {/* Column 2: Navigation Links */}
           <div className="md:col-span-3 flex flex-col items-start gap-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-2">
               Enlaces rápidos
@@ -63,45 +62,38 @@ export default function Footer() {
             ))}
           </div>
 
-          {/* Column 3: Contact Details */}
           <div className="md:col-span-3 flex flex-col items-start gap-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-2">
               Contacto
             </h4>
-            <span className="text-sm">
-              {config.clinicAddress ||
-                "Pje. Maximiliano Poblete 596, Antofagasta"}
-            </span>
+            <span className="text-sm">{clinicAddress}</span>
             <a
-              href={`tel:${config.clinicPhoneRaw}`}
+              href={`tel:${clinicPhoneRaw}`}
               className="text-sm hover:text-brand-primary transition-colors"
             >
-              {config.clinicPhone || "+56 9 6207 2672"}
+              {clinicPhone}
             </a>
             <a
-              href={`mailto:${config.clinicEmail}`}
+              href={`mailto:${clinicEmail}`}
               className="text-sm hover:text-brand-primary transition-colors"
             >
-              {config.clinicEmail || "contacto@kinefitchile.com"}
+              {clinicEmail}
             </a>
           </div>
 
-          {/* Column 4: Hours & Social */}
           <div className="md:col-span-2 flex flex-col items-start gap-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-2">
               Horarios
             </h4>
             <span className="text-xs text-slate-500 leading-relaxed whitespace-pre-line">
-              {config.hoursWeekday}
+              {hoursWeekday}
               {"\n\n"}
-              {config.hoursSaturday}
+              {hoursSaturday}
             </span>
 
-            {/* Social Icons */}
             <div className="flex gap-4 mt-3">
-              {/* Instagram */}
               <a
-                href={config.socialInstagram}
+                href={socialInstagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-slate-200/50 hover:bg-brand-primary hover:text-white text-slate-600 transition-all duration-300"
@@ -116,9 +108,8 @@ export default function Footer() {
                 </svg>
               </a>
 
-              {/* Facebook */}
               <a
-                href={config.socialFacebook}
+                href={socialFacebook}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-slate-200/50 hover:bg-brand-primary hover:text-white text-slate-600 transition-all duration-300"
@@ -133,9 +124,8 @@ export default function Footer() {
                 </svg>
               </a>
 
-              {/* WhatsApp */}
               <a
-                href={config.socialWhatsApp}
+                href={socialWhatsApp}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-slate-200/50 hover:bg-brand-primary hover:text-white text-slate-600 transition-all duration-300"
@@ -150,9 +140,8 @@ export default function Footer() {
                 </svg>
               </a>
 
-              {/* TikTok */}
               <a
-                href={config.socialTikTok}
+                href={socialTikTok}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-slate-200/50 hover:bg-brand-primary hover:text-white text-slate-600 transition-all duration-300"
@@ -170,12 +159,8 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom copyright row */}
         <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
-          <span>
-            {config.footerText ||
-              `© ${new Date().getFullYear()} Kinefit Chile. Todos los derechos reservados.`}
-          </span>
+          <span>{footerText}</span>
           <div className="flex gap-6">
             <a href="#" className="hover:text-brand-primary transition-colors">
               Términos y condiciones

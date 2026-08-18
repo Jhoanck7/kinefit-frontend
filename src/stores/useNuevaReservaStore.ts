@@ -1,7 +1,5 @@
 import { create } from "zustand";
 
-import { Servicio } from "@/lib/tipos";
-
 /** Estado del asistente de nueva reserva: en memoria, sin persistencia. */
 interface NuevaReservaState {
   fecha: Date | null;
@@ -11,17 +9,15 @@ interface NuevaReservaState {
   pacienteNombre: string | null;
   especialistaId: string | null;
   especialistaNombre: string | null;
-  servicio: Servicio | null;
+  servicioId: number | null;
+  servicioNombre: string | null;
+  servicioDuracionMinutos: number | null;
   notaPaciente: string;
   notaInterna: string;
-  setHorario: (
-    fecha: Date,
-    hora: string,
-    bloqueHorarioIds?: number[]
-  ) => void;
+  setHorario: (fecha: Date, hora: string, bloqueHorarioIds?: number[]) => void;
   setPaciente: (id: string, nombre: string) => void;
   setEspecialista: (id: string, nombre: string) => void;
-  setServicio: (servicio: Servicio) => void;
+  setServicio: (id: number, nombre: string, duracionMinutos?: number) => void;
   setNotaPaciente: (valor: string) => void;
   setNotaInterna: (valor: string) => void;
   reiniciar: () => void;
@@ -35,7 +31,9 @@ const ESTADO_INICIAL = {
   pacienteNombre: null,
   especialistaId: null,
   especialistaNombre: null,
-  servicio: null,
+  servicioId: null,
+  servicioNombre: null,
+  servicioDuracionMinutos: null,
   notaPaciente: "",
   notaInterna: "",
 };
@@ -48,7 +46,12 @@ export const useNuevaReservaStore = create<NuevaReservaState>()(set => ({
     set({ pacienteId, pacienteNombre }),
   setEspecialista: (especialistaId, especialistaNombre) =>
     set({ especialistaId, especialistaNombre }),
-  setServicio: servicio => set({ servicio }),
+  setServicio: (servicioId, servicioNombre, servicioDuracionMinutos) =>
+    set({
+      servicioId,
+      servicioNombre,
+      servicioDuracionMinutos: servicioDuracionMinutos ?? null,
+    }),
   setNotaPaciente: notaPaciente => set({ notaPaciente }),
   setNotaInterna: notaInterna => set({ notaInterna }),
   reiniciar: () => set(ESTADO_INICIAL),

@@ -3,11 +3,9 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-import { CAROUSEL_SLIDES } from "@/lib/utils";
-import {
-  GallerySlideItem,
-  LandingConfigData,
-} from "@/lib/panel/data/landing-config";
+import { GallerySlideItem, LandingConfigResponse } from "@/models/responses";
+
+const DEFAULT_SLIDES: GallerySlideItem[] = [];
 
 interface SanityGalleryItem {
   title: string;
@@ -23,9 +21,9 @@ interface GallerySectionProps {
 export default function GallerySection({
   config,
 }: {
-  config: LandingConfigData;
+  config: LandingConfigResponse;
 }) {
-  let slides = CAROUSEL_SLIDES;
+  let slides = DEFAULT_SLIDES;
   if (config.galleryJson) {
     try {
       const parsed = JSON.parse(config.galleryJson);

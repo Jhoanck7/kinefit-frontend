@@ -14,7 +14,7 @@ const RUTAS_SOLO_ADMINISTRADOR = [
   "/panel/reportes",
 ];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const token = await getToken({

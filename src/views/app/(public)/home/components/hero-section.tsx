@@ -4,27 +4,25 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 import { HERO_COPY } from "@/lib/utils";
-import {
-  defaultLandingConfig,
-  LandingConfigData,
-} from "@/lib/panel/data/landing-config";
+import { LandingConfigResponse } from "@/models/responses";
 import { useBookingStore } from "@/stores";
 
 import BookingCard from "./booking-card";
 
-export default function HeroSection({ config }: { config: LandingConfigData }) {
+export default function HeroSection({ config }: { config: LandingConfigResponse }) {
   const currentStep = useBookingStore(state => state.currentStep);
   const [currentBg, setCurrentBg] = useState(0);
 
-  // Lista de 3 imágenes de fondo
+  // Lista de imágenes de fondo configuradas (se omiten los slots sin cargar)
   const bgImages = [
-    config.heroImageUrl1 || "/",
-    config.heroImageUrl2 || "",
-    config.heroImageUrl3 || "",
-  ];
+    config.heroImageUrl1,
+    config.heroImageUrl2,
+    config.heroImageUrl3,
+  ].filter((url): url is string => Boolean(url));
 
   // Transición automática cada 5 segundos
   useEffect(() => {
+    if (bgImages.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentBg(prev => (prev + 1) % bgImages.length);
     }, 5000);

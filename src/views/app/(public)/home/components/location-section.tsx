@@ -2,15 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 
-import {
-  defaultLandingConfig,
-  LandingConfigData,
-} from "@/lib/panel/data/landing-config";
+import { LandingConfigResponse } from "@/models/responses";
 
 export default function LocationSection({
   config,
 }: {
-  config: LandingConfigData;
+  config: LandingConfigResponse;
 }) {
   const address =
     config.clinicAddress || "Pje. Maximiliano Poblete 596, Antofagasta";

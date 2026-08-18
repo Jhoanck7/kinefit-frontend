@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { fechaISO, formatearFechaExtensa } from "@/lib/formato";
-import { agendaService, citaService } from "@/services";
+import { formatearFechaExtensa } from "@/lib/formato";
+import { citaService } from "@/services";
 import { useNuevaReservaStore } from "@/stores";
 
 export const PASOS_NUEVA_RESERVA = [
@@ -14,29 +14,6 @@ export const PASOS_NUEVA_RESERVA = [
   { etiqueta: "Paciente" },
   { etiqueta: "Notas y resumen" },
 ];
-
-export const NOMBRE_SERVICIO: Record<string, string> = {
-  embarazadas: "Embarazadas",
-  masajes_pareja: "Masajes en pareja (masoterapia)",
-  masajes: "Masajes (masoterapia)",
-  masajes_premium: "Masajes Premium (masoterapia premium)",
-  masajes_reductivos: "Masajes Reductivos",
-  voucher_regalo: "Voucher para Regalo",
-  kinesiologia: "Kinesiología",
-};
-
-// Mismo mapeo dominio→id real usado en la selección de especialista; el enum
-// de Servicio del dominio aún no tiene una fuente única compartida con el
-// catálogo real de servicios del backend.
-const MAPA_SERVICIO_ID: Record<string, number> = {
-  masajes: 1,
-  kinesiologia: 2,
-  embarazadas: 3,
-  masajes_pareja: 4,
-  masajes_premium: 5,
-  masajes_reductivos: 6,
-  voucher_regalo: 7,
-};
 
 export const useResumenReserva = () => {
   const router = useRouter();
@@ -48,7 +25,8 @@ export const useResumenReserva = () => {
     pacienteNombre,
     especialistaId,
     especialistaNombre,
-    servicio,
+    servicioId,
+    servicioNombre,
     notaPaciente,
     notaInterna,
     setNotaPaciente,
@@ -60,12 +38,10 @@ export const useResumenReserva = () => {
   const [guardando, setGuardando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const nombreServicio = servicio ? NOMBRE_SERVICIO[servicio] : undefined;
-
   const filasResumen = [
     {
       etiqueta: "Servicio",
-      valor: nombreServicio,
+      valor: servicioNombre ?? undefined,
       editar: "/panel/nueva-reserva/servicio",
     },
     {
@@ -92,7 +68,14 @@ export const useResumenReserva = () => {
 
   // Actions
   const handleConfirmarReserva = async () => {
-    if (!fecha || !hora || !pacienteId || !servicio) {
+    if (
+      !fecha ||
+      !hora ||
+      !pacienteId ||
+      !servicioId ||
+      !bloqueHorarioIds ||
+      bloqueHorarioIds.length === 0
+    ) {
       setErrorMsg("Faltan datos obligatorios para registrar la reserva.");
       return;
     }
@@ -105,55 +88,12 @@ export const useResumenReserva = () => {
       const numEspecialistaId = especialistaId
         ? parseInt(especialistaId.replace(/\D/g, ""), 10) || 1
         : 1;
-      const numServicioId = MAPA_SERVICIO_ID[servicio] || 2;
-      const fechaStr = fechaISO(fecha);
-
-      let targetBloqueIds = bloqueHorarioIds;
-
-      if (!targetBloqueIds || targetBloqueIds.length === 0) {
-        const agendaRes = await agendaService.getAgenda(
-          [numEspecialistaId],
-          fechaStr,
-          fechaStr
-        );
-        const dataArr = agendaRes.data.data;
-        const hBuscada = hora.substring(0, 5);
-        const idx = dataArr.findIndex(
-          b => b.horaInicio && b.horaInicio.substring(0, 5) === hBuscada
-        );
-        
-        const DURACION_MINUTOS_SERVICIO: Record<string, number> = {
-          embarazadas: 60,
-          masajes_pareja: 60,
-          masajes: 30,
-          masajes_premium: 60,
-          masajes_reductivos: 60,
-          voucher_regalo: 60,
-          kinesiologia: 45,
-        };
-        const duracionMin = servicio ? (DURACION_MINUTOS_SERVICIO[servicio] ?? 60) : 60;
-        const bloquesRequeridos = Math.ceil(duracionMin / 30);
-        
-        if (idx !== -1 && idx + bloquesRequeridos <= dataArr.length) {
-          const ids: number[] = [];
-          for (let i = 0; i < bloquesRequeridos; i++) {
-            ids.push(dataArr[idx + i].id);
-          }
-          targetBloqueIds = ids;
-        }
-      }
-
-      if (!targetBloqueIds || targetBloqueIds.length === 0) {
-        throw new Error(
-          "No se encontró el bloque horario seleccionado para esa fecha y hora. Re-selecciona el horario."
-        );
-      }
 
       await citaService.createManual({
         pacienteId: numPacienteId,
         especialistaId: numEspecialistaId,
-        servicioId: numServicioId,
-        bloqueHorarioIds: targetBloqueIds,
+        servicioId,
+        bloqueHorarioIds,
         notaPaciente: notaPaciente || undefined,
         notaInterna: notaInterna || undefined,
       });

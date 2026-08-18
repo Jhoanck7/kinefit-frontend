@@ -9,7 +9,7 @@ import { Button, Card } from "@/components/ui";
 import { formatearFechaExtensa } from "@/lib/formato";
 
 import { ServicioOption } from "./components";
-import { CATALOGO_SERVICIOS, PASOS_NUEVA_RESERVA, useServicio } from "./hooks";
+import { PASOS_NUEVA_RESERVA, useServicio } from "./hooks";
 
 export default function ServicioView() {
   const {
@@ -17,8 +17,9 @@ export default function ServicioView() {
     hora,
     pacienteNombre,
     especialistaNombre,
-    servicio,
-    nombreServicio,
+    servicioId,
+    servicioNombre,
+    servicios,
     actions,
   } = useServicio();
 
@@ -38,12 +39,12 @@ export default function ServicioView() {
           </p>
 
           <div className="grid grid-cols-1 gap-2">
-            {CATALOGO_SERVICIOS.map(item => (
+            {servicios.map(item => (
               <ServicioOption
                 key={item.id}
-                titulo={item.titulo}
-                seleccionado={servicio === item.id}
-                onClick={() => actions.handleSeleccionar(item.id)}
+                titulo={item.nombre}
+                seleccionado={servicioId === item.id}
+                onClick={() => actions.handleSeleccionar(item)}
               />
             ))}
           </div>
@@ -59,7 +60,7 @@ export default function ServicioView() {
               </button>
             }
             avanzar={
-              <Button disabled={!servicio} onClick={actions.handleContinuar}>
+              <Button disabled={!servicioId} onClick={actions.handleContinuar}>
                 Continuar
               </Button>
             }
@@ -68,7 +69,7 @@ export default function ServicioView() {
 
         <SummaryPanel
           filas={[
-            { etiqueta: "Servicio", valor: nombreServicio },
+            { etiqueta: "Servicio", valor: servicioNombre ?? undefined },
             {
               etiqueta: "Fecha",
               valor: fecha ? formatearFechaExtensa(fecha) : undefined,

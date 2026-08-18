@@ -1,9 +1,9 @@
-import { LandingConfigData } from "@/lib/panel/data/landing-config";
+import { LandingConfigResponse } from "@/models/responses";
 
 export type FieldType = "text" | "email" | "password" | "textarea" | "image";
 
 export interface FieldDefinition {
-  key: keyof LandingConfigData;
+  key: keyof LandingConfigResponse;
   label: string;
   type: FieldType;
   required?: boolean;

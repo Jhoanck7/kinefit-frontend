@@ -43,6 +43,7 @@ interface SubmitBookingParams {
   selectedServiceId: number;
   selectedSpecialistId: number;
   selectedBloqueHorarioId: number;
+  selectedDuracionMinutos: number;
   patientName: string;
   patientPhone: string;
   patientRut: string;
@@ -55,6 +56,7 @@ export const useSubmitBookingMutation = () => {
       selectedServiceId,
       selectedSpecialistId,
       selectedBloqueHorarioId,
+      selectedDuracionMinutos,
       patientName,
       patientPhone,
       patientRut,
@@ -87,6 +89,7 @@ export const useSubmitBookingMutation = () => {
           especialistaId: selectedSpecialistId,
           servicioId: selectedServiceId,
           bloqueHorarioId: selectedBloqueHorarioId,
+          duracionMinutos: selectedDuracionMinutos,
           empresaId: null,
           notaPaciente: `Reserva para ${patientName}`,
         },

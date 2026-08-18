@@ -15,16 +15,6 @@ export const PASOS_NUEVA_RESERVA = [
   { etiqueta: "Notas y resumen" },
 ];
 
-export const NOMBRE_SERVICIO: Record<string, string> = {
-  embarazadas: "Embarazadas",
-  masajes_pareja: "Masajes en pareja",
-  masajes: "Masajes (masoterapia)",
-  masajes_premium: "Masajes Premium",
-  masajes_reductivos: "Masajes Reductivos",
-  voucher_regalo: "Voucher para Regalo",
-  kinesiologia: "Kinesiología",
-};
-
 export const usePacienteReserva = () => {
   const router = useRouter();
   const {
@@ -33,7 +23,7 @@ export const usePacienteReserva = () => {
     pacienteId,
     pacienteNombre,
     especialistaNombre,
-    servicio,
+    servicioNombre,
     setPaciente,
   } = useNuevaReservaStore();
 
@@ -61,10 +51,6 @@ export const usePacienteReserva = () => {
   useEffect(() => {
     if (perfilCargado) setPacienteConfirmado(perfilCargado);
   }, [perfilCargado]);
-
-  const nombreServicio = servicio
-    ? (NOMBRE_SERVICIO[servicio] ?? servicio)
-    : undefined;
 
   // Actions
   const handleBusquedaChange = (val: string) => {
@@ -95,7 +81,7 @@ export const usePacienteReserva = () => {
     pacienteId,
     pacienteNombre,
     especialistaNombre,
-    nombreServicio,
+    nombreServicio: servicioNombre,
     busqueda,
     resultados,
     buscado,

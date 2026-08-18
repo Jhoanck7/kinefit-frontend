@@ -1,3 +1,10 @@
+export interface GallerySlideItem {
+  title: string;
+  description: string;
+  image: string;
+  features?: string[];
+}
+
 export interface LandingConfigResponse {
   heroTagline: string;
   heroBrandName: string;

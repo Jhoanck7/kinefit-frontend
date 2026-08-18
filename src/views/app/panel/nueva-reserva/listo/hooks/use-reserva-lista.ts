@@ -3,34 +3,23 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { fechaISO } from "@/lib/formato";
 import { definicionEstado } from "@/lib/estados";
+import { fechaISO } from "@/lib/formato";
 import { useNuevaReservaStore } from "@/stores";
-
-export const NOMBRE_SERVICIO: Record<string, string> = {
-  embarazadas: "Embarazadas",
-  masajes_pareja: "Masajes en pareja",
-  masajes: "Masajes (masoterapia)",
-  masajes_premium: "Masajes Premium",
-  masajes_reductivos: "Masajes Reductivos",
-  voucher_regalo: "Voucher para Regalo",
-  kinesiologia: "Kinesiología",
-  masoterapia: "Masoterapia",
-};
 
 export const useReservaLista = () => {
   const router = useRouter();
-  const { fecha, hora, pacienteNombre, servicio, reiniciar } =
+  const { fecha, hora, pacienteNombre, servicioNombre, reiniciar } =
     useNuevaReservaStore();
   const definicion = definicionEstado("PorConfirmar");
 
   useEffect(() => {
-    if (!fecha || !hora || !pacienteNombre || !servicio) {
+    if (!fecha || !hora || !pacienteNombre || !servicioNombre) {
       router.replace("/panel/nueva-reserva/servicio");
     }
-  }, [fecha, hora, pacienteNombre, servicio, router]);
+  }, [fecha, hora, pacienteNombre, servicioNombre, router]);
 
-  const listo = Boolean(fecha && hora && pacienteNombre && servicio);
+  const listo = Boolean(fecha && hora && pacienteNombre && servicioNombre);
 
   let horaTermino: string | null = null;
   if (hora) {
@@ -40,10 +29,6 @@ export const useReservaLista = () => {
       .toString()
       .padStart(2, "0")}:${(minutosTermino % 60).toString().padStart(2, "0")}`;
   }
-
-  const nombreServicio = servicio
-    ? (NOMBRE_SERVICIO[servicio] ?? servicio)
-    : undefined;
 
   // Actions
   const handleIrALaAgenda = () => {
@@ -64,7 +49,7 @@ export const useReservaLista = () => {
     hora,
     horaTermino,
     pacienteNombre,
-    nombreServicio,
+    nombreServicio: servicioNombre,
     etiquetaEstado: definicion.etiqueta,
 
     // Actions

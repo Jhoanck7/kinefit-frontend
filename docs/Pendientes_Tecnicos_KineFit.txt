@@ -112,5 +112,13 @@ docs/Auditoria_Backend_vs_Frontend_Services.txt
     UsuarioPersonalController — Analizar estos controladores y evaluar
     su uso en frontend.
 
+27. useBookingStore no persiste (sin localStorage) — si el paciente
+    recarga la página a mitad del wizard de reserva pública, se pierde
+    todo el progreso, incluido el authToken de Google ya logueado.
+    Detectado 2026-08-17 al revisar por qué authToken vive en este
+    store; no es mala práctica en sí (no hay sesión de paciente en
+    ningún otro lado del sitio), pero la falta de persistencia es un
+    gap de UX real. No tocar sin permiso explícito de Maxi.
+
 ===========================================================================
 No implementar soluciones a estos puntos sin permiso explícito de Maxi.

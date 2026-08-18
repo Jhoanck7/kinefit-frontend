@@ -2,7 +2,9 @@
 
 import { useRouter } from "next/navigation";
 
-import { Servicio, useNuevaReservaStore } from "@/stores";
+import { useGetServicios } from "@/hooks/api";
+import { ServicioResponse } from "@/models/responses";
+import { useNuevaReservaStore } from "@/stores";
 
 export const PASOS_NUEVA_RESERVA = [
   { etiqueta: "Servicio" },
@@ -12,22 +14,6 @@ export const PASOS_NUEVA_RESERVA = [
   { etiqueta: "Notas y resumen" },
 ];
 
-export interface OpcionServicio {
-  id: Servicio;
-  titulo: string;
-}
-
-/** Catálogo oficial de servicios */
-export const CATALOGO_SERVICIOS: OpcionServicio[] = [
-  { id: "embarazadas", titulo: "Embarazadas" },
-  { id: "masajes_pareja", titulo: "Masajes en pareja (masoterapia)" },
-  { id: "masajes", titulo: "Masajes (masoterapia)" },
-  { id: "masajes_premium", titulo: "Masajes Premium (masoterapia premium)" },
-  { id: "masajes_reductivos", titulo: "Masajes Reductivos" },
-  { id: "voucher_regalo", titulo: "Voucher para Regalo" },
-  { id: "kinesiologia", titulo: "Kinesiología" },
-];
-
 export const useServicio = () => {
   const router = useRouter();
   const {
@@ -35,15 +21,15 @@ export const useServicio = () => {
     hora,
     pacienteNombre,
     especialistaNombre,
-    servicio,
+    servicioId,
+    servicioNombre,
     setServicio,
   } = useNuevaReservaStore();
 
-  const nombreServicio = servicio
-    ? CATALOGO_SERVICIOS.find(s => s.id === servicio)?.titulo
-    : undefined;
+  const { data: servicios = [], isLoading } = useGetServicios();
 
-  const handleSeleccionar = (id: Servicio) => setServicio(id);
+  const handleSeleccionar = (servicio: ServicioResponse) =>
+    setServicio(servicio.id, servicio.nombre, servicio.duracionMinutos);
   const handleCancelar = () => router.push("/panel/agenda");
   const handleContinuar = () => router.push("/panel/nueva-reserva/horario");
 
@@ -53,8 +39,10 @@ export const useServicio = () => {
     hora,
     pacienteNombre,
     especialistaNombre,
-    servicio,
-    nombreServicio,
+    servicioId,
+    servicioNombre,
+    servicios,
+    isLoading,
 
     // Actions
     actions: {

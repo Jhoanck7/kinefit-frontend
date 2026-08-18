@@ -6,6 +6,7 @@ export type {
   GeneracionAgendaResultadoResponse,
   PacienteEnAgendaResponse,
 } from "./agenda";
+export type { AuditoriaCitaResponse } from "./auditoria";
 export type { PersonalLoginResponse, UsuarioPersonalResponse } from "./auth";
 export type {
   BloqueHorarioCitaResponse,
@@ -41,12 +42,12 @@ export type {
   SeccionFormato,
   TipoCampoFormato,
 } from "./formato";
-export type { LandingConfigResponse } from "./landing-config";
-export type { ImageUploadResponse } from "./media";
 export type {
   HorarioCentroResponse,
   PlantillaHorarioResponse,
 } from "./horario";
+export type { GallerySlideItem, LandingConfigResponse } from "./landing-config";
+export type { ImageUploadResponse } from "./media";
 export type {
   ContadoresPacienteResponse,
   HistorialCitaResponse,
@@ -68,6 +69,7 @@ export type {
   ReporteReservasResponse,
   ReporteVentasResponse,
 } from "./reporte";
+export type { ServicioResponse } from "./servicio";
 export type {
   ComisionTerminalResponse,
   DesgloseCobroResponse,

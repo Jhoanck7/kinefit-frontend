@@ -1,11 +1,9 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { useCreatePacienteMutation } from "@/hooks/api";
-import { listConvenios } from "@/lib/panel/data/convenios";
-import { EmpresaResponse } from "@/models/responses";
+import { useCreatePacienteMutation, useGetEmpresas } from "@/hooks/api";
 import { pacienteService } from "@/services";
 import { useNuevaReservaStore } from "@/stores";
 
@@ -26,14 +24,10 @@ export const useRegistrarPaciente = () => {
     id: string;
     nombre: string;
   } | null>(null);
-  const [convenios, setConvenios] = useState<EmpresaResponse[]>([]);
+  const { data: convenios = [] } = useGetEmpresas();
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const createPacienteMutation = useCreatePacienteMutation();
-
-  useEffect(() => {
-    listConvenios().then(setConvenios);
-  }, []);
 
   // Actions
   const handleCambiarRut = async (valor: string) => {

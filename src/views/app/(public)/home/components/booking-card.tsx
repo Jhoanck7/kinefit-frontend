@@ -53,12 +53,12 @@ const parseDateInfo = (dateStr: string) => {
 export default function BookingCard() {
   const router = useRouter();
   const {
-    availableDates,
     selectedServiceId,
     selectedServiceName,
     selectedSpecialistId,
     selectedDate,
     selectedBloqueHorarioId,
+    selectedDuracionMinutos,
     patientName,
     patientEmail,
     patientPhone,
@@ -69,6 +69,7 @@ export default function BookingCard() {
     setSelectedSpecialist,
     setSelectedDate,
     setSelectedTimeSlot,
+    setSelectedDuracionMinutos,
     setPatientInfo,
     setAuthToken,
     nextStep,
@@ -87,6 +88,10 @@ export default function BookingCard() {
       selectedDate ?? undefined
     );
   const isLoading = loadingServices || loadingSpecialists || loadingSlots;
+
+  const availableDates =
+    specialists.find(sp => sp.id === selectedSpecialistId)?.fechasDisponibles ??
+    [];
 
   const authMutation = useAuthenticateWithGoogleMutation();
   const submitMutation = useSubmitBookingMutation();
@@ -179,12 +184,8 @@ export default function BookingCard() {
     nextStep();
   };
 
-  const handleSpecialistSelect = (
-    id: number,
-    name: string,
-    fechas?: string[]
-  ) => {
-    setSelectedSpecialist(id, name, fechas);
+  const handleSpecialistSelect = (id: number, name: string) => {
+    setSelectedSpecialist(id, name);
     nextStep();
   };
 
@@ -229,7 +230,8 @@ export default function BookingCard() {
       !patientRut ||
       !selectedServiceId ||
       !selectedSpecialistId ||
-      !selectedBloqueHorarioId
+      !selectedBloqueHorarioId ||
+      !selectedDuracionMinutos
     ) {
       return;
     }
@@ -244,6 +246,7 @@ export default function BookingCard() {
       selectedServiceId,
       selectedSpecialistId,
       selectedBloqueHorarioId,
+      selectedDuracionMinutos,
       patientName,
       patientPhone,
       patientRut,
@@ -419,13 +422,7 @@ export default function BookingCard() {
               .map(sp => (
                 <button
                   key={sp.id}
-                  onClick={() =>
-                    handleSpecialistSelect(
-                      sp.id,
-                      sp.nombre,
-                      sp.fechasDisponibles
-                    )
-                  }
+                  onClick={() => handleSpecialistSelect(sp.id, sp.nombre)}
                   className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-xl border-2 text-left transition-colors cursor-pointer ${
                     selectedSpecialistId === sp.id
                       ? "border-brand-primary bg-slate-100"
@@ -596,6 +593,31 @@ export default function BookingCard() {
                 </div>
               </div>
             )}
+
+            {/* Duración de la Atención */}
+            {selectedBloqueHorarioId && (
+              <div>
+                <label className="block text-xs text-slate-800 font-bold uppercase tracking-wider mb-2">
+                  3. ¿Cuánto Durará tu Atención?
+                </label>
+                <div className="grid grid-cols-3 gap-2.5">
+                  {[30, 60, 90].map(minutos => (
+                    <button
+                      key={minutos}
+                      type="button"
+                      onClick={() => setSelectedDuracionMinutos(minutos)}
+                      className={`p-3 text-xs font-bold rounded-xl border-2 text-center transition-colors cursor-pointer ${
+                        selectedDuracionMinutos === minutos
+                          ? "border-brand-primary bg-brand-primary text-white"
+                          : "border-slate-300 bg-white text-slate-800 hover:border-brand-primary hover:bg-slate-50"
+                      }`}
+                    >
+                      {minutos} min
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-between items-center mt-6 border-t-2 border-slate-200 pt-4">
@@ -607,9 +629,15 @@ export default function BookingCard() {
             </button>
             <button
               onClick={nextStep}
-              disabled={!selectedDate || !selectedBloqueHorarioId}
+              disabled={
+                !selectedDate ||
+                !selectedBloqueHorarioId ||
+                !selectedDuracionMinutos
+              }
               className={`rounded-xl px-6 py-3.5 text-xs font-bold uppercase tracking-wider border-2 transition-colors ${
-                selectedDate && selectedBloqueHorarioId
+                selectedDate &&
+                selectedBloqueHorarioId &&
+                selectedDuracionMinutos
                   ? "bg-brand-primary hover:bg-brand-primary-hover border-brand-primary text-white cursor-pointer"
                   : "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed"
               }`}

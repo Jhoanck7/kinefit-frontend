@@ -1,10 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui";
-import {
-  formatearFechaExtensa,
-  formatearRangoHorario,
-} from "@/lib/formato";
+import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/formato";
 
 import { useReservaLista } from "./hooks";
 

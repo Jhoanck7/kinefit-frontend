@@ -16,6 +16,7 @@ export default function LandingView() {
     slides,
     processSteps,
     reviewsList,
+    limiteResenas,
     cargando,
     guardando,
     sincronizando,
@@ -379,9 +380,14 @@ export default function LandingView() {
                     <div className="space-y-4 mt-4">
                       <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4 mt-4">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
-                            Parámetros API Google Places
-                          </h3>
+                          <div>
+                            <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                              Sincronización con Google Places
+                            </h3>
+                            <p className="text-xs text-slate-500 mt-0.5">
+                              La API Key de Google se procesa de forma segura en el servidor.
+                            </p>
+                          </div>
                           <Button
                             type="button"
                             disabled={sincronizando}
@@ -389,7 +395,7 @@ export default function LandingView() {
                           >
                             {sincronizando
                               ? "Conectando..."
-                              : " Sincronizar Ahora"}
+                              : "Sincronizar Ahora"}
                           </Button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -413,17 +419,21 @@ export default function LandingView() {
                               )
                             }
                           />
-                          <TextField
-                            etiqueta="Google Maps API Key"
-                            type="password"
-                            value={formData.googleApiKey || ""}
-                            onChange={e =>
-                              actions.handleChange(
-                                "googleApiKey",
-                                e.target.value
-                              )
-                            }
-                          />
+                          <div>
+                            <label className="mb-1 block text-xs font-medium text-panel-sidebar">
+                              Cantidad Máxima de Reseñas
+                            </label>
+                            <select
+                              value={limiteResenas}
+                              onChange={e => actions.setLimiteResenas(Number(e.target.value))}
+                              className="w-full rounded-xl border border-brand-border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-panel-sidebar bg-white"
+                            >
+                              <option value={3}>3 reseñas</option>
+                              <option value={5}>5 reseñas</option>
+                              <option value={8}>8 reseñas</option>
+                              <option value={10}>10 reseñas</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
 

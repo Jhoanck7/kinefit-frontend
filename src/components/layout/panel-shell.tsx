@@ -9,7 +9,7 @@ import { Sidebar } from "./sidebar";
 export function PanelShell({ children }: { children: ReactNode }) {
   const { status } = useSession();
 
-  // La protección real ya la hace middleware.ts en el servidor; este estado
+  // La protección real ya la hace proxy.ts en el servidor; este estado
   // es solo para no pintar el panel mientras la sesión de cliente hidrata.
   if (status === "loading") {
     return (

@@ -2,106 +2,123 @@
 
 import { useEffect, useState } from "react";
 
-
 import {
-  defaultGoogleReviews,
-  defaultLandingConfig,
-  defaultProcessSteps,
-  GallerySlideItem,
-  getLandingConfig,
-  GoogleReviewItem,
-  LandingConfigData,
-  ProcessStepItem,
-  sincronizarGoogleReviews,
-  updateLandingConfig,
-} from "@/lib/panel/data/landing-config";
+  useGetLandingConfig,
+  useSincronizarGoogleReviewsMutation,
+  useUpdateLandingConfigMutation,
+} from "@/hooks/api";
+import { LandingConfigResponse } from "@/models/responses";
+
+export interface GallerySlideItem {
+  title: string;
+  description: string;
+  image: string;
+  features?: string[];
+}
+
+export interface ProcessStepItem {
+  num: string;
+  title: string;
+  description: string;
+}
+
+export interface GoogleReviewItem {
+  author: string;
+  role?: string;
+  quote: string;
+  rating: number;
+  date?: string;
+  avatarUrl?: string;
+  isVerifiedGoogle?: boolean;
+}
+
+const DEFAULT_LANDING_CONFIG: LandingConfigResponse = {
+  heroTagline: "",
+  heroBrandName: "KineFit",
+  heroDescription: "Centro de Kinesiología y Fisioterapia Especializada.",
+  heroCtaText: "Reservar Cita",
+  clinicName: "KineFit Clínica",
+  clinicEmail: "contacto@kinefit.cl",
+  clinicPhone: "+56 9 1234 5678",
+  clinicPhoneRaw: "+56912345678",
+  clinicAddress: "Av. Providencia 1234, Oficina 501, Santiago",
+  hoursWeekday: "Lunes a Viernes: 08:00 - 20:00",
+  hoursSaturday: "Sábados: 09:00 - 14:00",
+  socialInstagram: "https://instagram.com/kinefit",
+  socialFacebook: "https://facebook.com/kinefit",
+  socialWhatsApp: "https://wa.me/56912345678",
+  socialTikTok: "https://tiktok.com/@kinefit",
+};
 
 export const useLanding = () => {
-  const [formData, setFormData] =
-    useState<LandingConfigData>(defaultLandingConfig);
+  const { data: configData, isLoading: cargando } = useGetLandingConfig();
+  const updateMutation = useUpdateLandingConfigMutation();
+  const sincronizarMutation = useSincronizarGoogleReviewsMutation();
+
+  const [formData, setFormData] = useState<LandingConfigResponse>(DEFAULT_LANDING_CONFIG);
   const [seccionActiva, setSeccionActiva] = useState<string | null>(null);
-  const [slides, setSlides] = useState<GallerySlideItem[]>(CAROUSEL_SLIDES);
-  const [processSteps, setProcessSteps] =
-    useState<ProcessStepItem[]>(defaultProcessSteps);
-  const [reviewsList, setReviewsList] =
-    useState<GoogleReviewItem[]>(defaultGoogleReviews);
-  const [cargando, setCargando] = useState(true);
-  const [guardando, setGuardando] = useState(false);
-  const [sincronizando, setSincronizando] = useState(false);
+  const [slides, setSlides] = useState<GallerySlideItem[]>([]);
+  const [processSteps, setProcessSteps] = useState<ProcessStepItem[]>([]);
+  const [reviewsList, setReviewsList] = useState<GoogleReviewItem[]>([]);
+  const [limiteResenas, setLimiteResenas] = useState<number>(5);
   const [confirmacionGuardar, setConfirmacionGuardar] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    async function cargarConfiguracion() {
-      try {
-        const config = await getLandingConfig();
-        setFormData(config);
-        if (config.galleryJson) {
-          try {
-            const parsed = JSON.parse(config.galleryJson);
-            if (Array.isArray(parsed) && parsed.length > 0) setSlides(parsed);
-          } catch { }
-        }
-        if (config.processStepsJson) {
-          try {
-            const parsedSteps = JSON.parse(config.processStepsJson);
-            if (Array.isArray(parsedSteps) && parsedSteps.length > 0)
-              setProcessSteps(parsedSteps);
-          } catch { }
-        }
-        if (config.reviewsJson) {
-          try {
-            const parsedReviews = JSON.parse(config.reviewsJson);
-            if (Array.isArray(parsedReviews) && parsedReviews.length > 0)
-              setReviewsList(parsedReviews);
-          } catch { }
-        }
-      } catch {
-        // El error se refleja al usuario únicamente si ocurre durante el guardado.
-      } finally {
-        setCargando(false);
+    if (configData) {
+      setFormData(configData);
+      if (configData.galleryJson) {
+        try {
+          const parsed = JSON.parse(configData.galleryJson);
+          if (Array.isArray(parsed)) setSlides(parsed);
+        } catch {}
+      }
+      if (configData.processStepsJson) {
+        try {
+          const parsedSteps = JSON.parse(configData.processStepsJson);
+          if (Array.isArray(parsedSteps)) setProcessSteps(parsedSteps);
+        } catch {}
+      }
+      if (configData.reviewsJson) {
+        try {
+          const parsedReviews = JSON.parse(configData.reviewsJson);
+          if (Array.isArray(parsedReviews)) setReviewsList(parsedReviews);
+        } catch {}
       }
     }
-    cargarConfiguracion();
-  }, []);
+  }, [configData]);
 
-  function handleChange(field: keyof LandingConfigData, value: string) {
+  function handleChange(field: keyof LandingConfigResponse, value: string) {
     setFormData(prev => ({ ...prev, [field]: value }));
   }
 
-  // Complejas (Arrays)
-  function handleSlideChange(
-    index: number,
-    field: keyof GallerySlideItem,
-    value: unknown
-  ) {
+  function handleSlideChange(index: number, field: keyof GallerySlideItem, value: unknown) {
     setSlides(prev => {
       const copy = [...prev];
       copy[index] = { ...copy[index], [field]: value };
       return copy;
     });
   }
+
   function handleAgregarSlide() {
     setSlides(prev => [
       ...prev,
       { title: "Nuevo Espacio", description: "", image: "", features: [] },
     ]);
   }
+
   function handleEliminarSlide(index: number) {
     setSlides(prev => prev.filter((_, i) => i !== index));
   }
 
-  function handleProcessStepChange(
-    index: number,
-    field: keyof ProcessStepItem,
-    value: string
-  ) {
+  function handleProcessStepChange(index: number, field: keyof ProcessStepItem, value: string) {
     setProcessSteps(prev => {
       const copy = [...prev];
       copy[index] = { ...copy[index], [field]: value };
       return copy;
     });
   }
+
   function handleAgregarProcessStep() {
     setProcessSteps(prev => [
       ...prev,
@@ -112,21 +129,19 @@ export const useLanding = () => {
       },
     ]);
   }
+
   function handleEliminarProcessStep(index: number) {
     setProcessSteps(prev => prev.filter((_, i) => i !== index));
   }
 
-  function handleReviewChange(
-    index: number,
-    field: keyof GoogleReviewItem,
-    value: unknown
-  ) {
+  function handleReviewChange(index: number, field: keyof GoogleReviewItem, value: unknown) {
     setReviewsList(prev => {
       const copy = [...prev];
       copy[index] = { ...copy[index], [field]: value };
       return copy;
     });
   }
+
   function handleAgregarReview() {
     setReviewsList(prev => [
       ...prev,
@@ -138,31 +153,27 @@ export const useLanding = () => {
       },
     ]);
   }
+
   function handleEliminarReview(index: number) {
     setReviewsList(prev => prev.filter((_, i) => i !== index));
   }
 
   async function handleSincronizarGoogle() {
-    setSincronizando(true);
     setErrorMsg(null);
     try {
-      const { data, message } = await sincronizarGoogleReviews();
-      if (!data) {
-        setErrorMsg(message || "No se pudo sincronizar con Google.");
-        return;
-      }
-      setFormData(data);
-      if (data.reviewsJson) {
-        try {
-          const parsedReviews = JSON.parse(data.reviewsJson);
-          if (Array.isArray(parsedReviews)) setReviewsList(parsedReviews);
-        } catch { }
+      const data = await sincronizarMutation.mutateAsync(limiteResenas);
+      if (data) {
+        setFormData(data);
+        if (data.reviewsJson) {
+          try {
+            const parsed = JSON.parse(data.reviewsJson);
+            if (Array.isArray(parsed)) setReviewsList(parsed);
+          } catch {}
+        }
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(msg || "Ocurrió un error al sincronizar con Google.");
-    } finally {
-      setSincronizando(false);
     }
   }
 
@@ -172,45 +183,41 @@ export const useLanding = () => {
   }
 
   async function ejecutarGuardar() {
-    setGuardando(true);
     setErrorMsg(null);
-
     try {
-      const dataToSave = {
+      const dataToSave: LandingConfigResponse = {
         ...formData,
         galleryJson: JSON.stringify(slides),
         processStepsJson: JSON.stringify(processSteps),
         reviewsJson: JSON.stringify(reviewsList),
       };
-      const res = await updateLandingConfig(dataToSave);
+      const res = await updateMutation.mutateAsync(dataToSave);
       setFormData(res);
       setConfirmacionGuardar(false);
       setSeccionActiva(null);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      setErrorMsg(msg);
-    } finally {
-      setGuardando(false);
+      setErrorMsg(msg || "Error al guardar la configuración.");
     }
   }
 
   return {
-    // Data
     formData,
     seccionActiva,
     slides,
     processSteps,
     reviewsList,
+    limiteResenas,
     cargando,
-    guardando,
-    sincronizando,
+    guardando: updateMutation.isPending,
+    sincronizando: sincronizarMutation.isPending,
     confirmacionGuardar,
     errorMsg,
 
-    // Actions
     actions: {
       setSeccionActiva,
       setConfirmacionGuardar,
+      setLimiteResenas,
       handleChange,
       handleSlideChange,
       handleAgregarSlide,

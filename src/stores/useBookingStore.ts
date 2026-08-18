@@ -9,7 +9,7 @@ interface BookingState {
   selectedDate: string | null; // YYYY-MM-DD
   selectedTimeSlot: string | null; // HH:MM
   selectedBloqueHorarioId: number | null;
-  availableDates: string[];
+  selectedDuracionMinutos: number | null;
   patientName: string;
   patientEmail: string;
   patientPhone: string;
@@ -19,13 +19,10 @@ interface BookingState {
 
   // Actions
   setSelectedService: (id: number, name: string) => void;
-  setSelectedSpecialist: (
-    id: number,
-    name: string,
-    fechasDisponibles?: string[]
-  ) => void;
+  setSelectedSpecialist: (id: number, name: string) => void;
   setSelectedDate: (date: string | null) => void;
   setSelectedTimeSlot: (slot: string | null, id: number | null) => void;
+  setSelectedDuracionMinutos: (minutos: number | null) => void;
   setPatientInfo: (info: {
     name: string;
     email: string;
@@ -47,11 +44,11 @@ const ESTADO_INICIAL = {
   selectedDate: null,
   selectedTimeSlot: null,
   selectedBloqueHorarioId: null,
-  availableDates: [],
+  selectedDuracionMinutos: null,
   patientName: "",
   patientEmail: "",
   patientPhone: "",
-  patientRut: "11111111-1",
+  patientRut: "",
   authToken: null,
   currentStep: 1,
 };
@@ -68,14 +65,12 @@ export const useBookingStore = create<BookingState>(set => ({
       selectedDate: null,
       selectedTimeSlot: null,
       selectedBloqueHorarioId: null,
-      availableDates: [],
     }),
 
-  setSelectedSpecialist: (id, name, fechasDisponibles = []) =>
+  setSelectedSpecialist: (id, name) =>
     set({
       selectedSpecialistId: id,
       selectedSpecialistName: name,
-      availableDates: fechasDisponibles,
       selectedDate: null,
       selectedTimeSlot: null,
       selectedBloqueHorarioId: null,
@@ -90,6 +85,9 @@ export const useBookingStore = create<BookingState>(set => ({
 
   setSelectedTimeSlot: (slot, id) =>
     set({ selectedTimeSlot: slot, selectedBloqueHorarioId: id }),
+
+  setSelectedDuracionMinutos: minutos =>
+    set({ selectedDuracionMinutos: minutos }),
 
   setPatientInfo: info =>
     set(state => ({

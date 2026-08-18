@@ -1,31 +1,52 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-import {
-  defaultGoogleReviews,
-  defaultLandingConfig,
-  GoogleReviewItem,
-  LandingConfigData,
-} from "@/lib/panel/data/landing-config";
+import { LandingConfigResponse } from "@/models/responses";
 
-interface SanityTestimonial {
-  nombre: string;
-  cargo: string;
-  content: string;
-  rating?: number;
+export interface GoogleReviewItem {
+  author: string;
+  role?: string;
+  quote: string;
+  rating: number;
+  date?: string;
+  avatarUrl?: string;
+  isVerifiedGoogle?: boolean;
 }
 
-interface TestimonialsSectionProps {
-  initialTestimonials?: SanityTestimonial[] | null;
-}
+const DEFAULT_REVIEWS: GoogleReviewItem[] = [
+  {
+    author: "María Paz Sepúlveda",
+    role: "Paciente Verificado en Google Maps",
+    quote:
+      "Excelente atención kinesiológica. Llegué con una lesión lumbar severa y en pocas sesiones logré volver a entrenar sin dolor. La dedicación del equipo es increíble.",
+    rating: 5,
+    date: "Hace 2 semanas",
+  },
+  {
+    author: "Rodrigo Morales V.",
+    role: "Paciente Verificado en Google Maps",
+    quote:
+      "La infraestructura y los profesionales son de primer nivel. El seguimiento personalizado en cada ejercicio marca la diferencia.",
+    rating: 5,
+    date: "Hace 1 mes",
+  },
+  {
+    author: "Camila Fuentes T.",
+    role: "Paciente Verificado en Google Maps",
+    quote:
+      "Atención puntual, instalaciones impecables y profesionales altamente capacitados. Totalmente recomendado para deportistas y rehabilitación postoperatoria.",
+    rating: 5,
+    date: "Hace 3 meses",
+  },
+];
 
 export default function TestimonialsSection({
   config,
 }: {
-  config: LandingConfigData;
+  config: LandingConfigResponse;
 }) {
-  let reviews = defaultGoogleReviews;
+  let reviews = DEFAULT_REVIEWS;
   if (config.reviewsJson) {
     try {
       const parsed = JSON.parse(config.reviewsJson);
@@ -59,7 +80,6 @@ export default function TestimonialsSection({
       className="py-20 sm:py-28 bg-blue-950 border-b border-blue-900 text-white overflow-hidden w-full"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header con Google Badge Oficial */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
             {config.testimonialsTitle ||
@@ -102,17 +122,14 @@ export default function TestimonialsSection({
           </div>
         </div>
 
-        {/* Reseñas Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-lg md:max-w-none mx-auto">
           {reviews.map((rev, idx) => (
             <div
               key={`${rev.author}-${idx}`}
-              className="bg-white border border-slate-200 rounded-3xl p-7 hover:border-brand-primary/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+              className="bg-white border border-slate-200 rounded-3xl p-7 hover:border-brand-primary/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group text-slate-900"
             >
               <div>
-                {/* Header de la Tarjeta con Insignia de Google */}
                 <div className="flex items-center justify-between mb-5">
-                  {/* Calificación de Estrellas */}
                   <div className="flex gap-1 text-amber-400">
                     {[...Array(rev.rating || 5)].map((_, i) => (
                       <svg
@@ -126,13 +143,11 @@ export default function TestimonialsSection({
                   </div>
                 </div>
 
-                {/* Texto de la Reseña */}
                 <p className="text-sm text-slate-700 leading-relaxed font-medium mb-6">
                   &ldquo;{rev.quote}&rdquo;
                 </p>
               </div>
 
-              {/* Pie de Autor y Fecha */}
               <div className="flex items-center justify-between border-t border-slate-100 pt-5">
                 <div className="flex items-center gap-3">
                   <div
