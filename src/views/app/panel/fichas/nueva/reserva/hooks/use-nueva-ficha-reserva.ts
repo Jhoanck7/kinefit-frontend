@@ -7,9 +7,10 @@ import {
   useGetHistorialPorPaciente,
   useGetPacientePerfil,
   useGetPacientes,
+  useUpdateCitaEstadoMutation,
 } from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
 import { HistorialCitaResponse, PacienteResponse } from "@/models/responses";
-import { citaService } from "@/services";
 import { useNuevaFichaStore } from "@/stores";
 
 export const useNuevaFichaReserva = () => {
@@ -21,6 +22,8 @@ export const useNuevaFichaReserva = () => {
   const [cambiandoEstadoId, setCambiandoEstadoId] = useState<number | null>(
     null
   );
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const actualizarEstadoMutation = useUpdateCitaEstadoMutation();
 
   const busquedaTrim = busqueda.trim();
   const { data: resultados = [] } = useGetPacientes(
@@ -30,7 +33,7 @@ export const useNuevaFichaReserva = () => {
   );
 
   const pacienteIdNum = pacienteId ? Number(pacienteId) : undefined;
-  const { data: perfil, refetch: refetchPerfil } = useGetPacientePerfil(
+  const { data: perfil } = useGetPacientePerfil(
     pacienteIdNum ?? 0,
     Boolean(pacienteIdNum)
   );
@@ -79,12 +82,15 @@ export const useNuevaFichaReserva = () => {
 
   const handleMarcarComoAtendida = async (citaIdNum: number) => {
     setCambiandoEstadoId(citaIdNum);
+    setErrorMsg(null);
     try {
-      await citaService.updateEstado(citaIdNum, { estadoNuevo: "Atendida" });
-      await refetchPerfil();
+      await actualizarEstadoMutation.mutateAsync({
+        id: citaIdNum,
+        data: { estadoNuevo: "Atendida" },
+      });
       setReserva(pacienteId!, pacienteNombre!, String(citaIdNum));
-    } catch {
-      // Ignorar fallo individual
+    } catch (err: unknown) {
+      setErrorMsg(handleApiError(err).message);
     } finally {
       setCambiandoEstadoId(null);
     }
@@ -100,6 +106,7 @@ export const useNuevaFichaReserva = () => {
     reservas,
     cambiandoEstadoId,
     citaSeleccionada,
+    errorMsg,
 
     // Actions
     actions: {

@@ -1,3 +1,5 @@
+export type { TonoAlerta } from "./alerta";
+export { Alerta } from "./alerta";
 export { BottomActionBar } from "./bottom-action-bar";
 export {
   NumberField,

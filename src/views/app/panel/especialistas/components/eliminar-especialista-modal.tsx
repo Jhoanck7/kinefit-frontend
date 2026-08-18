@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { Modal } from "@/components/shared";
+import { Alerta, Modal } from "@/components/shared";
 import { Button } from "@/components/ui";
 import { EspecialistaResponse } from "@/models/responses";
 
@@ -18,7 +18,7 @@ export function EliminarEspecialistaModal({
   eliminando,
 }: EliminarEspecialistaModalProps) {
   return (
-    <Modal abierto={!!especialista} onCerrar={onCancelar} ancho="max-w-md">
+    <Modal abierto={!!especialista} onCerrar={onCancelar}>
       {especialista && (
         <div className="p-6 space-y-6 text-center">
           <div className="mx-auto w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-3xl font-bold shadow-inner">
@@ -67,15 +67,12 @@ export function EliminarEspecialistaModal({
             </div>
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-left">
-            <p className="text-xs text-amber-800 leading-normal">
-              <span className="font-bold">⚠️ Nota Importante:</span> Esta acción
-              eliminará su registro de la base de datos. Si el especialista
-              posee citas asociadas, te recomendamos cancelar el borrado y
-              simplemente{" "}
-              <span className="font-bold underline">Desactivarlo</span>.
-            </p>
-          </div>
+          <Alerta tono="advertencia" className="text-left">
+            <span className="font-bold">⚠️ Nota Importante:</span> Esta acción
+            eliminará su registro de la base de datos. Si el especialista posee
+            citas asociadas, te recomendamos cancelar el borrado y simplemente{" "}
+            <span className="font-bold underline">Desactivarlo</span>.
+          </Alerta>
 
           <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
             <Button

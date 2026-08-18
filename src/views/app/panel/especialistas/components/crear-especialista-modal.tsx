@@ -1,4 +1,4 @@
-import { ImageUploader, Modal, TextField } from "@/components/shared";
+import { Alerta, ImageUploader, Modal, TextField } from "@/components/shared";
 import { Button } from "@/components/ui";
 import { BackendService } from "@/types";
 
@@ -46,16 +46,16 @@ export function CrearEspecialistaModal({
   onSubmit,
 }: CrearEspecialistaModalProps) {
   return (
-    <Modal abierto={abierto} onCerrar={onCerrar} ancho="max-w-3xl">
+    <Modal abierto={abierto} onCerrar={onCerrar}>
       <div className="p-2 sm:p-4">
         <h2 className="text-xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-200">
           Agregar Integrante del Equipo
         </h2>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700 border border-red-200">
+          <Alerta tono="error" className="mb-4">
             {error}
-          </div>
+          </Alerta>
         )}
 
         <div className="pt-2 bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6">

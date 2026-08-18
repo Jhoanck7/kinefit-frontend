@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useCreateCitaManualMutation } from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
 import { formatearFechaExtensa } from "@/lib/formato";
-import { citaService } from "@/services";
 import { useNuevaReservaStore } from "@/stores";
 
 export const PASOS_NUEVA_RESERVA = [
@@ -35,8 +36,8 @@ export const useResumenReserva = () => {
   } = useNuevaReservaStore();
 
   const [confirmarDescarte, setConfirmarDescarte] = useState(false);
-  const [guardando, setGuardando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const crearCitaMutation = useCreateCitaManualMutation();
 
   const filasResumen = [
     {
@@ -80,7 +81,6 @@ export const useResumenReserva = () => {
       return;
     }
 
-    setGuardando(true);
     setErrorMsg(null);
 
     try {
@@ -89,7 +89,7 @@ export const useResumenReserva = () => {
         ? parseInt(especialistaId.replace(/\D/g, ""), 10) || 1
         : 1;
 
-      await citaService.createManual({
+      await crearCitaMutation.mutateAsync({
         pacienteId: numPacienteId,
         especialistaId: numEspecialistaId,
         servicioId,
@@ -100,14 +100,7 @@ export const useResumenReserva = () => {
 
       router.push("/panel/nueva-reserva/listo");
     } catch (err: unknown) {
-      console.error("Error al registrar la cita en Backend:", err);
-      const msg =
-        err instanceof Error
-          ? err.message
-          : "Ocurrió un error al guardar la cita.";
-      setErrorMsg(msg);
-    } finally {
-      setGuardando(false);
+      setErrorMsg(handleApiError(err).message);
     }
   };
 
@@ -125,7 +118,7 @@ export const useResumenReserva = () => {
     notaInterna,
     filasResumen,
     confirmarDescarte,
-    guardando,
+    guardando: crearCitaMutation.isPending,
     errorMsg,
 
     // Actions

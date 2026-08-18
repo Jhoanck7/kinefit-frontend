@@ -4,8 +4,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useGetPacientePerfil, useGetPacientes } from "@/hooks/api";
+import { useDebounce } from "@/hooks/common";
 import { PacienteResponse } from "@/models/responses";
 import { useNuevaReservaStore } from "@/stores";
+
+const MIN_CARACTERES_BUSQUEDA = 2;
 
 export const PASOS_NUEVA_RESERVA = [
   { etiqueta: "Servicio" },
@@ -28,13 +31,14 @@ export const usePacienteReserva = () => {
   } = useNuevaReservaStore();
 
   const [busqueda, setBusqueda] = useState("");
-  const busquedaTrim = busqueda.trim();
-  const { data: resultados = [] } = useGetPacientes(
-    busquedaTrim || undefined,
+  const busquedaDebounced = useDebounce(busqueda.trim(), 300);
+  const busquedaValida = busquedaDebounced.length >= MIN_CARACTERES_BUSQUEDA;
+  const { data: resultados = [], isFetching: buscando } = useGetPacientes(
+    busquedaValida ? busquedaDebounced : undefined,
     undefined,
-    Boolean(busquedaTrim)
+    busquedaValida
   );
-  const buscado = Boolean(busquedaTrim);
+  const buscado = busquedaValida;
 
   const [pacienteConfirmado, setPacienteConfirmado] =
     useState<PacienteResponse | null>(null);
@@ -85,6 +89,10 @@ export const usePacienteReserva = () => {
     busqueda,
     resultados,
     buscado,
+    buscando,
+    mostrarHintMinimo:
+      busqueda.trim().length > 0 &&
+      busqueda.trim().length < MIN_CARACTERES_BUSQUEDA,
     pacienteConfirmado,
 
     // Actions

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Alerta,
   BottomActionBar,
   CollapsibleSection,
   FileDropzone,
@@ -44,17 +45,20 @@ export default function NuevaFichaContenidoView() {
       </div>
 
       {errorMsg && (
-        <div className="sm:col-span-2 flex items-start justify-between border border-red-300 bg-red-50 p-4 text-xs font-semibold text-red-800 rounded-none">
+        <Alerta
+          tono="error"
+          className="sm:col-span-2 flex items-start justify-between"
+        >
           <span>{errorMsg}</span>
           <button
             type="button"
             onClick={actions.handleCerrarError}
             aria-label="Cerrar aviso de error"
-            className="text-red-700 hover:text-red-950 font-bold px-2"
+            className="text-white hover:text-white/70 font-bold px-2"
           >
             ✕
           </button>
-        </div>
+        </Alerta>
       )}
 
       <Card className="border border-border p-6">

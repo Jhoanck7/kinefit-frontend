@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useGetFormatos } from "@/hooks/api";
-import { CitaDetalleResponse } from "@/models/responses";
-import { citaService, fichaService } from "@/services";
+import { useGetCita, useGetFormatos } from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
+import { fichaService } from "@/services";
 import { useNuevaFichaStore } from "@/stores";
 
 export const useNuevaFichaContenido = () => {
@@ -23,16 +23,14 @@ export const useNuevaFichaContenido = () => {
     reiniciar,
   } = useNuevaFichaStore();
 
-  const [cita, setCita] = useState<CitaDetalleResponse | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const { data: formatosDisponibles = [] } = useGetFormatos();
-
-  useEffect(() => {
-    if (!citaId) return;
-    citaService.getById(Number(citaId)).then(res => setCita(res.data.data));
-  }, [citaId]);
+  const { data: cita } = useGetCita(
+    citaId ? Number(citaId) : 0,
+    Boolean(citaId)
+  );
 
   useEffect(() => {
     if (formatosDisponibles.length > 0 && !formatoId) {
@@ -97,11 +95,7 @@ export const useNuevaFichaContenido = () => {
       reiniciar();
       router.push("/panel/fichas");
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : "Ocurrió un error al guardar la ficha en el backend.";
-      setErrorMsg(msg);
+      setErrorMsg(handleApiError(err).message);
       if (typeof window !== "undefined") {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }

@@ -12,6 +12,12 @@ export {
 } from "./use-appointment-service";
 export { useGetAuditoriaCita } from "./use-auditoria-service";
 export { useAuthenticateWithGoogleMutation } from "./use-auth-service";
+export {
+  useCreateCitaManualMutation,
+  useGetCita,
+  useGetImpactoCancelacion,
+  useUpdateCitaEstadoMutation,
+} from "./use-cita-service";
 export { useGetEmpresas } from "./use-empresa-service";
 export {
   useCreateEspecialistaMutation,

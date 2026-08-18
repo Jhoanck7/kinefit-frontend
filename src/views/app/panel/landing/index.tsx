@@ -1,6 +1,6 @@
 "use client";
 
-import { ImageUploader, Modal, TextField } from "@/components/shared";
+import { Alerta, ImageUploader, Modal, TextField } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
 import {
   FieldDefinition,
@@ -161,7 +161,6 @@ export default function LandingView() {
           <Modal
             abierto={!!seccionActiva}
             onCerrar={() => actions.setSeccionActiva(null)}
-            ancho="max-w-4xl"
           >
             {seccionActiva && (
               <div className="p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
@@ -385,7 +384,8 @@ export default function LandingView() {
                               Sincronización con Google Places
                             </h3>
                             <p className="text-xs text-slate-500 mt-0.5">
-                              La API Key de Google se procesa de forma segura en el servidor.
+                              La API Key de Google se procesa de forma segura en
+                              el servidor.
                             </p>
                           </div>
                           <Button
@@ -425,7 +425,9 @@ export default function LandingView() {
                             </label>
                             <select
                               value={limiteResenas}
-                              onChange={e => actions.setLimiteResenas(Number(e.target.value))}
+                              onChange={e =>
+                                actions.setLimiteResenas(Number(e.target.value))
+                              }
                               className="w-full rounded-xl border border-brand-border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-panel-sidebar bg-white"
                             >
                               <option value={3}>3 reseñas</option>
@@ -531,9 +533,9 @@ export default function LandingView() {
                   )}
 
                   {errorMsg && (
-                    <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700 text-center">
+                    <Alerta tono="error" className="text-center">
                       {errorMsg}
-                    </div>
+                    </Alerta>
                   )}
 
                   <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-slate-200">
@@ -569,9 +571,9 @@ export default function LandingView() {
               vista pública de la Landing Page inmediatamente.
             </p>
             {errorMsg && (
-              <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700 text-center mb-6">
+              <Alerta tono="error" className="text-center mb-6">
                 {errorMsg}
-              </div>
+              </Alerta>
             )}
             <div className="flex justify-end gap-3 border-t border-slate-200 pt-6">
               <Button

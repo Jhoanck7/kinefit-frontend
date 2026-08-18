@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import {
   CreatePacienteManualRequest,
@@ -16,6 +21,7 @@ export const useGetPacientes = (
     queryFn: () =>
       pacienteService.getAll(busqueda, soloActivos).then(res => res.data.data),
     enabled,
+    placeholderData: keepPreviousData,
   });
 };
 

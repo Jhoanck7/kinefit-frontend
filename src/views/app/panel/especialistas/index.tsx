@@ -128,7 +128,6 @@ export default function EspecialistasView() {
       <Modal
         abierto={!!notificacion}
         onCerrar={actions.handleCerrarNotificacion}
-        ancho="max-w-md"
       >
         <div className="p-8 text-center">
           <h2 className="text-lg font-semibold text-panel-sidebar">

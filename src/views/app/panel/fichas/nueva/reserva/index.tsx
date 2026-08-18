@@ -22,6 +22,7 @@ export default function NuevaFichaReservaView() {
     reservas,
     cambiandoEstadoId,
     citaSeleccionada,
+    errorMsg,
     actions,
   } = useNuevaFichaReserva();
 
@@ -41,6 +42,12 @@ export default function NuevaFichaReservaView() {
         <p className="font-sans text-xs text-slate-500 mb-4">
           Busque al paciente y seleccione la reserva asociada.
         </p>
+
+        {errorMsg && (
+          <p className="mb-4 font-sans text-xs font-medium text-red-700">
+            {errorMsg}
+          </p>
+        )}
 
         <SearchInput
           placeholder="Buscar por nombre o RUT..."

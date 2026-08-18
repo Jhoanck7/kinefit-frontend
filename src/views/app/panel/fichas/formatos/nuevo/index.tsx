@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 
-import { Modal, SwitchField, TextField } from "@/components/shared";
+import { Alerta, Modal, SwitchField, TextField } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
 
 import { TIPOS_CAMPO, useConstructorFormato } from "./hooks";
@@ -45,11 +45,11 @@ function ConstructorFormatoContenido() {
       </div>
 
       {idEditado && fichasDelFormatoEditado > 0 && (
-        <div className="mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800 border border-amber-200">
+        <Alerta tono="advertencia" className="mb-4">
           Este formato tiene <strong>{fichasDelFormatoEditado} ficha(s)</strong>{" "}
           ya creadas. Los cambios no alterarán esas fichas históricas: conservan
           la estructura vigente al momento de su creación.
-        </div>
+        </Alerta>
       )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[65fr_35fr]">
@@ -64,11 +64,7 @@ function ConstructorFormatoContenido() {
             />
           </Card>
 
-          {errorSecciones && (
-            <p className="text-sm font-semibold text-red-600">
-              {errorSecciones}
-            </p>
-          )}
+          {errorSecciones && <Alerta tono="error">{errorSecciones}</Alerta>}
 
           {secciones.map((seccion, indiceSeccion) => (
             <div
@@ -142,7 +138,7 @@ function ConstructorFormatoContenido() {
                   type="button"
                   onClick={() => actions.setSeccionAEliminar(seccion.id)}
                   aria-label="Eliminar sección"
-                  className="ml-2 text-xs font-bold text-red-600 hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded px-2 py-1 bg-red-50 border border-red-200"
+                  className="ml-2 text-xs font-bold text-white bg-red-700 hover:bg-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded-none px-2 py-1 border-0"
                 >
                   Eliminar
                 </button>
@@ -421,7 +417,6 @@ function ConstructorFormatoContenido() {
       <Modal
         abierto={Boolean(seccionAEliminar)}
         onCerrar={() => actions.setSeccionAEliminar(null)}
-        ancho="max-w-sm"
       >
         <div className="p-6">
           <h3 className="text-lg font-bold text-panel-sidebar">

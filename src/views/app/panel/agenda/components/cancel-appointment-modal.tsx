@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-import { Modal } from "@/components/shared";
+import { Alerta, Modal } from "@/components/shared";
 import {
-  CitaDetalleResponse,
-  ImpactoCancelacionResponse,
-} from "@/models/responses";
-import { citaService } from "@/services";
+  useGetCita,
+  useGetImpactoCancelacion,
+  useUpdateCitaEstadoMutation,
+} from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
 
 /**
  * Modal de cancelación con estilo Frameless Satoshi 100%
@@ -24,55 +25,44 @@ export function CancelAppointmentModal({
   onVolver: () => void;
   onConfirmado: () => void;
 }) {
-  const [cita, setCita] = useState<CitaDetalleResponse | null>(null);
-  const [impacto, setImpacto] = useState<ImpactoCancelacionResponse | null>(
-    null
+  const idNum = citaId ? Number(citaId) : 0;
+  const consultasHabilitadas = abierto && Boolean(citaId);
+  const { data: cita } = useGetCita(idNum, consultasHabilitadas);
+  const { data: impacto } = useGetImpactoCancelacion(
+    idNum,
+    consultasHabilitadas
   );
   const [motivo, setMotivo] = useState("");
-  const [guardando, setGuardando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!citaId || !abierto) return;
-    const id = Number(citaId);
-    citaService.getById(id).then(res => setCita(res.data.data));
-    citaService
-      .getImpactoCancelacion(id)
-      .then(res => setImpacto(res.data.data));
-  }, [citaId, abierto]);
+  const actualizarEstadoMutation = useUpdateCitaEstadoMutation();
 
   useEffect(() => {
     if (!abierto) {
       setMotivo("");
       setErrorMsg(null);
-      setGuardando(false);
-      setCita(null);
-      setImpacto(null);
     }
   }, [abierto]);
 
   async function handleConfirmarCancelacion() {
     if (!cita || !motivo.trim()) return;
 
-    setGuardando(true);
     setErrorMsg(null);
 
     try {
-      await citaService.updateEstado(cita.id, {
-        estadoNuevo: "Cancelada",
-        motivo: motivo.trim(),
+      await actualizarEstadoMutation.mutateAsync({
+        id: cita.id,
+        data: { estadoNuevo: "Cancelada", motivo: motivo.trim() },
       });
       onConfirmado();
     } catch (err: unknown) {
-      console.error("Error al cancelar la cita en Backend:", err);
-      setErrorMsg("No se pudo cancelar la cita. Inténtalo nuevamente.");
-    } finally {
-      setGuardando(false);
+      setErrorMsg(handleApiError(err).message);
     }
   }
 
+  const guardando = actualizarEstadoMutation.isPending;
+
   return (
-    <Modal abierto={abierto} onCerrar={onVolver} ancho="max-w-md">
+    <Modal abierto={abierto} onCerrar={onVolver}>
       <div className="p-6 bg-white text-slate-900 font-sans rounded-none shadow-none">
         <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
           CANCELAR RESERVA{" "}
@@ -87,23 +77,23 @@ export function CancelAppointmentModal({
         </p>
 
         {errorMsg && (
-          <div className="mt-3 border border-red-300 bg-red-50 p-3 font-sans text-xs font-semibold text-red-800 rounded-none">
+          <Alerta tono="error" className="mt-3">
             {errorMsg}
-          </div>
+          </Alerta>
         )}
 
         {impacto?.tienePagoAsociado && (
-          <div className="mt-4 border border-amber-300 bg-amber-50 p-3 font-sans text-xs text-amber-900 rounded-none">
+          <Alerta tono="advertencia" className="mt-4">
             Esta cita tiene un anticipo de{" "}
             <strong>${impacto.montoPagado.toLocaleString("es-CL")} CLP</strong>{" "}
             pagado vía Webpay. Se debe gestionar la devolución.
-          </div>
+          </Alerta>
         )}
 
         {impacto?.tieneFichaAsociada && (
-          <div className="mt-4 border border-amber-300 bg-amber-50 p-3 font-sans text-xs text-amber-900 rounded-none">
+          <Alerta tono="advertencia" className="mt-4">
             Esta cita ya tiene una ficha clínica asociada.
-          </div>
+          </Alerta>
         )}
 
         <div className="mt-4 space-y-1">
@@ -136,7 +126,7 @@ export function CancelAppointmentModal({
             type="button"
             disabled={!motivo.trim() || guardando}
             onClick={handleConfirmarCancelacion}
-            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-red-300 bg-red-50 text-red-700 hover:bg-red-100 rounded-none shadow-none disabled:opacity-50"
+            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-red-700 text-white hover:bg-red-800 border-0 rounded-none shadow-none disabled:opacity-50"
           >
             {guardando ? "CANCELANDO..." : "CONFIRMAR CANCELACIÓN"}
           </button>

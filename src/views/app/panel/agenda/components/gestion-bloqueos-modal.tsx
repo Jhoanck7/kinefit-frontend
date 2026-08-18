@@ -87,10 +87,10 @@ export function GestionBloqueosModal({
   }
 
   return (
-    <Modal abierto={abierto} onCerrar={onClose} ancho="max-w-3xl">
+    <Modal abierto={abierto} onCerrar={onClose}>
       <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
         {/* Encabezado */}
-        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
           <div>
             <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
               Gestión de Bloqueos de Agenda
@@ -302,10 +302,10 @@ export function GestionBloqueosModal({
                       <button
                         type="button"
                         onClick={() => handleToggleActivo(b.id)}
-                        className={`font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border transition-colors rounded-none shadow-none ${
+                        className={`font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border-0 transition-colors rounded-none shadow-none text-white ${
                           esActivo
-                            ? "border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
-                            : "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
+                            ? "bg-red-700 hover:bg-red-800"
+                            : "bg-emerald-700 hover:bg-emerald-800"
                         }`}
                       >
                         {esActivo ? "Desactivar" : "Activar"}

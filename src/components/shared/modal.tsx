@@ -24,7 +24,7 @@ export function Modal({
   abierto,
   onCerrar,
   children,
-  ancho = "max-w-3xl",
+  ancho = "max-w-6xl",
   className,
 }: ModalProps) {
   return (
@@ -32,7 +32,7 @@ export function Modal({
       <DialogContent
         showCloseButton={false}
         className={cn(
-          "w-full p-0 rounded-none border-slate-200 shadow-none overflow-y-auto max-h-[90vh]",
+          "w-full p-0 rounded-none border-slate-200 shadow-none overflow-y-auto max-h-[92vh]",
           ancho,
           className
         )}
