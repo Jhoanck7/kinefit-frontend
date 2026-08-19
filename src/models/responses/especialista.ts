@@ -12,6 +12,7 @@ export interface EspecialistaResponse {
   descripcion?: string;
   activo: boolean;
   fotoUrl?: string;
+  fotoPublicId?: string;
   fotoAlt?: string;
   biografia?: string;
   fechasDisponibles?: string[];

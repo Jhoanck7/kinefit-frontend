@@ -1,5 +1,8 @@
+import { CLINIC_INFO } from "@/lib/utils";
 import { especialistaService, landingConfigService } from "@/services";
 import { HomeView } from "@/views";
+
+export const revalidate = 60;
 
 export default async function Home() {
   const landingRes = await landingConfigService.getConfig().catch(() => null);
@@ -9,20 +12,20 @@ export default async function Home() {
 
   const config = landingRes?.data?.data ?? {
     heroTagline: "",
-    heroBrandName: "KineFit",
-    heroDescription: "Centro de Kinesiología y Fisioterapia Especializada.",
+    heroBrandName: CLINIC_INFO.name,
+    heroDescription: CLINIC_INFO.tagline,
     heroCtaText: "Reservar Cita",
-    clinicName: "KineFit Clínica",
-    clinicEmail: "contacto@kinefit.cl",
-    clinicPhone: "+56 9 1234 5678",
-    clinicPhoneRaw: "+56912345678",
-    clinicAddress: "Av. Providencia 1234, Oficina 501, Santiago",
-    hoursWeekday: "Lunes a Viernes: 08:00 - 20:00",
-    hoursSaturday: "Sábados: 09:00 - 14:00",
-    socialInstagram: "https://instagram.com/kinefit",
-    socialFacebook: "https://facebook.com/kinefit",
-    socialWhatsApp: "https://wa.me/56912345678",
-    socialTikTok: "https://tiktok.com/@kinefit",
+    clinicName: CLINIC_INFO.name,
+    clinicEmail: CLINIC_INFO.email,
+    clinicPhone: CLINIC_INFO.phone,
+    clinicPhoneRaw: CLINIC_INFO.phoneRaw,
+    clinicAddress: CLINIC_INFO.address,
+    hoursWeekday: CLINIC_INFO.hours.weekday,
+    hoursSaturday: CLINIC_INFO.hours.saturday,
+    socialInstagram: CLINIC_INFO.socials.instagram,
+    socialFacebook: CLINIC_INFO.socials.facebook,
+    socialWhatsApp: CLINIC_INFO.socials.whatsapp,
+    socialTikTok: CLINIC_INFO.socials.tiktok,
   };
 
   const specialists = especialistasRes?.data?.data ?? [];

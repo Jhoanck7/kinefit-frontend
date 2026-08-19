@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import { TextField } from "@/components/shared";
+import { Alerta, TextField } from "@/components/shared";
 import { Button } from "@/components/ui";
 
 import { useAcceso } from "./hooks";
@@ -28,9 +28,9 @@ export default function AccesoView() {
         </div>
 
         {errorMsg && (
-          <div className="mb-4 border border-red-300 bg-red-50 p-3 text-xs font-semibold text-red-800 rounded-none font-sans">
+          <Alerta tono="error" className="mb-4">
             {errorMsg}
-          </div>
+          </Alerta>
         )}
 
         <form onSubmit={actions.alEnviar} className="space-y-4 font-sans">

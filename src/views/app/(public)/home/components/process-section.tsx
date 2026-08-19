@@ -53,7 +53,7 @@ export default function ProcessSection({
   return (
     <section
       id="process"
-      className="py-24 bg-white border-b border-slate-200/60 text-slate-900 relative overflow-hidden"
+      className="py-24 bg-gradient-to-b from-slate-50 via-blue-50/10 to-slate-50 border-b border-slate-200/60 text-slate-900 relative overflow-hidden"
     >
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-blue-500/5 rounded-full filter blur-[150px] pointer-events-none -z-20" />
 
@@ -89,7 +89,7 @@ export default function ProcessSection({
         </div>
 
         <div className="relative">
-          <div className="absolute top-0 left-16 right-16 h-36 pointer-events-none hidden lg:block -z-10">
+          <div className="absolute top-0 left-16 right-16 h-36 pointer-events-none hidden lg:block z-0">
             <svg
               width="100%"
               height="100%"
@@ -124,7 +124,7 @@ export default function ProcessSection({
 
           <div className="absolute left-[35px] top-6 bottom-6 w-3 bg-brand-primary rounded-full hidden md:block lg:hidden -z-10 opacity-30" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, idx) => (
               <div
                 key={idx}

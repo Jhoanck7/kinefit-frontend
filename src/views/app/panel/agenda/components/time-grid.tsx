@@ -29,28 +29,14 @@ function construirFilas(
     const slot = rejilla[i];
     const bloque = porHora.get(slot.inicio);
 
-    if (!bloque || bloque.estado === "Disponible") {
-      items.push({
-        tipo: "vacio",
-        inicio: slot.inicio,
-        termino: slot.termino,
-        bloques: 1,
-      });
-      i += 1;
-      continue;
-    }
-
-    if (bloque.estado === "Ocupado" && bloque.cita) {
-      const citaId = bloque.cita.id;
+    if (bloque?.cita) {
+      const grupoId = bloque.cita.grupoCitaId ?? bloque.cita.id;
       let k = 0;
       while (i + k < rejilla.length) {
         const siguiente = porHora.get(rejilla[i + k].inicio);
-        if (
-          !siguiente ||
-          siguiente.estado !== "Ocupado" ||
-          siguiente.cita?.id !== citaId
-        )
-          break;
+        const siguienteGrupoId =
+          siguiente?.cita?.grupoCitaId ?? siguiente?.cita?.id;
+        if (!siguiente || siguienteGrupoId !== grupoId) break;
         k += 1;
       }
       const numBloques = Math.max(1, k);
@@ -62,6 +48,17 @@ function construirFilas(
         cita: bloque.cita,
       });
       i += numBloques;
+      continue;
+    }
+
+    if (!bloque || bloque.estado === "Disponible") {
+      items.push({
+        tipo: "vacio",
+        inicio: slot.inicio,
+        termino: slot.termino,
+        bloques: 1,
+      });
+      i += 1;
       continue;
     }
 
@@ -160,6 +157,7 @@ export function TimeGrid({
                 cita={item.cita}
                 horaInicio={item.inicio}
                 horaTermino={item.termino}
+                bloques={item.bloques}
                 onClick={() => onSeleccionarCita(String(item.cita.id))}
               />
             )}

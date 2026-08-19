@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { Modal } from "@/components/shared";
+import { Alerta, Modal } from "@/components/shared";
+import { useGetCita, useUpdateCitaEstadoMutation } from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
 import { definicionEstado, IdAccionCita } from "@/lib/estados";
 import {
   formatearFechaExtensa,
@@ -10,7 +12,6 @@ import {
   formatearRangoHorario,
 } from "@/lib/formato";
 import { CitaDetalleResponse, CodigoEstadoCita } from "@/models/responses";
-import { citaService } from "@/services";
 
 const MAPA_ESTADO_NUEVO: Record<string, string> = {
   confirmar: "Confirmada",
@@ -48,24 +49,12 @@ export function AppointmentDetailModal({
   onSolicitarCancelacion: () => void;
   onEstadoCambiar?: () => void;
 }) {
-  const [cita, setCita] = useState<CitaDetalleResponse | null>(null);
-  const [guardando, setGuardando] = useState(false);
+  const { data: cita } = useGetCita(
+    citaId ? Number(citaId) : 0,
+    Boolean(citaId)
+  );
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!citaId) {
-      setCita(null);
-      setErrorMsg(null);
-      return;
-    }
-    let cancelado = false;
-    citaService.getById(Number(citaId)).then(res => {
-      if (!cancelado) setCita(res.data.data);
-    });
-    return () => {
-      cancelado = true;
-    };
-  }, [citaId]);
+  const actualizarEstadoMutation = useUpdateCitaEstadoMutation();
 
   function alCerrar() {
     setErrorMsg(null);
@@ -81,28 +70,27 @@ export function AppointmentDetailModal({
     const estadoNuevo = MAPA_ESTADO_NUEVO[idAccion];
     if (!estadoNuevo || !cita) return;
 
-    setGuardando(true);
     setErrorMsg(null);
 
     try {
-      await citaService.updateEstado(cita.id, {
-        estadoNuevo,
-        confirmadoPor: estadoNuevo === "Confirmada" ? "Profesional" : undefined,
+      await actualizarEstadoMutation.mutateAsync({
+        id: cita.id,
+        data: {
+          estadoNuevo,
+          confirmadoPor:
+            estadoNuevo === "Confirmada" ? "Profesional" : undefined,
+        },
       });
-
-      const actualizada = await citaService.getById(cita.id);
-      setCita(actualizada.data.data);
       onEstadoCambiar?.();
     } catch (err: unknown) {
-      console.error("Error al actualizar el estado de la cita:", err);
-      setErrorMsg("No se pudo cambiar el estado de la cita en el servidor.");
-    } finally {
-      setGuardando(false);
+      setErrorMsg(handleApiError(err).message);
     }
   }
 
+  const guardando = actualizarEstadoMutation.isPending;
+
   return (
-    <Modal abierto={Boolean(citaId)} onCerrar={alCerrar} ancho="max-w-3xl">
+    <Modal abierto={Boolean(citaId)} onCerrar={alCerrar}>
       {!cita ? (
         <div className="p-8 text-center font-sans text-xs text-slate-500">
           Cargando reserva…
@@ -140,7 +128,7 @@ function DetalleCita({
   return (
     <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
       {/* Encabezado del Modal */}
-      <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
         <div>
           <div className="flex items-center gap-2">
             <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
@@ -171,9 +159,9 @@ function DetalleCita({
       </div>
 
       {errorMsg && (
-        <div className="mx-6 mt-4 border border-red-300 bg-red-50 p-3 font-sans text-xs font-medium text-red-800 rounded-none">
+        <Alerta tono="error" className="mx-6 mt-4">
           {errorMsg}
-        </div>
+        </Alerta>
       )}
 
       {/* Cuerpo en Layout de 2 Columnas (Principal + Lateral Interno Paciente) */}
@@ -330,18 +318,12 @@ function DetalleCita({
         ) : (
           <div className="flex flex-wrap gap-2 justify-end">
             {definicion.acciones.map(accion => {
-              const esPrimario = accion.estilo === "primario";
-              const esPeligro = accion.estilo === "peligro";
+              const esDestacado =
+                accion.estilo === "primario" || accion.estilo === "peligro";
 
-              let estiloBtn =
-                "border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 shadow-none";
-              if (esPrimario) {
-                estiloBtn =
-                  "bg-[#003366] text-white hover:bg-[#002244] border-0 font-bold shadow-none";
-              } else if (esPeligro) {
-                estiloBtn =
-                  "border border-red-300 bg-red-50 text-red-700 hover:bg-red-100 shadow-none";
-              }
+              const estiloBtn = esDestacado
+                ? "bg-[#003366] text-white hover:bg-[#002244] border-0 font-bold shadow-none"
+                : "border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 shadow-none";
 
               return (
                 <button

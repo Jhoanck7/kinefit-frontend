@@ -10,6 +10,8 @@ import {
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
 
+import { Alerta } from "./alerta";
+
 interface ImageUploaderProps {
   etiqueta?: string;
   value?: string;
@@ -102,7 +104,7 @@ export function ImageUploader({
                 type="button"
                 onClick={handleEliminar}
                 disabled={subiendo}
-                className="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors"
+                className="px-3 py-1.5 text-xs font-bold text-blue-900 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors"
               >
                 Eliminar
               </button>
@@ -150,11 +152,7 @@ export function ImageUploader({
         className="hidden"
       />
 
-      {errorMsg && (
-        <p className="text-xs font-semibold text-red-600 bg-red-50 p-2 rounded-lg border border-red-200">
-          {errorMsg}
-        </p>
-      )}
+      {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
     </div>
   );
 }

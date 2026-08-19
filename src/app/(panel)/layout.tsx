@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 
+import { Toaster } from "@/components/ui";
 import { ReactQueryProvider, RelojPanelProvider } from "@/providers";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -26,7 +27,16 @@ export default function PanelRootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${jetbrainsMono.variable} h-full antialiased`}>
+    <html
+      lang="es"
+      className={`${jetbrainsMono.variable} h-full antialiased`}
+      style={
+        {
+          "--font-sans":
+            '"Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        } as React.CSSProperties
+      }
+    >
       <head>
         <link
           rel="stylesheet"
@@ -39,6 +49,7 @@ export default function PanelRootLayout({
             <RelojPanelProvider>{children}</RelojPanelProvider>
           </ReactQueryProvider>
         </SessionProvider>
+        <Toaster />
       </body>
     </html>
   );

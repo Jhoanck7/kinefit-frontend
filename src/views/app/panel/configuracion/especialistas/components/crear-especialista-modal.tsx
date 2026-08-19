@@ -1,13 +1,19 @@
-import { ImageUploader, Modal, TextField } from "@/components/shared";
+import {
+  Alerta,
+  ImageUploader,
+  Modal,
+  TextAreaField,
+  TextField,
+} from "@/components/shared";
 import { Button } from "@/components/ui";
-import { BackendService } from "@/types";
+import { ServicioResponse } from "@/models/responses";
 
 import { ServiciosSelector } from "./servicios-selector";
 
 interface CrearEspecialistaModalProps {
   abierto: boolean;
   onCerrar: () => void;
-  servicios: BackendService[];
+  servicios: ServicioResponse[];
   nombre: string;
   cargo: string;
   email: string;
@@ -46,19 +52,19 @@ export function CrearEspecialistaModal({
   onSubmit,
 }: CrearEspecialistaModalProps) {
   return (
-    <Modal abierto={abierto} onCerrar={onCerrar} ancho="max-w-3xl">
+    <Modal abierto={abierto} onCerrar={onCerrar}>
       <div className="p-2 sm:p-4">
         <h2 className="text-xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-200">
           Agregar Integrante del Equipo
         </h2>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700 border border-red-200">
+          <Alerta tono="error" className="mb-4">
             {error}
-          </div>
+          </Alerta>
         )}
 
-        <div className="pt-2 bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6">
+        <div className="pt-2 bg-slate-50 p-4 rounded-none border border-slate-200 mb-6">
           <ImageUploader
             etiqueta="Foto de Perfil"
             value={fotoUrl}
@@ -84,7 +90,7 @@ export function CrearEspecialistaModal({
               required
             />
             <div className="md:col-span-2">
-              <label className="mb-1 block text-xs font-medium text-panel-sidebar">
+              <label className="mb-1 block text-xs font-medium text-slate-900">
                 Servicios que presta *
               </label>
               <ServiciosSelector
@@ -100,15 +106,12 @@ export function CrearEspecialistaModal({
               onChange={e => onEmailChange(e.target.value)}
             />
             <div className="md:col-span-2">
-              <label className="mb-1 block text-xs font-medium text-panel-sidebar">
-                Experiencia / Biografía / Resumen
-              </label>
-              <textarea
+              <TextAreaField
+                etiqueta="Experiencia / Biografía / Resumen"
                 value={descripcion}
                 onChange={e => onDescripcionChange(e.target.value)}
                 rows={4}
                 placeholder="Resumen del perfil o biografía..."
-                className="w-full rounded-xl border border-brand-border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
               />
             </div>
           </div>

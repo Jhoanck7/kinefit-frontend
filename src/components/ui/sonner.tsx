@@ -7,15 +7,13 @@ import {
   OctagonXIcon,
   TriangleAlertIcon,
 } from "lucide-react";
-import { useTheme } from "next-themes";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
+// Paleta sólida de components/shared/alerta.tsx; sin next-themes, el panel no tiene modo oscuro.
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
-
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme="light"
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,
@@ -26,15 +24,27 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       style={
         {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
+          "--normal-bg": "#0f172a",
+          "--normal-text": "#ffffff",
+          "--normal-border": "transparent",
+          "--success-bg": "#047857",
+          "--success-text": "#ffffff",
+          "--success-border": "transparent",
+          "--error-bg": "#b91c1c",
+          "--error-text": "#ffffff",
+          "--error-border": "transparent",
+          "--warning-bg": "#d97706",
+          "--warning-text": "#ffffff",
+          "--warning-border": "transparent",
+          "--info-bg": "#1e40af",
+          "--info-text": "#ffffff",
+          "--info-border": "transparent",
+          "--border-radius": "0px",
         } as React.CSSProperties
       }
       toastOptions={{
         classNames: {
-          toast: "cn-toast",
+          toast: "cn-toast font-sans text-xs font-semibold shadow-none",
         },
       }}
       {...props}

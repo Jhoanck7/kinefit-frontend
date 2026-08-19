@@ -23,6 +23,7 @@ export type {
   ServicioCitaResponse,
   TransaccionDetalleResponse,
 } from "./cita";
+export type { FranjaDisponibleResponse } from "./disponibilidad";
 export type { EmpresaResponse } from "./empresa";
 export type {
   EspecialistaAdminResponse,

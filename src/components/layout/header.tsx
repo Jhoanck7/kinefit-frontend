@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 function iniciales(nombre: string): string {
   return nombre
@@ -23,9 +23,9 @@ const TITULOS_POR_RUTA: { prefijo: string; titulo: string }[] = [
     titulo: "Planilla de Ventas y Registro de Cobros",
   },
   { prefijo: "/panel/reportes", titulo: "Reportes y Métricas" },
+  { prefijo: "/panel/configuracion", titulo: "Configuración" },
   { prefijo: "/panel/agenda/bloqueos", titulo: "Bloqueos de agenda" },
   { prefijo: "/panel/agenda", titulo: "Agenda" },
-  { prefijo: "/panel/horarios", titulo: "Horarios de atención" },
 ];
 
 function tituloDeLaRuta(pathname: string): string {
@@ -47,10 +47,6 @@ export function Header() {
   const pathname = usePathname();
   const titulo = tituloDeLaRuta(pathname);
 
-  function handleCerrarSesion() {
-    signOut({ callbackUrl: "/panel/acceso" });
-  }
-
   return (
     <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-8 font-sans shadow-none">
       <h1 className="text-xs font-bold uppercase tracking-widest text-slate-900 font-sans">
@@ -65,13 +61,6 @@ export function Header() {
             {iniciales(nombre)}
           </span>
         </div>
-        <button
-          onClick={handleCerrarSesion}
-          className="text-xs font-bold uppercase tracking-wider text-slate-600 border border-slate-200 bg-white px-3 py-1.5 rounded-none shadow-none font-sans"
-          title="Cerrar sesión de personal"
-        >
-          Cerrar sesión
-        </button>
       </div>
     </header>
   );

@@ -8,7 +8,6 @@ import { signOut } from "next-auth/react";
 import {
   IconoAgenda,
   IconoCerrarSesion,
-  IconoEspecialistas,
   IconoFichas,
   IconoLanding,
   IconoNuevaReserva,
@@ -21,7 +20,7 @@ const ITEMS_NAVEGACION = [
   {
     href: "/panel/agenda",
     etiqueta: "Agenda",
-    prefijos: ["/panel/agenda", "/panel/horarios"],
+    prefijos: ["/panel/agenda"],
     Icono: IconoAgenda,
   },
   {
@@ -43,12 +42,6 @@ const ITEMS_NAVEGACION = [
     Icono: IconoFichas,
   },
   {
-    href: "/panel/especialistas",
-    etiqueta: "Especialistas",
-    prefijos: ["/panel/especialistas"],
-    Icono: IconoEspecialistas,
-  },
-  {
     href: "/panel/ventas",
     etiqueta: "Ventas",
     prefijos: ["/panel/ventas"],
@@ -61,9 +54,14 @@ const ITEMS_NAVEGACION = [
     Icono: IconoReportes,
   },
   {
-    href: "/panel/landing",
-    etiqueta: "Configuración Landing",
-    prefijos: ["/panel/landing"],
+    href: "/panel/configuracion",
+    etiqueta: "Configuración",
+    prefijos: [
+      "/panel/configuracion",
+      "/panel/especialistas",
+      "/panel/landing",
+      "/panel/horarios",
+    ],
     Icono: IconoLanding,
   },
 ];

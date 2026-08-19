@@ -9,7 +9,11 @@ import { useBookingStore } from "@/stores";
 
 import BookingCard from "./booking-card";
 
-export default function HeroSection({ config }: { config: LandingConfigResponse }) {
+export default function HeroSection({
+  config,
+}: {
+  config: LandingConfigResponse;
+}) {
   const currentStep = useBookingStore(state => state.currentStep);
   const [currentBg, setCurrentBg] = useState(0);
 
@@ -81,7 +85,7 @@ export default function HeroSection({ config }: { config: LandingConfigResponse 
             <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
               <a
                 href="#agendamiento"
-                className="w-full sm:w-auto bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-xl px-8 py-4 border-2 border-brand-primary text-center uppercase tracking-wider text-sm cursor-pointer transition-all shadow-md hover:shadow-lg active:scale-95"
+                className="w-full sm:w-auto bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-xl px-8 py-4 shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 text-center uppercase tracking-wider text-sm cursor-pointer"
               >
                 {config.heroCtaText}
               </a>
@@ -90,7 +94,7 @@ export default function HeroSection({ config }: { config: LandingConfigResponse 
 
           {/* Lado Derecho - Módulo de Agendamiento Flotando Sobre la Imagen Cristalina */}
           <div id="agendamiento" className="lg:col-span-6 relative w-full z-30">
-            <div className="rounded-2xl border-2 border-white/80 bg-white/75 backdrop-blur-md p-6 sm:p-8 flex flex-col sm:flex-row gap-6 sm:gap-8 items-stretch shadow-2xl text-slate-900">
+            <div className="rounded-3xl border border-slate-200/80 bg-white/90 backdrop-blur-md p-6 sm:p-8 flex flex-col sm:flex-row gap-6 sm:gap-8 items-stretch shadow-2xl shadow-slate-200/50 text-slate-900">
               {/* Stepper lateral plano */}
               <div className="flex sm:flex-col justify-between sm:justify-center gap-2 sm:gap-6 border-b sm:border-b-0 sm:border-r border-slate-200 pb-4 sm:pb-0 sm:pr-6 shrink-0">
                 {[
@@ -105,22 +109,22 @@ export default function HeroSection({ config }: { config: LandingConfigResponse 
                   return (
                     <div key={s.step} className="flex items-center gap-3">
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                           isCompleted
-                            ? "bg-emerald-600 text-white border-2 border-emerald-600"
+                            ? "bg-emerald-500 text-white shadow-xs"
                             : isActive
-                              ? "bg-brand-primary text-white border-2 border-brand-primary"
-                              : "bg-slate-100 text-slate-500 border border-slate-300"
+                              ? "bg-brand-primary text-white ring-4 ring-brand-primary/20 shadow-md"
+                              : "bg-slate-100 text-slate-400 border border-slate-200"
                         }`}
                       >
                         {isCompleted ? "✓" : s.step}
                       </div>
                       <span
-                        className={`text-xs font-bold hidden sm:inline uppercase tracking-wider ${
+                        className={`text-xs font-semibold hidden sm:inline transition-colors ${
                           isActive
                             ? "text-slate-900"
                             : isCompleted
-                              ? "text-emerald-700"
+                              ? "text-emerald-600"
                               : "text-slate-400"
                         }`}
                       >

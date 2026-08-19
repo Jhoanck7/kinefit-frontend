@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { useCreatePacienteMutation, useGetEmpresas } from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
 import { pacienteService } from "@/services";
 import { useNuevaReservaStore } from "@/stores";
 
@@ -82,7 +83,7 @@ export const useRegistrarPaciente = () => {
 
       if (retorno) {
         setPacienteReserva(
-          String(creado.id),
+          creado.id,
           `${creado.nombre} ${creado.apellido}`.trim()
         );
         router.push(retorno);
@@ -90,12 +91,7 @@ export const useRegistrarPaciente = () => {
         router.push("/panel/pacientes");
       }
     } catch (err: unknown) {
-      console.error("Error al registrar paciente en Backend:", err);
-      const msg =
-        err instanceof Error
-          ? err.message
-          : "No se pudo registrar el paciente en el backend.";
-      setErrorMsg(msg);
+      setErrorMsg(handleApiError(err).message);
     }
   };
 

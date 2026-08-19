@@ -3,9 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useGetFormatos } from "@/hooks/api";
-import { CitaDetalleResponse } from "@/models/responses";
-import { citaService, fichaService } from "@/services";
+import {
+  useCreateFichaMutation,
+  useGetCita,
+  useGetFormatos,
+  useSubirAdjuntoMutation,
+} from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
 import { useNuevaFichaStore } from "@/stores";
 
 export const useNuevaFichaContenido = () => {
@@ -23,16 +27,15 @@ export const useNuevaFichaContenido = () => {
     reiniciar,
   } = useNuevaFichaStore();
 
-  const [cita, setCita] = useState<CitaDetalleResponse | null>(null);
-  const [guardando, setGuardando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const crearFichaMutation = useCreateFichaMutation();
+  const subirAdjuntoMutation = useSubirAdjuntoMutation();
 
   const { data: formatosDisponibles = [] } = useGetFormatos();
-
-  useEffect(() => {
-    if (!citaId) return;
-    citaService.getById(Number(citaId)).then(res => setCita(res.data.data));
-  }, [citaId]);
+  const { data: cita } = useGetCita(
+    citaId ? Number(citaId) : 0,
+    Boolean(citaId)
+  );
 
   useEffect(() => {
     if (formatosDisponibles.length > 0 && !formatoId) {
@@ -69,17 +72,15 @@ export const useNuevaFichaContenido = () => {
   const handleGuardar = async () => {
     if (!citaId || !formatoId) return;
 
-    setGuardando(true);
     setErrorMsg(null);
 
     try {
-      const res = await fichaService.create({
+      const creada = await crearFichaMutation.mutateAsync({
         citaId: Number(citaId),
         tipo:
           formatoId === "fmt-masoterapia" ? "Recomendacion" : "FichaClinica",
         contenido: (contenido as Record<string, string>) || {},
       });
-      const creada = res.data.data;
 
       if (adjuntos && adjuntos.length > 0) {
         for (const nombreArch of adjuntos) {
@@ -87,7 +88,10 @@ export const useNuevaFichaContenido = () => {
             const dummyFile = new File(["contenido"], nombreArch, {
               type: "text/plain",
             });
-            await fichaService.subirAdjunto(creada.id, dummyFile);
+            await subirAdjuntoMutation.mutateAsync({
+              fichaId: creada.id,
+              archivo: dummyFile,
+            });
           } catch {
             // Ignorar fallo individual
           }
@@ -97,16 +101,10 @@ export const useNuevaFichaContenido = () => {
       reiniciar();
       router.push("/panel/fichas");
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : "Ocurrió un error al guardar la ficha en el backend.";
-      setErrorMsg(msg);
+      setErrorMsg(handleApiError(err).message);
       if (typeof window !== "undefined") {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
-    } finally {
-      setGuardando(false);
     }
   };
 
@@ -120,7 +118,7 @@ export const useNuevaFichaContenido = () => {
     cita,
     formato,
     opcionesFormato,
-    guardando,
+    guardando: crearFichaMutation.isPending || subirAdjuntoMutation.isPending,
     errorMsg,
     nombreFormato,
 

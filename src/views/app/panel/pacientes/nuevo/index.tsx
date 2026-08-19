@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 
-import { SelectField, TextField } from "@/components/shared";
+import { Alerta, SelectField, TextField } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
 
 import { useRegistrarPaciente } from "./hooks";
@@ -30,9 +30,9 @@ function RegistrarPacienteContent() {
         </h2>
 
         {errorMsg && (
-          <div className="mb-4 rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700 border border-red-200">
+          <Alerta tono="error" className="mb-4">
             {errorMsg}
-          </div>
+          </Alerta>
         )}
 
         <form onSubmit={actions.handleEnviar} className="space-y-4">
@@ -61,7 +61,7 @@ function RegistrarPacienteContent() {
             onChange={e => actions.handleCambiarRut(e.target.value)}
           />
           {pacienteExistente && (
-            <div className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+            <Alerta tono="advertencia">
               Ya existe un paciente registrado con este RUT:{" "}
               <strong>{pacienteExistente.nombre}</strong>.{" "}
               <button
@@ -72,7 +72,7 @@ function RegistrarPacienteContent() {
                 Usar este paciente
               </button>{" "}
               en vez de registrar uno nuevo.
-            </div>
+            </Alerta>
           )}
           <TextField
             etiqueta="Correo electrónico"

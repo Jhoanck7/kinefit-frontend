@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 
-import { Modal } from "@/components/shared";
-import { useCreateVentaMutation, useGetPacientes } from "@/hooks/api";
+import { Alerta, Modal } from "@/components/shared";
+import {
+  useCreateVentaMutation,
+  useGetPacientes,
+  useGetServicios,
+} from "@/hooks/api";
+import { useDebounce } from "@/hooks/common";
 import { CreateVentaRequest } from "@/models/requests";
 import { PacienteResponse, TerminalPagoResponse } from "@/models/responses";
 
@@ -25,12 +30,15 @@ export function NuevaVentaModal({
   const [busquedaPaciente, setBusquedaPaciente] = useState("");
   const [pacienteSeleccionado, setPacienteSeleccionado] =
     useState<PacienteResponse | null>(null);
-  const busquedaTrim = busquedaPaciente.trim();
-  const { data: resultados = [] } = useGetPacientes(
-    busquedaTrim.length >= 2 ? busquedaTrim : undefined,
-    undefined,
-    busquedaTrim.length >= 2 && !pacienteSeleccionado
-  );
+  const busquedaDebounced = useDebounce(busquedaPaciente.trim(), 300);
+  const busquedaValida = busquedaDebounced.length >= 2;
+  const { data: resultados = [], isFetching: buscandoPaciente } =
+    useGetPacientes(
+      busquedaValida ? busquedaDebounced : undefined,
+      undefined,
+      busquedaValida && !pacienteSeleccionado
+    );
+  const { data: servicios = [] } = useGetServicios();
   const [descripcion, setDescripcion] = useState("");
   const [monto, setMonto] = useState(40000);
   const [metodoPago, setMetodoPago] = useState<MetodoPago>("Debito");
@@ -93,10 +101,9 @@ export function NuevaVentaModal({
         resetForm();
         onClose();
       }}
-      ancho="max-w-2xl"
     >
       <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
-        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
           <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
             Registrar Cobro Manual
           </h3>
@@ -114,15 +121,11 @@ export function NuevaVentaModal({
           onSubmit={handleSubmit}
           className="p-6 space-y-4 font-sans text-xs"
         >
-          {errorMsg && (
-            <div className="border border-red-300 bg-red-50 p-3 font-sans text-xs font-semibold text-red-800 rounded-none">
-              {errorMsg}
-            </div>
-          )}
+          {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
 
           <div className="relative">
             <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
-              Paciente (opcional — dejar vacío para cliente sin registrar)
+              Paciente (opcional: dejar vacío para cliente sin registrar)
             </label>
             <input
               type="text"
@@ -135,6 +138,9 @@ export function NuevaVentaModal({
               placeholder="Buscar por nombre o RUT..."
               className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
             />
+            {buscandoPaciente && !pacienteSeleccionado && (
+              <p className="mt-1 text-xs text-slate-500">Buscando…</p>
+            )}
             {resultados.length > 0 && !pacienteSeleccionado && (
               <ul className="absolute z-10 mt-1 w-full divide-y divide-slate-200 border border-slate-200 bg-white shadow-sm max-h-48 overflow-y-auto">
                 {resultados.map(p => (
@@ -157,16 +163,23 @@ export function NuevaVentaModal({
 
           <div>
             <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
-              Servicio / Concepto *
+              Servicio
             </label>
-            <input
-              type="text"
+            <select
               required
               value={descripcion}
               onChange={e => setDescripcion(e.target.value)}
-              placeholder="Ej: Evaluación Kinesiología"
               className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
-            />
+            >
+              <option value="" disabled>
+                Selecciona un servicio...
+              </option>
+              {servicios.map(s => (
+                <option key={s.id} value={s.nombre}>
+                  {s.nombre}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

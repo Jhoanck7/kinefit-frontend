@@ -9,8 +9,14 @@ import { useNuevaReservaStore } from "@/stores";
 
 export const useReservaLista = () => {
   const router = useRouter();
-  const { fecha, hora, pacienteNombre, servicioNombre, reiniciar } =
-    useNuevaReservaStore();
+  const {
+    fecha,
+    hora,
+    horasSeleccionadas,
+    pacienteNombre,
+    servicioNombre,
+    reiniciar,
+  } = useNuevaReservaStore();
   const definicion = definicionEstado("PorConfirmar");
 
   useEffect(() => {
@@ -23,8 +29,9 @@ export const useReservaLista = () => {
 
   let horaTermino: string | null = null;
   if (hora) {
+    const duracionMin = Math.max(horasSeleccionadas.length, 1) * 30;
     const [h, m] = hora.split(":").map(Number);
-    const minutosTermino = h * 60 + m + 30;
+    const minutosTermino = h * 60 + m + duracionMin;
     horaTermino = `${Math.floor(minutosTermino / 60)
       .toString()
       .padStart(2, "0")}:${(minutosTermino % 60).toString().padStart(2, "0")}`;

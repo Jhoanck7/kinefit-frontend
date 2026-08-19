@@ -7,10 +7,14 @@ import {
   useGetHistorialPorPaciente,
   useGetPacientePerfil,
   useGetPacientes,
+  useUpdateCitaEstadoMutation,
 } from "@/hooks/api";
+import { useDebounce } from "@/hooks/common";
+import { handleApiError } from "@/lib/api";
 import { HistorialCitaResponse, PacienteResponse } from "@/models/responses";
-import { citaService } from "@/services";
 import { useNuevaFichaStore } from "@/stores";
+
+const MIN_CARACTERES_BUSQUEDA = 2;
 
 export const useNuevaFichaReserva = () => {
   const router = useRouter();
@@ -21,16 +25,19 @@ export const useNuevaFichaReserva = () => {
   const [cambiandoEstadoId, setCambiandoEstadoId] = useState<number | null>(
     null
   );
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const actualizarEstadoMutation = useUpdateCitaEstadoMutation();
 
-  const busquedaTrim = busqueda.trim();
-  const { data: resultados = [] } = useGetPacientes(
-    busquedaTrim || undefined,
+  const busquedaDebounced = useDebounce(busqueda.trim(), 300);
+  const busquedaValida = busquedaDebounced.length >= MIN_CARACTERES_BUSQUEDA;
+  const { data: resultados = [], isFetching: buscando } = useGetPacientes(
+    busquedaValida ? busquedaDebounced : undefined,
     undefined,
-    Boolean(busquedaTrim)
+    busquedaValida
   );
 
   const pacienteIdNum = pacienteId ? Number(pacienteId) : undefined;
-  const { data: perfil, refetch: refetchPerfil } = useGetPacientePerfil(
+  const { data: perfil } = useGetPacientePerfil(
     pacienteIdNum ?? 0,
     Boolean(pacienteIdNum)
   );
@@ -79,12 +86,15 @@ export const useNuevaFichaReserva = () => {
 
   const handleMarcarComoAtendida = async (citaIdNum: number) => {
     setCambiandoEstadoId(citaIdNum);
+    setErrorMsg(null);
     try {
-      await citaService.updateEstado(citaIdNum, { estadoNuevo: "Atendida" });
-      await refetchPerfil();
+      await actualizarEstadoMutation.mutateAsync({
+        id: citaIdNum,
+        data: { estadoNuevo: "Atendida" },
+      });
       setReserva(pacienteId!, pacienteNombre!, String(citaIdNum));
-    } catch {
-      // Ignorar fallo individual
+    } catch (err: unknown) {
+      setErrorMsg(handleApiError(err).message);
     } finally {
       setCambiandoEstadoId(null);
     }
@@ -97,9 +107,14 @@ export const useNuevaFichaReserva = () => {
     citaId,
     busqueda,
     resultados,
+    buscando,
+    mostrarHintMinimo:
+      busqueda.trim().length > 0 &&
+      busqueda.trim().length < MIN_CARACTERES_BUSQUEDA,
     reservas,
     cambiandoEstadoId,
     citaSeleccionada,
+    errorMsg,
 
     // Actions
     actions: {

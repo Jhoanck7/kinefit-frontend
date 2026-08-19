@@ -6,13 +6,9 @@ import { useGetServicios } from "@/hooks/api";
 import { ServicioResponse } from "@/models/responses";
 import { useNuevaReservaStore } from "@/stores";
 
-export const PASOS_NUEVA_RESERVA = [
-  { etiqueta: "Servicio" },
-  { etiqueta: "Horario" },
-  { etiqueta: "Especialista" },
-  { etiqueta: "Paciente" },
-  { etiqueta: "Notas y resumen" },
-];
+import { PASOS_NUEVA_RESERVA } from "../../pasos";
+
+export { PASOS_NUEVA_RESERVA };
 
 export const useServicio = () => {
   const router = useRouter();
@@ -29,7 +25,7 @@ export const useServicio = () => {
   const { data: servicios = [], isLoading } = useGetServicios();
 
   const handleSeleccionar = (servicio: ServicioResponse) =>
-    setServicio(servicio.id, servicio.nombre, servicio.duracionMinutos);
+    setServicio(servicio.id, servicio.nombre);
   const handleCancelar = () => router.push("/panel/agenda");
   const handleContinuar = () => router.push("/panel/nueva-reserva/horario");
 

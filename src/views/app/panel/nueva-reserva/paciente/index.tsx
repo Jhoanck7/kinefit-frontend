@@ -22,6 +22,8 @@ export default function PacienteView() {
     busqueda,
     resultados,
     buscado,
+    buscando,
+    mostrarHintMinimo,
     pacienteConfirmado,
     actions,
   } = usePacienteReserva();
@@ -75,7 +77,13 @@ export default function PacienteView() {
                 placeholder="Buscar por nombre o RUT..."
                 value={busqueda}
                 onChange={actions.handleBusquedaChange}
-                ayuda="Buscar por nombre o RUT…"
+                ayuda={
+                  mostrarHintMinimo
+                    ? "Escribe al menos 2 caracteres."
+                    : buscando
+                      ? "Buscando…"
+                      : undefined
+                }
               />
 
               {buscado && (

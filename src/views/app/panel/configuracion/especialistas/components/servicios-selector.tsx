@@ -1,7 +1,7 @@
-import { BackendService } from "@/types";
+import { ServicioResponse } from "@/models/responses";
 
 interface ServiciosSelectorProps {
-  servicios: BackendService[];
+  servicios: ServicioResponse[];
   seleccionados: number[];
   onCambiar: (ids: number[]) => void;
 }
@@ -20,7 +20,7 @@ export function ServiciosSelector({
   }
 
   return (
-    <div className="space-y-1.5 rounded-xl border border-brand-border p-3">
+    <div className="space-y-1.5 rounded-none border border-slate-200 p-3">
       {servicios.map(srv => (
         <label
           key={srv.id}
@@ -30,7 +30,7 @@ export function ServiciosSelector({
             type="checkbox"
             checked={seleccionados.includes(srv.id)}
             onChange={() => alternar(srv.id)}
-            className="rounded border-brand-border"
+            className="rounded border-slate-200"
           />
           {srv.nombre}
         </label>

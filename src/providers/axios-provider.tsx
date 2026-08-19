@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getSession, signOut } from "next-auth/react";
+import { toast } from "sonner";
 
 import { isSessionExpired } from "@/lib/auth";
 
@@ -23,10 +24,7 @@ axiosInstance.interceptors.request.use(async config => {
     const token = session?.accessToken;
 
     if (session && isSessionExpired(session)) {
-      // TODO: reemplazar por toast cuando se instale un sistema de notificaciones
-      console.error(
-        "Tu sesión ha expirado. Por favor, inicia sesión de nuevo."
-      );
+      toast.error("Tu sesión ha expirado. Por favor, inicia sesión de nuevo.");
       await signOut({ redirect: false });
       return Promise.reject(new Error("Token expired"));
     }

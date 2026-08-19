@@ -6,6 +6,7 @@ export interface PacienteEnAgendaResponse {
 
 export interface CitaEnAgendaResponse {
   id: number;
+  grupoCitaId?: string;
   estado: string;
   origen: string;
   paciente?: PacienteEnAgendaResponse;
@@ -19,7 +20,7 @@ export interface BloqueAgendaResponse {
   fecha: string;
   horaInicio: string;
   horaFin: string;
-  estado: "Disponible" | "Ocupado" | "Bloqueado";
+  estado: "Disponible" | "Reservado" | "Bloqueado";
   cita?: CitaEnAgendaResponse;
 }
 

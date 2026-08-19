@@ -1,18 +1,21 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Modal } from "@/components/shared";
 import { Badge } from "@/components/ui";
+import {
+  useGetCita,
+  useGetFichaById,
+  useGetHistorialPorPaciente,
+} from "@/hooks/api";
 import {
   formatearFechaCorta,
   formatearFechaHora,
   formatearRangoHorario,
 } from "@/lib/formato";
 import { obtenerEtiquetaCampo } from "@/lib/formatos-ficha";
-import { CitaDetalleResponse, FichaResponse } from "@/models/responses";
-import { citaService, fichaService } from "@/services";
 
 function OutOfScopeInlineLink({ etiqueta }: { etiqueta: string }) {
   const [mostrar, setMostrar] = useState(false);
@@ -51,36 +54,21 @@ export function FichaDetalleModal({
   onSeleccionarFicha,
 }: FichaDetalleModalProps) {
   const router = useRouter();
-  const [ficha, setFicha] = useState<FichaResponse | null>(null);
-  const [cita, setCita] = useState<CitaDetalleResponse | null>(null);
-  const [anteriores, setAnteriores] = useState<FichaResponse[]>([]);
-  const [adjuntosLocales, setAdjuntosLocales] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (!fichaId) {
-      setFicha(null);
-      setCita(null);
-      setAnteriores([]);
-      setAdjuntosLocales([]);
-      return;
-    }
-    fichaService.getById(Number(fichaId)).then(res => {
-      const resultado = res.data.data;
-      setFicha(resultado);
-      setAdjuntosLocales(resultado.adjuntos.map(a => a.nombreOriginal));
-      citaService.getById(resultado.citaId).then(citaRes => {
-        const citaResuelta = citaRes.data.data;
-        setCita(citaResuelta);
-        fichaService
-          .getHistorialPorPaciente(citaResuelta.paciente.id)
-          .then(historialRes => {
-            setAnteriores(
-              historialRes.data.data.filter(f => f.id !== resultado.id)
-            );
-          });
-      });
-    });
-  }, [fichaId]);
+  const { data: ficha = null } = useGetFichaById(
+    Number(fichaId),
+    Boolean(fichaId)
+  );
+  const { data: cita } = useGetCita(ficha?.citaId ?? 0, Boolean(ficha));
+  const { data: historial = [] } = useGetHistorialPorPaciente(
+    cita?.paciente.id ?? 0,
+    Boolean(cita) && Boolean(ficha)
+  );
+  const anteriores = historial.filter(f => f.id !== ficha?.id);
+  const [adjuntosSimulados, setAdjuntosSimulados] = useState<string[]>([]);
+  const adjuntosLocales = [
+    ...(ficha?.adjuntos.map(a => a.nombreOriginal) ?? []),
+    ...adjuntosSimulados,
+  ];
 
   function handleImprimirFicha() {
     if (!ficha || !cita) return;
@@ -138,11 +126,11 @@ export function FichaDetalleModal({
   function handleSubirAdjuntoSimulado(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files || e.target.files.length === 0) return;
     const archivo = e.target.files[0];
-    setAdjuntosLocales(prev => [...prev, archivo.name]);
+    setAdjuntosSimulados(prev => [...prev, archivo.name]);
   }
 
   return (
-    <Modal abierto={Boolean(fichaId)} onCerrar={onCerrar} ancho="max-w-4xl">
+    <Modal abierto={Boolean(fichaId)} onCerrar={onCerrar}>
       {!ficha || !cita ? (
         <div className="p-10 text-center font-sans text-xs text-slate-500">
           Cargando ficha…
@@ -150,7 +138,7 @@ export function FichaDetalleModal({
       ) : (
         <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
           {/* Encabezado Formal */}
-          <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
+          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">

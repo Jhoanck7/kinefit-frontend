@@ -7,7 +7,12 @@ export type {
   LoginPersonalRequest,
   UpdatePerfilRequest,
 } from "./auth";
-export type { CreateCitaManualRequest, UpdateCitaEstadoRequest } from "./cita";
+export type {
+  CreateCitaManualRequest,
+  CreateCitaPublicaRequest,
+  UpdateCitaEstadoRequest,
+} from "./cita";
+export type { CreateEmpresaRequest, UpdateEmpresaRequest } from "./empresa";
 export type {
   CreateEspecialistaRequest,
   UpdateEspecialistaRequest,
@@ -22,6 +27,7 @@ export type {
   CreatePacienteManualRequest,
   UpdatePacienteRequest,
 } from "./paciente";
+export type { CreateServicioRequest, UpdateServicioRequest } from "./servicio";
 export type {
   CreateComisionTerminalRequest,
   CreateRepartoProfesionalRequest,

@@ -113,7 +113,7 @@ export default function LocationSection({
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-primary/90 text-white font-bold text-xs uppercase tracking-wider px-6 py-4 rounded-xl shadow-md transition-all cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-primary-hover text-white font-bold text-xs uppercase tracking-wider px-6 py-4 rounded-xl shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
               >
                 <span>Abrir Dirección en Google Maps ↗</span>
               </a>

@@ -67,7 +67,7 @@ export default function AboutSection({
             <div className="pt-4 flex flex-wrap items-center gap-4">
               <a
                 href="#agendamiento"
-                className="bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-xl px-8 py-4 border-2 border-brand-primary tracking-wider text-sm cursor-pointer transition-all shadow-md hover:shadow-lg uppercase"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-xl px-8 py-4 shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 tracking-wider text-sm cursor-pointer uppercase"
               >
                 {config.aboutCtaText || "Agendar Atención Kinésica"}
               </a>

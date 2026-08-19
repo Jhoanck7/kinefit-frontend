@@ -1,5 +1,6 @@
 export {
   useCreateBloqueoMutation,
+  useGenerarAgendaMutation,
   useGetAgenda,
   useGetBloqueos,
   useRevertirBloqueoMutation,
@@ -7,12 +8,28 @@ export {
 export {
   useGetAvailableSlots,
   useGetServices,
-  useGetSpecialists,
   useSubmitBookingMutation,
 } from "./use-appointment-service";
 export { useGetAuditoriaCita } from "./use-auditoria-service";
 export { useAuthenticateWithGoogleMutation } from "./use-auth-service";
-export { useGetEmpresas } from "./use-empresa-service";
+export { useGetBloquesDisponibles } from "./use-bloque-horario-service";
+export {
+  useCreateCitaManualMutation,
+  useGetCita,
+  useGetImpactoCancelacion,
+  useUpdateCitaEstadoMutation,
+} from "./use-cita-service";
+export {
+  useGetEspecialistasDisponibles,
+  useGetFechasDisponibles,
+  useGetHorasDisponibles,
+} from "./use-disponibilidad-service";
+export {
+  useCreateEmpresaMutation,
+  useGetEmpresas,
+  useUpdateEmpresaEstadoMutation,
+  useUpdateEmpresaMutation,
+} from "./use-empresa-service";
 export {
   useCreateEspecialistaMutation,
   useDeleteEspecialistaMutation,
@@ -63,7 +80,12 @@ export {
   useGetReporteReservas,
   useGetReporteVentas,
 } from "./use-reporte-service";
-export { useGetServicios } from "./use-servicio-service";
+export {
+  useCreateServicioMutation,
+  useGetServicios,
+  useUpdateServicioEstadoMutation,
+  useUpdateServicioMutation,
+} from "./use-servicio-service";
 export {
   useCreateRepartoMutation,
   useCreateTasaImpuestoMutation,

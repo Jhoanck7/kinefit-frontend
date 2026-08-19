@@ -81,7 +81,7 @@ export function ReporteReservasView({
               Reservas Totales
             </span>
             {comparacion?.variacionReservasTotales !== undefined && (
-              <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-sm font-bold text-emerald-800">
+              <span className="rounded-none bg-emerald-700 px-2.5 py-1 text-sm font-bold text-white">
                 {comparacion.variacionReservasTotales >= 0 ? "+" : ""}
                 {comparacion.variacionReservasTotales}% vs anterior
               </span>
@@ -102,7 +102,7 @@ export function ReporteReservasView({
               Tasa de Ocupación
             </span>
             {comparacion?.variacionPorcentajeOcupacion !== undefined && (
-              <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-sm font-bold text-emerald-800">
+              <span className="rounded-none bg-emerald-700 px-2.5 py-1 text-sm font-bold text-white">
                 {comparacion.variacionPorcentajeOcupacion >= 0 ? "+" : ""}
                 {comparacion.variacionPorcentajeOcupacion}% vs anterior
               </span>
@@ -123,7 +123,7 @@ export function ReporteReservasView({
               Tasa de Inasistencias
             </span>
             {comparacion?.variacionTasaInasistencias !== undefined && (
-              <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-sm font-bold text-emerald-800">
+              <span className="rounded-none bg-emerald-700 px-2.5 py-1 text-sm font-bold text-white">
                 {comparacion.variacionTasaInasistencias}% vs anterior
               </span>
             )}

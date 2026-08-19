@@ -60,7 +60,7 @@ export function PacienteDetalleModal({
   }, [pacienteId]);
 
   return (
-    <Modal abierto={Boolean(pacienteId)} onCerrar={onCerrar} ancho="max-w-3xl">
+    <Modal abierto={Boolean(pacienteId)} onCerrar={onCerrar}>
       {!perfil ? (
         <div className="p-10 text-center font-sans text-xs text-slate-500">
           Cargando paciente…
@@ -68,7 +68,7 @@ export function PacienteDetalleModal({
       ) : (
         <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
           {/* Encabezado Formal */}
-          <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
+          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
             <div>
               <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
                 Ficha del Paciente

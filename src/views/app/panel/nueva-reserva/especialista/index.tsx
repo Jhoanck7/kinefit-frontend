@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Alerta,
   BottomActionBar,
   OptionSelector,
   StepIndicator,
@@ -20,13 +21,16 @@ export default function EspecialistaView() {
     especialistaId,
     especialistaNombre,
     especialistas,
+    sinEspecialistasDisponibles,
+    resolviendoBloques,
+    errorResolucionBloques,
     isLoading,
     actions,
   } = useEspecialista();
 
   const opciones = especialistas.map(esp => ({
     id: String(esp.id),
-    titulo: `${esp.nombre} (${esp.cargo})`,
+    titulo: esp.nombre,
     icono: (
       <span className="flex h-7 w-7 items-center justify-center rounded-none bg-slate-100 text-xs font-bold font-sans text-slate-800">
         {esp.nombre
@@ -57,12 +61,26 @@ export default function EspecialistaView() {
             <p className="font-sans text-xs text-slate-400">
               Cargando especialistas...
             </p>
+          ) : sinEspecialistasDisponibles ? (
+            <Alerta tono="advertencia">
+              Ningún especialista tiene disponible esa franja completa. Prueba
+              con otro horario.
+            </Alerta>
           ) : (
             <OptionSelector
               opciones={opciones}
-              seleccionId={especialistaId}
+              seleccionId={
+                especialistaId !== null ? String(especialistaId) : null
+              }
               onSeleccionar={actions.handleSeleccionar}
             />
+          )}
+
+          {errorResolucionBloques && (
+            <Alerta tono="error" className="mt-4">
+              Ese horario ya no está disponible para el especialista
+              seleccionado. Elige otro especialista u otro horario.
+            </Alerta>
           )}
 
           <BottomActionBar
@@ -82,10 +100,14 @@ export default function EspecialistaView() {
             }
             avanzar={
               <Button
-                disabled={!especialistaId}
+                disabled={
+                  !especialistaId ||
+                  resolviendoBloques ||
+                  errorResolucionBloques
+                }
                 onClick={actions.handleContinuar}
               >
-                Continuar
+                {resolviendoBloques ? "Verificando..." : "Continuar"}
               </Button>
             }
           />

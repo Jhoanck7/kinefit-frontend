@@ -14,17 +14,6 @@ export const useGetServices = (soloActivos = true) => {
   });
 };
 
-export const useGetSpecialists = (servicioId?: number, soloActivos = true) => {
-  return useQuery({
-    queryKey: ["booking-specialists", servicioId, { soloActivos }],
-    queryFn: () =>
-      appointmentService
-        .getEspecialistas(servicioId, soloActivos)
-        .then(res => res.data.data),
-    enabled: Boolean(servicioId),
-  });
-};
-
 export const useGetAvailableSlots = (
   especialistaId?: number,
   fecha?: string

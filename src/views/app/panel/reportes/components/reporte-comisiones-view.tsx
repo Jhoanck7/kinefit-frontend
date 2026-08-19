@@ -1,5 +1,6 @@
 "use client";
 
+import { Alerta } from "@/components/shared";
 import { Card } from "@/components/ui";
 import { useGetReporteComisiones } from "@/hooks/api";
 
@@ -80,13 +81,13 @@ export function ReporteComisionesView({
                 </div>
 
                 {tieneAcuerdo ? (
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-bold text-emerald-800">
+                  <span className="rounded-none bg-emerald-700 px-3 py-1 text-sm font-bold text-white">
                     Acuerdo Vigente: {p.porcentajeProfesionalVigente}%
                     Profesional / {100 - (p.porcentajeProfesionalVigente ?? 50)}
                     % Centro
                   </span>
                 ) : (
-                  <span className="rounded-full bg-amber-50 px-3 py-1 text-sm font-bold text-amber-800">
+                  <span className="rounded-none bg-amber-700 px-3 py-1 text-sm font-bold text-white">
                     {p.ventasSinRepartoVigente} cobro(s) sin acuerdo de reparto
                   </span>
                 )}
@@ -141,16 +142,16 @@ export function ReporteComisionesView({
               {/* Resultado de Reparto Final */}
               {tieneAcuerdo ? (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 pt-2">
-                  <div className="rounded-xl bg-emerald-50 p-4 border border-emerald-200 flex justify-between items-center">
+                  <div className="rounded-none bg-emerald-700 text-white p-4 flex justify-between items-center">
                     <div>
-                      <span className="text-sm font-semibold text-emerald-800 block">
+                      <span className="text-sm font-semibold block">
                         Líquido a Pagar Profesional
                       </span>
-                      <span className="text-xs text-emerald-700">
+                      <span className="text-xs text-white/80">
                         {p.porcentajeProfesionalVigente}% de la base líquida
                       </span>
                     </div>
-                    <span className="text-xl font-bold text-emerald-800">
+                    <span className="text-xl font-bold">
                       ${p.montoProfesional?.toLocaleString("es-CL")}
                     </span>
                   </div>
@@ -171,12 +172,12 @@ export function ReporteComisionesView({
                   </div>
                 </div>
               ) : (
-                <div className="rounded-xl bg-amber-50 p-4 border border-amber-200 text-sm text-amber-900">
+                <Alerta tono="advertencia">
                   <strong>Atención:</strong>{" "}
                   {p.motivoNoCalculable ?? "No hay tasa de reparto registrada."}{" "}
                   Configura un convenio en la sección de Ventas para calcular la
                   liquidación.
-                </div>
+                </Alerta>
               )}
             </Card>
           );

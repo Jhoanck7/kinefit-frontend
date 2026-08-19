@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Modal } from "@/components/shared";
+import { Alerta, Modal } from "@/components/shared";
 import {
   useCreateRepartoMutation,
   useCreateTasaImpuestoMutation,
@@ -158,10 +158,10 @@ export function ConfiguracionFinancieraModal({
   }
 
   return (
-    <Modal abierto={abierto} onCerrar={onClose} ancho="max-w-3xl">
+    <Modal abierto={abierto} onCerrar={onClose}>
       <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
         {/* Encabezado */}
-        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/80 px-6 py-4">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
           <div>
             <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
               Configuración Financiera
@@ -219,11 +219,7 @@ export function ConfiguracionFinancieraModal({
 
         {/* Contenido principal */}
         <div className="p-6 space-y-4 font-sans text-xs">
-          {errorMsg && (
-            <div className="border border-red-300 bg-red-50 p-3 font-sans text-xs font-semibold text-red-800 rounded-none">
-              {errorMsg}
-            </div>
-          )}
+          {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
 
           {cargando ? (
             <p className="font-sans text-xs text-slate-500 py-8 text-center">
@@ -566,10 +562,10 @@ export function ConfiguracionFinancieraModal({
 
                         <div className="flex items-center gap-3">
                           <div className="flex gap-2">
-                            <span className="border border-slate-200 bg-slate-50 px-2.5 py-0.5 font-sans text-xs font-medium text-slate-800 rounded-none">
+                            <span className="bg-slate-900 text-white px-2.5 py-0.5 font-sans text-xs font-medium rounded-none">
                               {a.porcentajeProfesional}% Prof.
                             </span>
-                            <span className="border border-slate-200 bg-slate-50 px-2.5 py-0.5 font-sans text-xs font-medium text-slate-800 rounded-none">
+                            <span className="bg-slate-900 text-white px-2.5 py-0.5 font-sans text-xs font-medium rounded-none">
                               {a.porcentajeCentro}% Clínica
                             </span>
                           </div>
@@ -684,7 +680,7 @@ export function ConfiguracionFinancieraModal({
                               IVA Débito Fiscal Chile
                             </span>
                             {idx === 0 && (
-                              <span className="border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider text-emerald-800 rounded-none">
+                              <span className="bg-emerald-700 text-white px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none">
                                 Vigente
                               </span>
                             )}

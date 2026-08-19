@@ -1,5 +1,5 @@
-import { LandingView } from "@/views";
+import { redirect } from "next/navigation";
 
 export default function LandingPage() {
-  return <LandingView />;
+  redirect("/panel/configuracion?tab=landing");
 }

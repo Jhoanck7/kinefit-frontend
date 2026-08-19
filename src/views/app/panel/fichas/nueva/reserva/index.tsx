@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Alerta,
   BottomActionBar,
   EmptyState,
   SearchInput,
@@ -19,9 +20,12 @@ export default function NuevaFichaReservaView() {
     citaId,
     busqueda,
     resultados,
+    buscando,
+    mostrarHintMinimo,
     reservas,
     cambiandoEstadoId,
     citaSeleccionada,
+    errorMsg,
     actions,
   } = useNuevaFichaReserva();
 
@@ -42,10 +46,23 @@ export default function NuevaFichaReservaView() {
           Busque al paciente y seleccione la reserva asociada.
         </p>
 
+        {errorMsg && (
+          <p className="mb-4 font-sans text-xs font-medium text-red-700">
+            {errorMsg}
+          </p>
+        )}
+
         <SearchInput
           placeholder="Buscar por nombre o RUT..."
           value={busqueda}
           onChange={actions.setBusqueda}
+          ayuda={
+            mostrarHintMinimo
+              ? "Escribe al menos 2 caracteres."
+              : buscando
+                ? "Buscando…"
+                : undefined
+          }
         />
 
         {resultados.length > 0 && (
@@ -99,7 +116,7 @@ export default function NuevaFichaReservaView() {
                         }
                         className={`flex w-full items-center justify-between gap-3 border p-3 text-left transition-colors rounded-none ${
                           seleccionada
-                            ? "border-blue-900 bg-blue-50/90 text-blue-950"
+                            ? "border-blue-900 bg-white text-slate-900"
                             : "border-slate-200 bg-white hover:bg-slate-50 text-slate-900"
                         } disabled:opacity-60 disabled:cursor-not-allowed`}
                       >
@@ -115,12 +132,12 @@ export default function NuevaFichaReservaView() {
                           </p>
                         </div>
                         <span
-                          className={`shrink-0 border px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none ${
+                          className={`shrink-0 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none text-white ${
                             cita.conFicha
-                              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                              ? "bg-emerald-700"
                               : esAtendida
-                                ? "border-blue-200 bg-blue-50 text-blue-800"
-                                : "border-amber-200 bg-amber-50 text-amber-800"
+                                ? "bg-blue-800"
+                                : "bg-amber-600"
                           }`}
                         >
                           {cita.conFicha
@@ -144,25 +161,26 @@ export default function NuevaFichaReservaView() {
                       )}
 
                       {!esAtendida && !cita.conFicha && (
-                        <div className="flex flex-wrap items-center justify-between gap-2 border border-amber-200 bg-amber-50 p-2.5 font-sans text-xs text-amber-900 rounded-none">
-                          <span>
+                        <>
+                          <Alerta tono="advertencia">
                             Esta cita está en estado{" "}
                             <strong>&ldquo;{cita.estado}&rdquo;</strong>. Debe
                             estar marcada como <strong>Atendida</strong> para
                             poder asociarle una ficha.
-                          </span>
-                          <Button
-                            variant="outline"
+                          </Alerta>
+                          <button
+                            type="button"
                             disabled={cambiandoEstadoId === cita.id}
                             onClick={() =>
                               actions.handleMarcarComoAtendida(cita.id)
                             }
+                            className="mt-1 font-sans text-xs text-slate-700 hover:text-slate-950 underline underline-offset-2 block disabled:opacity-50"
                           >
                             {cambiandoEstadoId === cita.id
                               ? "Actualizando..."
                               : "Marcar como Atendida"}
-                          </Button>
-                        </div>
+                          </button>
+                        </>
                       )}
                     </li>
                   );

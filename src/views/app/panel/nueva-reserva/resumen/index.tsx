@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import {
+  Alerta,
   BottomActionBar,
   Modal,
   StepIndicator,
@@ -29,11 +30,7 @@ export default function ResumenView() {
         <StepIndicator pasos={PASOS_NUEVA_RESERVA} pasoActivo={5} />
       </div>
 
-      {errorMsg && (
-        <div className="border border-red-300 bg-red-50 p-3 text-xs font-semibold text-red-800 rounded-none">
-          {errorMsg}
-        </div>
-      )}
+      {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
 
       <Card className="border border-border p-6 space-y-6">
         <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
@@ -46,7 +43,7 @@ export default function ResumenView() {
               <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
                 Nota para el paciente
               </span>
-              <Badge className="gap-1.5 rounded-none border-blue-200 bg-blue-50 text-[11px] font-medium text-blue-950">
+              <Badge className="gap-1.5 rounded-none border-0 bg-blue-800 text-[11px] font-medium text-white">
                 El paciente la verá en su confirmación
               </Badge>
             </div>
@@ -134,7 +131,6 @@ export default function ResumenView() {
       <Modal
         abierto={confirmarDescarte}
         onCerrar={actions.handleCerrarConfirmarDescarte}
-        ancho="max-w-sm"
       >
         <div className="bg-white p-6 font-sans shadow-none rounded-none space-y-4">
           <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
@@ -150,9 +146,7 @@ export default function ResumenView() {
             >
               Volver
             </Button>
-            <Button variant="destructive" onClick={actions.handleDescartar}>
-              Sí, descartar
-            </Button>
+            <Button onClick={actions.handleDescartar}>Sí, descartar</Button>
           </div>
         </div>
       </Modal>

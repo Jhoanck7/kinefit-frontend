@@ -66,7 +66,7 @@ export default function Navbar() {
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-lg text-slate-700 hover:text-slate-900 bg-slate-100 border border-slate-300 focus:outline-none transition-colors cursor-pointer"
+              className="inline-flex items-center justify-center p-2 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 focus:outline-none transition-colors"
               aria-controls="mobile-menu"
               aria-expanded="false"
             >
