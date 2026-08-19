@@ -1,13 +1,17 @@
 "use client";
 
-import { Alerta, ImageUploader, Modal, TextField } from "@/components/shared";
-import { Button, Card } from "@/components/ui";
 import {
-  FieldDefinition,
-  landingConfigSchema,
-} from "@/views/app/panel/landing/landing-config-schema";
+  Alerta,
+  ImageUploader,
+  Modal,
+  SelectField,
+  TextAreaField,
+  TextField,
+} from "@/components/shared";
+import { Button, Card } from "@/components/ui";
 
 import { useLanding } from "./hooks";
+import { FieldDefinition, landingConfigSchema } from "./landing-config-schema";
 
 const COL_SPAN_MD: Record<1 | 2 | 3, string> = {
   1: "md:col-span-1",
@@ -57,15 +61,13 @@ export default function LandingView() {
           key={f.key}
           className={`col-span-1 ${COL_SPAN_MD[f.gridCols ?? 1]}`}
         >
-          <label className="mb-1 block text-xs font-medium text-panel-sidebar">
-            {f.label} {f.required && <span className="text-red-600">*</span>}
-          </label>
-          <textarea
+          <TextAreaField
+            etiqueta={f.label}
             value={(formData[f.key] as string) || ""}
             onChange={e => actions.handleChange(f.key, e.target.value)}
             rows={f.rows || 3}
             required={f.required}
-            className="w-full rounded-xl border border-brand-border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-panel-sidebar bg-white"
+            obligatorio={f.required}
           />
         </div>
       );
@@ -88,20 +90,17 @@ export default function LandingView() {
     const section = landingConfigSchema.find(s => s.id === sectionId);
     if (!section || !section.fields) return null;
 
-    // Agrupar campos para respetar gridCols
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {section.fields.map(f => {
             if (f.sectionHeader) {
-              // Si tiene section header, rompemos el grid?
-              // Para simplificar, renderizamos todo el bloque. En un sistema más complejo agruparíamos por headers.
               return (
                 <div
                   key={f.key + "_wrap"}
                   className="md:col-span-2 pt-4 border-t border-slate-200"
                 >
-                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-primary mb-4">
+                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-4">
                     {f.sectionHeader}
                   </h3>
                   {renderField(f)}
@@ -124,19 +123,19 @@ export default function LandingView() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 pb-12">
-      <div className="flex flex-col gap-1 border-b border-brand-border pb-4">
-        <h1 className="text-2xl font-bold text-panel-sidebar">
-          Configuración de la Landing Page
+      <div className="flex flex-col gap-1 border-b border-slate-200 pb-4">
+        <h1 className="text-2xl font-bold text-slate-900">
+          Configuración de la Página Web Principal
         </h1>
-        <p className="text-sm text-brand-muted">
+        <p className="text-sm text-slate-500">
           Edita en tiempo real los textos, pasos de atención, imágenes
           Cloudinary y reseñas de Google.
         </p>
       </div>
 
       {cargando ? (
-        <Card className="p-6">
-          <p className="text-sm text-brand-muted py-8 text-center">
+        <Card className="rounded-none border-slate-200 shadow-none p-6">
+          <p className="text-sm text-slate-500 py-8 text-center">
             Cargando configuración actual del servidor...
           </p>
         </Card>
@@ -146,18 +145,18 @@ export default function LandingView() {
             {landingConfigSchema.map(section => (
               <Card
                 key={section.id}
-                className="p-6 cursor-pointer hover:border-brand-primary/50 transition-all shadow-sm hover:shadow-md flex flex-col justify-between group"
+                className="rounded-none border-slate-200 shadow-none p-6 cursor-pointer hover:border-blue-900/50 transition-all flex flex-col justify-between group"
                 onClick={() => actions.setSeccionActiva(section.id)}
               >
                 <div>
-                  <h3 className="font-bold text-panel-sidebar group-hover:text-brand-primary transition-colors">
+                  <h3 className="font-bold text-slate-900 group-hover:text-blue-900 transition-colors">
                     {section.title}
                   </h3>
-                  <p className="text-sm text-brand-muted mt-2">
+                  <p className="text-sm text-slate-500 mt-2">
                     {section.description}
                   </p>
                 </div>
-                <div className="mt-4 text-brand-primary text-xs font-bold self-end group-hover:underline">
+                <div className="mt-4 text-blue-900 text-xs font-bold self-end group-hover:underline">
                   Editar →
                 </div>
               </Card>
@@ -182,41 +181,21 @@ export default function LandingView() {
                 </div>
 
                 <form onSubmit={actions.handleGuardar} className="space-y-6">
-                  {/* DYNAMIC FORM RENDERING */}
                   {renderDynamicFields(seccionActiva)}
 
                   {seccionActiva === "team" && (
-                    <div className="mt-6 rounded-xl border border-blue-200 bg-blue-50 p-4">
-                      <p className="text-sm text-blue-800 flex items-start gap-2">
-                        <svg
-                          className="w-5 h-5 shrink-0 mt-0.5 text-blue-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          ></path>
-                        </svg>
-                        <span>
-                          <strong>Nota:</strong> Las cartas de los especialistas
-                          (foto, nombre, rol, especialidad) se configuran
-                          individualmente en la sección{" "}
-                          <strong>Especialistas</strong> del menú lateral
-                          izquierdo.
-                        </span>
-                      </p>
-                    </div>
+                    <Alerta tono="info" className="mt-6">
+                      <strong>Nota:</strong> Las cartas de los especialistas
+                      (foto, nombre, rol, especialidad) se configuran
+                      individualmente en la pestaña{" "}
+                      <strong>Especialistas</strong> de Configuración.
+                    </Alerta>
                   )}
 
-                  {/* CUSTOM RENDERERS FOR ARRAYS */}
                   {seccionActiva === "process" && (
                     <div className="space-y-4 pt-4 border-t border-slate-200 mt-4">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-primary">
+                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
                           Lista de Pasos
                         </h3>
                         <Button
@@ -230,9 +209,9 @@ export default function LandingView() {
                       {processSteps.map((step, idx) => (
                         <div
                           key={idx}
-                          className="rounded-xl border border-brand-border bg-white p-4 space-y-3"
+                          className="rounded-none border border-slate-200 bg-white p-4 space-y-3"
                         >
-                          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                          <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                             <span className="text-xs font-bold text-slate-800">
                               Paso #{idx + 1}
                             </span>
@@ -241,7 +220,7 @@ export default function LandingView() {
                               onClick={() =>
                                 actions.handleEliminarProcessStep(idx)
                               }
-                              className="text-xs text-red-600 font-bold hover:underline"
+                              className="text-xs text-blue-900 font-bold hover:underline"
                             >
                               Eliminar
                             </button>
@@ -272,24 +251,20 @@ export default function LandingView() {
                               obligatorio
                             />
                           </div>
-                          <div>
-                            <label className="mb-1 block text-xs font-medium text-panel-sidebar">
-                              Descripción
-                            </label>
-                            <textarea
-                              value={step.description}
-                              onChange={e =>
-                                actions.handleProcessStepChange(
-                                  idx,
-                                  "description",
-                                  e.target.value
-                                )
-                              }
-                              rows={2}
-                              required
-                              className="w-full rounded-xl border border-brand-border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-panel-sidebar bg-slate-50"
-                            />
-                          </div>
+                          <TextAreaField
+                            etiqueta="Descripción"
+                            value={step.description}
+                            onChange={e =>
+                              actions.handleProcessStepChange(
+                                idx,
+                                "description",
+                                e.target.value
+                              )
+                            }
+                            rows={2}
+                            required
+                            obligatorio
+                          />
                         </div>
                       ))}
                     </div>
@@ -298,7 +273,7 @@ export default function LandingView() {
                   {seccionActiva === "gallery" && (
                     <div className="space-y-4 pt-4 border-t border-slate-200 mt-4">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-primary">
+                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
                           Fotos del Carrusel ({slides.length})
                         </h3>
                         <Button
@@ -313,7 +288,7 @@ export default function LandingView() {
                         {slides.map((slide, idx) => (
                           <div
                             key={idx}
-                            className="rounded-xl border border-brand-border bg-white p-4 flex flex-col md:flex-row gap-6 shadow-xs"
+                            className="rounded-none border border-slate-200 bg-white p-4 flex flex-col md:flex-row gap-6"
                           >
                             <div className="w-full md:w-1/3">
                               <ImageUploader
@@ -329,7 +304,7 @@ export default function LandingView() {
                                 folder="kinefit/gallery"
                               />
                             </div>
-                            <div className="w-full mdmd:w-2/3 space-y-4">
+                            <div className="w-full md:w-2/3 space-y-4">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs font-bold text-slate-800">
                                   Información del Slide
@@ -339,7 +314,7 @@ export default function LandingView() {
                                   onClick={() =>
                                     actions.handleEliminarSlide(idx)
                                   }
-                                  className="text-xs text-red-600 font-bold hover:underline"
+                                  className="text-xs text-blue-900 font-bold hover:underline"
                                 >
                                   Eliminar
                                 </button>
@@ -356,24 +331,20 @@ export default function LandingView() {
                                 }
                                 obligatorio
                               />
-                              <div>
-                                <label className="mb-1 block text-xs font-medium text-panel-sidebar">
-                                  Descripción
-                                </label>
-                                <textarea
-                                  value={slide.description}
-                                  onChange={e =>
-                                    actions.handleSlideChange(
-                                      idx,
-                                      "description",
-                                      e.target.value
-                                    )
-                                  }
-                                  rows={2}
-                                  required
-                                  className="w-full rounded-xl border border-brand-border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-panel-sidebar bg-slate-50"
-                                />
-                              </div>
+                              <TextAreaField
+                                etiqueta="Descripción"
+                                value={slide.description}
+                                onChange={e =>
+                                  actions.handleSlideChange(
+                                    idx,
+                                    "description",
+                                    e.target.value
+                                  )
+                                }
+                                rows={2}
+                                required
+                                obligatorio
+                              />
                             </div>
                           </div>
                         ))}
@@ -383,7 +354,7 @@ export default function LandingView() {
 
                   {seccionActiva === "reviews" && (
                     <div className="space-y-4 mt-4">
-                      <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4 mt-4">
+                      <div className="bg-slate-50 p-4 rounded-none border border-slate-200 space-y-4 mt-4">
                         <div className="flex items-center justify-between">
                           <div>
                             <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
@@ -425,29 +396,24 @@ export default function LandingView() {
                               )
                             }
                           />
-                          <div>
-                            <label className="mb-1 block text-xs font-medium text-panel-sidebar">
-                              Cantidad Máxima de Reseñas
-                            </label>
-                            <select
-                              value={limiteResenas}
-                              onChange={e =>
-                                actions.setLimiteResenas(Number(e.target.value))
-                              }
-                              className="w-full rounded-xl border border-brand-border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-panel-sidebar bg-white"
-                            >
-                              <option value={3}>3 reseñas</option>
-                              <option value={5}>5 reseñas</option>
-                              <option value={8}>8 reseñas</option>
-                              <option value={10}>10 reseñas</option>
-                            </select>
-                          </div>
+                          <SelectField
+                            etiqueta="Cantidad Máxima de Reseñas"
+                            value={limiteResenas}
+                            onChange={e =>
+                              actions.setLimiteResenas(Number(e.target.value))
+                            }
+                          >
+                            <option value={3}>3 reseñas</option>
+                            <option value={5}>5 reseñas</option>
+                            <option value={8}>8 reseñas</option>
+                            <option value={10}>10 reseñas</option>
+                          </SelectField>
                         </div>
                       </div>
 
                       <div className="space-y-4 pt-4 border-t border-slate-200">
                         <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-xs font-extrabold uppercase tracking-wider text-brand-primary">
+                          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
                             Reseñas ({reviewsList.length})
                           </h3>
                           <Button
@@ -461,9 +427,9 @@ export default function LandingView() {
                         {reviewsList.map((rev, idx) => (
                           <div
                             key={idx}
-                            className="rounded-xl border border-brand-border bg-white p-4 space-y-3 shadow-xs"
+                            className="rounded-none border border-slate-200 bg-white p-4 space-y-3"
                           >
-                            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                            <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                               <span className="text-xs font-bold text-slate-800">
                                 Reseña #{idx + 1} • {rev.author}
                               </span>
@@ -472,7 +438,7 @@ export default function LandingView() {
                                 onClick={() =>
                                   actions.handleEliminarReview(idx)
                                 }
-                                className="text-xs text-red-600 font-bold hover:underline"
+                                className="text-xs text-blue-900 font-bold hover:underline"
                               >
                                 Eliminar
                               </button>
@@ -513,25 +479,20 @@ export default function LandingView() {
                                 }
                               />
                             </div>
-                            <div>
-                              <label className="mb-1 block text-xs font-medium text-panel-sidebar">
-                                Comentario{" "}
-                                <span className="text-red-600">*</span>
-                              </label>
-                              <textarea
-                                value={rev.quote}
-                                onChange={e =>
-                                  actions.handleReviewChange(
-                                    idx,
-                                    "quote",
-                                    e.target.value
-                                  )
-                                }
-                                rows={2}
-                                required
-                                className="w-full rounded-xl border border-brand-border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-panel-sidebar bg-slate-50"
-                              />
-                            </div>
+                            <TextAreaField
+                              etiqueta="Comentario"
+                              value={rev.quote}
+                              onChange={e =>
+                                actions.handleReviewChange(
+                                  idx,
+                                  "quote",
+                                  e.target.value
+                                )
+                              }
+                              rows={2}
+                              required
+                              obligatorio
+                            />
                           </div>
                         ))}
                       </div>

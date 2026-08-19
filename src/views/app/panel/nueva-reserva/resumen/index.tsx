@@ -43,7 +43,7 @@ export default function ResumenView() {
               <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
                 Nota para el paciente
               </span>
-              <Badge className="gap-1.5 rounded-none border-blue-200 bg-blue-50 text-[11px] font-medium text-blue-950">
+              <Badge className="gap-1.5 rounded-none border-0 bg-blue-800 text-[11px] font-medium text-white">
                 El paciente la verá en su confirmación
               </Badge>
             </div>
@@ -146,9 +146,7 @@ export default function ResumenView() {
             >
               Volver
             </Button>
-            <Button variant="destructive" onClick={actions.handleDescartar}>
-              Sí, descartar
-            </Button>
+            <Button onClick={actions.handleDescartar}>Sí, descartar</Button>
           </div>
         </div>
       </Modal>

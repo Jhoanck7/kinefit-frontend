@@ -21,7 +21,7 @@ export function EliminarEspecialistaModal({
     <Modal abierto={!!especialista} onCerrar={onCancelar}>
       {especialista && (
         <div className="p-6 space-y-6 text-center">
-          <div className="mx-auto w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-3xl font-bold shadow-inner">
+          <div className="mx-auto w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-3xl font-bold">
             ⚠️
           </div>
 
@@ -38,7 +38,7 @@ export function EliminarEspecialistaModal({
             </p>
           </div>
 
-          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 p-3.5 rounded-2xl text-left">
+          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 p-3.5 rounded-none text-left">
             <div className="relative w-12 h-12 rounded-full overflow-hidden bg-slate-200 border border-slate-300 shrink-0">
               {especialista.fotoUrl ? (
                 <Image
@@ -49,7 +49,7 @@ export function EliminarEspecialistaModal({
                   unoptimized
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-brand-primary text-white font-bold">
+                <div className="w-full h-full flex items-center justify-center bg-blue-900 text-white font-bold">
                   {especialista.nombre.charAt(0)}
                 </div>
               )}
@@ -58,7 +58,7 @@ export function EliminarEspecialistaModal({
               <p className="font-bold text-slate-900 text-sm truncate">
                 {especialista.nombre}
               </p>
-              <p className="text-xs text-brand-primary font-medium truncate">
+              <p className="text-xs text-blue-900 font-medium truncate">
                 {especialista.cargo}
               </p>
               <p className="text-[11px] text-slate-500 truncate">
@@ -85,7 +85,7 @@ export function EliminarEspecialistaModal({
             </Button>
             <Button
               type="button"
-              variant="destructive"
+
               onClick={onConfirmar}
               disabled={eliminando}
             >

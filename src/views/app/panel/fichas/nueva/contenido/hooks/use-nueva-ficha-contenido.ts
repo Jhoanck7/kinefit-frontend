@@ -3,9 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useGetCita, useGetFormatos } from "@/hooks/api";
+import {
+  useCreateFichaMutation,
+  useGetCita,
+  useGetFormatos,
+  useSubirAdjuntoMutation,
+} from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
-import { fichaService } from "@/services";
 import { useNuevaFichaStore } from "@/stores";
 
 export const useNuevaFichaContenido = () => {
@@ -23,8 +27,9 @@ export const useNuevaFichaContenido = () => {
     reiniciar,
   } = useNuevaFichaStore();
 
-  const [guardando, setGuardando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const crearFichaMutation = useCreateFichaMutation();
+  const subirAdjuntoMutation = useSubirAdjuntoMutation();
 
   const { data: formatosDisponibles = [] } = useGetFormatos();
   const { data: cita } = useGetCita(
@@ -67,17 +72,15 @@ export const useNuevaFichaContenido = () => {
   const handleGuardar = async () => {
     if (!citaId || !formatoId) return;
 
-    setGuardando(true);
     setErrorMsg(null);
 
     try {
-      const res = await fichaService.create({
+      const creada = await crearFichaMutation.mutateAsync({
         citaId: Number(citaId),
         tipo:
           formatoId === "fmt-masoterapia" ? "Recomendacion" : "FichaClinica",
         contenido: (contenido as Record<string, string>) || {},
       });
-      const creada = res.data.data;
 
       if (adjuntos && adjuntos.length > 0) {
         for (const nombreArch of adjuntos) {
@@ -85,7 +88,10 @@ export const useNuevaFichaContenido = () => {
             const dummyFile = new File(["contenido"], nombreArch, {
               type: "text/plain",
             });
-            await fichaService.subirAdjunto(creada.id, dummyFile);
+            await subirAdjuntoMutation.mutateAsync({
+              fichaId: creada.id,
+              archivo: dummyFile,
+            });
           } catch {
             // Ignorar fallo individual
           }
@@ -99,8 +105,6 @@ export const useNuevaFichaContenido = () => {
       if (typeof window !== "undefined") {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
-    } finally {
-      setGuardando(false);
     }
   };
 
@@ -114,7 +118,7 @@ export const useNuevaFichaContenido = () => {
     cita,
     formato,
     opcionesFormato,
-    guardando,
+    guardando: crearFichaMutation.isPending || subirAdjuntoMutation.isPending,
     errorMsg,
     nombreFormato,
 

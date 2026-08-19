@@ -23,21 +23,21 @@ function ConstructorFormatoContenido() {
   } = useConstructorFormato();
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="mx-auto max-w-6xl font-sans shadow-none">
       <div className="mb-6 flex items-start gap-3">
         <button
           type="button"
           onClick={actions.handleVolver}
           aria-label="Volver"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-border text-panel-sidebar hover:bg-panel-fondo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar"
+          className="flex h-9 w-9 items-center justify-center rounded-none border border-slate-200 text-slate-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900"
         >
           ←
         </button>
         <div>
-          <h2 className="text-xl font-bold text-panel-sidebar">
+          <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
             {idEditado ? "Editar formato de ficha" : "Nuevo formato de ficha"}
           </h2>
-          <p className="text-sm text-brand-muted">
+          <p className="font-sans text-xs text-slate-500 mt-0.5">
             Configura los campos y secciones para las evaluaciones clínicas.
             Puedes arrastrar o usar las flechas para reordenar elementos.
           </p>
@@ -54,7 +54,7 @@ function ConstructorFormatoContenido() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[65fr_35fr]">
         <div className="space-y-4">
-          <Card>
+          <Card className="rounded-none border-slate-200 shadow-none p-4">
             <TextField
               etiqueta="Nombre del formato"
               placeholder="Ej: Ficha de Masoterapia / Ficha Kinesiológica"
@@ -88,13 +88,12 @@ function ConstructorFormatoContenido() {
                   actions.setDraggedSeccionIndex(null);
                 }
               }}
-              className="rounded-2xl border border-brand-border overflow-hidden bg-white shadow-sm transition-all"
+              className="border border-slate-200 rounded-none bg-white"
             >
-              {/* Encabezado de Sección */}
-              <div className="flex items-center gap-2 bg-panel-seleccion px-4 py-3 border-b border-brand-border">
+              <div className="flex items-center gap-2 bg-slate-50/80 px-4 py-3 border-b border-slate-200">
                 <span
                   title="Arrastra para reordenar esta sección"
-                  className="cursor-grab active:cursor-grabbing text-brand-muted hover:text-panel-sidebar select-none font-bold text-lg px-1"
+                  className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-900 select-none font-bold text-lg px-1"
                 >
                   ⠿
                 </span>
@@ -106,11 +105,10 @@ function ConstructorFormatoContenido() {
                     })
                   }
                   placeholder="Nombre de la sección"
-                  className="flex-1 bg-transparent text-base font-semibold text-panel-sidebar focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded px-2 py-0.5"
+                  className="flex-1 bg-transparent font-sans text-sm font-semibold text-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 rounded-none px-2 py-0.5"
                   aria-label="Nombre de la sección"
                 />
 
-                {/* Botones de Reordenar Sección */}
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
@@ -118,7 +116,7 @@ function ConstructorFormatoContenido() {
                     disabled={indiceSeccion === 0}
                     title="Mover sección arriba"
                     aria-label="Mover sección arriba"
-                    className="flex h-7 w-7 items-center justify-center rounded bg-white/80 border border-brand-border text-xs font-bold text-panel-sidebar hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed shadow-sm transition-colors"
+                    className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 bg-white text-xs font-bold text-slate-900 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed shadow-none transition-colors"
                   >
                     ▲
                   </button>
@@ -128,7 +126,7 @@ function ConstructorFormatoContenido() {
                     disabled={indiceSeccion === secciones.length - 1}
                     title="Mover sección abajo"
                     aria-label="Mover sección abajo"
-                    className="flex h-7 w-7 items-center justify-center rounded bg-white/80 border border-brand-border text-xs font-bold text-panel-sidebar hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed shadow-sm transition-colors"
+                    className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 bg-white text-xs font-bold text-slate-900 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed shadow-none transition-colors"
                   >
                     ▼
                   </button>
@@ -138,13 +136,12 @@ function ConstructorFormatoContenido() {
                   type="button"
                   onClick={() => actions.setSeccionAEliminar(seccion.id)}
                   aria-label="Eliminar sección"
-                  className="ml-2 text-xs font-bold text-white bg-red-700 hover:bg-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded-none px-2 py-1 border-0"
+                  className="ml-2 text-xs font-bold text-slate-900 border border-slate-200 bg-white hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 rounded-none px-2 py-1"
                 >
                   Eliminar
                 </button>
               </div>
 
-              {/* Lista de Campos */}
               <div className="space-y-3 bg-white p-4">
                 {seccion.campos.map((campo, indiceCampo) => (
                   <div
@@ -170,12 +167,12 @@ function ConstructorFormatoContenido() {
                         actions.setDraggedCampo(null);
                       }
                     }}
-                    className="rounded-lg border border-brand-border p-3 bg-white hover:border-panel-sidebar/40 transition-all shadow-2xs"
+                    className="border border-slate-200 rounded-none p-3 bg-white hover:border-slate-400 transition-colors"
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <span
                         title="Arrastra para reordenar este campo"
-                        className="cursor-grab active:cursor-grabbing text-brand-muted hover:text-panel-sidebar select-none font-bold text-base px-1"
+                        className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-900 select-none font-bold text-base px-1"
                       >
                         ⠿
                       </span>
@@ -189,7 +186,7 @@ function ConstructorFormatoContenido() {
                         }
                         placeholder="Nombre del campo"
                         aria-label="Nombre del campo"
-                        className="min-w-[140px] flex-1 rounded border border-brand-border px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar font-medium"
+                        className="min-w-[140px] flex-1 rounded-none border border-slate-200 px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 font-medium"
                       />
 
                       <select
@@ -201,7 +198,7 @@ function ConstructorFormatoContenido() {
                           })
                         }
                         aria-label="Tipo de dato"
-                        className="rounded border border-brand-border px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar font-medium bg-white"
+                        className="rounded-none border border-slate-200 px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 font-medium bg-white"
                       >
                         {TIPOS_CAMPO.map(t => (
                           <option key={t.valor} value={t.valor}>
@@ -221,7 +218,6 @@ function ConstructorFormatoContenido() {
                         }
                       />
 
-                      {/* Selector de Sección si hay múltiples */}
                       {secciones.length > 1 && (
                         <select
                           value={seccion.id}
@@ -234,7 +230,7 @@ function ConstructorFormatoContenido() {
                             )
                           }
                           title="Mover a otra sección"
-                          className="rounded border border-brand-border bg-panel-fondo px-2 py-1 text-xs text-brand-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar"
+                          className="rounded-none border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900"
                         >
                           {secciones.map(sec => (
                             <option key={sec.id} value={sec.id}>
@@ -244,7 +240,6 @@ function ConstructorFormatoContenido() {
                         </select>
                       )}
 
-                      {/* Botones para Subir/Bajar Posición del Campo */}
                       <div className="flex items-center gap-1">
                         <button
                           type="button"
@@ -254,7 +249,7 @@ function ConstructorFormatoContenido() {
                           disabled={indiceCampo === 0}
                           title="Subir posición del campo"
                           aria-label="Mover campo arriba"
-                          className="flex h-7 w-7 items-center justify-center rounded border border-brand-border bg-panel-fondo text-xs font-bold text-panel-sidebar hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed shadow-sm transition-colors"
+                          className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 bg-slate-50 text-xs font-bold text-slate-900 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed shadow-none transition-colors"
                         >
                           ▲
                         </button>
@@ -266,7 +261,7 @@ function ConstructorFormatoContenido() {
                           disabled={indiceCampo === seccion.campos.length - 1}
                           title="Bajar posición del campo"
                           aria-label="Mover campo abajo"
-                          className="flex h-7 w-7 items-center justify-center rounded border border-brand-border bg-panel-fondo text-xs font-bold text-panel-sidebar hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed shadow-sm transition-colors"
+                          className="flex h-7 w-7 items-center justify-center rounded-none border border-slate-200 bg-slate-50 text-xs font-bold text-slate-900 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed shadow-none transition-colors"
                         >
                           ▼
                         </button>
@@ -279,15 +274,15 @@ function ConstructorFormatoContenido() {
                         }
                         aria-label="Quitar campo"
                         title="Quitar este campo"
-                        className="text-brand-muted hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded px-1.5 py-0.5 text-base font-bold"
+                        className="text-slate-400 hover:text-red-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 rounded-none px-1.5 py-0.5 text-base font-bold"
                       >
                         &times;
                       </button>
                     </div>
 
                     {campo.tipo === "seleccion" && (
-                      <div className="mt-3 space-y-2 border-t border-brand-border pt-3">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-brand-muted">
+                      <div className="mt-3 space-y-2 border-t border-slate-200 pt-3">
+                        <p className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                           Opciones de selección
                         </p>
                         {campo.opciones.map((opcion, indiceOpcion) => (
@@ -306,7 +301,7 @@ function ConstructorFormatoContenido() {
                               }}
                               placeholder={`Opción ${indiceOpcion + 1}`}
                               aria-label={`Opción ${indiceOpcion + 1}`}
-                              className="flex-1 rounded border border-brand-border px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar"
+                              className="flex-1 rounded-none border border-slate-200 px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900"
                             />
                             <button
                               type="button"
@@ -318,7 +313,7 @@ function ConstructorFormatoContenido() {
                                 })
                               }
                               aria-label="Quitar opción"
-                              className="text-brand-muted hover:text-red-600 font-bold px-1"
+                              className="text-slate-400 hover:text-red-700 font-bold px-1"
                             >
                               &times;
                             </button>
@@ -331,7 +326,7 @@ function ConstructorFormatoContenido() {
                               opciones: [...campo.opciones, ""],
                             })
                           }
-                          className="text-xs font-semibold text-panel-sidebar underline underline-offset-2"
+                          className="font-sans text-xs font-bold text-slate-700 hover:text-slate-950 underline underline-offset-2"
                         >
                           Agregar opción
                         </button>
@@ -343,7 +338,7 @@ function ConstructorFormatoContenido() {
                 <button
                   type="button"
                   onClick={() => actions.agregarCampo(seccion.id)}
-                  className="w-full rounded-lg border-2 border-dashed border-brand-border py-2 text-sm font-semibold text-panel-sidebar hover:border-panel-sidebar/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar bg-slate-50/50"
+                  className="w-full rounded-none border border-dashed border-slate-300 py-2 text-sm font-semibold text-slate-700 hover:border-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 bg-slate-50/50"
                 >
                   Agregar campo
                 </button>
@@ -354,12 +349,12 @@ function ConstructorFormatoContenido() {
           <button
             type="button"
             onClick={actions.agregarSeccion}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-border py-4 font-semibold text-panel-sidebar hover:border-panel-sidebar/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar bg-white"
+            className="flex w-full items-center justify-center gap-2 rounded-none border border-dashed border-slate-300 py-4 font-semibold text-slate-700 hover:border-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 bg-white"
           >
             Agregar sección
           </button>
 
-          <div className="flex justify-end gap-3 border-t border-brand-border pt-6">
+          <div className="flex justify-end gap-3 border-t border-slate-200 pt-6">
             <Button variant="outline" onClick={actions.handleCancelar}>
               Cancelar
             </Button>
@@ -367,35 +362,36 @@ function ConstructorFormatoContenido() {
           </div>
         </div>
 
-        {/* Vista Previa en Vivo */}
-        <div className="rounded-2xl border border-brand-border overflow-hidden h-fit sticky top-6 shadow-sm">
-          <div className="flex items-center justify-between bg-panel-sidebar px-4 py-3 text-white">
-            <span className="font-semibold">Vista Previa</span>
+        <div className="border border-slate-200 rounded-none h-fit sticky top-6">
+          <div className="flex items-center justify-between bg-slate-900 px-4 py-3 text-white">
+            <span className="font-sans text-xs font-bold uppercase tracking-wider">
+              Vista Previa
+            </span>
           </div>
           <div className="space-y-5 bg-white p-4">
-            <p className="text-lg font-bold text-panel-sidebar">
+            <p className="font-sans text-sm font-bold text-slate-900">
               {nombreFormato || "Sin nombre"}
             </p>
             {secciones.map(seccion => (
               <div key={seccion.id}>
-                <p className="mb-2 border-b border-brand-border pb-1 font-semibold text-panel-sidebar">
+                <p className="mb-2 border-b border-slate-200 pb-1 font-sans text-xs font-bold uppercase tracking-wider text-slate-400">
                   {seccion.nombre || "Sin nombre"}
                 </p>
                 <div className="space-y-3">
                   {seccion.campos.map(campo => (
                     <div key={campo.id}>
-                      <label className="mb-1 block text-xs font-medium text-panel-sidebar">
+                      <label className="mb-1 block font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
                         {campo.nombre || "Sin nombre"}
                         {campo.obligatorio && (
-                          <span className="ml-0.5 text-red-600">*</span>
+                          <span className="ml-0.5 text-red-700">*</span>
                         )}
                       </label>
                       {campo.tipo === "texto_largo" ? (
-                        <div className="h-16 rounded border border-brand-border bg-panel-fondo" />
+                        <div className="h-16 rounded-none border border-slate-200 bg-slate-50" />
                       ) : campo.tipo === "seleccion" ? (
                         <select
                           disabled
-                          className="w-full rounded border border-brand-border bg-panel-fondo px-2 py-1 text-sm text-brand-muted"
+                          className="w-full rounded-none border border-slate-200 bg-slate-50 px-2 py-1 text-sm text-slate-500"
                         >
                           <option>Seleccionar…</option>
                           {campo.opciones.map((o, i) => (
@@ -403,7 +399,7 @@ function ConstructorFormatoContenido() {
                           ))}
                         </select>
                       ) : (
-                        <div className="h-8 rounded border border-brand-border bg-panel-fondo" />
+                        <div className="h-8 rounded-none border border-slate-200 bg-slate-50" />
                       )}
                     </div>
                   ))}
@@ -419,10 +415,10 @@ function ConstructorFormatoContenido() {
         onCerrar={() => actions.setSeccionAEliminar(null)}
       >
         <div className="p-6">
-          <h3 className="text-lg font-bold text-panel-sidebar">
+          <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
             ¿Eliminar esta sección?
           </h3>
-          <p className="mt-2 text-sm text-brand-muted">
+          <p className="mt-2 font-sans text-xs text-slate-500">
             Se perderán {seccionEnBorrado?.campos.length ?? 0} campo(s) de
             &ldquo;{seccionEnBorrado?.nombre}&rdquo;.
           </p>
@@ -433,10 +429,7 @@ function ConstructorFormatoContenido() {
             >
               Volver
             </Button>
-            <Button
-              variant="destructive"
-              onClick={actions.eliminarSeccionConfirmado}
-            >
+            <Button onClick={actions.eliminarSeccionConfirmado}>
               Eliminar sección
             </Button>
           </div>

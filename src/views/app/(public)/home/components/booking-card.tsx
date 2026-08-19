@@ -267,13 +267,13 @@ export default function BookingCard() {
   if (submitMutation.isSuccess && webpayData) {
     return (
       <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 bg-transparent">
-        <div className="w-16 h-16 rounded-full bg-red-100 border-2 border-red-500 flex items-center justify-center text-red-600 text-3xl mb-4 font-bold">
+        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-600 text-3xl mb-4 shadow-lg shadow-red-500/10">
           💳
         </div>
-        <h3 className="text-lg font-bold text-slate-900 mb-2 uppercase tracking-wide">
+        <h3 className="text-lg font-bold text-slate-900 mb-2">
           Transbank Webpay Plus
         </h3>
-        <p className="text-xs text-slate-600 max-w-[300px] mb-6 leading-relaxed font-medium">
+        <p className="text-xs text-brand-muted max-w-[300px] mb-6 leading-relaxed">
           Conectando de forma segura con la pasarela de pago Transbank Webpay...
         </p>
 
@@ -287,7 +287,7 @@ export default function BookingCard() {
             <input type="hidden" name="token_ws" value={webpayData.token} />
             <button
               type="submit"
-              className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl px-6 py-3.5 border-2 border-red-600 transition-colors uppercase tracking-wider cursor-pointer"
+              className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
             >
               Ir a Webpay Plus ($10.000 CLP)
             </button>
@@ -295,7 +295,7 @@ export default function BookingCard() {
         ) : (
           <button
             onClick={() => router.push(webpayData.urlRedireccion)}
-            className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl px-6 py-3.5 border-2 border-red-600 transition-colors uppercase tracking-wider cursor-pointer"
+            className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
           >
             Abrir Pasarela Webpay Plus ($10.000 CLP)
           </button>
@@ -307,23 +307,24 @@ export default function BookingCard() {
   if (submitMutation.isSuccess && !webpayData) {
     return (
       <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 bg-transparent">
-        <div className="w-16 h-16 rounded-full bg-emerald-100 border-2 border-emerald-600 flex items-center justify-center text-emerald-600 text-3xl mb-6 font-bold">
+        <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 text-3xl mb-6 shadow-lg shadow-emerald-500/10">
           ✓
         </div>
-        <h3 className="text-lg font-bold text-slate-900 mb-2 uppercase tracking-wide">
+        <h3 className="text-lg font-bold text-slate-900 mb-2">
           ¡Cita Registrada Exitosamente!
         </h3>
-        <p className="text-xs text-slate-600 max-w-[280px] mb-6 leading-relaxed font-medium">
+        <p className="text-xs text-brand-muted max-w-[280px] mb-6 leading-relaxed">
           Tu reserva para{" "}
-          <span className="text-slate-900 font-bold">
+          <span className="text-slate-900 font-semibold">
             {selectedServiceName}
           </span>{" "}
-          el <span className="text-slate-900 font-bold">{selectedDate}</span> ha
-          sido registrada en el sistema.
+          el{" "}
+          <span className="text-slate-900 font-semibold">{selectedDate}</span>{" "}
+          ha sido registrada en el sistema.
         </p>
         <button
           onClick={handleResetBooking}
-          className="bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl px-6 py-3.5 border-2 border-brand-primary transition-colors uppercase tracking-wider cursor-pointer"
+          className="bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer"
         >
           Reservar otra cita
         </button>
@@ -332,12 +333,12 @@ export default function BookingCard() {
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-[400px] justify-between p-1 bg-transparent">
+    <div className="flex-1 flex flex-col h-[460px] p-1 bg-transparent">
       {isLoading && (
-        <div className="absolute inset-0 bg-white/90 flex items-center justify-center z-50 rounded-2xl border-2 border-slate-200">
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex items-center justify-center z-50 rounded-3xl">
           <div className="flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
-            <span className="text-xs font-bold text-brand-primary uppercase tracking-wider">
+            <span className="text-xs font-semibold text-brand-primary uppercase tracking-wider">
               Cargando...
             </span>
           </div>
@@ -346,17 +347,17 @@ export default function BookingCard() {
 
       {/* Step 1: Service selection */}
       {currentStep === 1 && (
-        <div className="flex flex-col gap-6">
-          <div className="text-left">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-brand-primary mb-1">
+        <div className="flex flex-col h-full">
+          <div className="text-left shrink-0 mb-6">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">
               Paso 1 de 4
             </h3>
-            <p className="text-slate-900 text-base font-extrabold uppercase tracking-tight">
+            <p className="text-slate-800 text-base font-bold">
               Selecciona un servicio
             </p>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex-1 min-h-0 flex flex-col gap-3 overflow-y-auto pr-1">
             {services
               .filter(s => s.activo)
               .map(service => (
@@ -365,17 +366,17 @@ export default function BookingCard() {
                   onClick={() =>
                     handleServiceSelect(service.id, service.nombre)
                   }
-                  className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-xl border-2 text-left transition-colors cursor-pointer ${
+                  className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer ${
                     selectedServiceId === service.id
-                      ? "border-brand-primary bg-slate-100"
-                      : "border-slate-300 bg-white hover:border-brand-primary hover:bg-slate-50"
+                      ? "border-brand-primary bg-brand-primary/10 shadow-md shadow-brand-primary/10"
+                      : "border-brand-border bg-white hover:border-brand-primary/50 hover:bg-slate-50"
                   }`}
                 >
                   <div>
                     <h4 className="text-sm font-bold text-slate-900">
                       {service.nombre}
                     </h4>
-                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                    <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
                       Servicio Operativo
                     </span>
                   </div>
@@ -396,7 +397,7 @@ export default function BookingCard() {
               ))}
 
             {services.filter(s => s.activo).length === 0 && !isLoading && (
-              <p className="text-xs text-slate-500 font-semibold text-center py-8">
+              <p className="text-xs text-brand-muted text-center py-8">
                 No hay especialidades disponibles de momento.
               </p>
             )}
@@ -406,34 +407,34 @@ export default function BookingCard() {
 
       {/* Step 2: Specialist Selection */}
       {currentStep === 2 && (
-        <div className="flex flex-col gap-6">
-          <div className="text-left">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-brand-primary mb-1">
+        <div className="flex flex-col h-full">
+          <div className="text-left shrink-0 mb-6">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">
               Paso 2 de 4
             </h3>
-            <p className="text-slate-900 text-base font-extrabold uppercase tracking-tight">
+            <p className="text-slate-800 text-base font-bold">
               Selecciona un Especialista
             </p>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex-1 min-h-0 flex flex-col gap-3 overflow-y-auto pr-1">
             {specialists
               .filter(sp => sp.activo)
               .map(sp => (
                 <button
                   key={sp.id}
                   onClick={() => handleSpecialistSelect(sp.id, sp.nombre)}
-                  className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-xl border-2 text-left transition-colors cursor-pointer ${
+                  className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer ${
                     selectedSpecialistId === sp.id
-                      ? "border-brand-primary bg-slate-100"
-                      : "border-slate-300 bg-white hover:border-brand-primary hover:bg-slate-50"
+                      ? "border-brand-primary bg-brand-primary/10 shadow-md shadow-brand-primary/10"
+                      : "border-brand-border bg-white hover:border-brand-primary/50 hover:bg-slate-50"
                   }`}
                 >
                   <div>
                     <h4 className="text-sm font-bold text-slate-900">
                       {sp.nombre}
                     </h4>
-                    <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                    <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
                       {sp.cargo}
                     </span>
                   </div>
@@ -454,16 +455,16 @@ export default function BookingCard() {
               ))}
 
             {specialists.filter(sp => sp.activo).length === 0 && !isLoading && (
-              <p className="text-xs text-slate-500 font-semibold text-center py-8">
+              <p className="text-xs text-brand-muted text-center py-8">
                 No hay profesionales disponibles para este servicio.
               </p>
             )}
           </div>
 
-          <div className="flex justify-between items-center mt-6 border-t-2 border-slate-200 pt-4">
+          <div className="flex justify-between items-center shrink-0 mt-4 border-t border-brand-border/30 pt-4">
             <button
               onClick={prevStep}
-              className="text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
+              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
             >
               Atrás
             </button>
@@ -473,27 +474,27 @@ export default function BookingCard() {
 
       {/* Step 3: Date & Time */}
       {currentStep === 3 && (
-        <div className="flex flex-col gap-6">
-          <div className="text-left">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-brand-primary mb-1">
+        <div className="flex flex-col h-full">
+          <div className="text-left shrink-0 mb-6">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">
               Paso 3 de 4
             </h3>
-            <p className="text-slate-900 text-base font-extrabold uppercase tracking-tight">
+            <p className="text-slate-800 text-base font-bold">
               Fecha y Horario
             </p>
           </div>
 
-          <div className="flex flex-col gap-5">
-            {/* Unified Flat Date Selector */}
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-5">
+            {/* Selector de fecha */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="text-xs text-slate-800 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <label className="text-xs text-slate-700 font-semibold flex items-center gap-1.5">
                   <svg
                     className="w-4 h-4 text-brand-primary"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    strokeWidth="2.5"
+                    strokeWidth="2"
                   >
                     <path
                       strokeLinecap="round"
@@ -504,14 +505,14 @@ export default function BookingCard() {
                   1. Selecciona la Fecha
                 </label>
                 {selectedDate && (
-                  <span className="text-[11px] font-bold text-brand-primary bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-300">
+                  <span className="text-[11px] font-bold text-brand-primary bg-brand-primary/10 px-2.5 py-0.5 rounded-full border border-brand-primary/20">
                     {parseDateInfo(selectedDate).formattedFull}
                   </span>
                 )}
               </div>
 
               {availableDates && availableDates.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[160px] overflow-y-auto pr-1">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[160px] overflow-y-auto pr-1">
                   {availableDates.map(dateStr => {
                     const info = parseDateInfo(dateStr);
                     const isSelected = selectedDate === dateStr;
@@ -520,13 +521,25 @@ export default function BookingCard() {
                         key={dateStr}
                         type="button"
                         onClick={() => handleDateChange(dateStr)}
-                        className={`p-3 text-xs font-bold rounded-xl border-2 text-center transition-colors cursor-pointer ${
+                        className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all cursor-pointer ${
                           isSelected
-                            ? "border-brand-primary bg-brand-primary text-white"
-                            : "border-slate-300 bg-white text-slate-800 hover:border-brand-primary hover:bg-slate-50"
+                            ? "bg-gradient-to-br from-brand-primary to-emerald-600 text-white border-brand-primary shadow-lg shadow-brand-primary/25 scale-[1.02]"
+                            : "bg-slate-50 border-slate-200/80 text-slate-700 hover:bg-white hover:border-brand-primary/40 hover:shadow-sm"
                         }`}
                       >
-                        {info.formattedShort}
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? "text-white/80" : "text-slate-400"}`}
+                        >
+                          {info.dayName}
+                        </span>
+                        <span className="text-lg font-extrabold my-0.5 leading-none">
+                          {info.dayNumber}
+                        </span>
+                        <span
+                          className={`text-[10px] font-semibold uppercase ${isSelected ? "text-white/90" : "text-slate-500"}`}
+                        >
+                          {info.monthName}
+                        </span>
                       </button>
                     );
                   })}
@@ -538,22 +551,22 @@ export default function BookingCard() {
                     value={selectedDate || ""}
                     onChange={e => handleDateChange(e.target.value)}
                     min={todayStr}
-                    className="w-full bg-white border-2 border-slate-300 rounded-xl p-3 text-xs font-bold text-slate-900 focus:outline-none focus:border-brand-primary transition-colors cursor-pointer"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-sm font-semibold text-slate-900 focus:outline-none focus:border-brand-primary focus:bg-white transition-all cursor-pointer"
                   />
                 </div>
               )}
             </div>
 
-            {/* Flat Time Slot Selection */}
+            {/* Selector de horario */}
             {selectedDate && (
               <div>
-                <label className="block text-xs text-slate-800 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <label className="block text-xs text-slate-700 font-semibold mb-2 flex items-center gap-1.5">
                   <svg
                     className="w-4 h-4 text-brand-primary"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    strokeWidth="2.5"
+                    strokeWidth="2"
                   >
                     <path
                       strokeLinecap="round"
@@ -574,10 +587,10 @@ export default function BookingCard() {
                         onClick={() =>
                           handleTimeSelect(slot.horaInicio, slot.id)
                         }
-                        className={`p-3 text-xs font-bold rounded-xl border-2 text-center transition-colors cursor-pointer ${
+                        className={`p-3 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
                           isSelected
-                            ? "border-brand-primary bg-brand-primary text-white"
-                            : "border-slate-300 bg-white text-slate-800 hover:border-brand-primary hover:bg-slate-50"
+                            ? "border-brand-primary bg-brand-primary text-white shadow-md shadow-brand-primary/20"
+                            : "border-slate-200/80 bg-white text-slate-700 hover:border-brand-primary hover:bg-slate-50"
                         }`}
                       >
                         {displayHora}
@@ -586,7 +599,7 @@ export default function BookingCard() {
                   })}
 
                   {availableSlots.length === 0 && !isLoading && (
-                    <p className="text-[11px] text-red-600 font-bold col-span-3 text-center py-4">
+                    <p className="text-[11px] text-rose-500 font-medium col-span-3 text-center py-4">
                       No hay franjas disponibles ese día.
                     </p>
                   )}
@@ -597,7 +610,7 @@ export default function BookingCard() {
             {/* Duración de la Atención */}
             {selectedBloqueHorarioId && (
               <div>
-                <label className="block text-xs text-slate-800 font-bold uppercase tracking-wider mb-2">
+                <label className="block text-xs text-slate-700 font-semibold mb-2">
                   3. ¿Cuánto Durará tu Atención?
                 </label>
                 <div className="grid grid-cols-3 gap-2.5">
@@ -606,10 +619,10 @@ export default function BookingCard() {
                       key={minutos}
                       type="button"
                       onClick={() => setSelectedDuracionMinutos(minutos)}
-                      className={`p-3 text-xs font-bold rounded-xl border-2 text-center transition-colors cursor-pointer ${
+                      className={`p-3 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
                         selectedDuracionMinutos === minutos
-                          ? "border-brand-primary bg-brand-primary text-white"
-                          : "border-slate-300 bg-white text-slate-800 hover:border-brand-primary hover:bg-slate-50"
+                          ? "border-brand-primary bg-brand-primary text-white shadow-md shadow-brand-primary/20"
+                          : "border-slate-200/80 bg-white text-slate-700 hover:border-brand-primary hover:bg-slate-50"
                       }`}
                     >
                       {minutos} min
@@ -620,10 +633,10 @@ export default function BookingCard() {
             )}
           </div>
 
-          <div className="flex justify-between items-center mt-6 border-t-2 border-slate-200 pt-4">
+          <div className="flex justify-between items-center shrink-0 mt-4 border-t border-brand-border/30 pt-4">
             <button
               onClick={prevStep}
-              className="text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
+              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
             >
               Atrás
             </button>
@@ -634,12 +647,12 @@ export default function BookingCard() {
                 !selectedBloqueHorarioId ||
                 !selectedDuracionMinutos
               }
-              className={`rounded-xl px-6 py-3.5 text-xs font-bold uppercase tracking-wider border-2 transition-colors ${
+              className={`rounded-xl px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
                 selectedDate &&
                 selectedBloqueHorarioId &&
                 selectedDuracionMinutos
-                  ? "bg-brand-primary hover:bg-brand-primary-hover border-brand-primary text-white cursor-pointer"
-                  : "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed"
+                  ? "bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer shadow-md"
+                  : "bg-slate-100 text-slate-400 cursor-not-allowed"
               }`}
             >
               Siguiente
@@ -650,20 +663,20 @@ export default function BookingCard() {
 
       {/* Step 4: Patient Info & Google Login */}
       {currentStep === 4 && (
-        <form onSubmit={handleFormSubmit} className="flex flex-col gap-6">
-          <div className="text-left">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-brand-primary mb-1">
+        <form onSubmit={handleFormSubmit} className="flex flex-col h-full">
+          <div className="text-left shrink-0 mb-6">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">
               Paso 4 de 4
             </h3>
-            <p className="text-slate-900 text-base font-extrabold uppercase tracking-tight">
+            <p className="text-slate-800 text-base font-bold">
               Datos del Paciente
             </p>
           </div>
 
-          <div className="flex flex-col gap-4">
-            {/* Flat Google Sign-In Widget Container */}
-            <div className="bg-slate-50 border-2 border-slate-300 rounded-xl p-4 text-center space-y-3">
-              <span className="text-xs text-slate-700 font-bold block uppercase tracking-wider">
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-4">
+            {/* Google Sign-In Widget Container */}
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center space-y-3">
+              <span className="text-xs text-slate-600 font-semibold block">
                 Inicia sesión con tu cuenta de Google
               </span>
 
@@ -673,14 +686,14 @@ export default function BookingCard() {
               />
 
               {authToken ? (
-                <div className="text-xs text-emerald-700 font-bold bg-emerald-100 rounded-lg p-2 border border-emerald-300">
+                <div className="text-xs text-emerald-600 font-bold bg-emerald-50 rounded-lg p-2 border border-emerald-200">
                   ✓ Sesión iniciada correctamente
                 </div>
               ) : (
                 <button
                   type="button"
                   onClick={handleDemoAuth}
-                  className="text-[11px] text-brand-primary hover:underline font-bold uppercase cursor-pointer"
+                  className="text-[11px] text-brand-primary hover:underline font-semibold cursor-pointer"
                 >
                   (Opción 2) Usar Sesión de Paciente de Pruebas
                 </button>
@@ -688,7 +701,7 @@ export default function BookingCard() {
             </div>
 
             <div>
-              <label className="block text-xs text-slate-700 mb-1.5 font-bold uppercase tracking-wider">
+              <label className="block text-xs text-brand-muted mb-1.5 font-medium">
                 Nombre Completo
               </label>
               <input
@@ -697,12 +710,12 @@ export default function BookingCard() {
                 placeholder="JHOAN MONTERO"
                 value={patientName}
                 onChange={e => handlePatientInfoChange("name", e.target.value)}
-                className="w-full bg-white border-2 border-slate-300 rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-bold"
+                className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs text-slate-700 mb-1.5 font-bold uppercase tracking-wider">
+              <label className="block text-xs text-brand-muted mb-1.5 font-medium">
                 Correo Electrónico
               </label>
               <input
@@ -711,12 +724,12 @@ export default function BookingCard() {
                 placeholder="jhoanck777@gmail.com"
                 value={patientEmail}
                 onChange={e => handlePatientInfoChange("email", e.target.value)}
-                className="w-full bg-white border-2 border-slate-300 rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-bold"
+                className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs text-slate-700 mb-1.5 font-bold uppercase tracking-wider">
+              <label className="block text-xs text-brand-muted mb-1.5 font-medium">
                 RUT del Paciente (ej: 11111111-1 o 12345678-5)
               </label>
               <input
@@ -725,12 +738,12 @@ export default function BookingCard() {
                 placeholder="11111111-1"
                 value={patientRut}
                 onChange={e => handlePatientInfoChange("rut", e.target.value)}
-                className="w-full bg-white border-2 border-slate-300 rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-bold"
+                className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs text-slate-700 mb-1.5 font-bold uppercase tracking-wider">
+              <label className="block text-xs text-brand-muted mb-1.5 font-medium">
                 Teléfono Móvil
               </label>
               <input
@@ -739,22 +752,22 @@ export default function BookingCard() {
                 placeholder="+56 9 7551 6503"
                 value={patientPhone}
                 onChange={e => handlePatientInfoChange("phone", e.target.value)}
-                className="w-full bg-white border-2 border-slate-300 rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-bold"
+                className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
               />
             </div>
           </div>
 
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-red-100 border-2 border-red-500 text-xs text-red-700 font-bold text-center">
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-600 font-semibold text-center">
               {errorMsg}
             </div>
           )}
 
-          <div className="flex justify-between items-center mt-6 border-t-2 border-slate-200 pt-4">
+          <div className="flex justify-between items-center shrink-0 mt-4 border-t border-brand-border/30 pt-4">
             <button
               type="button"
               onClick={prevStep}
-              className="text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
+              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
             >
               Atrás
             </button>
@@ -766,13 +779,13 @@ export default function BookingCard() {
                 !patientEmail ||
                 !patientPhone
               }
-              className={`rounded-xl px-6 py-3.5 text-xs font-bold uppercase tracking-wider border-2 transition-colors ${
+              className={`rounded-xl px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
                 !submitMutation.isPending &&
                 patientName &&
                 patientEmail &&
                 patientPhone
-                  ? "bg-brand-primary hover:bg-brand-primary-hover border-brand-primary text-white cursor-pointer"
-                  : "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed"
+                  ? "bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer shadow-md"
+                  : "bg-slate-100 text-slate-400 cursor-not-allowed"
               }`}
             >
               {submitMutation.isPending

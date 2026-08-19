@@ -220,6 +220,62 @@ creada.
 **Deuda preexistente no tocada:** el `Continuar` de `nueva-reserva/paciente` sigue con el
 `react-hooks/set-state-in-effect` documentado en A3, sin relación con A1.
 
+**Corrección posterior (hueco real, no cosmético):** `setServicio` invalidaba `servicioId` y
+`servicioNombre` pero no el resto de la cadena. Secuencia reproducible: elegir Servicio A →
+fecha → horas → especialista → volver al paso 1 → elegir Servicio B → confirmar. Llegaba con
+horas y especialista de A pero servicio B. El backend no lo bloquea: `CreateManualAsync` no
+valida que el especialista atienda el servicio elegido — no habría dado 409, se habría guardado
+una cita con un profesional que no presta ese servicio, en silencio. **Corregido:** `setServicio`
+ahora limpia `fecha`, `horasSeleccionadas`, `especialistaId` y `bloqueHorarioIds`, igual que
+`setHorario`.
+
+**Bug preexistente descubierto al verificar A1 en agenda (no introducido por A1, confirmado
+por `git log` — el archivo no se tocó en ninguna fase de este plan):** una cita recién creada
+se guardaba bien en la base de datos, pero al volver a la Agenda aparecía como **"BLOQUEADO"**
+en vez de como tarjeta de cita, y por lo tanto no se podía abrir su detalle. Causa: el backend
+serializa el estado de un bloque reservado como `"Reservado"` (`EstadoBloque.Reservado.ToString()`
+en `AgendaService.cs`), pero `time-grid.tsx` comparaba contra `"Ocupado"` — un valor que el
+enum del backend (`Disponible | Bloqueado | Reservado`) nunca produce. Como la comparación
+nunca coincidía, **toda** cita reservada cayó siempre en la rama "Bloqueado" del renderizado,
+no solo las creadas por el asistente nuevo. **Corregido:** `time-grid.tsx` y el tipo
+`BloqueAgendaResponse` (`models/responses/agenda.ts`) actualizados a `"Reservado"`. Verificado
+visualmente: la cita ahora se ve como tarjeta con paciente/hora/estado y su modal de detalle
+abre con todos los datos.
+
+**Corrección posterior — duplicación en vez de alargue en citas multi-bloque:** una reserva de
+2-3 bloques se veía como N tarjetas separadas en la Agenda en vez de una sola tarjeta alargada.
+Causa raíz (verificada contra `CitaService.CreateManualAsync`): el backend crea **una fila de
+`Cita` por cada bloque de 30 min** (vinculadas por `GrupoCitaId`, no una sola cita con rango
+horario), y `GET /agenda` no exponía ese campo — el frontend no tenía forma de saber que dos
+citas con `id` distinto eran en realidad una misma reserva. **Cambio de backend** (aditivo,
+con permiso de Maxi): `CitaEnAgendaDTO.GrupoCitaId` agregado y poblado en `AgendaService.cs`.
+**Cambio de frontend:** `time-grid.tsx` agrupa por `grupoCitaId ?? id` en vez de por `id`.
+**Verificado tras reiniciar el backend:** una reserva de 2 bloques ya se ve como una sola
+tarjeta "11:00 — 12:00" en la Agenda, y su modal de detalle abre correctamente.
+
+**Hallazgo relacionado, investigado y descartado como problema real:** el modal de detalle
+mostraba `11:00:00 — 11:30:00` (solo el primer bloque) en vez del rango completo. Antes de
+tocar nada se verificó si esto era solo visual o también afectaba `Confirmar`/`Cancelar` —
+riesgo real, porque esas acciones podrían haber actuado solo sobre una fila de `Cita` del
+grupo. Se leyó `CitaService.UpdateEstadoAsync` completo: **ya tenía una rama específica para
+`GrupoCitaId`** (líneas 536-554) que aplica el nuevo estado y libera los bloques de **todas**
+las citas del grupo. Se confirmó con una prueba real contra la API: confirmar la cita #6
+también pasó la #7 (su par en el grupo) a "Confirmada". La preocupación funcional era
+infundada — ya estaba bien resuelta en el backend, sin relación con este plan.
+
+**Corrección de solo lectura aplicada:** `CitaService.GetByIdAsync` sí tenía el bug real, pero
+acotado a la vista: calculaba `HoraFin` desde `cita.BloqueHorario.HoraFin` (el bloque de esa
+fila puntual) en vez de agregarlo por grupo. Corregido: si `GrupoCitaId` está presente, toma
+el `HoraFin` máximo entre todas las citas del grupo. Verificado contra la API real
+(`horaFin: "12:00:00"`, antes `"11:30:00"`) y visualmente en el modal.
+
+**Corrección posterior — tarjeta de cita rediseñada:** `appointment-card.tsx` usaba texto
+coloreado por estado (`text-emerald-950`, `text-amber-950`, etc.) y un layout de 3 líneas
+alineado a la izquierda que desbordaba el bloque en reservas de 30 min. Corregido: texto
+siempre `text-slate-900`, contenido centrado, y una sola línea compacta (hora · estado) cuando
+la tarjeta ocupa un solo bloque — el color de estado se conserva solo en el punto (dot) y el
+borde izquierdo, igual que en la leyenda.
+
 ---
 
 ### A2. Recuperar el mensaje real del backend + capa `hooks/api` para citas — ✅ hecho
@@ -410,6 +466,27 @@ por Maxi, quedaron 3 alertas dinámicas reales sin migrar, corregidas en la mism
 Lección para el resto del plan: cuando una tarea nace de un criterio de diseño ("evitar el
 patrón X"), cerrarla con un grep del patrón sobre `src/`, no con una lista armada a mano.
 
+**Segunda corrección posterior, tras el mismo consejo aplicado por segunda vez:** un grep del
+patrón "fondo claro + borde del mismo color" sobre `src/views/app/panel` (no solo `<Badge>`
+del componente shadcn, sino cualquier `<span>`/`<div>` con esas clases) encontró 6 casos más
+sin migrar: el badge "Activo/Inactivo" de `gestion-bloqueos-modal.tsx`, los badges de estado de
+`fichas/nueva/reserva/index.tsx` (que además tenían un `<Button>` embebido dentro del aviso de
+"Marcar como Atendida" — retirado del `Alerta` y convertido en link de texto simple, mismo
+patrón que "Abrir la ficha existente"), el cuadro de nota de `landing/index.tsx` (antes
+descartado como "estático, no aplica" — corregido igual, el criterio de Maxi no distingue
+estático de dinámico), dos cuadros en `reporte-comisiones-view.tsx`, y el badge "Vigente" de
+`configuracion-financiera-modal.tsx`.
+
+**Regla nueva de Maxi — botones solo blanco o azul del panel:** ningún botón debe usar rojo,
+verde u otro color, ni siquiera para acciones destructivas (cancelar, eliminar) — el texto del
+botón comunica la acción, no el color. Corregidos: los botones sólidos rojos que A4b había
+introducido (`appointment-detail-modal.tsx`, `cancel-appointment-modal.tsx`,
+`gestion-bloqueos-modal.tsx`, `editar-especialista-modal.tsx`,
+`fichas/formatos/nuevo/index.tsx`) pasan a azul sólido u outline blanco, y los 3
+`variant="destructive"` de shadcn (rojo claro con borde — `eliminar-especialista-modal.tsx`,
+`fichas/formatos/nuevo/index.tsx`, `nueva-reserva/resumen/index.tsx`) pierden el variant y
+heredan el azul por defecto.
+
 ---
 
 ### A5. Unificar el tamaño de los modales — ✅ hecho
@@ -459,6 +536,31 @@ pasando por debajo al hacer scroll. Se agregó `backdrop-blur-sm` a los 7 header
 miden `max-w-6xl` igual que los modales de detalle — es la consecuencia directa de "todos al
 mismo ancho grande" que ya advertía la nota de diseño de A5, pero conviene verlo en pantalla
 antes de darlo por cerrado.
+
+**Corrección crítica posterior — el ancho de A5 nunca se aplicó de verdad:** Maxi reportó que
+"el detalle en general" (cita, paciente, venta) seguía viéndose sin arreglar pese a que A5
+decía estar cerrado. Causa raíz: `components/ui/dialog.tsx`'s `DialogContent` trae
+`sm:max-w-sm` (384px) en sus clases base. `twMerge` no elimina esa clase al agregar
+`max-w-6xl` sin prefijo — considera `sm:max-w-sm` y `max-w-6xl` variantes independientes, no
+conflictivas — así que en cualquier viewport ≥640px la regla `sm:` gana por orden de cascada,
+sin importar el orden de las clases en el string. Resultado real: **los 13 modales quedaron
+atascados en ~384px de ancho desde que A5 se dio por cerrado**, invisible en las
+verificaciones de esa fase porque solo se corrió lint/tsc, sin captura de pantalla.
+**Corregido:** el `ancho` por defecto de `Modal` pasa de `"max-w-6xl"` a `"sm:max-w-6xl"`.
+Verificado visualmente en los 3 modales de detalle (cita, paciente, venta): ahora sí miden el
+ancho completo, con el layout de dos columnas 65/35 que fija la Especificación Visual.
+
+**Corrección posterior — cita cancelada desaparecía de la Agenda en vez de quedar visible.**
+Causa raíz en `AgendaService.cs`: `citaVigente` filtraba explícitamente `Cancelada`/`Expirada`
+del bloque, así que al cancelar, el bloque volvía a `Disponible` (correcto, libera el horario
+para nueva reserva) pero la cita desaparecía por completo de la respuesta — no había forma de
+distinguir "nunca se usó" de "se canceló". **Corregido:** `citaVigente` toma la cita más
+reciente por `CreatedAt` sin filtrar por estado (el índice único garantiza que solo puede haber
+una cita activa a la vez, así que "la más reciente" es siempre la correcta, activa o no).
+`time-grid.tsx` ajustado a juego: agrupa por `bloque.cita` presente, sin importar si
+`bloque.estado` es `Reservado` o `Disponible`. Verificado end-to-end: la reserva cancelada
+queda visible en gris ("Cancelada") en la Agenda, con su franja horaria completa liberada para
+volver a reservarse.
 
 ---
 
@@ -567,6 +669,23 @@ quedan registrados para una futura pasada dedicada si Maxi la pide.
 **Verificado visualmente** (Playwright, backend real): login + navegación a `/panel/agenda` y
 `/panel/landing` tras los cambios de layout — sin errores de consola, Toaster mudo pero
 montado (no se disparó ningún toast en la prueba, layout intacto).
+
+**Corrección posterior:** el ítem "`appointment-service.ts` usa tipos legado" se había marcado
+✅ solo por eliminar el `getEspecialistas` duplicado — el tipado seguía sin tocar. Corregido:
+`getServices`/`getBloques`/`crearCita` migrados de `BackendService`/`BackendTimeSlot`/
+`CreateCitaDto` (`@/types`) a `ServicioResponse`/`FranjaDisponibleResponse` (reusados) y un
+`CreateCitaPublicaRequest` nuevo en `models/requests/cita.ts` (DTO genuinamente distinto del
+manual del panel — el flujo público sigue con bloque único, fuera de alcance unificarlo, ver
+C3). Los 4 tipos legado quedaron sin ninguna referencia fuera de `@/types/index.ts`.
+
+**Se reintrodujo y corrigió el antipatrón que A2 había erradicado:**
+`especialistas/hooks/use-especialistas.ts:24` llamaba `appointmentService.getServices()`
+directo desde un hook de vista, saltándose `hooks/api/` — y `useGetServicios` ya existía
+haciendo lo mismo. Migrado a `useGetServicios(false)`; `ServiciosSelector` y los 2 modales que
+la consumen (`crear-` / `editar-especialista-modal.tsx`) pasaron de `BackendService[]` a
+`ServicioResponse[]`.
+
+Verificado con `npm run build`: compila, 30 rutas, `/` ahora con `Revalidate 1m`.
 
 ---
 
@@ -769,42 +888,64 @@ Sobre blanco, el trazo con `-z-10` pierde todo contraste y queda plano detrás d
 Corresponde a las Secciones 4 y 5 del plan anterior. **Se reporta, no se corrige sin
 autorización** — salvo lo que se apruebe explícitamente.
 
-### D1. Resultado de la auditoría (Sección 4 del plan anterior)
+### D1. Resultado de la auditoría (Sección 4 del plan anterior) — ✅ cerrada con evidencia de build
 
 | # | Señal | Estado |
 |---|---|---|
 | 1 | URL `*.vercel.app` expuesta | ✅ no aparece |
-| 2 | View-source vacío | ✅ el home hace SSR de landing-config y especialistas |
+| 2 | View-source vacío | ✅ `index.html` = 81 KB de HTML ya renderizado |
 | 3 | Página 404 propia | ❌ **no existe `not-found.tsx`** |
 | 4 | Vite/React donde se esperaría Next | ✅ Next 16 App Router, consistente |
-| 5 | Mismo `<title>` en todas las páginas | ❌ **ninguna de las 28 páginas define metadata propia** |
+| 5 | Mismo `<title>` en todas las páginas | ❌ **confirmado** — `/` y `/confirmacion` comparten título |
 | 6 | Meta descripciones | ⚠️ solo la global, ninguna por página |
-| 7 | OG Image | ❌ **`openGraph` sin `images`; no hay `opengraph-image`** |
-| 8 | Datos estructurados | ✅ JSON-LD `PhysicalTherapyClinic` en `(public)/layout.tsx` |
-| 9 | `<h1>` por página | ⚠️ el home usa `<p>` con estilo de título en varias secciones |
-| 10 | Tag canónico | ❌ **sin `metadataBase` ni `alternates.canonical`** |
+| 7 | OG Image | ❌ **confirmado** — cero `og:image` en el HTML |
+| 8 | Datos estructurados | ✅ 2 bloques `application/ld+json` en el HTML |
+| 9 | `<h1>` por página | ✅ exactamente 1 en el home |
+| 10 | Tag canónico | ❌ **confirmado** — cero `rel="canonical"` |
 | 11 | `llm.txt` | ❌ no existe |
-| 12 | `robots.txt` | ❌ **no existe** (el panel sí declara `noindex` por metadata) |
+| 12 | `robots.txt` | ❌ **confirmado** — no existe (el panel sí declara `noindex` por metadata) |
 | 13 | Favicon | ✅ `icon.svg` en ambos grupos de rutas |
-| 14 | Sitemap | ❌ **no existe** |
+| 14 | Sitemap | ❌ **confirmado** — no existe |
 | 15 | Atributo `lang` | ✅ `lang="es"` en ambos layouts |
-| 16 | `alt` en imágenes | ⚠️ revisar caso por caso; el modelo ya trae `FotoAlt` del backend |
-| 17 | Sourcemaps en producción | ⚠️ `next.config.ts` no los desactiva explícitamente |
-| 18 | Errores de consola | ⚠️ 5 `console.*`; el de `axios-provider` se dispara al expirar sesión |
-| 19 | Bundle excesivo | ⚠️ sin medir — `booking-card.tsx` tiene 787 líneas en un solo cliente |
+| 16 | `alt` en imágenes | ✅ las 5 imágenes públicas lo tienen (genéricos, mejorables) |
+| 17 | Sourcemaps en producción | ✅ limpio — `find .next/static -name "*.map"` → 0 resultados |
+| 18 | Errores de consola | ✅ resuelto en A7 — 0 `no-console` restantes |
+| 19 | Bundle excesivo | ✅ razonable — 1.9 MB en chunks, el mayor 300 KB, normal con el panel incluido |
 | 20 | **Hardcoding** | ❌ **el hallazgo principal** — ver detalle abajo |
 
 **Inventario de hardcoding (señal 20, la más importante):**
-- `|| 1` como especialista/paciente por defecto (`use-horario.ts:82-84`,
-  `use-resumen-reserva.ts:87-89`) → **causa directa del 409**.
-- Corte mañana/tarde `"14:00"` / `"15:00"` → oculta bloques sin avisar.
+- `|| 1` como especialista/paciente por defecto → **resuelto en A1/A6**.
+- Corte mañana/tarde hardcodeado → **resuelto en A1** (partición completa por umbral, sin
+  descartar datos).
 - `DEFAULT_PROCESS_STEPS` con 4 pasos escritos en el componente
-  (`process-section.tsx:13-37`) — se usan si el backend no responde.
-- `"Servicio Operativo"` fijo bajo cada servicio en `booking-card.tsx:378`.
+  (`process-section.tsx:13-37`) — se usan si el backend no responde. Sigue pendiente,
+  fuera de alcance de la Fase 1.
+- `"Servicio Operativo"` fijo bajo cada servicio en `booking-card.tsx:378`. Pendiente.
 - `BOOKING_SERVICES` mock en `services-section.tsx`, componente huérfano exportado en el
   barrel pero nunca renderizado (excepción ya documentada en la arquitectura).
-- `CLINIC_INFO` en `lib/utils.ts` duplica datos que el backend ya expone vía landing-config.
-- `PASOS_NUEVA_RESERVA` repetido en 5 archivos.
+- `CLINIC_INFO` en `lib/utils.ts` duplica datos que el backend ya expone vía landing-config —
+  **ver hallazgo nuevo abajo, ya corregido**.
+- `PASOS_NUEVA_RESERVA` repetido en 5 archivos → **resuelto en A6**.
+
+**Hallazgo nuevo, no cubierto por ninguna de las 20 señales originales — ✅ corregido:**
+
+1. **El home público era completamente estático.** `(public)/page.tsx` es un Server Component
+   que hace `await landingConfigService.getConfig()` sin ningún `revalidate`/`dynamic` en todo
+   el proyecto (grepeado). El build confirmaba `○ (Static)` para `/`: los datos se congelaban
+   en build time. Consecuencia: editar Landing desde el panel no tenía ningún efecto en
+   producción hasta el próximo deploy — la pestaña B2 completa habría sido decorativa.
+   **Corregido:** `export const revalidate = 60` en `(public)/page.tsx`. Verificado contra
+   `npm run build`: la tabla de rutas ahora muestra `Revalidate 1m` para `/` (antes no
+   mostraba columna de revalidación).
+2. **El fallback de la señal 20 tenía datos de otra clínica.** El objeto de respaldo que se usa
+   si la API no responde en build time traía `"Av. Providencia 1234... Santiago"`,
+   `"+56 9 1234 5678"` y `"contacto@kinefit.cl"` — ninguno es de KineFit (Antofagasta,
+   Pje. Maximiliano Poblete 596, `+56 9 6207 2672`). Si la API estuviera caída durante un
+   build de producción, el sitio habría publicado dirección, teléfono y correo falsos.
+   **Corregido:** el fallback ahora deriva de `CLINIC_INFO` (`lib/utils.ts`), que ya tenía los
+   datos reales. Queda registrado que `CLINIC_INFO` y `landing-config` son dos fuentes para
+   los mismos datos (el footer y el JSON-LD leen de `CLINIC_INFO`, no del panel) — decidir
+   cuál gobierna antes de construir B2 sigue pendiente, es una decisión de Maxi.
 
 ### D2. Mejoras propuestas (Sección 5) — priorizadas
 **Alta** (cierran señales críticas y son de bajo riesgo):
@@ -874,9 +1015,31 @@ evidencia.**
 | 2 | C1 … C4 | ninguno | bajo (solo estilos) |
 | 3 | D1 … D3 | por definir | bajo |
 
-**El plan completo no requiere ningún cambio en el backend.** Los dos puntos que sí lo
-exigirían — CRUD de bloques horario y unificar el flujo público al modelo multi-bloque —
-quedan explícitamente fuera de alcance por decisión tomada.
+**Corrección a la afirmación anterior:** la ejecución real de A1 sí terminó exigiendo backend,
+los tres aditivos y de solo lectura/estado, ninguno cambia contratos existentes:
+1. `CitaEnAgendaDTO.GrupoCitaId` — agrupar visualmente citas multi-bloque en la Agenda.
+2. `CitaService.GetByIdAsync` — el detalle de una reserva multi-bloque mostraba el rango del
+   primer bloque en vez del rango completo.
+3. `AgendaService.GetAgendaAsync` — una cita cancelada desaparecía de la Agenda en vez de
+   quedar visible como tal.
+
+Los dos puntos identificados originalmente que sí exigirían backend — CRUD de bloques horario
+y unificar el flujo público al modelo multi-bloque — siguen fuera de alcance por decisión
+tomada; no tienen relación con estos tres.
+
+**Correcciones visuales adicionales fuera del plan original (pedidas directamente por Maxi
+tras probar A1–A7 en el navegador):**
+- Sección **Formatos de ficha** (`fichas/formatos/index.tsx` y `.../nuevo/index.tsx`): seguía
+  con el estilo previo a la refactorización completa (`rounded-2xl`, `rounded-full`,
+  `shadow-sm`, tokens `text-panel-sidebar`/`bg-panel-seleccion`/`border-brand-border`).
+  Reescrita para usar los mismos tokens que Agenda/Nueva Reserva/Pacientes/Ventas
+  (`rounded-none`, `border-slate-200`, `text-slate-900`, `bg-slate-900` para el header de
+  Vista Previa).
+- **Ventas → Registrar Cobro Manual:** "Servicio / Concepto *" con texto libre pasó a
+  "Servicio" con un `<select>` de los servicios reales (`useGetServicios`). Corregido el guion
+  largo del label de Paciente a dos puntos.
+- **Ventas → Configuración Financiera → Acuerdos de Reparto:** los badges "50% Prof." /
+  "50% Clínica" tenían el patrón "fondo claro + borde" — pasaron a fondo sólido sin borde.
 
 ---
 

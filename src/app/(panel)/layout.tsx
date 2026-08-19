@@ -27,7 +27,16 @@ export default function PanelRootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${jetbrainsMono.variable} h-full antialiased`}>
+    <html
+      lang="es"
+      className={`${jetbrainsMono.variable} h-full antialiased`}
+      style={
+        {
+          "--font-sans":
+            '"Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        } as React.CSSProperties
+      }
+    >
       <head>
         <link
           rel="stylesheet"

@@ -318,18 +318,12 @@ function DetalleCita({
         ) : (
           <div className="flex flex-wrap gap-2 justify-end">
             {definicion.acciones.map(accion => {
-              const esPrimario = accion.estilo === "primario";
-              const esPeligro = accion.estilo === "peligro";
+              const esDestacado =
+                accion.estilo === "primario" || accion.estilo === "peligro";
 
-              let estiloBtn =
-                "border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 shadow-none";
-              if (esPrimario) {
-                estiloBtn =
-                  "bg-[#003366] text-white hover:bg-[#002244] border-0 font-bold shadow-none";
-              } else if (esPeligro) {
-                estiloBtn =
-                  "bg-red-700 text-white hover:bg-red-800 border-0 font-bold shadow-none";
-              }
+              const estiloBtn = esDestacado
+                ? "bg-[#003366] text-white hover:bg-[#002244] border-0 font-bold shadow-none"
+                : "border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 shadow-none";
 
               return (
                 <button

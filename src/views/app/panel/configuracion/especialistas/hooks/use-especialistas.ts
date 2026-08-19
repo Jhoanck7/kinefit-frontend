@@ -1,30 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   useCreateEspecialistaMutation,
   useDeleteEspecialistaMutation,
   useGetEspecialistas,
+  useGetServicios,
   useUpdateEspecialistaMutation,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
 import { EspecialistaResponse } from "@/models/responses";
-import { appointmentService } from "@/services";
-import { BackendService } from "@/types";
 
 export const useEspecialistas = () => {
   const { data: especialistas = [], isLoading: cargando } = useGetEspecialistas(
     undefined,
     false
   );
-  const [servicios, setServicios] = useState<BackendService[]>([]);
-
-  useEffect(() => {
-    appointmentService.getServices(false).then(res => {
-      setServicios(res.data.data || []);
-    });
-  }, []);
+  const { data: servicios = [] } = useGetServicios(false);
 
   const crearMutation = useCreateEspecialistaMutation();
   const actualizarMutation = useUpdateEspecialistaMutation();
@@ -74,7 +67,7 @@ export const useEspecialistas = () => {
     setEspecialistaAEditarId(esp.id);
     setEditFormData(esp);
     setEditServicioIds(esp.servicios.map(s => s.id));
-    setEditFotoPublicId("");
+    setEditFotoPublicId(esp.fotoPublicId || "");
     setErrorEditar(null);
   };
 
@@ -126,6 +119,8 @@ export const useEspecialistas = () => {
           email: editFormData.email || undefined,
           descripcion: editFormData.descripcion || undefined,
           fotoPublicId: editFotoPublicId || undefined,
+          fotoAlt: editFormData.fotoAlt || undefined,
+          biografia: editFormData.biografia || undefined,
         },
       });
       setNotificacion(

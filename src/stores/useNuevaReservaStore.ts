@@ -62,7 +62,17 @@ export const useNuevaReservaStore = create<NuevaReservaState>()(set => ({
   setEspecialista: (especialistaId, especialistaNombre, bloqueHorarioIds) =>
     set({ especialistaId, especialistaNombre, bloqueHorarioIds }),
   setServicio: (servicioId, servicioNombre) =>
-    set({ servicioId, servicioNombre }),
+    set({
+      servicioId,
+      servicioNombre,
+      // Cambiar de servicio invalida la cadena: el backend no valida que el especialista atienda el nuevo servicio.
+      fecha: null,
+      horasSeleccionadas: [],
+      hora: null,
+      especialistaId: null,
+      especialistaNombre: null,
+      bloqueHorarioIds: [],
+    }),
   setNotaPaciente: notaPaciente => set({ notaPaciente }),
   setNotaInterna: notaInterna => set({ notaInterna }),
   reiniciar: () => set(ESTADO_INICIAL),

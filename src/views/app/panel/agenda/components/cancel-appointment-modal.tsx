@@ -126,7 +126,7 @@ export function CancelAppointmentModal({
             type="button"
             disabled={!motivo.trim() || guardando}
             onClick={handleConfirmarCancelacion}
-            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-red-700 text-white hover:bg-red-800 border-0 rounded-none shadow-none disabled:opacity-50"
+            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#003366] text-white hover:bg-[#002244] border-0 rounded-none shadow-none disabled:opacity-50"
           >
             {guardando ? "CANCELANDO..." : "CONFIRMAR CANCELACIÓN"}
           </button>

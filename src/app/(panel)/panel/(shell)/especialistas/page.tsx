@@ -1,5 +1,5 @@
-import { EspecialistasView } from "@/views";
+import { redirect } from "next/navigation";
 
 export default function EspecialistasPage() {
-  return <EspecialistasView />;
+  redirect("/panel/configuracion?tab=especialistas");
 }

@@ -1,5 +1,6 @@
 export {
   useCreateBloqueoMutation,
+  useGenerarAgendaMutation,
   useGetAgenda,
   useGetBloqueos,
   useRevertirBloqueoMutation,
@@ -23,7 +24,12 @@ export {
   useGetFechasDisponibles,
   useGetHorasDisponibles,
 } from "./use-disponibilidad-service";
-export { useGetEmpresas } from "./use-empresa-service";
+export {
+  useCreateEmpresaMutation,
+  useGetEmpresas,
+  useUpdateEmpresaEstadoMutation,
+  useUpdateEmpresaMutation,
+} from "./use-empresa-service";
 export {
   useCreateEspecialistaMutation,
   useDeleteEspecialistaMutation,
@@ -74,7 +80,12 @@ export {
   useGetReporteReservas,
   useGetReporteVentas,
 } from "./use-reporte-service";
-export { useGetServicios } from "./use-servicio-service";
+export {
+  useCreateServicioMutation,
+  useGetServicios,
+  useUpdateServicioEstadoMutation,
+  useUpdateServicioMutation,
+} from "./use-servicio-service";
 export {
   useCreateRepartoMutation,
   useCreateTasaImpuestoMutation,

@@ -104,7 +104,7 @@ export function ImageUploader({
                 type="button"
                 onClick={handleEliminar}
                 disabled={subiendo}
-                className="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors"
+                className="px-3 py-1.5 text-xs font-bold text-blue-900 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors"
               >
                 Eliminar
               </button>

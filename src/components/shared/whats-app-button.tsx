@@ -2,10 +2,12 @@
 
 import React from "react";
 
+import { useGetLandingConfig } from "@/hooks/api";
 import { CLINIC_INFO } from "@/lib/utils";
 
 export default function WhatsAppButton() {
-  const whatsappUrl = CLINIC_INFO.socials.whatsapp;
+  const { data: config } = useGetLandingConfig();
+  const whatsappUrl = config?.socialWhatsApp || CLINIC_INFO.socials.whatsapp;
 
   return (
     <a

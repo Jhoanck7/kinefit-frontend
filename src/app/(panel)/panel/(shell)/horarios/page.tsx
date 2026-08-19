@@ -1,5 +1,5 @@
-import { HorariosView } from "@/views";
+import { redirect } from "next/navigation";
 
 export default function HorariosPage() {
-  return <HorariosView />;
+  redirect("/panel/configuracion?tab=horarios");
 }

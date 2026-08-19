@@ -283,10 +283,10 @@ export function GestionBloqueosModal({
                           {b.motivo}
                         </span>
                         <span
-                          className={`border px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none ${
+                          className={`px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none ${
                             esActivo
-                              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                              : "border-slate-200 bg-slate-50 text-slate-500"
+                              ? "bg-emerald-700 text-white"
+                              : "bg-slate-400 text-white"
                           }`}
                         >
                           {esActivo ? "Activo" : "Inactivo"}
@@ -302,10 +302,10 @@ export function GestionBloqueosModal({
                       <button
                         type="button"
                         onClick={() => handleToggleActivo(b.id)}
-                        className={`font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border-0 transition-colors rounded-none shadow-none text-white ${
+                        className={`font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 transition-colors rounded-none shadow-none ${
                           esActivo
-                            ? "bg-red-700 hover:bg-red-800"
-                            : "bg-emerald-700 hover:bg-emerald-800"
+                            ? "border border-slate-200 bg-white hover:bg-slate-50 text-slate-900"
+                            : "border-0 bg-[#003366] hover:bg-[#002244] text-white"
                         }`}
                       >
                         {esActivo ? "Desactivar" : "Activar"}

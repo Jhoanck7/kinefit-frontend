@@ -41,8 +41,7 @@ export const useEspecialista = () => {
       Boolean(servicioId) && Boolean(fechaIso) && Boolean(horaInicio)
     );
 
-  // Al elegir un especialista, se resuelven sus bloques reales para esa fecha
-  // (GET /bloques) — recién ahí se conocen los bloqueHorarioIds a reservar.
+  // GET /bloques resuelve los bloqueHorarioIds reales del especialista elegido.
   const { data: bloquesDelEspecialista, isLoading: cargandoBloques } =
     useGetBloquesDisponibles(
       especialistaId ?? 0,
@@ -61,8 +60,7 @@ export const useEspecialista = () => {
         .filter((id): id is number => id !== undefined)
     : [];
   const resolviendoBloques = Boolean(especialistaId) && cargandoBloques;
-  // Caso borde: el especialista tenía la cadena libre al listarse, pero algún
-  // bloque cambió de estado antes de confirmar la elección.
+  // Caso borde: un bloque cambió de estado entre listarse y confirmar la elección.
   const errorResolucionBloques =
     Boolean(especialistaId) &&
     !cargandoBloques &&

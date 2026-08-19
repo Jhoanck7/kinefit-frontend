@@ -8,6 +8,15 @@ export interface CreateCitaManualRequest {
   notaInterna?: string;
 }
 
+export interface CreateCitaPublicaRequest {
+  especialistaId: number;
+  servicioId: number;
+  bloqueHorarioId: number;
+  duracionMinutos: number;
+  empresaId?: number | null;
+  notaPaciente?: string | null;
+}
+
 export interface UpdateCitaEstadoRequest {
   estadoNuevo: string;
   motivo?: string;

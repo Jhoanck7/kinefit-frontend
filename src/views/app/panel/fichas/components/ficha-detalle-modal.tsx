@@ -1,19 +1,21 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Modal } from "@/components/shared";
 import { Badge } from "@/components/ui";
-import { useGetCita } from "@/hooks/api";
+import {
+  useGetCita,
+  useGetFichaById,
+  useGetHistorialPorPaciente,
+} from "@/hooks/api";
 import {
   formatearFechaCorta,
   formatearFechaHora,
   formatearRangoHorario,
 } from "@/lib/formato";
 import { obtenerEtiquetaCampo } from "@/lib/formatos-ficha";
-import { FichaResponse } from "@/models/responses";
-import { fichaService } from "@/services";
 
 function OutOfScopeInlineLink({ etiqueta }: { etiqueta: string }) {
   const [mostrar, setMostrar] = useState(false);
@@ -52,32 +54,21 @@ export function FichaDetalleModal({
   onSeleccionarFicha,
 }: FichaDetalleModalProps) {
   const router = useRouter();
-  const [ficha, setFicha] = useState<FichaResponse | null>(null);
-  const [anteriores, setAnteriores] = useState<FichaResponse[]>([]);
-  const [adjuntosLocales, setAdjuntosLocales] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (!fichaId) {
-      setFicha(null);
-      setAnteriores([]);
-      setAdjuntosLocales([]);
-      return;
-    }
-    fichaService.getById(Number(fichaId)).then(res => {
-      const resultado = res.data.data;
-      setFicha(resultado);
-      setAdjuntosLocales(resultado.adjuntos.map(a => a.nombreOriginal));
-    });
-  }, [fichaId]);
-
+  const { data: ficha = null } = useGetFichaById(
+    Number(fichaId),
+    Boolean(fichaId)
+  );
   const { data: cita } = useGetCita(ficha?.citaId ?? 0, Boolean(ficha));
-
-  useEffect(() => {
-    if (!cita || !ficha) return;
-    fichaService.getHistorialPorPaciente(cita.paciente.id).then(res => {
-      setAnteriores(res.data.data.filter(f => f.id !== ficha.id));
-    });
-  }, [cita, ficha]);
+  const { data: historial = [] } = useGetHistorialPorPaciente(
+    cita?.paciente.id ?? 0,
+    Boolean(cita) && Boolean(ficha)
+  );
+  const anteriores = historial.filter(f => f.id !== ficha?.id);
+  const [adjuntosSimulados, setAdjuntosSimulados] = useState<string[]>([]);
+  const adjuntosLocales = [
+    ...(ficha?.adjuntos.map(a => a.nombreOriginal) ?? []),
+    ...adjuntosSimulados,
+  ];
 
   function handleImprimirFicha() {
     if (!ficha || !cita) return;
@@ -135,7 +126,7 @@ export function FichaDetalleModal({
   function handleSubirAdjuntoSimulado(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files || e.target.files.length === 0) return;
     const archivo = e.target.files[0];
-    setAdjuntosLocales(prev => [...prev, archivo.name]);
+    setAdjuntosSimulados(prev => [...prev, archivo.name]);
   }
 
   return (

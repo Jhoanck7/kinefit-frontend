@@ -1,13 +1,19 @@
-import { Alerta, ImageUploader, Modal, TextField } from "@/components/shared";
+import {
+  Alerta,
+  ImageUploader,
+  Modal,
+  TextAreaField,
+  TextField,
+} from "@/components/shared";
 import { Button } from "@/components/ui";
-import { BackendService } from "@/types";
+import { ServicioResponse } from "@/models/responses";
 
 import { ServiciosSelector } from "./servicios-selector";
 
 interface CrearEspecialistaModalProps {
   abierto: boolean;
   onCerrar: () => void;
-  servicios: BackendService[];
+  servicios: ServicioResponse[];
   nombre: string;
   cargo: string;
   email: string;
@@ -58,7 +64,7 @@ export function CrearEspecialistaModal({
           </Alerta>
         )}
 
-        <div className="pt-2 bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6">
+        <div className="pt-2 bg-slate-50 p-4 rounded-none border border-slate-200 mb-6">
           <ImageUploader
             etiqueta="Foto de Perfil"
             value={fotoUrl}
@@ -84,7 +90,7 @@ export function CrearEspecialistaModal({
               required
             />
             <div className="md:col-span-2">
-              <label className="mb-1 block text-xs font-medium text-panel-sidebar">
+              <label className="mb-1 block text-xs font-medium text-slate-900">
                 Servicios que presta *
               </label>
               <ServiciosSelector
@@ -100,15 +106,12 @@ export function CrearEspecialistaModal({
               onChange={e => onEmailChange(e.target.value)}
             />
             <div className="md:col-span-2">
-              <label className="mb-1 block text-xs font-medium text-panel-sidebar">
-                Experiencia / Biografía / Resumen
-              </label>
-              <textarea
+              <TextAreaField
+                etiqueta="Experiencia / Biografía / Resumen"
                 value={descripcion}
                 onChange={e => onDescripcionChange(e.target.value)}
                 rows={4}
                 placeholder="Resumen del perfil o biografía..."
-                className="w-full rounded-xl border border-brand-border p-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
               />
             </div>
           </div>

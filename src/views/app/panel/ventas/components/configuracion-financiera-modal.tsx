@@ -562,10 +562,10 @@ export function ConfiguracionFinancieraModal({
 
                         <div className="flex items-center gap-3">
                           <div className="flex gap-2">
-                            <span className="border border-slate-200 bg-slate-50 px-2.5 py-0.5 font-sans text-xs font-medium text-slate-800 rounded-none">
+                            <span className="bg-slate-900 text-white px-2.5 py-0.5 font-sans text-xs font-medium rounded-none">
                               {a.porcentajeProfesional}% Prof.
                             </span>
-                            <span className="border border-slate-200 bg-slate-50 px-2.5 py-0.5 font-sans text-xs font-medium text-slate-800 rounded-none">
+                            <span className="bg-slate-900 text-white px-2.5 py-0.5 font-sans text-xs font-medium rounded-none">
                               {a.porcentajeCentro}% Clínica
                             </span>
                           </div>
@@ -680,7 +680,7 @@ export function ConfiguracionFinancieraModal({
                               IVA Débito Fiscal Chile
                             </span>
                             {idx === 0 && (
-                              <span className="border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider text-emerald-800 rounded-none">
+                              <span className="bg-emerald-700 text-white px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none">
                                 Vigente
                               </span>
                             )}

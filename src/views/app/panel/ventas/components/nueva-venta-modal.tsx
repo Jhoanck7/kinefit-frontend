@@ -3,7 +3,11 @@
 import { useState } from "react";
 
 import { Alerta, Modal } from "@/components/shared";
-import { useCreateVentaMutation, useGetPacientes } from "@/hooks/api";
+import {
+  useCreateVentaMutation,
+  useGetPacientes,
+  useGetServicios,
+} from "@/hooks/api";
 import { useDebounce } from "@/hooks/common";
 import { CreateVentaRequest } from "@/models/requests";
 import { PacienteResponse, TerminalPagoResponse } from "@/models/responses";
@@ -34,6 +38,7 @@ export function NuevaVentaModal({
       undefined,
       busquedaValida && !pacienteSeleccionado
     );
+  const { data: servicios = [] } = useGetServicios();
   const [descripcion, setDescripcion] = useState("");
   const [monto, setMonto] = useState(40000);
   const [metodoPago, setMetodoPago] = useState<MetodoPago>("Debito");
@@ -120,7 +125,7 @@ export function NuevaVentaModal({
 
           <div className="relative">
             <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
-              Paciente (opcional — dejar vacío para cliente sin registrar)
+              Paciente (opcional: dejar vacío para cliente sin registrar)
             </label>
             <input
               type="text"
@@ -158,16 +163,23 @@ export function NuevaVentaModal({
 
           <div>
             <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
-              Servicio / Concepto *
+              Servicio
             </label>
-            <input
-              type="text"
+            <select
               required
               value={descripcion}
               onChange={e => setDescripcion(e.target.value)}
-              placeholder="Ej: Evaluación Kinesiología"
               className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
-            />
+            >
+              <option value="" disabled>
+                Selecciona un servicio...
+              </option>
+              {servicios.map(s => (
+                <option key={s.id} value={s.nombre}>
+                  {s.nombre}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

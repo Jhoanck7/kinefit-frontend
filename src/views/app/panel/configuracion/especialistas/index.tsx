@@ -39,31 +39,31 @@ export default function EspecialistasView() {
   return (
     <div className="mx-auto max-w-5xl space-y-6 pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-brand-border pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-panel-sidebar">
+          <h1 className="text-2xl font-bold text-slate-900">
             Gestión del Equipo y Gerencia
           </h1>
-          <p className="text-sm text-brand-muted">
+          <p className="text-sm text-slate-500">
             Agrega, edita o elimina integrantes del equipo.
           </p>
         </div>
 
         <Button onClick={actions.handleAbrirFormNuevo}>
-          ➕ Agregar Integrante del Equipo
+          Agregar Integrante del Equipo
         </Button>
       </div>
 
       {/* Lista de Integrantes Existentes */}
       {cargando ? (
         <Card className="p-6">
-          <p className="text-sm text-brand-muted py-8 text-center">
+          <p className="text-sm text-slate-500 py-8 text-center">
             Cargando equipo desde el servidor...
           </p>
         </Card>
       ) : especialistas.length === 0 ? (
         <Card className="p-6">
-          <p className="text-sm text-brand-muted py-8 text-center">
+          <p className="text-sm text-slate-500 py-8 text-center">
             No hay integrantes registrados en el equipo.
           </p>
         </Card>
@@ -130,10 +130,10 @@ export default function EspecialistasView() {
         onCerrar={actions.handleCerrarNotificacion}
       >
         <div className="p-8 text-center">
-          <h2 className="text-lg font-semibold text-panel-sidebar">
+          <h2 className="text-lg font-semibold text-slate-900">
             Acción Completada
           </h2>
-          <p className="mt-2 text-sm text-brand-muted">{notificacion}</p>
+          <p className="mt-2 text-sm text-slate-500">{notificacion}</p>
           <Button
             className="mt-6"
             onClick={actions.handleCerrarNotificacion}

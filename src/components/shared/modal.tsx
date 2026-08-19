@@ -24,7 +24,7 @@ export function Modal({
   abierto,
   onCerrar,
   children,
-  ancho = "max-w-6xl",
+  ancho = "sm:max-w-6xl",
   className,
 }: ModalProps) {
   return (
