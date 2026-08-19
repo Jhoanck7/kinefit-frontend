@@ -99,8 +99,8 @@ export default function HeroSection({
               <div className="flex sm:flex-col justify-between sm:justify-center gap-2 sm:gap-6 border-b sm:border-b-0 sm:border-r border-slate-200 pb-4 sm:pb-0 sm:pr-6 shrink-0">
                 {[
                   { step: 1, label: "Servicio" },
-                  { step: 2, label: "Especialista" },
-                  { step: 3, label: "Horario" },
+                  { step: 2, label: "Horario" },
+                  { step: 3, label: "Especialista" },
                   { step: 4, label: "Reserva" },
                 ].map(s => {
                   const isActive = currentStep === s.step;

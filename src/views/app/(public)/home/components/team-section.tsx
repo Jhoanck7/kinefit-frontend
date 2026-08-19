@@ -108,7 +108,7 @@ export default function TeamSection({
                         height={168}
                         priority
                         unoptimized
-                        className="w-full h-full object-cover object-center group-hover/card:grayscale-0 transition-all duration-500 rounded-full"
+                        className="w-full h-full object-cover object-center scale-[1.55] origin-[50%_20%] group-hover/card:grayscale-0 transition-all duration-500 rounded-full"
                       />
                     </div>
 

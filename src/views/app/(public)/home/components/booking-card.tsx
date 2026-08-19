@@ -5,12 +5,18 @@ import React, { useEffect, useRef, useState } from "react";
 
 import {
   useAuthenticateWithGoogleMutation,
-  useGetAvailableSlots,
-  useGetEspecialistas,
+  useGetEspecialistasDisponibles,
+  useGetFechasDisponibles,
+  useGetHorasDisponibles,
   useGetServices,
   useSubmitBookingMutation,
 } from "@/hooks/api";
+import { bloqueHorarioService } from "@/services";
 import { useBookingStore } from "@/stores";
+
+const DURACION_BLOQUE_MIN = 30;
+const MAX_BLOQUES = 3;
+const LIMITE_MANANA = "13:00";
 
 const parseDateInfo = (dateStr: string) => {
   if (!dateStr || !dateStr.includes("-")) {
@@ -50,15 +56,76 @@ const parseDateInfo = (dateStr: string) => {
   };
 };
 
+function sumarMinutos(hora: string, minutos: number): string {
+  const [h, m] = hora.split(":").map(Number);
+  const total = h * 60 + m + minutos;
+  const hFin = Math.floor(total / 60);
+  const mFin = total % 60;
+  return `${hFin.toString().padStart(2, "0")}:${mFin.toString().padStart(2, "0")}`;
+}
+
+function sonConsecutivas(horasOrdenadas: string[]): boolean {
+  for (let i = 1; i < horasOrdenadas.length; i++) {
+    if (
+      sumarMinutos(horasOrdenadas[i - 1], DURACION_BLOQUE_MIN) !==
+      horasOrdenadas[i]
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function HorariosGrid({
+  horas,
+  seleccionadas,
+  onSeleccionar,
+}: {
+  horas: string[];
+  seleccionadas: string[];
+  onSeleccionar: (hora: string) => void;
+}) {
+  if (horas.length === 0) {
+    return (
+      <p className="text-xs text-slate-400">
+        Sin horarios disponibles en este tramo.
+      </p>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      {horas.map(hora => {
+        const seleccionado = seleccionadas.includes(hora);
+        return (
+          <button
+            key={hora}
+            type="button"
+            onClick={() => onSeleccionar(hora)}
+            className={`flex items-center justify-center gap-1 rounded-none border px-2 py-2 text-xs transition-colors cursor-pointer ${
+              seleccionado
+                ? "border-brand-primary bg-brand-primary text-white font-bold"
+                : "border-slate-200 bg-white text-slate-900 hover:bg-slate-50"
+            }`}
+          >
+            <span>{hora}</span>
+            {seleccionado && <span className="text-[10px] font-bold">✓</span>}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function BookingCard() {
   const router = useRouter();
   const {
     selectedServiceId,
     selectedServiceName,
-    selectedSpecialistId,
     selectedDate,
+    selectedHoras,
+    selectedSpecialistId,
     selectedBloqueHorarioId,
-    selectedDuracionMinutos,
     patientName,
     patientEmail,
     patientPhone,
@@ -66,10 +133,8 @@ export default function BookingCard() {
     authToken,
     currentStep,
     setSelectedService,
+    setSelectedHorario,
     setSelectedSpecialist,
-    setSelectedDate,
-    setSelectedTimeSlot,
-    setSelectedDuracionMinutos,
     setPatientInfo,
     setAuthToken,
     nextStep,
@@ -78,29 +143,57 @@ export default function BookingCard() {
   } = useBookingStore();
 
   const [authError, setAuthError] = useState<string | null>(null);
+  const [errorSeleccion, setErrorSeleccion] = useState<string | null>(null);
+  const [resolviendoEspecialistaId, setResolviendoEspecialistaId] = useState<
+    number | null
+  >(null);
+  const [errorResolucion, setErrorResolucion] = useState<string | null>(null);
 
   const { data: services = [], isLoading: loadingServices } = useGetServices();
-  const { data: specialists = [], isLoading: loadingSpecialists } =
-    useGetEspecialistas(selectedServiceId ?? undefined, true);
-  const { data: availableSlots = [], isLoading: loadingSlots } =
-    useGetAvailableSlots(
-      selectedSpecialistId ?? undefined,
-      selectedDate ?? undefined
-    );
-  const isLoading = loadingServices || loadingSpecialists || loadingSlots;
 
-  const availableDates =
-    specialists.find(sp => sp.id === selectedSpecialistId)?.fechasDisponibles ??
-    [];
+  const duracionMinutos = selectedHoras.length * DURACION_BLOQUE_MIN;
+  const horaInicio = [...selectedHoras].sort()[0] ?? "";
+  const todayIso = new Date().toISOString().slice(0, 10);
+
+  const { isLoading: loadingFechas } = useGetFechasDisponibles(
+    selectedServiceId ?? 0,
+    DURACION_BLOQUE_MIN,
+    Boolean(selectedServiceId)
+  );
+  const { data: horasDisponibles = [], isLoading: loadingHoras } =
+    useGetHorasDisponibles(
+      selectedServiceId ?? 0,
+      selectedDate ?? "",
+      DURACION_BLOQUE_MIN,
+      Boolean(selectedServiceId) && Boolean(selectedDate)
+    );
+
+  const horasManana = horasDisponibles.filter(h => h < LIMITE_MANANA);
+  const horasTarde = horasDisponibles.filter(h => h >= LIMITE_MANANA);
+
+  const {
+    data: especialistasDisponibles = [],
+    isLoading: loadingEspecialistas,
+  } = useGetEspecialistasDisponibles(
+    selectedServiceId ?? 0,
+    selectedDate ?? "",
+    horaInicio,
+    duracionMinutos,
+    currentStep === 3 &&
+      Boolean(selectedServiceId) &&
+      Boolean(selectedDate) &&
+      Boolean(horaInicio)
+  );
+
+  const isLoading =
+    loadingServices ||
+    (currentStep === 2 && (loadingFechas || loadingHoras)) ||
+    (currentStep === 3 && loadingEspecialistas);
 
   const authMutation = useAuthenticateWithGoogleMutation();
   const submitMutation = useSubmitBookingMutation();
 
   const webpayFormRef = useRef<HTMLFormElement>(null);
-
-  const todayStr = React.useMemo(() => {
-    return new Date().toISOString().split("T")[0];
-  }, []);
 
   // Cargar e Inicializar Google Sign-In SDK
   useEffect(() => {
@@ -184,17 +277,74 @@ export default function BookingCard() {
     nextStep();
   };
 
-  const handleSpecialistSelect = (id: number, name: string) => {
-    setSelectedSpecialist(id, name);
-    nextStep();
+  const handleSeleccionarHora = (hora: string) => {
+    if (!selectedDate) return;
+
+    const yaSeleccionada = selectedHoras.includes(hora);
+    let nuevas: string[];
+
+    if (yaSeleccionada) {
+      nuevas = selectedHoras.filter(h => h !== hora);
+    } else {
+      if (selectedHoras.length >= MAX_BLOQUES) {
+        setErrorSeleccion(
+          "Puedes reservar como máximo 3 bloques (90 minutos)."
+        );
+        return;
+      }
+      nuevas = [...selectedHoras, hora].sort();
+    }
+
+    if (nuevas.length > 1 && !sonConsecutivas(nuevas)) {
+      setErrorSeleccion(
+        "Los bloques deben ser consecutivos. Selecciona horarios seguidos."
+      );
+      return;
+    }
+
+    setErrorSeleccion(null);
+    setSelectedHorario(selectedDate, nuevas);
   };
 
   const handleDateChange = (dateStr: string) => {
-    setSelectedDate(dateStr);
+    setErrorSeleccion(null);
+    setSelectedHorario(dateStr, []);
   };
 
-  const handleTimeSelect = (horaInicio: string, slotId: number) => {
-    setSelectedTimeSlot(horaInicio, slotId);
+  const handleContinuarHorario = () => {
+    if (selectedHoras.length === 0) {
+      setErrorSeleccion("Selecciona al menos un bloque de horario.");
+      return;
+    }
+    nextStep();
+  };
+
+  const handleSpecialistSelect = async (id: number) => {
+    const especialista = especialistasDisponibles.find(e => e.id === id);
+    if (!especialista || !selectedDate) return;
+
+    setErrorResolucion(null);
+    setResolviendoEspecialistaId(id);
+    try {
+      const res = await bloqueHorarioService.getDisponibles(id, selectedDate);
+      const bloque = res.data.data.find(
+        b => b.horaInicio === horaInicio && b.estado === "Disponible"
+      );
+      if (bloque) {
+        setSelectedSpecialist(especialista.id, especialista.nombre, bloque.id);
+        nextStep();
+      } else {
+        setErrorResolucion(
+          "Ningún especialista tiene disponible esa franja completa. Prueba con otro horario."
+        );
+      }
+    } catch {
+      setErrorResolucion(
+        "No se pudo confirmar la disponibilidad. Intenta nuevamente."
+      );
+    } finally {
+      setResolviendoEspecialistaId(null);
+    }
   };
 
   const handlePatientInfoChange = (
@@ -231,7 +381,7 @@ export default function BookingCard() {
       !selectedServiceId ||
       !selectedSpecialistId ||
       !selectedBloqueHorarioId ||
-      !selectedDuracionMinutos
+      !duracionMinutos
     ) {
       return;
     }
@@ -246,7 +396,7 @@ export default function BookingCard() {
       selectedServiceId,
       selectedSpecialistId,
       selectedBloqueHorarioId,
-      selectedDuracionMinutos,
+      selectedDuracionMinutos: duracionMinutos,
       patientName,
       patientPhone,
       patientRut,
@@ -405,7 +555,7 @@ export default function BookingCard() {
         </div>
       )}
 
-      {/* Step 2: Specialist Selection */}
+      {/* Step 2: Horario */}
       {currentStep === 2 && (
         <div className="flex flex-col h-full">
           <div className="text-left shrink-0 mb-6">
@@ -413,31 +563,150 @@ export default function BookingCard() {
               Paso 2 de 4
             </h3>
             <p className="text-slate-800 text-base font-bold">
+              Fecha y Horario
+            </p>
+          </div>
+
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-4">
+            {errorSeleccion && (
+              <p className="text-[11px] text-rose-600 font-semibold bg-rose-50 border border-rose-200 rounded-none px-3 py-2">
+                {errorSeleccion}
+              </p>
+            )}
+
+            {/* Selector de fecha (calcado de nueva-reserva/horario) */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                Seleccionar Fecha de Atención
+              </label>
+              <input
+                type="date"
+                value={selectedDate ?? ""}
+                min={todayIso}
+                onChange={e => handleDateChange(e.target.value)}
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-brand-primary focus:outline-none cursor-pointer"
+              />
+              {selectedDate && (
+                <p className="text-xs text-slate-700 pt-1">
+                  Fecha seleccionada:{" "}
+                  <span className="font-medium text-slate-900">
+                    {parseDateInfo(selectedDate).formattedFull}
+                  </span>
+                </p>
+              )}
+              {horaInicio && selectedHoras.length > 0 && (
+                <p className="text-xs text-slate-700 pt-1">
+                  Horario seleccionado:{" "}
+                  <span className="font-medium text-slate-900">
+                    {horaInicio} a{" "}
+                    {sumarMinutos(
+                      [...selectedHoras].sort().slice(-1)[0],
+                      DURACION_BLOQUE_MIN
+                    )}{" "}
+                    hrs
+                  </span>{" "}
+                  ({duracionMinutos} minutos)
+                </p>
+              )}
+            </div>
+
+            {/* Selector de horario acumulativo (1 a 3 bloques consecutivos) */}
+            {!selectedDate ? (
+              <p className="text-xs text-slate-400">
+                Selecciona primero una fecha para ver los horarios.
+              </p>
+            ) : loadingHoras ? (
+              <p className="text-xs text-slate-400">
+                Cargando horarios disponibles...
+              </p>
+            ) : horasDisponibles.length === 0 ? (
+              <p className="text-xs text-slate-400">
+                Sin bloques disponibles para esta fecha. Prueba con otra.
+              </p>
+            ) : (
+              <>
+                <div>
+                  <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-2">
+                    Mañana
+                  </p>
+                  <HorariosGrid
+                    horas={horasManana}
+                    seleccionadas={selectedHoras}
+                    onSeleccionar={handleSeleccionarHora}
+                  />
+                </div>
+                <div className="border-t border-slate-200" />
+                <div>
+                  <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-2">
+                    Tarde
+                  </p>
+                  <HorariosGrid
+                    horas={horasTarde}
+                    seleccionadas={selectedHoras}
+                    onSeleccionar={handleSeleccionarHora}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center shrink-0 mt-4 border-t border-brand-border/30 pt-4">
+            <button
+              onClick={prevStep}
+              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
+            >
+              Atrás
+            </button>
+            <button
+              onClick={handleContinuarHorario}
+              disabled={selectedHoras.length === 0}
+              className={`rounded-xl px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
+                selectedHoras.length > 0
+                  ? "bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer shadow-md"
+                  : "bg-slate-100 text-slate-400 cursor-not-allowed"
+              }`}
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Especialista */}
+      {currentStep === 3 && (
+        <div className="flex flex-col h-full">
+          <div className="text-left shrink-0 mb-6">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">
+              Paso 3 de 4
+            </h3>
+            <p className="text-slate-800 text-base font-bold">
               Selecciona un Especialista
             </p>
           </div>
 
           <div className="flex-1 min-h-0 flex flex-col gap-3 overflow-y-auto pr-1">
-            {specialists
-              .filter(sp => sp.activo)
-              .map(sp => (
-                <button
-                  key={sp.id}
-                  onClick={() => handleSpecialistSelect(sp.id, sp.nombre)}
-                  className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer ${
-                    selectedSpecialistId === sp.id
-                      ? "border-brand-primary bg-brand-primary/10 shadow-md shadow-brand-primary/10"
-                      : "border-brand-border bg-white hover:border-brand-primary/50 hover:bg-slate-50"
-                  }`}
-                >
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-900">
-                      {sp.nombre}
-                    </h4>
-                    <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-                      {sp.cargo}
-                    </span>
-                  </div>
+            {especialistasDisponibles.map(sp => (
+              <button
+                key={sp.id}
+                onClick={() => handleSpecialistSelect(sp.id)}
+                disabled={resolviendoEspecialistaId !== null}
+                className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer disabled:cursor-wait ${
+                  selectedSpecialistId === sp.id
+                    ? "border-brand-primary bg-brand-primary/10 shadow-md shadow-brand-primary/10"
+                    : "border-brand-border bg-white hover:border-brand-primary/50 hover:bg-slate-50"
+                }`}
+              >
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    {sp.nombre}
+                  </h4>
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                    {sp.cargo}
+                  </span>
+                </div>
+                {resolviendoEspecialistaId === sp.id ? (
+                  <div className="w-5 h-5 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
+                ) : (
                   <svg
                     className="w-5 h-5 text-brand-primary"
                     fill="none"
@@ -451,12 +720,20 @@ export default function BookingCard() {
                       d="M9 5l7 7-7 7"
                     />
                   </svg>
-                </button>
-              ))}
+                )}
+              </button>
+            ))}
 
-            {specialists.filter(sp => sp.activo).length === 0 && !isLoading && (
+            {especialistasDisponibles.length === 0 && !isLoading && (
               <p className="text-xs text-brand-muted text-center py-8">
-                No hay profesionales disponibles para este servicio.
+                Ningún especialista tiene disponible esa franja completa. Prueba
+                con otro horario.
+              </p>
+            )}
+
+            {errorResolucion && (
+              <p className="text-[11px] text-rose-500 font-semibold text-center">
+                {errorResolucion}
               </p>
             )}
           </div>
@@ -467,195 +744,6 @@ export default function BookingCard() {
               className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
             >
               Atrás
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 3: Date & Time */}
-      {currentStep === 3 && (
-        <div className="flex flex-col h-full">
-          <div className="text-left shrink-0 mb-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">
-              Paso 3 de 4
-            </h3>
-            <p className="text-slate-800 text-base font-bold">
-              Fecha y Horario
-            </p>
-          </div>
-
-          <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-5">
-            {/* Selector de fecha */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className="text-xs text-slate-700 font-semibold flex items-center gap-1.5">
-                  <svg
-                    className="w-4 h-4 text-brand-primary"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  1. Selecciona la Fecha
-                </label>
-                {selectedDate && (
-                  <span className="text-[11px] font-bold text-brand-primary bg-brand-primary/10 px-2.5 py-0.5 rounded-full border border-brand-primary/20">
-                    {parseDateInfo(selectedDate).formattedFull}
-                  </span>
-                )}
-              </div>
-
-              {availableDates && availableDates.length > 0 ? (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[160px] overflow-y-auto pr-1">
-                  {availableDates.map(dateStr => {
-                    const info = parseDateInfo(dateStr);
-                    const isSelected = selectedDate === dateStr;
-                    return (
-                      <button
-                        key={dateStr}
-                        type="button"
-                        onClick={() => handleDateChange(dateStr)}
-                        className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all cursor-pointer ${
-                          isSelected
-                            ? "bg-gradient-to-br from-brand-primary to-emerald-600 text-white border-brand-primary shadow-lg shadow-brand-primary/25 scale-[1.02]"
-                            : "bg-slate-50 border-slate-200/80 text-slate-700 hover:bg-white hover:border-brand-primary/40 hover:shadow-sm"
-                        }`}
-                      >
-                        <span
-                          className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? "text-white/80" : "text-slate-400"}`}
-                        >
-                          {info.dayName}
-                        </span>
-                        <span className="text-lg font-extrabold my-0.5 leading-none">
-                          {info.dayNumber}
-                        </span>
-                        <span
-                          className={`text-[10px] font-semibold uppercase ${isSelected ? "text-white/90" : "text-slate-500"}`}
-                        >
-                          {info.monthName}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={selectedDate || ""}
-                    onChange={e => handleDateChange(e.target.value)}
-                    min={todayStr}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-sm font-semibold text-slate-900 focus:outline-none focus:border-brand-primary focus:bg-white transition-all cursor-pointer"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Selector de horario */}
-            {selectedDate && (
-              <div>
-                <label className="block text-xs text-slate-700 font-semibold mb-2 flex items-center gap-1.5">
-                  <svg
-                    className="w-4 h-4 text-brand-primary"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  2. Selecciona la Franja Horaria
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[160px] overflow-y-auto pr-1">
-                  {availableSlots.map(slot => {
-                    const displayHora = `${slot.horaInicio} - ${slot.horaFin}`;
-                    const isSelected = selectedBloqueHorarioId === slot.id;
-                    return (
-                      <button
-                        key={slot.id}
-                        type="button"
-                        onClick={() =>
-                          handleTimeSelect(slot.horaInicio, slot.id)
-                        }
-                        className={`p-3 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
-                          isSelected
-                            ? "border-brand-primary bg-brand-primary text-white shadow-md shadow-brand-primary/20"
-                            : "border-slate-200/80 bg-white text-slate-700 hover:border-brand-primary hover:bg-slate-50"
-                        }`}
-                      >
-                        {displayHora}
-                      </button>
-                    );
-                  })}
-
-                  {availableSlots.length === 0 && !isLoading && (
-                    <p className="text-[11px] text-rose-500 font-medium col-span-3 text-center py-4">
-                      No hay franjas disponibles ese día.
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Duración de la Atención */}
-            {selectedBloqueHorarioId && (
-              <div>
-                <label className="block text-xs text-slate-700 font-semibold mb-2">
-                  3. ¿Cuánto Durará tu Atención?
-                </label>
-                <div className="grid grid-cols-3 gap-2.5">
-                  {[30, 60, 90].map(minutos => (
-                    <button
-                      key={minutos}
-                      type="button"
-                      onClick={() => setSelectedDuracionMinutos(minutos)}
-                      className={`p-3 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
-                        selectedDuracionMinutos === minutos
-                          ? "border-brand-primary bg-brand-primary text-white shadow-md shadow-brand-primary/20"
-                          : "border-slate-200/80 bg-white text-slate-700 hover:border-brand-primary hover:bg-slate-50"
-                      }`}
-                    >
-                      {minutos} min
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="flex justify-between items-center shrink-0 mt-4 border-t border-brand-border/30 pt-4">
-            <button
-              onClick={prevStep}
-              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
-            >
-              Atrás
-            </button>
-            <button
-              onClick={nextStep}
-              disabled={
-                !selectedDate ||
-                !selectedBloqueHorarioId ||
-                !selectedDuracionMinutos
-              }
-              className={`rounded-xl px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
-                selectedDate &&
-                selectedBloqueHorarioId &&
-                selectedDuracionMinutos
-                  ? "bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer shadow-md"
-                  : "bg-slate-100 text-slate-400 cursor-not-allowed"
-              }`}
-            >
-              Siguiente
             </button>
           </div>
         </div>

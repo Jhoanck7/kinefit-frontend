@@ -4,12 +4,11 @@ interface BookingState {
   // Selección del usuario
   selectedServiceId: number | null;
   selectedServiceName: string | null;
+  selectedDate: string | null; // YYYY-MM-DD
+  selectedHoras: string[]; // HH:MM, 1 a 3 bloques consecutivos de 30 min
   selectedSpecialistId: number | null;
   selectedSpecialistName: string | null;
-  selectedDate: string | null; // YYYY-MM-DD
-  selectedTimeSlot: string | null; // HH:MM
   selectedBloqueHorarioId: number | null;
-  selectedDuracionMinutos: number | null;
   patientName: string;
   patientEmail: string;
   patientPhone: string;
@@ -19,10 +18,12 @@ interface BookingState {
 
   // Actions
   setSelectedService: (id: number, name: string) => void;
-  setSelectedSpecialist: (id: number, name: string) => void;
-  setSelectedDate: (date: string | null) => void;
-  setSelectedTimeSlot: (slot: string | null, id: number | null) => void;
-  setSelectedDuracionMinutos: (minutos: number | null) => void;
+  setSelectedHorario: (date: string | null, horas: string[]) => void;
+  setSelectedSpecialist: (
+    id: number,
+    name: string,
+    bloqueHorarioId: number | null
+  ) => void;
   setPatientInfo: (info: {
     name: string;
     email: string;
@@ -39,12 +40,11 @@ interface BookingState {
 const ESTADO_INICIAL = {
   selectedServiceId: null,
   selectedServiceName: null,
+  selectedDate: null,
+  selectedHoras: [],
   selectedSpecialistId: null,
   selectedSpecialistName: null,
-  selectedDate: null,
-  selectedTimeSlot: null,
   selectedBloqueHorarioId: null,
-  selectedDuracionMinutos: null,
   patientName: "",
   patientEmail: "",
   patientPhone: "",
@@ -60,34 +60,28 @@ export const useBookingStore = create<BookingState>(set => ({
     set({
       selectedServiceId: id,
       selectedServiceName: name,
+      selectedDate: null,
+      selectedHoras: [],
       selectedSpecialistId: null,
       selectedSpecialistName: null,
-      selectedDate: null,
-      selectedTimeSlot: null,
       selectedBloqueHorarioId: null,
     }),
 
-  setSelectedSpecialist: (id, name) =>
+  setSelectedHorario: (date, horas) =>
+    set({
+      selectedDate: date,
+      selectedHoras: horas,
+      selectedSpecialistId: null,
+      selectedSpecialistName: null,
+      selectedBloqueHorarioId: null,
+    }),
+
+  setSelectedSpecialist: (id, name, bloqueHorarioId) =>
     set({
       selectedSpecialistId: id,
       selectedSpecialistName: name,
-      selectedDate: null,
-      selectedTimeSlot: null,
-      selectedBloqueHorarioId: null,
+      selectedBloqueHorarioId: bloqueHorarioId,
     }),
-
-  setSelectedDate: date =>
-    set({
-      selectedDate: date,
-      selectedTimeSlot: null,
-      selectedBloqueHorarioId: null,
-    }),
-
-  setSelectedTimeSlot: (slot, id) =>
-    set({ selectedTimeSlot: slot, selectedBloqueHorarioId: id }),
-
-  setSelectedDuracionMinutos: minutos =>
-    set({ selectedDuracionMinutos: minutos }),
 
   setPatientInfo: info =>
     set(state => ({
