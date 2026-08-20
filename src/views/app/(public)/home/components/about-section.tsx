@@ -27,7 +27,7 @@ export default function AboutSection({
     }
 
     // Instagram Post o Reel link
-    const match = rawUrl.match(/instagram\.com\/(?:p|reel|reels|tv)\/([a-zA-Z0-9_-]+)/i)
+    const match = rawUrl.match(/(?:p|reel|tv)\/([^/?#&]+)/i);
     if (match) {
       const type = match[1];
       const shortcode = match[2];
