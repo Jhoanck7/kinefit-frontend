@@ -27,7 +27,7 @@ export default function AboutSection({
     }
 
     // Instagram Post o Reel link
-    const match = rawUrl.match(/instagram\.com\/(p|reel|tv)\/([^/?#&]+)/i);
+    const match = rawUrl.match(/instagram\.com\/(?:p|reel|reels|tv)\/([a-zA-Z0-9_-]+)/i)
     if (match) {
       const type = match[1];
       const shortcode = match[2];
@@ -41,12 +41,25 @@ export default function AboutSection({
   };
 
   const { isDirectVideo, embedSrc } = getEmbedUrl(videoUrl);
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as any).instgrm) {
+      (window as any).instgrm.Embeds.process();
+    }
+  }, [embedSrc]);
 
   return (
     <section
       id="about"
       className="py-20 sm:py-28 bg-white text-slate-900 border-b border-slate-200/60 overflow-hidden w-full"
     >
+      {/* Script oficial de Instagram */}
+      <Script
+        src="https://www.instagram.com/embed.js"
+        strategy="lazyOnload"
+        onLoad={() => {
+          if ((window as any).instgrm) (window as any).instgrm.Embeds.process();
+        }}
+      />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Contenedor de 2 Columnas (Texto e Instagram Video) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
