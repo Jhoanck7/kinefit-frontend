@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
+import Script from "next/script";
 import { LandingConfigResponse } from "@/models/responses";
 
 export default function AboutSection({
