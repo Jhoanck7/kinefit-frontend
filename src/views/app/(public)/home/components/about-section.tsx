@@ -28,12 +28,11 @@ export default function AboutSection({
 
     // Instagram Post o Reel link
     const match = rawUrl.match(/(?:p|reel|tv)\/([^/?#&]+)/i);
-    if (match) {
-      const type = match[1];
-      const shortcode = match[2];
+    if (match && match[1]) {
+      const shortcode = match[1];
       return {
         isDirectVideo: false,
-        embedSrc: `https://www.instagram.com/${type}/${shortcode}/embed`,
+        embedSrc: `https://www.instagram.com/reel/${shortcode}/embed/`,
       };
     }
 
