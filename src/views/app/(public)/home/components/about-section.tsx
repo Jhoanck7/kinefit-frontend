@@ -110,7 +110,9 @@ export default function AboutSection({
                   <iframe
                     src={embedSrc}
                     className="w-full h-full min-h-[500px] border-none bg-transparent"
-                    allow="encrypted-media"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    loading="lazy"
                   />
                 ) : (
                   /* Fallback Interactivo si es un enlace directo a Instagram */
