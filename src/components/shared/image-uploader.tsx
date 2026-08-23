@@ -16,7 +16,12 @@ interface ImageUploaderProps {
   etiqueta?: string;
   value?: string;
   publicId?: string;
-  onChange: (secureUrl: string, newPublicId?: string) => void;
+  onChange: (
+    secureUrl: string,
+    newPublicId?: string,
+    width?: number,
+    height?: number
+  ) => void;
   folder?: string;
 }
 
@@ -52,7 +57,12 @@ export function ImageUploader({
       const resultado = publicId
         ? await replaceMutation.mutateAsync({ publicId, file, folder })
         : await uploadMutation.mutateAsync({ file, folder });
-      onChange(resultado.url, resultado.publicId);
+      onChange(
+        resultado.url,
+        resultado.publicId,
+        resultado.ancho,
+        resultado.alto
+      );
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
     }

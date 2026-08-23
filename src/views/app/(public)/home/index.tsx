@@ -5,12 +5,12 @@ import {
 
 import {
   AboutSection,
-  GallerySection,
   HeroSection,
   LocationSection,
   ProcessSection,
   TeamSection,
   TestimonialsSection,
+  VouchersSection,
 } from "./components";
 
 interface HomeViewProps {
@@ -26,7 +26,7 @@ export default function HomeView({ config, specialists }: HomeViewProps) {
       <TeamSection config={config} initialTeam={specialists} />
       <TestimonialsSection config={config} />
       <ProcessSection config={config} />
-      <GallerySection config={config} />
+      <VouchersSection config={config} />
       <LocationSection config={config} />
     </main>
   );

@@ -8,7 +8,7 @@ import {
   TextAreaField,
   TextField,
 } from "@/components/shared";
-import { Button, Card } from "@/components/ui";
+import { Button, Card, Switch } from "@/components/ui";
 
 import { useLanding } from "./hooks";
 import { FieldDefinition, landingConfigSchema } from "./landing-config-schema";
@@ -19,13 +19,23 @@ const COL_SPAN_MD: Record<1 | 2 | 3, string> = {
   3: "md:col-span-3",
 };
 
+function esUrlAbsolutaValida(url: string | undefined): boolean {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export default function LandingView() {
   const {
     formData,
     seccionActiva,
-    slides,
     processSteps,
     reviewsList,
+    vouchers,
     limiteResenas,
     cargando,
     guardando,
@@ -183,6 +193,54 @@ export default function LandingView() {
                 <form onSubmit={actions.handleGuardar} className="space-y-6">
                   {renderDynamicFields(seccionActiva)}
 
+                  {seccionActiva === "reservas" && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between rounded-none border border-slate-200 bg-slate-50 p-4">
+                        <div>
+                          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                            Formulario de reserva activo
+                          </h3>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Apagado, el sitio deja de mostrar el formulario y el
+                            botón principal redirige a la dirección alterna.
+                          </p>
+                        </div>
+                        <Switch
+                          checked={formData.reservasHabilitadas}
+                          onCheckedChange={checked =>
+                            actions.handleChange("reservasHabilitadas", checked)
+                          }
+                        />
+                      </div>
+
+                      {!formData.reservasHabilitadas && (
+                        <>
+                          <TextField
+                            etiqueta="URL Alterna de Reserva"
+                            value={formData.reservasUrlAlterna || ""}
+                            onChange={e =>
+                              actions.handleChange(
+                                "reservasUrlAlterna",
+                                e.target.value
+                              )
+                            }
+                            obligatorio
+                            required
+                          />
+                          {!esUrlAbsolutaValida(
+                            formData.reservasUrlAlterna
+                          ) && (
+                            <Alerta tono="error">
+                              Debe ingresar una URL absoluta válida (ej:
+                              https://link.agendapro.com/...) para poder
+                              desactivar las reservas.
+                            </Alerta>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )}
+
                   {seccionActiva === "team" && (
                     <Alerta tono="info" className="mt-6">
                       <strong>Nota:</strong> Las cartas de los especialistas
@@ -270,84 +328,153 @@ export default function LandingView() {
                     </div>
                   )}
 
-                  {seccionActiva === "gallery" && (
-                    <div className="space-y-4 pt-4 border-t border-slate-200 mt-4">
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
-                          Fotos del Carrusel ({slides.length})
-                        </h3>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={actions.handleAgregarSlide}
-                        >
-                          + Agregar Foto
-                        </Button>
+                  {seccionActiva === "vouchers" && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <TextField
+                          etiqueta="Título"
+                          value={formData.vouchersTitle || ""}
+                          onChange={e =>
+                            actions.handleChange(
+                              "vouchersTitle",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <TextField
+                          etiqueta="Subtítulo"
+                          value={formData.vouchersSubtitle || ""}
+                          onChange={e =>
+                            actions.handleChange(
+                              "vouchersSubtitle",
+                              e.target.value
+                            )
+                          }
+                        />
                       </div>
-                      <div className="grid grid-cols-1 gap-4">
-                        {slides.map((slide, idx) => (
+
+                      <div className="flex items-center justify-between rounded-none border border-slate-200 bg-slate-50 p-4">
+                        <div>
+                          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                            Mostrar nota
+                          </h3>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            Texto chico debajo del subtítulo, por ejemplo
+                            condiciones o vigencia del voucher.
+                          </p>
+                        </div>
+                        <Switch
+                          checked={formData.vouchersMostrarNota}
+                          onCheckedChange={checked =>
+                            actions.handleChange("vouchersMostrarNota", checked)
+                          }
+                        />
+                      </div>
+
+                      {formData.vouchersMostrarNota && (
+                        <TextAreaField
+                          etiqueta="Nota"
+                          value={formData.vouchersNota || ""}
+                          onChange={e =>
+                            actions.handleChange("vouchersNota", e.target.value)
+                          }
+                          rows={2}
+                        />
+                      )}
+
+                      <div className="space-y-4 pt-4 border-t border-slate-200">
+                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                          Fotos ({vouchers.length})
+                        </h3>
+
+                        {vouchers.map((voucher, idx) => (
                           <div
                             key={idx}
-                            className="rounded-none border border-slate-200 bg-white p-4 flex flex-col md:flex-row gap-6"
+                            className="rounded-none border border-slate-200 bg-white p-4 space-y-3"
                           >
-                            <div className="w-full md:w-1/3">
-                              <ImageUploader
-                                etiqueta={`Foto ${idx + 1}`}
-                                value={slide.image}
-                                onChange={secureUrl =>
-                                  actions.handleSlideChange(
-                                    idx,
-                                    "image",
-                                    secureUrl
-                                  )
-                                }
-                                folder="kinefit/gallery"
-                              />
-                            </div>
-                            <div className="w-full md:w-2/3 space-y-4">
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-slate-800">
-                                  Información del Slide
-                                </span>
+                            <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                              <span className="text-xs font-bold text-slate-800">
+                                Foto #{idx + 1}
+                              </span>
+                              <div className="flex items-center gap-3">
+                                <button
+                                  type="button"
+                                  disabled={idx === 0}
+                                  onClick={() =>
+                                    actions.handleMoverVoucher(idx, "arriba")
+                                  }
+                                  className="text-xs text-blue-900 font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                                >
+                                  Subir
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={idx === vouchers.length - 1}
+                                  onClick={() =>
+                                    actions.handleMoverVoucher(idx, "abajo")
+                                  }
+                                  className="text-xs text-blue-900 font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                                >
+                                  Bajar
+                                </button>
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    actions.handleEliminarSlide(idx)
+                                    actions.handleEliminarVoucher(idx)
                                   }
                                   className="text-xs text-blue-900 font-bold hover:underline"
                                 >
                                   Eliminar
                                 </button>
                               </div>
-                              <TextField
-                                etiqueta="Título"
-                                value={slide.title}
-                                onChange={e =>
-                                  actions.handleSlideChange(
-                                    idx,
-                                    "title",
-                                    e.target.value
-                                  )
-                                }
-                                obligatorio
-                              />
-                              <TextAreaField
-                                etiqueta="Descripción"
-                                value={slide.description}
-                                onChange={e =>
-                                  actions.handleSlideChange(
-                                    idx,
-                                    "description",
-                                    e.target.value
-                                  )
-                                }
-                                rows={2}
-                                required
-                                obligatorio
-                              />
                             </div>
+                            <ImageUploader
+                              etiqueta=""
+                              value={voucher.image}
+                              onChange={(secureUrl, _publicId, width, height) =>
+                                actions.handleVoucherImageChange(
+                                  idx,
+                                  secureUrl,
+                                  width || 0,
+                                  height || 0
+                                )
+                              }
+                              folder="kinefit/vouchers"
+                            />
+                            <TextField
+                              etiqueta="Texto Alternativo (obligatorio)"
+                              value={voucher.alt}
+                              onChange={e =>
+                                actions.handleVoucherAltChange(
+                                  idx,
+                                  e.target.value
+                                )
+                              }
+                              obligatorio
+                              required
+                            />
+                            {!voucher.alt.trim() && (
+                              <Alerta tono="error">
+                                El texto alternativo es obligatorio.
+                              </Alerta>
+                            )}
                           </div>
                         ))}
+
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() =>
+                            actions.handleAgregarVoucher({
+                              image: "",
+                              alt: "",
+                              width: 0,
+                              height: 0,
+                            })
+                          }
+                        >
+                          + Agregar Foto
+                        </Button>
                       </div>
                     </div>
                   )}
@@ -513,7 +640,17 @@ export default function LandingView() {
                     >
                       Cerrar sin Guardar
                     </Button>
-                    <Button type="submit" disabled={guardando}>
+                    <Button
+                      type="submit"
+                      disabled={
+                        guardando ||
+                        (seccionActiva === "reservas" &&
+                          !formData.reservasHabilitadas &&
+                          !esUrlAbsolutaValida(formData.reservasUrlAlterna)) ||
+                        (seccionActiva === "vouchers" &&
+                          vouchers.some(v => !v.image || !v.alt.trim()))
+                      }
+                    >
                       {guardando ? "Guardando..." : "Guardar Cambios"}
                     </Button>
                   </div>

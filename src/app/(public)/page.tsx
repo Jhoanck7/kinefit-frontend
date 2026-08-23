@@ -26,6 +26,8 @@ export default async function Home() {
     socialFacebook: CLINIC_INFO.socials.facebook,
     socialWhatsApp: CLINIC_INFO.socials.whatsapp,
     socialTikTok: CLINIC_INFO.socials.tiktok,
+    reservasHabilitadas: true,
+    vouchersMostrarNota: true,
   };
 
   const specialists = especialistasRes?.data?.data ?? [];

@@ -121,6 +121,7 @@ export const useEspecialistas = () => {
           fotoPublicId: editFotoPublicId || undefined,
           fotoAlt: editFormData.fotoAlt || undefined,
           biografia: editFormData.biografia || undefined,
+          mostrarContacto: editFormData.mostrarContacto,
         },
       });
       setNotificacion(
@@ -163,9 +164,9 @@ export const useEspecialistas = () => {
     setEditFotoPublicId(publicId || "");
   };
 
-  const handleEditarCampo = (
-    campo: keyof EspecialistaResponse,
-    valor: string
+  const handleEditarCampo = <K extends keyof EspecialistaResponse>(
+    campo: K,
+    valor: EspecialistaResponse[K]
   ) => {
     if (!editFormData) return;
     setEditFormData({ ...editFormData, [campo]: valor });

@@ -1,8 +1,8 @@
-export interface GallerySlideItem {
-  title: string;
-  description: string;
+export interface VoucherItem {
   image: string;
-  features?: string[];
+  alt: string;
+  width: number;
+  height: number;
 }
 
 export interface LandingConfigResponse {
@@ -20,6 +20,7 @@ export interface LandingConfigResponse {
   clinicPhone: string;
   clinicPhoneRaw: string;
   clinicAddress: string;
+  locationAppleMapsUrl?: string;
 
   hoursWeekday: string;
   hoursSaturday: string;
@@ -28,8 +29,6 @@ export interface LandingConfigResponse {
   socialFacebook: string;
   socialWhatsApp: string;
   socialTikTok: string;
-
-  galleryJson?: string;
 
   aboutVideoUrl?: string;
 
@@ -54,15 +53,21 @@ export interface LandingConfigResponse {
   teamTitle?: string;
   teamSubtitle?: string;
 
-  galleryTitle?: string;
-  gallerySubtitle?: string;
-
   testimonialsTitle?: string;
   testimonialsSubtitle?: string;
 
   locationTitle?: string;
   locationSubtitle?: string;
   footerText?: string;
+
+  reservasHabilitadas: boolean;
+  reservasUrlAlterna?: string;
+
+  vouchersTitle?: string;
+  vouchersSubtitle?: string;
+  vouchersNota?: string;
+  vouchersMostrarNota: boolean;
+  vouchersJson?: string;
 
   updatedAt?: string;
 }

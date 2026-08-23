@@ -102,7 +102,7 @@ function HorariosGrid({
             key={hora}
             type="button"
             onClick={() => onSeleccionar(hora)}
-            className={`flex items-center justify-center gap-1 rounded-none border px-2 py-2 text-xs transition-colors cursor-pointer ${
+            className={`flex items-center justify-center gap-1 rounded-global border px-2 py-2 text-xs transition-colors cursor-pointer ${
               seleccionado
                 ? "border-brand-primary bg-brand-primary text-white font-bold"
                 : "border-slate-200 bg-white text-slate-900 hover:bg-slate-50"
@@ -437,7 +437,7 @@ export default function BookingCard() {
             <input type="hidden" name="token_ws" value={webpayData.token} />
             <button
               type="submit"
-              className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
+              className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-global px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
             >
               Ir a Webpay Plus ($10.000 CLP)
             </button>
@@ -445,7 +445,7 @@ export default function BookingCard() {
         ) : (
           <button
             onClick={() => router.push(webpayData.urlRedireccion)}
-            className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
+            className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-global px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
           >
             Abrir Pasarela Webpay Plus ($10.000 CLP)
           </button>
@@ -474,7 +474,7 @@ export default function BookingCard() {
         </p>
         <button
           onClick={handleResetBooking}
-          className="bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer"
+          className="bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-global px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer"
         >
           Reservar otra cita
         </button>
@@ -516,7 +516,7 @@ export default function BookingCard() {
                   onClick={() =>
                     handleServiceSelect(service.id, service.nombre)
                   }
-                  className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer ${
+                  className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-global border text-left transition-all cursor-pointer ${
                     selectedServiceId === service.id
                       ? "border-brand-primary bg-brand-primary/10 shadow-md shadow-brand-primary/10"
                       : "border-brand-border bg-white hover:border-brand-primary/50 hover:bg-slate-50"
@@ -569,7 +569,7 @@ export default function BookingCard() {
 
           <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-4">
             {errorSeleccion && (
-              <p className="text-[11px] text-rose-600 font-semibold bg-rose-50 border border-rose-200 rounded-none px-3 py-2">
+              <p className="text-[11px] text-rose-600 font-semibold bg-rose-50 border border-rose-200 rounded-global px-3 py-2">
                 {errorSeleccion}
               </p>
             )}
@@ -584,7 +584,7 @@ export default function BookingCard() {
                 value={selectedDate ?? ""}
                 min={todayIso}
                 onChange={e => handleDateChange(e.target.value)}
-                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-brand-primary focus:outline-none cursor-pointer"
+                className="w-full rounded-global border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-brand-primary focus:outline-none cursor-pointer"
               />
               {selectedDate && (
                 <p className="text-xs text-slate-700 pt-1">
@@ -660,7 +660,7 @@ export default function BookingCard() {
             <button
               onClick={handleContinuarHorario}
               disabled={selectedHoras.length === 0}
-              className={`rounded-xl px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
+              className={`rounded-global px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
                 selectedHoras.length > 0
                   ? "bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer shadow-md"
                   : "bg-slate-100 text-slate-400 cursor-not-allowed"
@@ -690,7 +690,7 @@ export default function BookingCard() {
                 key={sp.id}
                 onClick={() => handleSpecialistSelect(sp.id)}
                 disabled={resolviendoEspecialistaId !== null}
-                className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-2xl border text-left transition-all cursor-pointer disabled:cursor-wait ${
+                className={`w-full flex justify-between items-center p-4 sm:p-5 rounded-global border text-left transition-all cursor-pointer disabled:cursor-wait ${
                   selectedSpecialistId === sp.id
                     ? "border-brand-primary bg-brand-primary/10 shadow-md shadow-brand-primary/10"
                     : "border-brand-border bg-white hover:border-brand-primary/50 hover:bg-slate-50"
@@ -763,7 +763,7 @@ export default function BookingCard() {
 
           <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-4">
             {/* Google Sign-In Widget Container */}
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center space-y-3">
+            <div className="bg-slate-50 border border-slate-200 rounded-global p-4 text-center space-y-3">
               <span className="text-xs text-slate-600 font-semibold block">
                 Inicia sesión con tu cuenta de Google
               </span>
@@ -798,7 +798,7 @@ export default function BookingCard() {
                 placeholder="JHOAN MONTERO"
                 value={patientName}
                 onChange={e => handlePatientInfoChange("name", e.target.value)}
-                className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
+                className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
               />
             </div>
 
@@ -812,7 +812,7 @@ export default function BookingCard() {
                 placeholder="jhoanck777@gmail.com"
                 value={patientEmail}
                 onChange={e => handlePatientInfoChange("email", e.target.value)}
-                className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
+                className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
               />
             </div>
 
@@ -826,7 +826,7 @@ export default function BookingCard() {
                 placeholder="11111111-1"
                 value={patientRut}
                 onChange={e => handlePatientInfoChange("rut", e.target.value)}
-                className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
+                className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
               />
             </div>
 
@@ -840,13 +840,13 @@ export default function BookingCard() {
                 placeholder="+56 9 7551 6503"
                 value={patientPhone}
                 onChange={e => handlePatientInfoChange("phone", e.target.value)}
-                className="w-full bg-white border border-brand-border rounded-xl p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
+                className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
               />
             </div>
           </div>
 
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-600 font-semibold text-center">
+            <div className="p-3 rounded-global bg-rose-50 border border-rose-200 text-xs text-rose-600 font-semibold text-center">
               {errorMsg}
             </div>
           )}
@@ -867,7 +867,7 @@ export default function BookingCard() {
                 !patientEmail ||
                 !patientPhone
               }
-              className={`rounded-xl px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
+              className={`rounded-global px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
                 !submitMutation.isPending &&
                 patientName &&
                 patientEmail &&

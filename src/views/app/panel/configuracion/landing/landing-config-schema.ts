@@ -74,8 +74,15 @@ export const landingConfigSchema: SectionSchema[] = [
     ],
   },
   {
+    id: "reservas",
+    title: "2. Reservas en Línea",
+    description: "Activa o desactiva el formulario de reserva del sitio.",
+    hasCustomRenderer: true,
+    fields: [],
+  },
+  {
     id: "about",
-    title: "2. Quiénes Somos",
+    title: "3. Quiénes Somos",
     description: "Descripción de la clínica, video y botón de acción.",
     fields: [
       {
@@ -107,7 +114,7 @@ export const landingConfigSchema: SectionSchema[] = [
   },
   {
     id: "process",
-    title: "3. Nuestro Proceso",
+    title: "4. Nuestro Proceso",
     description: "Pasos de atención o metodología de trabajo.",
     hasCustomRenderer: true,
     fields: [
@@ -126,15 +133,15 @@ export const landingConfigSchema: SectionSchema[] = [
     ],
   },
   {
-    id: "gallery",
-    title: "4. Galería Instalaciones",
-    description: "Fotos de la clínica, boxes y espacios.",
+    id: "vouchers",
+    title: "5. Vouchers de Regalo",
+    description: "Título, subtítulo, nota y fotos de la sección de vouchers.",
     hasCustomRenderer: true,
     fields: [],
   },
   {
     id: "team",
-    title: "5. Especialistas",
+    title: "6. Especialistas",
     description: "Configuración visual de la sección del equipo.",
     fields: [
       {
@@ -153,7 +160,7 @@ export const landingConfigSchema: SectionSchema[] = [
   },
   {
     id: "location",
-    title: "6. Ubicación y Contacto",
+    title: "7. Ubicación y Contacto",
     description: "Dirección, horarios, teléfonos y correos.",
     fields: [
       {
@@ -204,6 +211,12 @@ export const landingConfigSchema: SectionSchema[] = [
         gridCols: 1,
       },
       {
+        key: "locationAppleMapsUrl",
+        label: "URL de Apple Maps (opcional)",
+        type: "text",
+        gridCols: 1,
+      },
+      {
         key: "hoursWeekday",
         label: "Horario Lunes a Viernes",
         type: "text",
@@ -221,7 +234,7 @@ export const landingConfigSchema: SectionSchema[] = [
   },
   {
     id: "social",
-    title: "7. Redes Sociales",
+    title: "8. Redes Sociales",
     description: "Links a tus perfiles de redes sociales y Footer.",
     fields: [
       {
@@ -258,7 +271,7 @@ export const landingConfigSchema: SectionSchema[] = [
   },
   {
     id: "reviews",
-    title: "8. Reseñas Google",
+    title: "9. Reseñas Google",
     description: "Sincronización de API Places y testimonios.",
     hasCustomRenderer: true,
     fields: [

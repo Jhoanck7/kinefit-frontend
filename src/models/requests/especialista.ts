@@ -7,6 +7,7 @@ export interface CreateEspecialistaRequest {
   fotoPublicId?: string;
   fotoAlt?: string;
   biografia?: string;
+  mostrarContacto?: boolean;
 }
 
 export interface UpdateEspecialistaRequest {
@@ -18,4 +19,5 @@ export interface UpdateEspecialistaRequest {
   fotoPublicId?: string;
   fotoAlt?: string;
   biografia?: string;
+  mostrarContacto?: boolean;
 }

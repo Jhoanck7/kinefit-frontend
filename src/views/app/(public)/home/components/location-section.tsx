@@ -18,7 +18,7 @@ export default function LocationSection({
   return (
     <section
       id="location"
-      className="py-24 bg-white border-b border-slate-200/60 text-slate-900 relative overflow-hidden"
+      className="scroll-mt-24 py-24 bg-white border-b border-slate-200/60 text-slate-900 relative overflow-hidden"
     >
       {/* Background decoration */}
       <div className="absolute bottom-0 right-0 w-[400px] h-[200px] bg-blue-500/5 rounded-full filter blur-[100px] pointer-events-none -z-10" />
@@ -41,8 +41,8 @@ export default function LocationSection({
             {/* Location Cards */}
             <div className="space-y-6 w-full">
               {/* Address Card */}
-              <div className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200/50 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
+              <div className="flex gap-4 p-5 rounded-global bg-slate-50 border border-slate-200/50">
+                <div className="w-10 h-10 rounded-global bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -73,8 +73,8 @@ export default function LocationSection({
               </div>
 
               {/* Hours Card */}
-              <div className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200/50 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
+              <div className="flex gap-4 p-5 rounded-global bg-slate-50 border border-slate-200/50">
+                <div className="w-10 h-10 rounded-global bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -104,8 +104,8 @@ export default function LocationSection({
               </div>
             </div>
 
-            {/* Direct Google Maps Navigation Button */}
-            <div className="mt-8 w-full">
+            {/* Direct Map Navigation Buttons */}
+            <div className="mt-8 w-full flex flex-col gap-3">
               <a
                 href={
                   config.googleReviewsUrl ||
@@ -113,16 +113,27 @@ export default function LocationSection({
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-primary-hover text-white font-bold text-xs uppercase tracking-wider px-6 py-4 rounded-xl shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-primary-hover text-white font-bold text-xs uppercase tracking-wider px-6 py-4 rounded-global shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
               >
-                <span>Abrir Dirección en Google Maps ↗</span>
+                <span>Abrir Dirección en Google Maps</span>
+              </a>
+              <a
+                href={
+                  config.locationAppleMapsUrl ||
+                  `https://maps.apple.com/?q=${encodeURIComponent(address)}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-primary-hover text-white font-bold text-xs uppercase tracking-wider px-6 py-4 rounded-global shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer"
+              >
+                <span>Abrir Dirección en Apple Maps</span>
               </a>
             </div>
           </div>
 
           {/* Right Column: Google Maps Embed Frame */}
           <div className="lg:col-span-7">
-            <div className="w-full h-[400px] lg:h-[480px] rounded-3xl overflow-hidden border border-slate-200 shadow-xl bg-slate-100 relative">
+            <div className="w-full h-[400px] lg:h-[480px] rounded-global overflow-hidden border border-slate-200 bg-slate-100 relative">
               <iframe
                 title="KineFit Chile Ubicación en Google Maps"
                 src={mapUrl}

@@ -7,6 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const defaultMetadata: Metadata = {
+  metadataBase: new URL("https://kinefitchile.com"),
   title: {
     default: "Kinefit - Centro de Kinesiología y Masoterapia",
     template: "%s | Kinefit",
@@ -34,6 +35,9 @@ export const defaultMetadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Kinefit - Centro de Kinesiología y Masoterapia",
     description:
@@ -42,12 +46,21 @@ export const defaultMetadata: Metadata = {
     locale: "es_CL",
     url: "https://kinefitchile.com",
     siteName: "Kinefit",
+    images: [
+      {
+        url: "/Kinefit color.png",
+        width: 1200,
+        height: 1200,
+        alt: "Kinefit Chile",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Kinefit - Centro de Kinesiología y Masoterapia",
     description:
       "Centro de rehabilitación kinésica, entrenamiento funcional y bienestar integral.",
+    images: ["/Kinefit color.png"],
   },
 };
 
@@ -76,10 +89,11 @@ export const CLINIC_INFO = {
 
 // Links de navegación del sitio público
 export const NAV_LINKS = [
+  { name: "Reserva", href: "#agendamiento" },
+  { name: "Enfoque", href: "#about" },
   { name: "Equipo", href: "#team" },
   { name: "Testimonios", href: "#testimonials" },
   { name: "Proceso", href: "#process" },
-  { name: "Instalaciones", href: "#instalaciones" },
   { name: "Ubicación", href: "#location" },
 ];
 

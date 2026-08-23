@@ -11,6 +11,7 @@ export interface EspecialistaResponse {
   email?: string;
   descripcion?: string;
   activo: boolean;
+  mostrarContacto: boolean;
   fotoUrl?: string;
   fotoPublicId?: string;
   fotoAlt?: string;
@@ -27,4 +28,5 @@ export interface EspecialistaAdminResponse {
   descripcion?: string;
   fotoUrl?: string;
   activo: boolean;
+  mostrarContacto: boolean;
 }

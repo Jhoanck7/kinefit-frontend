@@ -5,7 +5,7 @@ import {
   TextAreaField,
   TextField,
 } from "@/components/shared";
-import { Button } from "@/components/ui";
+import { Button, Switch } from "@/components/ui";
 import { EspecialistaResponse, ServicioResponse } from "@/models/responses";
 
 import { ServiciosSelector } from "./servicios-selector";
@@ -18,7 +18,10 @@ interface EditarEspecialistaModalProps {
   servicioIds: number[];
   error: string | null;
   guardando: boolean;
-  onCampoChange: (campo: keyof EspecialistaResponse, valor: string) => void;
+  onCampoChange: <K extends keyof EspecialistaResponse>(
+    campo: K,
+    valor: EspecialistaResponse[K]
+  ) => void;
   onServicioIdsChange: (ids: number[]) => void;
   onFotoChange: (secureUrl: string, publicId?: string) => void;
   onSolicitarEliminacion: () => void;
@@ -113,6 +116,23 @@ export function EditarEspecialistaModal({
                   onChange={e => onCampoChange("descripcion", e.target.value)}
                   rows={4}
                   placeholder="Resumen del perfil o biografía..."
+                />
+              </div>
+              <div className="md:col-span-2 flex items-center justify-between rounded-none border border-slate-200 bg-slate-50 p-4">
+                <div>
+                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                    Mostrar contacto en el sitio
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Apagado, el correo no se muestra en la tarjeta pública del
+                    equipo.
+                  </p>
+                </div>
+                <Switch
+                  checked={especialista.mostrarContacto}
+                  onCheckedChange={checked =>
+                    onCampoChange("mostrarContacto", checked)
+                  }
                 />
               </div>
             </div>

@@ -7,14 +7,7 @@ import {
   useSincronizarGoogleReviewsMutation,
   useUpdateLandingConfigMutation,
 } from "@/hooks/api";
-import { LandingConfigResponse } from "@/models/responses";
-
-export interface GallerySlideItem {
-  title: string;
-  description: string;
-  image: string;
-  features?: string[];
-}
+import { LandingConfigResponse, VoucherItem } from "@/models/responses";
 
 export interface ProcessStepItem {
   num: string;
@@ -48,6 +41,8 @@ const DEFAULT_LANDING_CONFIG: LandingConfigResponse = {
   socialFacebook: "https://facebook.com/kinefit",
   socialWhatsApp: "https://wa.me/56912345678",
   socialTikTok: "https://tiktok.com/@kinefit",
+  reservasHabilitadas: true,
+  vouchersMostrarNota: true,
 };
 
 export const useLanding = () => {
@@ -59,9 +54,9 @@ export const useLanding = () => {
     DEFAULT_LANDING_CONFIG
   );
   const [seccionActiva, setSeccionActiva] = useState<string | null>(null);
-  const [slides, setSlides] = useState<GallerySlideItem[]>([]);
   const [processSteps, setProcessSteps] = useState<ProcessStepItem[]>([]);
   const [reviewsList, setReviewsList] = useState<GoogleReviewItem[]>([]);
+  const [vouchers, setVouchers] = useState<VoucherItem[]>([]);
   const [limiteResenas, setLimiteResenas] = useState<number>(5);
   const [confirmacionGuardar, setConfirmacionGuardar] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -69,12 +64,6 @@ export const useLanding = () => {
   useEffect(() => {
     if (configData) {
       setFormData(configData);
-      if (configData.galleryJson) {
-        try {
-          const parsed = JSON.parse(configData.galleryJson);
-          if (Array.isArray(parsed)) setSlides(parsed);
-        } catch {}
-      }
       if (configData.processStepsJson) {
         try {
           const parsedSteps = JSON.parse(configData.processStepsJson);
@@ -87,34 +76,20 @@ export const useLanding = () => {
           if (Array.isArray(parsedReviews)) setReviewsList(parsedReviews);
         } catch {}
       }
+      if (configData.vouchersJson) {
+        try {
+          const parsedVouchers = JSON.parse(configData.vouchersJson);
+          if (Array.isArray(parsedVouchers)) setVouchers(parsedVouchers);
+        } catch {}
+      }
     }
   }, [configData]);
 
-  function handleChange(field: keyof LandingConfigResponse, value: string) {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  }
-
-  function handleSlideChange(
-    index: number,
-    field: keyof GallerySlideItem,
-    value: unknown
+  function handleChange<K extends keyof LandingConfigResponse>(
+    field: K,
+    value: LandingConfigResponse[K]
   ) {
-    setSlides(prev => {
-      const copy = [...prev];
-      copy[index] = { ...copy[index], [field]: value };
-      return copy;
-    });
-  }
-
-  function handleAgregarSlide() {
-    setSlides(prev => [
-      ...prev,
-      { title: "Nuevo Espacio", description: "", image: "", features: [] },
-    ]);
-  }
-
-  function handleEliminarSlide(index: number) {
-    setSlides(prev => prev.filter((_, i) => i !== index));
+    setFormData(prev => ({ ...prev, [field]: value }));
   }
 
   function handleProcessStepChange(
@@ -172,6 +147,45 @@ export const useLanding = () => {
     setReviewsList(prev => prev.filter((_, i) => i !== index));
   }
 
+  function handleAgregarVoucher(item: VoucherItem) {
+    setVouchers(prev => [...prev, item]);
+  }
+
+  function handleVoucherAltChange(index: number, alt: string) {
+    setVouchers(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], alt };
+      return copy;
+    });
+  }
+
+  function handleVoucherImageChange(
+    index: number,
+    image: string,
+    width: number,
+    height: number
+  ) {
+    setVouchers(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], image, width, height };
+      return copy;
+    });
+  }
+
+  function handleEliminarVoucher(index: number) {
+    setVouchers(prev => prev.filter((_, i) => i !== index));
+  }
+
+  function handleMoverVoucher(index: number, direccion: "arriba" | "abajo") {
+    setVouchers(prev => {
+      const destino = direccion === "arriba" ? index - 1 : index + 1;
+      if (destino < 0 || destino >= prev.length) return prev;
+      const copy = [...prev];
+      [copy[index], copy[destino]] = [copy[destino], copy[index]];
+      return copy;
+    });
+  }
+
   async function handleSincronizarGoogle() {
     setErrorMsg(null);
     try {
@@ -201,14 +215,15 @@ export const useLanding = () => {
     try {
       const dataToSave: LandingConfigResponse = {
         ...formData,
-        galleryJson: JSON.stringify(slides),
         processStepsJson: JSON.stringify(processSteps),
         reviewsJson: JSON.stringify(reviewsList),
+        vouchersJson: JSON.stringify(vouchers),
       };
       const res = await updateMutation.mutateAsync(dataToSave);
       setFormData(res);
       setConfirmacionGuardar(false);
       setSeccionActiva(null);
+      fetch("/api/revalidate", { method: "POST" }).catch(() => {});
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(msg || "Error al guardar la configuración.");
@@ -218,9 +233,9 @@ export const useLanding = () => {
   return {
     formData,
     seccionActiva,
-    slides,
     processSteps,
     reviewsList,
+    vouchers,
     limiteResenas,
     cargando,
     guardando: updateMutation.isPending,
@@ -233,15 +248,17 @@ export const useLanding = () => {
       setConfirmacionGuardar,
       setLimiteResenas,
       handleChange,
-      handleSlideChange,
-      handleAgregarSlide,
-      handleEliminarSlide,
       handleProcessStepChange,
       handleAgregarProcessStep,
       handleEliminarProcessStep,
       handleReviewChange,
       handleAgregarReview,
       handleEliminarReview,
+      handleAgregarVoucher,
+      handleVoucherAltChange,
+      handleVoucherImageChange,
+      handleEliminarVoucher,
+      handleMoverVoucher,
       handleSincronizarGoogle,
       handleGuardar,
       ejecutarGuardar,

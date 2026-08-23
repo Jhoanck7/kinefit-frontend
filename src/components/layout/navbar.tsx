@@ -1,49 +1,32 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { NAV_LINKS } from "@/lib/utils";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const navLinks = NAV_LINKS;
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 bg-white border-b ${
-        isScrolled ? "border-slate-300 py-2" : "border-slate-200 py-4"
-      }`}
-    >
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 py-2">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 sm:h-24 md:h-28">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo container */}
           <div className="flex items-center">
             <a
               href="#"
-              className="relative w-56 sm:w-72 md:w-80 h-16 sm:h-20 md:h-24 block"
+              className="relative w-40 sm:w-48 md:w-52 h-14 sm:h-16 block"
             >
               <Image
                 src="/Kinefit Negro ver.png"
                 alt="Kinefit Logo"
                 fill
                 priority
-                sizes="(max-width: 640px) 224px, (max-width: 768px) 288px, 320px"
-                className="object-contain object-left scale-[1.45] sm:scale-[1.35] origin-left -translate-y-1.5 sm:-translate-y-2"
+                sizes="(max-width: 640px) 160px, (max-width: 768px) 192px, 208px"
+                className="object-contain object-left scale-[1.3] sm:scale-[1.25] origin-left"
               />
             </a>
           </div>

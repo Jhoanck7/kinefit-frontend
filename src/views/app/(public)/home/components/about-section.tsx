@@ -49,7 +49,7 @@ export default function AboutSection({
   return (
     <section
       id="about"
-      className="py-20 sm:py-28 bg-white text-slate-900 border-b border-slate-200/60 overflow-hidden w-full"
+      className="scroll-mt-24 py-20 sm:py-28 bg-white text-slate-900 border-b border-slate-200/60 overflow-hidden w-full"
     >
       {/* Script oficial de Instagram */}
       <Script
@@ -77,18 +77,29 @@ export default function AboutSection({
             </p>
 
             <div className="pt-4 flex flex-wrap items-center gap-4">
-              <a
-                href="#agendamiento"
-                className="bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-xl px-8 py-4 shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 tracking-wider text-sm cursor-pointer uppercase"
-              >
-                {config.aboutCtaText || "Agendar Atención Kinésica"}
-              </a>
+              {config.reservasHabilitadas !== false ? (
+                <a
+                  href="#agendamiento"
+                  className="bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-global px-8 py-4 shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 tracking-wider text-sm cursor-pointer uppercase"
+                >
+                  {config.aboutCtaText || "Agendar Atención Kinésica"}
+                </a>
+              ) : (
+                <a
+                  href={config.reservasUrlAlterna || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-global px-8 py-4 shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 tracking-wider text-sm cursor-pointer uppercase"
+                >
+                  {config.aboutCtaText || "Agendar Atención Kinésica"}
+                </a>
+              )}
             </div>
           </div>
 
           {/* Columna Derecha: Reproductor de Video / Reel de Instagram */}
           <div className="lg:col-span-5 flex justify-center w-full">
-            <div className="relative w-full max-w-[420px] rounded-3xl overflow-hidden border-4 border-white shadow-2xl bg-slate-950 group">
+            <div className="relative w-full max-w-[420px] rounded-global overflow-hidden border-4 border-white shadow-2xl bg-slate-950 group">
               {/* Marco Superior Estilo Smartphone / Reel Player */}
               <div className="bg-slate-900 px-4 py-3 flex items-center justify-between border-b border-slate-800 text-white text-xs font-semibold">
                 <div className="flex items-center gap-2">

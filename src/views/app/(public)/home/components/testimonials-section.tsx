@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React from "react";
 
 import { LandingConfigResponse } from "@/models/responses";
@@ -77,7 +78,7 @@ export default function TestimonialsSection({
   return (
     <section
       id="testimonials"
-      className="py-20 sm:py-28 bg-blue-950 border-b border-blue-900 text-white overflow-hidden w-full"
+      className="scroll-mt-24 py-20 sm:py-28 bg-blue-950 border-b border-blue-900 text-white overflow-hidden w-full"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
@@ -95,7 +96,7 @@ export default function TestimonialsSection({
               href={googleUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 bg-brand-primary hover:bg-brand-primary-hover text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-full shadow-md transition-all"
+              className="inline-flex items-center gap-2.5 bg-brand-primary hover:bg-brand-primary-hover text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-global shadow-md transition-all"
             >
               <svg
                 className="w-4 h-4 text-white"
@@ -122,11 +123,11 @@ export default function TestimonialsSection({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-lg md:max-w-none mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-lg md:max-w-none mx-auto font-satoshi">
           {reviews.map((rev, idx) => (
             <div
               key={`${rev.author}-${idx}`}
-              className="bg-white border border-slate-200 rounded-3xl p-7 hover:border-brand-primary/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group text-slate-900"
+              className="bg-white border border-slate-200 rounded-global p-7 hover:border-brand-primary/40 transition-all duration-300 flex flex-col justify-between group text-slate-900"
             >
               <div>
                 <div className="flex items-center justify-between mb-5">
@@ -150,11 +151,23 @@ export default function TestimonialsSection({
 
               <div className="flex items-center justify-between border-t border-slate-100 pt-5">
                 <div className="flex items-center gap-3">
-                  <div
-                    className={`w-10 h-10 rounded-full font-bold text-xs flex items-center justify-center border ${avatarColors[idx % avatarColors.length]}`}
-                  >
-                    {getInitials(rev.author)}
-                  </div>
+                  {rev.avatarUrl ? (
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-200">
+                      <Image
+                        src={rev.avatarUrl}
+                        alt={rev.author}
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className={`w-10 h-10 rounded-full font-bold text-xs flex items-center justify-center border ${avatarColors[idx % avatarColors.length]}`}
+                    >
+                      {getInitials(rev.author)}
+                    </div>
+                  )}
 
                   <div className="text-left">
                     <h3 className="text-xs font-bold text-slate-900 leading-tight">

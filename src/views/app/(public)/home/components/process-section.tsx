@@ -53,7 +53,7 @@ export default function ProcessSection({
   return (
     <section
       id="process"
-      className="py-24 bg-gradient-to-b from-slate-50 via-blue-50/10 to-slate-50 border-b border-slate-200/60 text-slate-900 relative overflow-hidden"
+      className="scroll-mt-24 py-24 bg-gradient-to-b from-slate-50 via-blue-50/10 to-slate-50 border-b border-slate-200/60 text-slate-900 relative overflow-hidden"
     >
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-blue-500/5 rounded-full filter blur-[150px] pointer-events-none -z-20" />
 
@@ -128,7 +128,7 @@ export default function ProcessSection({
             {steps.map((step, idx) => (
               <div
                 key={idx}
-                className="group bg-white rounded-3xl border border-slate-200/60 p-8 shadow-sm hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+                className="group bg-white rounded-global border border-slate-200/60 p-8 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="w-14 h-14 rounded-2xl bg-brand-primary-glow flex items-center justify-center mb-6 font-black text-2xl text-brand-primary group-hover:scale-110 group-hover:bg-brand-primary group-hover:text-white transition-all duration-300 shadow-sm">
