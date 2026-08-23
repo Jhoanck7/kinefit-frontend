@@ -4,11 +4,28 @@ import Image from "next/image";
 import React, { useState } from "react";
 
 import { NAV_LINKS } from "@/lib/utils";
+import { LandingConfigResponse } from "@/models/responses";
 
-export default function Navbar() {
+function tieneVouchers(config?: LandingConfigResponse | null) {
+  if (!config?.vouchersJson) return false;
+  try {
+    const parsed = JSON.parse(config.vouchersJson);
+    return Array.isArray(parsed) && parsed.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+export default function Navbar({
+  config,
+}: {
+  config?: LandingConfigResponse | null;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const navLinks = NAV_LINKS;
+  const navLinks = tieneVouchers(config)
+    ? NAV_LINKS
+    : NAV_LINKS.filter(link => link.href !== "#vouchers");
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 py-2">

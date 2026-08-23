@@ -1,8 +1,17 @@
 "use client";
 
+import { Info } from "lucide-react";
 import Image from "next/image";
 import React, { useRef } from "react";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { LandingConfigResponse, VoucherItem } from "@/models/responses";
 
 export default function VouchersSection({
@@ -123,9 +132,27 @@ export default function VouchersSection({
               </p>
             )}
             {mostrarNota && (
-              <div className="mt-6 bg-slate-50 border border-slate-200 rounded-global p-3">
-                <p className="text-xs text-slate-500">{config.vouchersNota}</p>
-              </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button
+                    type="button"
+                    className="mt-6 inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-brand-primary transition-colors cursor-pointer"
+                  >
+                    <Info className="w-4 h-4" />
+                    Nota importante
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="sr-only">
+                      Nota importante
+                    </DialogTitle>
+                    <DialogDescription className="whitespace-pre-line">
+                      {config.vouchersNota}
+                    </DialogDescription>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
             )}
           </div>
         </div>

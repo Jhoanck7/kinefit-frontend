@@ -94,6 +94,7 @@ export const NAV_LINKS = [
   { name: "Equipo", href: "#team" },
   { name: "Testimonios", href: "#testimonials" },
   { name: "Proceso", href: "#process" },
+  { name: "Vouchers", href: "#vouchers" },
   { name: "Ubicación", href: "#location" },
 ];
 

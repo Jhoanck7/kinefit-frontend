@@ -125,7 +125,7 @@ export default async function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-white font-sans">
         <ReactQueryProvider>
-          <Navbar />
+          <Navbar config={config} />
           <div className="flex-grow">{children}</div>
           <Footer />
           <WhatsAppButton />
