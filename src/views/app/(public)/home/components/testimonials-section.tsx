@@ -123,11 +123,11 @@ export default function TestimonialsSection({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-lg md:max-w-none mx-auto font-satoshi">
+        <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 pt-2 font-satoshi [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {reviews.map((rev, idx) => (
             <div
               key={`${rev.author}-${idx}`}
-              className="bg-white border border-slate-200 rounded-global p-7 hover:border-brand-primary/40 transition-all duration-300 flex flex-col justify-between group text-slate-900"
+              className="w-[85%] sm:w-[380px] lg:w-[400px] shrink-0 snap-start bg-white border border-slate-200 rounded-global p-7 hover:border-brand-primary/40 transition-all duration-300 flex flex-col justify-between group text-slate-900 shadow-sm"
             >
               <div>
                 <div className="flex items-center justify-between mb-5">
