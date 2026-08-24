@@ -12,6 +12,45 @@ import { handleApiError } from "@/lib/api";
 
 import { Alerta } from "./alerta";
 
+// El backend ya redimensiona y valida: esto solo acorta la subida de archivos grandes.
+const UMBRAL_COMPRESION_BYTES = 8 * 1024 * 1024;
+const LADO_MAYOR_MAXIMO = 2000;
+const CALIDAD_JPEG = 0.95;
+
+async function comprimirImagen(file: File): Promise<File> {
+  if (file.type === "image/svg+xml" || file.size <= UMBRAL_COMPRESION_BYTES) {
+    return file;
+  }
+
+  try {
+    const bitmap = await createImageBitmap(file);
+    const escala = Math.min(
+      1,
+      LADO_MAYOR_MAXIMO / Math.max(bitmap.width, bitmap.height)
+    );
+    if (escala === 1) return file;
+
+    const ancho = Math.round(bitmap.width * escala);
+    const alto = Math.round(bitmap.height * escala);
+    const canvas = document.createElement("canvas");
+    canvas.width = ancho;
+    canvas.height = alto;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, ancho, alto);
+
+    const tipoSalida = file.type === "image/png" ? "image/png" : "image/jpeg";
+    const blob = await new Promise<Blob | null>(resolve =>
+      canvas.toBlob(resolve, tipoSalida, CALIDAD_JPEG)
+    );
+    if (!blob) return file;
+
+    return new File([blob], file.name, { type: tipoSalida });
+  } catch {
+    return file;
+  }
+}
+
 interface ImageUploaderProps {
   etiqueta?: string;
   value?: string;
@@ -54,9 +93,10 @@ export function ImageUploader({
   async function subirImagen(file: File) {
     setErrorMsg(null);
     try {
+      const archivo = await comprimirImagen(file);
       const resultado = publicId
-        ? await replaceMutation.mutateAsync({ publicId, file, folder })
-        : await uploadMutation.mutateAsync({ file, folder });
+        ? await replaceMutation.mutateAsync({ publicId, file: archivo, folder })
+        : await uploadMutation.mutateAsync({ file: archivo, folder });
       onChange(
         resultado.url,
         resultado.publicId,
@@ -148,7 +188,7 @@ export function ImageUploader({
                 : "Haz clic o arrastra una imagen aquí"}
             </p>
             <p className="text-xs text-slate-500">
-              Soporta PNG, JPG, WEBP o SVG (Máx 10 MB)
+              Soporta PNG, JPG, WEBP o SVG (Máx 25 MB)
             </p>
           </div>
         </div>
