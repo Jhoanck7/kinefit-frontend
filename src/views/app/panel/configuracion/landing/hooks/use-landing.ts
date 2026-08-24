@@ -159,15 +159,28 @@ export const useLanding = () => {
     });
   }
 
-  function handleVoucherImageChange(
+  function handleVoucherImagenSofaChange(
     index: number,
-    image: string,
-    width: number,
-    height: number
+    imagenSofa: string,
+    anchoSofa: number,
+    altoSofa: number
   ) {
     setVouchers(prev => {
       const copy = [...prev];
-      copy[index] = { ...copy[index], image, width, height };
+      copy[index] = { ...copy[index], imagenSofa, anchoSofa, altoSofa };
+      return copy;
+    });
+  }
+
+  function handleVoucherImagenBlancoChange(
+    index: number,
+    imagenBlanco: string,
+    anchoBlanco: number,
+    altoBlanco: number
+  ) {
+    setVouchers(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], imagenBlanco, anchoBlanco, altoBlanco };
       return copy;
     });
   }
@@ -256,7 +269,8 @@ export const useLanding = () => {
       handleEliminarReview,
       handleAgregarVoucher,
       handleVoucherAltChange,
-      handleVoucherImageChange,
+      handleVoucherImagenSofaChange,
+      handleVoucherImagenBlancoChange,
       handleEliminarVoucher,
       handleMoverVoucher,
       handleSincronizarGoogle,

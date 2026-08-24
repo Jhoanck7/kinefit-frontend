@@ -58,19 +58,31 @@ export default function VouchersSection({
             >
               {vouchers.map((voucher, idx) => (
                 <div
-                  key={`${voucher.image}-${idx}`}
-                  className="w-full shrink-0 snap-start snap-always"
+                  key={`${voucher.imagenSofa}-${idx}`}
+                  className="w-full shrink-0 snap-start snap-always relative flex justify-center"
                 >
-                  <div className="rounded-global overflow-hidden border border-slate-200/60">
+                  <div className="rounded-global overflow-hidden">
                     <Image
-                      src={voucher.image}
+                      src={voucher.imagenBlanco}
                       alt={voucher.alt}
-                      width={voucher.width}
-                      height={voucher.height}
+                      width={voucher.anchoBlanco}
+                      height={voucher.altoBlanco}
                       sizes="(max-width: 1024px) 100vw, 60vw"
-                      className="w-full h-auto max-h-[70vh] object-contain"
+                      className="w-auto h-auto max-w-full max-h-[85vh] object-contain mx-auto"
                     />
                   </div>
+                  {voucher.imagenSofa && (
+                    <div className="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 w-24 sm:w-32 md:w-40 rotate-3 rounded-global overflow-hidden border-4 border-white shadow-lg">
+                      <Image
+                        src={voucher.imagenSofa}
+                        alt={voucher.alt}
+                        width={voucher.anchoSofa}
+                        height={voucher.altoSofa}
+                        sizes="160px"
+                        className="w-full h-auto object-cover"
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

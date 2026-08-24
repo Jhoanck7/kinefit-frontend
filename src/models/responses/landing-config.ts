@@ -1,8 +1,11 @@
 export interface VoucherItem {
-  image: string;
   alt: string;
-  width: number;
-  height: number;
+  imagenSofa: string;
+  anchoSofa: number;
+  altoSofa: number;
+  imagenBlanco: string;
+  anchoBlanco: number;
+  altoBlanco: number;
 }
 
 export interface LandingConfigResponse {

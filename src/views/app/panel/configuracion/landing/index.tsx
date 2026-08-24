@@ -394,7 +394,7 @@ export default function LandingView() {
                           >
                             <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                               <span className="text-xs font-bold text-slate-800">
-                                Foto #{idx + 1}
+                                Modelo #{idx + 1}
                               </span>
                               <div className="flex items-center gap-3">
                                 <button
@@ -428,19 +428,44 @@ export default function LandingView() {
                                 </button>
                               </div>
                             </div>
-                            <ImageUploader
-                              etiqueta=""
-                              value={voucher.image}
-                              onChange={(secureUrl, _publicId, width, height) =>
-                                actions.handleVoucherImageChange(
-                                  idx,
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <ImageUploader
+                                etiqueta="Fondo sofá (superpuesta)"
+                                value={voucher.imagenSofa}
+                                onChange={(
                                   secureUrl,
-                                  width || 0,
-                                  height || 0
-                                )
-                              }
-                              folder="kinefit/vouchers"
-                            />
+                                  _publicId,
+                                  width,
+                                  height
+                                ) =>
+                                  actions.handleVoucherImagenSofaChange(
+                                    idx,
+                                    secureUrl,
+                                    width || 0,
+                                    height || 0
+                                  )
+                                }
+                                folder="kinefit/vouchers"
+                              />
+                              <ImageUploader
+                                etiqueta="Fondo blanco (principal)"
+                                value={voucher.imagenBlanco}
+                                onChange={(
+                                  secureUrl,
+                                  _publicId,
+                                  width,
+                                  height
+                                ) =>
+                                  actions.handleVoucherImagenBlancoChange(
+                                    idx,
+                                    secureUrl,
+                                    width || 0,
+                                    height || 0
+                                  )
+                                }
+                                folder="kinefit/vouchers"
+                              />
+                            </div>
                             <TextField
                               etiqueta="Texto Alternativo (obligatorio)"
                               value={voucher.alt}
@@ -466,10 +491,13 @@ export default function LandingView() {
                           variant="outline"
                           onClick={() =>
                             actions.handleAgregarVoucher({
-                              image: "",
                               alt: "",
-                              width: 0,
-                              height: 0,
+                              imagenSofa: "",
+                              anchoSofa: 0,
+                              altoSofa: 0,
+                              imagenBlanco: "",
+                              anchoBlanco: 0,
+                              altoBlanco: 0,
                             })
                           }
                         >
@@ -648,7 +676,10 @@ export default function LandingView() {
                           !formData.reservasHabilitadas &&
                           !esUrlAbsolutaValida(formData.reservasUrlAlterna)) ||
                         (seccionActiva === "vouchers" &&
-                          vouchers.some(v => !v.image || !v.alt.trim()))
+                          vouchers.some(
+                            v =>
+                              !v.imagenSofa || !v.imagenBlanco || !v.alt.trim()
+                          ))
                       }
                     >
                       {guardando ? "Guardando..." : "Guardar Cambios"}
