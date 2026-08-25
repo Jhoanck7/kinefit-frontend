@@ -148,88 +148,94 @@ export default function TestimonialsSection({
           </div>
         </div>
 
-        <div
-          ref={scrollRef}
-          onMouseEnter={autoScroll.onMouseEnter}
-          onMouseLeave={e => {
-            autoScroll.onMouseLeave();
-            terminarArrastre();
-            e.currentTarget.style.removeProperty("cursor");
-          }}
-          onMouseDown={e => {
-            iniciarArrastre(e);
-            e.currentTarget.style.cursor = "grabbing";
-          }}
-          onMouseMove={moverArrastre}
-          onMouseUp={e => {
-            terminarArrastre();
-            e.currentTarget.style.removeProperty("cursor");
-          }}
-          className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 pt-2 font-satoshi cursor-grab [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {reviews.map((rev, idx) => (
-            <div
-              key={`${rev.author}-${idx}`}
-              className="w-[85%] sm:w-[380px] lg:w-[400px] shrink-0 snap-start bg-white border border-slate-200 rounded-global p-7 hover:border-brand-primary/40 transition-all duration-300 flex flex-col justify-between group text-slate-900 shadow-sm"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex gap-1 text-amber-400">
-                    {[...Array(rev.rating || 5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className="w-4.5 h-4.5 fill-current"
-                        viewBox="0 0 24 24"
+        <div className="relative w-full overflow-hidden">
+          {/* Sombras difuminadas en los extremos */}
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-r from-blue-950 to-transparent z-10" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-l from-blue-950 to-transparent z-10" />
+
+          <div
+            ref={scrollRef}
+            onMouseEnter={autoScroll.onMouseEnter}
+            onMouseLeave={e => {
+              autoScroll.onMouseLeave();
+              terminarArrastre();
+              e.currentTarget.style.removeProperty("cursor");
+            }}
+            onMouseDown={e => {
+              iniciarArrastre(e);
+              e.currentTarget.style.cursor = "grabbing";
+            }}
+            onMouseMove={moverArrastre}
+            onMouseUp={e => {
+              terminarArrastre();
+              e.currentTarget.style.removeProperty("cursor");
+            }}
+            className="flex gap-6 overflow-x-auto scroll-smooth pb-6 pt-2 font-satoshi cursor-grab [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {reviews.map((rev, idx) => (
+              <div
+                key={`${rev.author}-${idx}`}
+                className="w-[300px] sm:w-[380px] shrink-0 bg-white border border-slate-200 rounded-global p-7 transition-all duration-300 flex flex-col justify-between text-slate-900 shadow-md select-none"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex gap-1 text-amber-400">
+                      {[...Array(rev.rating || 5)].map((_, i) => (
+                        <svg
+                          key={i}
+                          className="w-4.5 h-4.5 fill-current"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z" />
+                        </svg>
+                      ))}
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-slate-700 leading-relaxed font-medium mb-6 line-clamp-4">
+                    &ldquo;{rev.quote}&rdquo;
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-slate-100 pt-5">
+                  <div className="flex items-center gap-3">
+                    {rev.avatarUrl ? (
+                      <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-200">
+                        <Image
+                          src={rev.avatarUrl}
+                          alt={rev.author}
+                          fill
+                          unoptimized
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className={`w-10 h-10 rounded-full font-bold text-xs flex items-center justify-center border ${avatarColors[idx % avatarColors.length]}`}
                       >
-                        <path d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z" />
-                      </svg>
-                    ))}
+                        {getInitials(rev.author)}
+                      </div>
+                    )}
+
+                    <div className="text-left">
+                      <h3 className="text-xs font-bold text-slate-900 leading-tight">
+                        {rev.author}
+                      </h3>
+                      <span className="text-[11px] text-slate-500 font-medium block">
+                        {rev.role || "Paciente Verificado"}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                <p className="text-sm text-slate-700 leading-relaxed font-medium mb-6">
-                  &ldquo;{rev.quote}&rdquo;
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-slate-100 pt-5">
-                <div className="flex items-center gap-3">
-                  {rev.avatarUrl ? (
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 border border-slate-200">
-                      <Image
-                        src={rev.avatarUrl}
-                        alt={rev.author}
-                        fill
-                        unoptimized
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      className={`w-10 h-10 rounded-full font-bold text-xs flex items-center justify-center border ${avatarColors[idx % avatarColors.length]}`}
-                    >
-                      {getInitials(rev.author)}
-                    </div>
-                  )}
-
-                  <div className="text-left">
-                    <h3 className="text-xs font-bold text-slate-900 leading-tight">
-                      {rev.author}
-                    </h3>
-                    <span className="text-[11px] text-slate-500 font-medium block">
-                      {rev.role || "Paciente Verificado"}
+                  {rev.date && (
+                    <span className="text-[10px] text-slate-400 font-semibold">
+                      {rev.date}
                     </span>
-                  </div>
+                  )}
                 </div>
-
-                {rev.date && (
-                  <span className="text-[10px] text-slate-400 font-semibold">
-                    {rev.date}
-                  </span>
-                )}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
