@@ -3,7 +3,7 @@
 import Image from "next/image";
 import React, { useRef } from "react";
 
-import { useAutoScroll } from "@/hooks/common";
+import { useMarqueeScroll } from "@/hooks/common";
 import { LandingConfigResponse } from "@/models/responses";
 
 export interface GoogleReviewItem {
@@ -56,12 +56,15 @@ export default function TestimonialsSection({
     } catch {}
   }
 
+  // Duplicamos el arreglo para que el scroll continuo empalme sin costura
+  const marqueeReviews = [...reviews, ...reviews];
+
   const googleUrl =
     config.googleReviewsUrl ||
     "https://maps.google.com/?q=Kinefit+Chile+Antofagasta";
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const autoScroll = useAutoScroll(scrollRef);
+  const marqueeScroll = useMarqueeScroll(scrollRef);
   const arrastreRef = useRef({ activo: false, inicioX: 0, scrollInicial: 0 });
 
   const iniciarArrastre = (e: React.MouseEvent) => {
@@ -155,9 +158,9 @@ export default function TestimonialsSection({
 
           <div
             ref={scrollRef}
-            onMouseEnter={autoScroll.onMouseEnter}
+            onMouseEnter={marqueeScroll.onMouseEnter}
             onMouseLeave={e => {
-              autoScroll.onMouseLeave();
+              marqueeScroll.onMouseLeave();
               terminarArrastre();
               e.currentTarget.style.removeProperty("cursor");
             }}
@@ -170,9 +173,9 @@ export default function TestimonialsSection({
               terminarArrastre();
               e.currentTarget.style.removeProperty("cursor");
             }}
-            className="flex gap-6 overflow-x-auto scroll-smooth pb-6 pt-2 font-satoshi cursor-grab [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            className="flex gap-6 overflow-x-auto pb-6 pt-2 font-satoshi cursor-grab [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
-            {reviews.map((rev, idx) => (
+            {marqueeReviews.map((rev, idx) => (
               <div
                 key={`${rev.author}-${idx}`}
                 className="w-[300px] sm:w-[380px] shrink-0 bg-white border border-slate-200 rounded-global p-7 transition-all duration-300 flex flex-col justify-between text-slate-900 shadow-md select-none"
