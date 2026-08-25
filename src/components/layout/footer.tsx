@@ -85,7 +85,7 @@ export default function Footer() {
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-2">
               Horarios
             </h4>
-            <span className="text-xs text-slate-500 leading-relaxed whitespace-pre-line">
+            <span className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
               {hoursWeekday}
               {"\n\n"}
               {hoursSaturday}

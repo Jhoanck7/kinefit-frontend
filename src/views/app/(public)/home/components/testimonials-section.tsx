@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useRef } from "react";
 
+import { useAutoScroll } from "@/hooks/common";
 import { LandingConfigResponse } from "@/models/responses";
 
 export interface GoogleReviewItem {
@@ -58,6 +59,30 @@ export default function TestimonialsSection({
   const googleUrl =
     config.googleReviewsUrl ||
     "https://maps.google.com/?q=Kinefit+Chile+Antofagasta";
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const autoScroll = useAutoScroll(scrollRef);
+  const arrastreRef = useRef({ activo: false, inicioX: 0, scrollInicial: 0 });
+
+  const iniciarArrastre = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    arrastreRef.current = {
+      activo: true,
+      inicioX: e.pageX,
+      scrollInicial: scrollRef.current.scrollLeft,
+    };
+  };
+
+  const moverArrastre = (e: React.MouseEvent) => {
+    if (!arrastreRef.current.activo || !scrollRef.current) return;
+    e.preventDefault();
+    const delta = e.pageX - arrastreRef.current.inicioX;
+    scrollRef.current.scrollLeft = arrastreRef.current.scrollInicial - delta;
+  };
+
+  const terminarArrastre = () => {
+    arrastreRef.current.activo = false;
+  };
 
   const getInitials = (name: string) => {
     const parts = name.trim().split(" ");
@@ -123,7 +148,25 @@ export default function TestimonialsSection({
           </div>
         </div>
 
-        <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 pt-2 font-satoshi [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div
+          ref={scrollRef}
+          onMouseEnter={autoScroll.onMouseEnter}
+          onMouseLeave={e => {
+            autoScroll.onMouseLeave();
+            terminarArrastre();
+            e.currentTarget.style.removeProperty("cursor");
+          }}
+          onMouseDown={e => {
+            iniciarArrastre(e);
+            e.currentTarget.style.cursor = "grabbing";
+          }}
+          onMouseMove={moverArrastre}
+          onMouseUp={e => {
+            terminarArrastre();
+            e.currentTarget.style.removeProperty("cursor");
+          }}
+          className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 pt-2 font-satoshi cursor-grab [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        >
           {reviews.map((rev, idx) => (
             <div
               key={`${rev.author}-${idx}`}

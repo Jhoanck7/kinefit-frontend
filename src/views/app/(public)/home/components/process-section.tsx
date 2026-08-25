@@ -82,7 +82,7 @@ export default function ProcessSection({
             {config.processTitle ||
               "¿Cómo Funciona Tu Atención en KineFit Chile?"}
           </p>
-          <p className="text-slate-500 mt-4 text-base sm:text-lg">
+          <p className="text-slate-500 mt-4 text-base sm:text-lg whitespace-pre-line">
             {config.processSubtitle ||
               "Un método estructurado paso a paso diseñado para garantizar tu pronta recuperación y bienestar duradero."}
           </p>
@@ -123,6 +123,40 @@ export default function ProcessSection({
           </div>
 
           <div className="absolute left-[35px] top-6 bottom-6 w-3 bg-brand-primary rounded-full hidden md:block lg:hidden -z-10 opacity-30" />
+
+          {/* Camino vertical solo en móvil real (mismo estilo que el de escritorio) */}
+          <div className="absolute left-[20px] top-6 bottom-6 w-[70px] pointer-events-none block md:hidden z-0">
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="0 0 150 1000"
+              fill="none"
+              preserveAspectRatio="none"
+              className="overflow-visible"
+            >
+              <path
+                d="M 75,10 C -20,250 170,250 75,500 C -20,750 170,750 75,990"
+                stroke="#0C5DC5"
+                strokeWidth="28"
+                strokeLinecap="round"
+                className="opacity-15 filter blur-[12px]"
+              />
+              <path
+                d="M 75,10 C -20,250 170,250 75,500 C -20,750 170,750 75,990"
+                stroke="#0C5DC5"
+                strokeWidth="14"
+                strokeLinecap="round"
+                className="opacity-90"
+              />
+              <path
+                d="M 75,10 C -20,250 170,250 75,500 C -20,750 170,750 75,990"
+                stroke="#ffffff"
+                strokeWidth="3"
+                strokeLinecap="round"
+                className="animate-path-flow opacity-60"
+              />
+            </svg>
+          </div>
 
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, idx) => (
