@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useAutoScroll } from "@/hooks/common";
 import { LandingConfigResponse, VoucherItem } from "@/models/responses";
 
 export default function VouchersSection({
@@ -20,6 +21,7 @@ export default function VouchersSection({
   config: LandingConfigResponse;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const autoScroll = useAutoScroll(scrollRef);
 
   let vouchers: VoucherItem[] = [];
   if (config.vouchersJson) {
@@ -50,9 +52,21 @@ export default function VouchersSection({
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          {/* Móvil: título antes del carrusel */}
+          <div className="lg:hidden text-left">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
+              Vouchers de Regalo
+            </h2>
+            <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              {config.vouchersTitle || "Regala Bienestar"}
+            </p>
+          </div>
+
           <div className="lg:col-span-7 relative group">
             <div
               ref={scrollRef}
+              onMouseEnter={autoScroll.onMouseEnter}
+              onMouseLeave={autoScroll.onMouseLeave}
               className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
@@ -132,10 +146,10 @@ export default function VouchersSection({
           </div>
 
           <div className="lg:col-span-5 text-left">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
+            <h2 className="hidden lg:block text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
               Vouchers de Regalo
             </h2>
-            <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+            <p className="hidden lg:block text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
               {config.vouchersTitle || "Regala Bienestar"}
             </p>
             {config.vouchersSubtitle && (

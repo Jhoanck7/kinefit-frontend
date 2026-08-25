@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 
+import { useAutoScroll } from "@/hooks/common";
 import {
   EspecialistaResponse,
   LandingConfigResponse,
@@ -47,21 +48,7 @@ export default function TeamSection({
     }
   };
 
-  useEffect(() => {
-    const handleAutoScroll = () => {
-      if (scrollRef.current) {
-        const { scrollLeft, clientWidth, scrollWidth } = scrollRef.current;
-        if (scrollLeft + clientWidth >= scrollWidth - 24) {
-          scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          scrollRef.current.scrollBy({ left: clientWidth, behavior: "smooth" });
-        }
-      }
-    };
-
-    const timer = setInterval(handleAutoScroll, 5000);
-    return () => clearInterval(timer);
-  }, []);
+  const autoScroll = useAutoScroll(scrollRef);
 
   return (
     <section
@@ -88,49 +75,49 @@ export default function TeamSection({
           {/* Flex Scroll Container */}
           <div
             ref={scrollRef}
+            onMouseEnter={autoScroll.onMouseEnter}
+            onMouseLeave={autoScroll.onMouseLeave}
             className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory py-4 px-4 scrollbar-none scroll-pl-4"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {teamMembers.map(member => (
               <div
                 key={member.name}
-                className="w-[88%] sm:w-[70%] md:w-[55%] lg:w-[45%] shrink-0 snap-start snap-always"
+                className="w-[85%] sm:w-[48%] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 snap-start snap-always"
               >
                 {/* Card Container */}
-                <div className="group/card flex flex-col bg-white border border-slate-200/60 rounded-global overflow-hidden hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100 hover:-translate-y-1 transition-all duration-300 w-full h-full">
-                  {/* Bloque superior: foto a ancho completo */}
-                  <div className="relative w-full h-[320px] sm:h-[380px] shrink-0 overflow-hidden bg-slate-100">
+                <div className="group/card flex flex-col items-center text-center bg-white border border-slate-200/60 rounded-global p-6 sm:p-8 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100 hover:-translate-y-1 transition-all duration-300 w-full h-full">
+                  {/* Foto circular */}
+                  <div className="relative w-[168px] h-[168px] min-w-[168px] max-w-[168px] min-h-[168px] max-h-[168px] shrink-0 mx-auto rounded-full overflow-hidden mb-6 border-4 border-white shadow-md group-hover/card:scale-105 transition-transform duration-300">
                     <Image
                       src={member.image}
                       alt={member.name}
-                      fill
+                      width={168}
+                      height={168}
                       priority
                       unoptimized
-                      className="object-cover object-top scale-125 origin-top group-hover/card:scale-[1.35] transition-transform duration-500"
+                      className="w-full h-full object-cover object-center scale-[1.55] origin-[50%_20%] transition-all duration-500 rounded-full"
                     />
                   </div>
 
-                  {/* Bloque inferior: datos */}
-                  <div className="flex flex-col p-6 sm:p-8 text-left">
-                    <h3 className="text-xl font-bold text-slate-900 mb-1">
-                      {member.name}
-                    </h3>
-                    <span className="text-xs font-semibold text-brand-primary uppercase tracking-wider mb-3 block">
-                      {member.role}
-                    </span>
-                    <p className="text-sm text-slate-500 leading-relaxed mb-4">
-                      {member.specialty}
-                    </p>
+                  <h3 className="text-lg font-bold text-slate-900 mb-1">
+                    {member.name}
+                  </h3>
+                  <span className="text-xs font-semibold text-brand-primary uppercase tracking-wider mb-3 block">
+                    {member.role}
+                  </span>
+                  <p className="text-xs text-slate-500 leading-relaxed max-w-xs mb-4 min-h-[32px]">
+                    {member.specialty}
+                  </p>
 
-                    {member.mostrarContacto && member.email && (
-                      <a
-                        href={`mailto:${member.email}`}
-                        className="text-xs font-semibold text-brand-muted hover:text-brand-primary transition-colors"
-                      >
-                        {member.email}
-                      </a>
-                    )}
-                  </div>
+                  {member.mostrarContacto && member.email && (
+                    <a
+                      href={`mailto:${member.email}`}
+                      className="text-xs font-semibold text-brand-muted hover:text-brand-primary transition-colors"
+                    >
+                      {member.email}
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
