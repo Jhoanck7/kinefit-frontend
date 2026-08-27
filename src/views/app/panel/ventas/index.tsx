@@ -25,6 +25,7 @@ const COLUMNAS = [
   "Fecha",
   "Cliente",
   "Servicio",
+  "Descuento Convenio",
   "Monto Bruto",
   "Método Pago",
   "Terminal POS",
@@ -32,7 +33,7 @@ const COLUMNAS = [
   "IVA",
   "Monto Neto",
   "Pago Prof.",
-  "Margen Clínica",
+  "Margen de la Empresa",
 ];
 
 export default function VentasView() {
@@ -121,6 +122,11 @@ export default function VentasView() {
                       primerItem?.descripcion ??
                       "Atención"}
                   </TableCell>
+                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                    {venta.desglose.descuentoConvenio
+                      ? `-$${venta.desglose.descuentoConvenio.toLocaleString("es-CL")}`
+                      : "Sin Convenio"}
+                  </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-900 whitespace-nowrap">
                     ${venta.desglose.montoTotal.toLocaleString("es-CL")}
                   </TableCell>
@@ -128,12 +134,14 @@ export default function VentasView() {
                     {venta.metodoPago}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                    {venta.terminalNombre ?? "—"}
+                    {venta.terminalNombre ?? "No Aplica"}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                    {venta.desglose.comisionTerminal > 0
-                      ? `-$${venta.desglose.comisionTerminal.toLocaleString("es-CL")}`
-                      : "$0"}
+                    {!venta.terminalPagoId
+                      ? "No Aplica"
+                      : venta.desglose.comisionTerminal > 0
+                        ? `-$${venta.desglose.comisionTerminal.toLocaleString("es-CL")}`
+                        : "$0"}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
                     ${(venta.desglose.impuesto ?? 0).toLocaleString("es-CL")}
@@ -144,12 +152,12 @@ export default function VentasView() {
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
                     {venta.desglose.montoProfesional
                       ? `$${venta.desglose.montoProfesional.toLocaleString("es-CL")}`
-                      : "—"}
+                      : "Sin Reparto Configurado"}
                   </TableCell>
                   <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
                     {venta.desglose.montoCentro
                       ? `$${venta.desglose.montoCentro.toLocaleString("es-CL")}`
-                      : "—"}
+                      : "Sin Reparto Configurado"}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-right">
                     <svg
@@ -189,6 +197,7 @@ export default function VentasView() {
       {/* Modales */}
       <VentaDetalleModal
         venta={ventaSeleccionada}
+        terminales={terminales}
         onClose={() => actions.setVentaSeleccionada(null)}
       />
       <NuevaVentaModal

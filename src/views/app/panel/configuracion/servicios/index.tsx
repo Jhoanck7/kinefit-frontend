@@ -14,16 +14,18 @@ import {
 import { ServicioModal } from "./components";
 import { useServicios } from "./hooks";
 
-const COLUMNAS = ["Orden", "Nombre", "Descripción", "Estado"];
+const COLUMNAS = ["Orden", "Nombre", "Duración", "Descripción", "Estado"];
 
 export default function ServiciosView() {
   const {
     servicios,
     cargando,
+    duracionActiva,
     mostrarModal,
     servicioEditando,
     nombre,
     orden,
+    duracionMinutos,
     descripcion,
     imagenUrl,
     error,
@@ -46,6 +48,24 @@ export default function ServiciosView() {
           </p>
         </div>
         <Button onClick={actions.handleAbrirCrear}>Nuevo Servicio</Button>
+      </div>
+
+      <div className="border border-slate-200 bg-slate-50/50 p-4 flex items-center justify-between gap-4">
+        <div>
+          <p className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+            Duración Configurable de Servicios
+          </p>
+          <p className="font-sans text-xs text-slate-500 mt-0.5">
+            Con esto activo, cada servicio exige una duración (30/60/90 min) y
+            la reserva exige exactamente esos bloques. Apagado, se mantiene el
+            comportamiento actual: el operador arma los bloques a mano.
+          </p>
+        </div>
+        <SwitchField
+          etiqueta={duracionActiva ? "Activo" : "Inactivo"}
+          checked={duracionActiva}
+          onChange={actions.handleToggleDuracionActiva}
+        />
       </div>
 
       {errorEstado && <Alerta tono="error">{errorEstado}</Alerta>}
@@ -92,8 +112,13 @@ export default function ServiciosView() {
                     <TableCell className="px-4 py-3 font-medium text-sm text-slate-900">
                       {servicio.nombre}
                     </TableCell>
+                    <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                      {servicio.duracionMinutos
+                        ? `${servicio.duracionMinutos} min`
+                        : "Sin Duración"}
+                    </TableCell>
                     <TableCell className="px-4 py-3 text-sm text-slate-700 max-w-xs truncate">
-                      {servicio.descripcion || "—"}
+                      {servicio.descripcion || "Sin Descripción"}
                     </TableCell>
                     <TableCell className="px-4 py-3">
                       <SwitchField
@@ -129,12 +154,15 @@ export default function ServiciosView() {
         servicioEditando={servicioEditando}
         nombre={nombre}
         orden={orden}
+        duracionMinutos={duracionMinutos}
+        duracionActiva={duracionActiva}
         descripcion={descripcion}
         imagenUrl={imagenUrl}
         error={error}
         guardando={guardando}
         onNombreChange={actions.setNombre}
         onOrdenChange={actions.setOrden}
+        onDuracionMinutosChange={actions.setDuracionMinutos}
         onDescripcionChange={actions.setDescripcion}
         onFotoChange={actions.handleFotoChange}
         onSubmit={actions.handleGuardar}

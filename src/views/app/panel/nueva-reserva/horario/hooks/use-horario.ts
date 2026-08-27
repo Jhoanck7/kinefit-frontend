@@ -4,12 +4,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import {
+  useGetConfiguracionSistema,
   useGetFechasDisponibles,
   useGetHorasDisponibles,
   useGetPacientePerfil,
 } from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
 import { fechaISO } from "@/lib/formato";
+import {
+  bloquesRequeridos,
+  sonConsecutivas,
+  sumarMinutos,
+} from "@/lib/horario";
 import { useNuevaReservaStore } from "@/stores";
 
 import { PASOS_NUEVA_RESERVA } from "../../pasos";
@@ -19,26 +25,6 @@ export { PASOS_NUEVA_RESERVA };
 const DURACION_BLOQUE_MIN = 30;
 const MAX_BLOQUES = 3;
 const LIMITE_MANANA = "13:00";
-
-function sumarMinutos(hora: string, minutos: number): string {
-  const [h, m] = hora.split(":").map(Number);
-  const total = h * 60 + m + minutos;
-  const hFin = Math.floor(total / 60);
-  const mFin = total % 60;
-  return `${hFin.toString().padStart(2, "0")}:${mFin.toString().padStart(2, "0")}`;
-}
-
-function sonConsecutivas(horasOrdenadas: string[]): boolean {
-  for (let i = 1; i < horasOrdenadas.length; i++) {
-    if (
-      sumarMinutos(horasOrdenadas[i - 1], DURACION_BLOQUE_MIN) !==
-      horasOrdenadas[i]
-    ) {
-      return false;
-    }
-  }
-  return true;
-}
 
 export const useHorario = () => {
   const router = useRouter();
@@ -51,9 +37,20 @@ export const useHorario = () => {
     especialistaNombre,
     servicioId,
     servicioNombre,
+    servicioDuracionMinutos,
     setHorario,
     setPaciente,
   } = useNuevaReservaStore();
+
+  const { data: configuracionSistema } = useGetConfiguracionSistema();
+  const duracionActiva = configuracionSistema?.duracionServiciosActiva ?? false;
+  const bloquesExigidos = duracionActiva
+    ? bloquesRequeridos(servicioDuracionMinutos)
+    : 0;
+  const duracionServicioEfectiva =
+    duracionActiva && servicioDuracionMinutos
+      ? servicioDuracionMinutos
+      : DURACION_BLOQUE_MIN;
 
   const [errorSeleccion, setErrorSeleccion] = useState<string | null>(null);
 
@@ -93,13 +90,13 @@ export const useHorario = () => {
   // API calls
   const { data: fechasDisponibles = [] } = useGetFechasDisponibles(
     servicioId ?? 0,
-    DURACION_BLOQUE_MIN,
+    duracionServicioEfectiva,
     Boolean(servicioId)
   );
   const { data: horas = [], isLoading } = useGetHorasDisponibles(
     servicioId ?? 0,
     fechaIso,
-    DURACION_BLOQUE_MIN,
+    duracionServicioEfectiva,
     Boolean(servicioId) && Boolean(fecha)
   );
 
@@ -121,12 +118,16 @@ export const useHorario = () => {
     const yaSeleccionada = horasSeleccionadas.includes(hora);
     let nuevas: string[];
 
+    const maxBloques = duracionActiva ? bloquesExigidos : MAX_BLOQUES;
+
     if (yaSeleccionada) {
       nuevas = horasSeleccionadas.filter(h => h !== hora);
     } else {
-      if (horasSeleccionadas.length >= MAX_BLOQUES) {
+      if (horasSeleccionadas.length >= maxBloques) {
         setErrorSeleccion(
-          "Puedes reservar como máximo 3 bloques (90 minutos)."
+          duracionActiva
+            ? `Este servicio dura ${servicioDuracionMinutos} min (${bloquesExigidos} bloque(s)).`
+            : "Puedes reservar como máximo 3 bloques (90 minutos)."
         );
         return;
       }
@@ -157,6 +158,12 @@ export const useHorario = () => {
       setErrorSeleccion("Selecciona al menos un bloque de horario.");
       return;
     }
+    if (duracionActiva && horasSeleccionadas.length !== bloquesExigidos) {
+      setErrorSeleccion(
+        `Este servicio dura ${servicioDuracionMinutos} min (${bloquesExigidos} bloque(s)).`
+      );
+      return;
+    }
     router.push("/panel/nueva-reserva/especialista");
   };
   const handleCancelar = () => router.push("/panel/agenda");
@@ -172,6 +179,9 @@ export const useHorario = () => {
     manana,
     tarde,
     fechasDisponibles,
+    duracionActiva,
+    bloquesExigidos,
+    servicioDuracionMinutos,
     nombreServicio: servicioNombre,
     especialistaNombre,
     pacienteNombre,

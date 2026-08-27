@@ -15,16 +15,21 @@ interface ServicioModalProps {
   servicioEditando: ServicioResponse | null;
   nombre: string;
   orden: number;
+  duracionMinutos: number | undefined;
+  duracionActiva: boolean;
   descripcion: string;
   imagenUrl: string;
   error: string | null;
   guardando: boolean;
   onNombreChange: (v: string) => void;
   onOrdenChange: (v: number) => void;
+  onDuracionMinutosChange: (v: number | undefined) => void;
   onDescripcionChange: (v: string) => void;
   onFotoChange: (secureUrl: string, publicId?: string) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
+
+const DURACIONES_DISPONIBLES = [30, 60, 90];
 
 export function ServicioModal({
   abierto,
@@ -32,12 +37,15 @@ export function ServicioModal({
   servicioEditando,
   nombre,
   orden,
+  duracionMinutos,
+  duracionActiva,
   descripcion,
   imagenUrl,
   error,
   guardando,
   onNombreChange,
   onOrdenChange,
+  onDuracionMinutosChange,
   onDescripcionChange,
   onFotoChange,
   onSubmit,
@@ -81,6 +89,29 @@ export function ServicioModal({
               obligatorio
               required
             />
+            {duracionActiva && (
+              <div>
+                <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                  Duración (minutos) *
+                </label>
+                <div className="flex gap-2">
+                  {DURACIONES_DISPONIBLES.map(min => (
+                    <button
+                      key={min}
+                      type="button"
+                      onClick={() => onDuracionMinutosChange(min)}
+                      className={`flex-1 rounded-none border px-3 py-2 text-sm font-medium ${
+                        duracionMinutos === min
+                          ? "border-slate-900 bg-slate-900 text-white"
+                          : "border-slate-200 bg-white text-slate-700"
+                      }`}
+                    >
+                      {min} min
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="md:col-span-2">
               <TextAreaField
                 etiqueta="Descripción"

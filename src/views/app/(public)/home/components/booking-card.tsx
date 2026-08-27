@@ -5,12 +5,18 @@ import React, { useEffect, useRef, useState } from "react";
 
 import {
   useAuthenticateWithGoogleMutation,
+  useGetConfiguracionSistema,
   useGetEspecialistasDisponibles,
   useGetFechasDisponibles,
   useGetHorasDisponibles,
   useGetServices,
   useSubmitBookingMutation,
 } from "@/hooks/api";
+import {
+  bloquesRequeridos,
+  sonConsecutivas,
+  sumarMinutos,
+} from "@/lib/horario";
 import { bloqueHorarioService } from "@/services";
 import { useBookingStore } from "@/stores";
 
@@ -55,26 +61,6 @@ const parseDateInfo = (dateStr: string) => {
     formattedShort: `${dayName} ${day} ${monthName}`,
   };
 };
-
-function sumarMinutos(hora: string, minutos: number): string {
-  const [h, m] = hora.split(":").map(Number);
-  const total = h * 60 + m + minutos;
-  const hFin = Math.floor(total / 60);
-  const mFin = total % 60;
-  return `${hFin.toString().padStart(2, "0")}:${mFin.toString().padStart(2, "0")}`;
-}
-
-function sonConsecutivas(horasOrdenadas: string[]): boolean {
-  for (let i = 1; i < horasOrdenadas.length; i++) {
-    if (
-      sumarMinutos(horasOrdenadas[i - 1], DURACION_BLOQUE_MIN) !==
-      horasOrdenadas[i]
-    ) {
-      return false;
-    }
-  }
-  return true;
-}
 
 function HorariosGrid({
   horas,
@@ -150,6 +136,17 @@ export default function BookingCard() {
   const [errorResolucion, setErrorResolucion] = useState<string | null>(null);
 
   const { data: services = [], isLoading: loadingServices } = useGetServices();
+  const { data: configuracionSistema } = useGetConfiguracionSistema();
+  const duracionActiva = configuracionSistema?.duracionServiciosActiva ?? false;
+
+  const servicioSeleccionado = services.find(s => s.id === selectedServiceId);
+  const bloquesExigidos = duracionActiva
+    ? bloquesRequeridos(servicioSeleccionado?.duracionMinutos)
+    : 0;
+  const duracionServicioEfectiva =
+    duracionActiva && servicioSeleccionado?.duracionMinutos
+      ? servicioSeleccionado.duracionMinutos
+      : DURACION_BLOQUE_MIN;
 
   const duracionMinutos = selectedHoras.length * DURACION_BLOQUE_MIN;
   const horaInicio = [...selectedHoras].sort()[0] ?? "";
@@ -157,14 +154,14 @@ export default function BookingCard() {
 
   const { isLoading: loadingFechas } = useGetFechasDisponibles(
     selectedServiceId ?? 0,
-    DURACION_BLOQUE_MIN,
+    duracionServicioEfectiva,
     Boolean(selectedServiceId)
   );
   const { data: horasDisponibles = [], isLoading: loadingHoras } =
     useGetHorasDisponibles(
       selectedServiceId ?? 0,
       selectedDate ?? "",
-      DURACION_BLOQUE_MIN,
+      duracionServicioEfectiva,
       Boolean(selectedServiceId) && Boolean(selectedDate)
     );
 
@@ -283,12 +280,16 @@ export default function BookingCard() {
     const yaSeleccionada = selectedHoras.includes(hora);
     let nuevas: string[];
 
+    const maxBloques = duracionActiva ? bloquesExigidos : MAX_BLOQUES;
+
     if (yaSeleccionada) {
       nuevas = selectedHoras.filter(h => h !== hora);
     } else {
-      if (selectedHoras.length >= MAX_BLOQUES) {
+      if (selectedHoras.length >= maxBloques) {
         setErrorSeleccion(
-          "Puedes reservar como máximo 3 bloques (90 minutos)."
+          duracionActiva
+            ? `Este servicio dura ${servicioSeleccionado?.duracionMinutos} min (${bloquesExigidos} bloque(s)).`
+            : "Puedes reservar como máximo 3 bloques (90 minutos)."
         );
         return;
       }
@@ -314,6 +315,12 @@ export default function BookingCard() {
   const handleContinuarHorario = () => {
     if (selectedHoras.length === 0) {
       setErrorSeleccion("Selecciona al menos un bloque de horario.");
+      return;
+    }
+    if (duracionActiva && selectedHoras.length !== bloquesExigidos) {
+      setErrorSeleccion(
+        `Este servicio dura ${servicioSeleccionado?.duracionMinutos} min (${bloquesExigidos} bloque(s)).`
+      );
       return;
     }
     nextStep();
@@ -608,6 +615,12 @@ export default function BookingCard() {
                   ({duracionMinutos} minutos)
                 </p>
               )}
+              {duracionActiva && servicioSeleccionado?.duracionMinutos && (
+                <p className="text-xs text-slate-500 pt-1">
+                  Este servicio requiere {servicioSeleccionado.duracionMinutos}{" "}
+                  min ({bloquesExigidos} bloque(s) de 30 min).
+                </p>
+              )}
             </div>
 
             {/* Selector de horario acumulativo (1 a 3 bloques consecutivos) */}
@@ -659,9 +672,13 @@ export default function BookingCard() {
             </button>
             <button
               onClick={handleContinuarHorario}
-              disabled={selectedHoras.length === 0}
+              disabled={
+                selectedHoras.length === 0 ||
+                (duracionActiva && selectedHoras.length !== bloquesExigidos)
+              }
               className={`rounded-global px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
-                selectedHoras.length > 0
+                selectedHoras.length > 0 &&
+                (!duracionActiva || selectedHoras.length === bloquesExigidos)
                   ? "bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer shadow-md"
                   : "bg-slate-100 text-slate-400 cursor-not-allowed"
               }`}

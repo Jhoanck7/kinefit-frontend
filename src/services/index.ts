@@ -9,6 +9,10 @@ export {
 } from "./bloque-horario-service";
 export { CitaService, citaService } from "./cita-service";
 export {
+  ConfiguracionSistemaService,
+  configuracionSistemaService,
+} from "./configuracion-sistema-service";
+export {
   DisponibilidadService,
   disponibilidadService,
 } from "./disponibilidad-service";

@@ -79,3 +79,34 @@ export function ultimaHoraDelDia(diaSemana: number): string {
   const tramos = tramosDelDia(diaSemana);
   return tramos[tramos.length - 1].termino;
 }
+
+export function sumarMinutos(hora: string, minutos: number): string {
+  const [h, m] = hora.split(":").map(Number);
+  const total = h * 60 + m + minutos;
+  const hFin = Math.floor(total / 60);
+  const mFin = total % 60;
+  return `${hFin.toString().padStart(2, "0")}:${mFin.toString().padStart(2, "0")}`;
+}
+
+export function sonConsecutivas(
+  horasOrdenadas: string[],
+  duracionBloqueMin = DURACION_BLOQUE_MIN
+): boolean {
+  for (let i = 1; i < horasOrdenadas.length; i++) {
+    if (
+      sumarMinutos(horasOrdenadas[i - 1], duracionBloqueMin) !==
+      horasOrdenadas[i]
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function bloquesRequeridos(
+  duracionMinutos: number | undefined,
+  duracionBloqueMin = DURACION_BLOQUE_MIN
+): number {
+  if (!duracionMinutos || duracionMinutos <= 0) return 0;
+  return Math.ceil(duracionMinutos / duracionBloqueMin);
+}

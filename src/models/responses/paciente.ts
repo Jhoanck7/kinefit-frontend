@@ -9,6 +9,7 @@ export interface PacienteResponse {
   activo: boolean;
   origenRegistro: string;
   convenio?: string;
+  empresaId?: number;
   createdAt: string;
   updatedAt: string;
 }

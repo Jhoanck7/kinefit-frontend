@@ -45,18 +45,24 @@ export function ConfiguracionFinancieraModal({
   const [mostrarFormTerminal, setMostrarFormTerminal] = useState(false);
   const [nombreTerminal, setNombreTerminal] = useState("");
   const [plazoAbono, setPlazoAbono] = useState(1);
+  const [notasTerminal, setNotasTerminal] = useState("");
   const [pctDebito, setPctDebito] = useState(1.23);
   const [cargoFijoDebito, setCargoFijoDebito] = useState(0);
+  const [impuestoIncluidoDebito, setImpuestoIncluidoDebito] = useState(true);
   const [pctCredito, setPctCredito] = useState(1.89);
   const [cargoFijoCredito, setCargoFijoCredito] = useState(0);
+  const [impuestoIncluidoCredito, setImpuestoIncluidoCredito] = useState(true);
 
   function resetFormTerminal() {
     setNombreTerminal("");
     setPlazoAbono(1);
+    setNotasTerminal("");
     setPctDebito(1.23);
     setCargoFijoDebito(0);
+    setImpuestoIncluidoDebito(true);
     setPctCredito(1.89);
     setCargoFijoCredito(0);
+    setImpuestoIncluidoCredito(true);
     setMostrarFormTerminal(false);
   }
 
@@ -68,16 +74,19 @@ export function ConfiguracionFinancieraModal({
       await crearTerminalMutation.mutateAsync({
         nombre: nombreTerminal.trim(),
         plazoAbonoDias: plazoAbono,
+        notas: notasTerminal.trim() || undefined,
         comisiones: [
           {
             metodoPago: "Debito",
             porcentaje: pctDebito,
             cargoFijo: cargoFijoDebito,
+            impuestoIncluidoEnTasa: impuestoIncluidoDebito,
           },
           {
             metodoPago: "Credito",
             porcentaje: pctCredito,
             cargoFijo: cargoFijoCredito,
+            impuestoIncluidoEnTasa: impuestoIncluidoCredito,
           },
         ],
       });
@@ -271,7 +280,7 @@ export function ConfiguracionFinancieraModal({
 
                         <div>
                           <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
-                            Plazo de Abono (Días)
+                            Plazo de Abono (Días Hábiles)
                           </label>
                           <input
                             type="number"
@@ -283,6 +292,19 @@ export function ConfiguracionFinancieraModal({
                             className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                           />
                         </div>
+                      </div>
+
+                      <div>
+                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          Notas
+                        </label>
+                        <textarea
+                          placeholder="Ej. Comisión mixta elegida por menor cargo fijo en volumen bajo"
+                          value={notasTerminal}
+                          onChange={e => setNotasTerminal(e.target.value)}
+                          rows={2}
+                          className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
+                        />
                       </div>
 
                       <div className="p-3 border border-slate-200 bg-white space-y-2 rounded-none">
@@ -322,6 +344,20 @@ export function ConfiguracionFinancieraModal({
                             />
                           </div>
                         </div>
+                        <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={impuestoIncluidoDebito}
+                            onChange={e =>
+                              setImpuestoIncluidoDebito(e.target.checked)
+                            }
+                            className="mt-0.5"
+                          />
+                          <span className="font-sans text-xs text-slate-600">
+                            La tasa ya incluye el impuesto. Si se desmarca, se
+                            asume tasa neta y el sistema le suma el IVA vigente.
+                          </span>
+                        </label>
                       </div>
 
                       <div className="p-3 border border-slate-200 bg-white space-y-2 rounded-none">
@@ -361,6 +397,20 @@ export function ConfiguracionFinancieraModal({
                             />
                           </div>
                         </div>
+                        <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={impuestoIncluidoCredito}
+                            onChange={e =>
+                              setImpuestoIncluidoCredito(e.target.checked)
+                            }
+                            className="mt-0.5"
+                          />
+                          <span className="font-sans text-xs text-slate-600">
+                            La tasa ya incluye el impuesto. Si se desmarca, se
+                            asume tasa neta y el sistema le suma el IVA vigente.
+                          </span>
+                        </label>
                       </div>
 
                       <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
@@ -407,8 +457,13 @@ export function ConfiguracionFinancieraModal({
                               {t.nombre}
                             </span>
                             <span className="font-sans text-xs text-slate-500">
-                              Abono en {t.plazoAbonoDias} día(s)
+                              Abono en {t.plazoAbonoDias} día(s) hábil(es)
                             </span>
+                            {t.notas && (
+                              <span className="font-sans text-xs text-slate-400 block mt-0.5">
+                                {t.notas}
+                              </span>
+                            )}
                           </div>
 
                           <div className="text-right text-xs">
@@ -566,7 +621,7 @@ export function ConfiguracionFinancieraModal({
                               {a.porcentajeProfesional}% Prof.
                             </span>
                             <span className="bg-slate-900 text-white px-2.5 py-0.5 font-sans text-xs font-medium rounded-none">
-                              {a.porcentajeCentro}% Clínica
+                              {a.porcentajeCentro}% Empresa
                             </span>
                           </div>
 

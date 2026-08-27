@@ -4,7 +4,6 @@ import { Suspense } from "react";
 
 import { EmptyState, Paginacion, SearchInput } from "@/components/shared";
 import {
-  Badge,
   Button,
   Card,
   Table,
@@ -148,12 +147,10 @@ function FichasContenido() {
                   {ficha.pacienteNombre}
                 </TableCell>
                 <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                  {ficha.pacienteRut || "—"}
+                  {ficha.pacienteRut || "Sin RUT"}
                 </TableCell>
-                <TableCell className="px-4 py-3">
-                  <Badge className="rounded-none border-slate-200 bg-slate-50 text-[11px] font-medium text-slate-700">
-                    {ficha.tipoNombre}
-                  </Badge>
+                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  {ficha.tipoNombre}
                 </TableCell>
                 <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
                   {formatearFechaCorta(
@@ -164,7 +161,7 @@ function FichasContenido() {
                   Cita #{ficha.citaId}
                 </TableCell>
                 <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                  {ficha.creadoPorNombre || "—"}
+                  {ficha.creadoPorNombre || "Sin Registro"}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right">
                   <svg

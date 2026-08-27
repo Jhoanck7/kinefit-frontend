@@ -15,6 +15,7 @@ interface NuevaReservaState {
   especialistaNombre: string | null;
   servicioId: number | null;
   servicioNombre: string | null;
+  servicioDuracionMinutos: number | undefined;
   notaPaciente: string;
   notaInterna: string;
   setHorario: (fecha: Date, horasSeleccionadas: string[]) => void;
@@ -24,7 +25,11 @@ interface NuevaReservaState {
     nombre: string,
     bloqueHorarioIds: number[]
   ) => void;
-  setServicio: (id: number, nombre: string) => void;
+  setServicio: (
+    id: number,
+    nombre: string,
+    duracionMinutos?: number
+  ) => void;
   setNotaPaciente: (valor: string) => void;
   setNotaInterna: (valor: string) => void;
   reiniciar: () => void;
@@ -41,6 +46,7 @@ const ESTADO_INICIAL = {
   especialistaNombre: null,
   servicioId: null,
   servicioNombre: null,
+  servicioDuracionMinutos: undefined as number | undefined,
   notaPaciente: "",
   notaInterna: "",
 };
@@ -61,10 +67,11 @@ export const useNuevaReservaStore = create<NuevaReservaState>()(set => ({
     set({ pacienteId, pacienteNombre }),
   setEspecialista: (especialistaId, especialistaNombre, bloqueHorarioIds) =>
     set({ especialistaId, especialistaNombre, bloqueHorarioIds }),
-  setServicio: (servicioId, servicioNombre) =>
+  setServicio: (servicioId, servicioNombre, servicioDuracionMinutos) =>
     set({
       servicioId,
       servicioNombre,
+      servicioDuracionMinutos,
       // Cambiar de servicio invalida la cadena: el backend no valida que el especialista atienda el nuevo servicio.
       fecha: null,
       horasSeleccionadas: [],

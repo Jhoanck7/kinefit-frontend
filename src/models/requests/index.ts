@@ -12,6 +12,7 @@ export type {
   CreateCitaPublicaRequest,
   UpdateCitaEstadoRequest,
 } from "./cita";
+export type { UpdateConfiguracionSistemaRequest } from "./configuracion-sistema";
 export type { CreateEmpresaRequest, UpdateEmpresaRequest } from "./empresa";
 export type {
   CreateEspecialistaRequest,

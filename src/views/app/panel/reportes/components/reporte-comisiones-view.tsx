@@ -84,7 +84,7 @@ export function ReporteComisionesView({
                   <span className="rounded-none bg-emerald-700 px-3 py-1 text-sm font-bold text-white">
                     Acuerdo Vigente: {p.porcentajeProfesionalVigente}%
                     Profesional / {100 - (p.porcentajeProfesionalVigente ?? 50)}
-                    % Centro
+                    % Empresa
                   </span>
                 ) : (
                   <span className="rounded-none bg-amber-700 px-3 py-1 text-sm font-bold text-white">
@@ -159,7 +159,7 @@ export function ReporteComisionesView({
                   <div className="rounded-xl bg-panel-seleccion p-4 border border-brand-border flex justify-between items-center">
                     <div>
                       <span className="text-sm font-semibold text-panel-sidebar block">
-                        Margen Neto Clínica
+                        Margen Neto de la Empresa
                       </span>
                       <span className="text-xs text-brand-muted">
                         {100 - (p.porcentajeProfesionalVigente ?? 50)}% de la

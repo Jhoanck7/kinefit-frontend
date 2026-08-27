@@ -4,7 +4,6 @@ import { Suspense } from "react";
 
 import { EmptyState, Paginacion, SearchInput } from "@/components/shared";
 import {
-  Badge,
   Button,
   Table,
   TableBody,
@@ -112,22 +111,16 @@ function PacientesContent() {
                   {paciente.apellido}
                 </TableCell>
                 <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                  {paciente.rut || "—"}
+                  {paciente.rut || "Sin RUT"}
                 </TableCell>
                 <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                  {paciente.email || "—"}
+                  {paciente.email || "Sin Correo"}
                 </TableCell>
                 <TableCell className="px-4 py-3 font-medium text-sm text-slate-700 whitespace-nowrap">
-                  {paciente.telefono || "—"}
+                  {paciente.telefono || "Sin Teléfono"}
                 </TableCell>
-                <TableCell className="px-4 py-3">
-                  {paciente.convenio ? (
-                    <Badge className="rounded-none border-slate-200 bg-slate-50 text-[11px] font-medium text-slate-700">
-                      {paciente.convenio}
-                    </Badge>
-                  ) : (
-                    <span className="font-sans text-xs text-slate-400">—</span>
-                  )}
+                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  {paciente.convenio || "Sin Convenio"}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right">
                   <svg

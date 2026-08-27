@@ -2,14 +2,19 @@
 
 import { Modal } from "@/components/shared";
 import { formatearFechaHora } from "@/lib/formato";
-import { VentaResponse } from "@/models/responses";
+import { TerminalPagoResponse, VentaResponse } from "@/models/responses";
 
 interface VentaDetalleModalProps {
   venta: VentaResponse | null;
+  terminales: TerminalPagoResponse[];
   onClose: () => void;
 }
 
-export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
+export function VentaDetalleModal({
+  venta,
+  terminales,
+  onClose,
+}: VentaDetalleModalProps) {
   if (!venta) return null;
 
   const primerItem = venta.items[0];
@@ -18,6 +23,7 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
   const repartoConfigurado =
     venta.desglose.montoProfesional !== undefined &&
     venta.desglose.montoCentro !== undefined;
+  const terminalUsado = terminales.find(t => t.id === venta.terminalPagoId);
 
   function handleImprimir() {
     window.print();
@@ -58,6 +64,36 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
                 DESGLOSE CONTABLE
               </h3>
               <div className="space-y-3">
+                {Boolean(venta.desglose.descuentoConvenio) && (
+                  <>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                        Precio de Lista
+                      </span>
+                      <span className="font-sans font-medium text-sm text-slate-900">
+                        $
+                        {(
+                          venta.desglose.montoTotal +
+                          venta.desglose.descuentoConvenio!
+                        ).toLocaleString("es-CL")}{" "}
+                        CLP
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                        Descuento Convenio
+                      </span>
+                      <span className="font-sans font-medium text-sm text-slate-700">
+                        -$
+                        {venta.desglose.descuentoConvenio!.toLocaleString(
+                          "es-CL"
+                        )}{" "}
+                        CLP
+                      </span>
+                    </div>
+                  </>
+                )}
+
                 <div className="flex justify-between items-center text-sm">
                   <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
                     Monto Cobrado (Bruto)
@@ -103,6 +139,16 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
                   </span>
                 </div>
 
+                {Boolean(venta.desglose.impuestoComisionTerminal) && (
+                  <p className="text-right font-sans text-[11px] text-slate-400 -mt-1">
+                    (incluye impuesto de comisión: $
+                    {venta.desglose.impuestoComisionTerminal!.toLocaleString(
+                      "es-CL"
+                    )}{" "}
+                    CLP)
+                  </p>
+                )}
+
                 <div className="border-t border-slate-200 my-1" />
 
                 <div className="flex justify-between items-center text-sm">
@@ -135,7 +181,7 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
                   </div>
                   <div className="flex justify-between items-center text-sm">
                     <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
-                      Margen Clínica (
+                      Margen de la Empresa (
                       {100 -
                         (venta.desglose.porcentajeProfesionalAplicado ?? 50)}
                       %)
@@ -200,6 +246,11 @@ export function VentaDetalleModal({ venta, onClose }: VentaDetalleModalProps) {
                   {venta.metodoPago}{" "}
                   {venta.terminalNombre ? `· ${venta.terminalNombre}` : ""}
                 </p>
+                {terminalUsado?.notas && (
+                  <p className="font-sans text-xs text-slate-500 mt-1">
+                    {terminalUsado.notas}
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -5,6 +5,7 @@ export interface VentaItemResponse {
   servicioNombre?: string;
   descripcion?: string;
   monto: number;
+  descuentoConvenio?: number;
 }
 
 export interface DesgloseCobroResponse {
@@ -18,6 +19,8 @@ export interface DesgloseCobroResponse {
   montoCentro?: number;
   porcentajeProfesionalAplicado?: number;
   motivoNoCalculable?: string;
+  impuestoComisionTerminal?: number;
+  descuentoConvenio?: number;
 }
 
 export interface VentaResponse {
@@ -51,6 +54,7 @@ export interface ComisionTerminalResponse {
   cargoFijo?: number;
   vigenteDesde: string;
   vigenteHasta?: string;
+  impuestoIncluidoEnTasa: boolean;
 }
 
 export interface TerminalPagoResponse {
@@ -58,6 +62,7 @@ export interface TerminalPagoResponse {
   nombre: string;
   plazoAbonoDias: number;
   activo: boolean;
+  notas?: string;
   comisiones: ComisionTerminalResponse[];
 }
 

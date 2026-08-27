@@ -4,7 +4,9 @@ import { useState } from "react";
 
 import {
   useCreateServicioMutation,
+  useGetConfiguracionSistema,
   useGetServicios,
+  useUpdateConfiguracionSistemaMutation,
   useUpdateServicioEstadoMutation,
   useUpdateServicioMutation,
 } from "@/hooks/api";
@@ -13,16 +15,22 @@ import { ServicioResponse } from "@/models/responses";
 
 export const useServicios = () => {
   const { data: servicios = [], isLoading: cargando } = useGetServicios(false);
+  const { data: configuracionSistema } = useGetConfiguracionSistema();
+  const duracionActiva = configuracionSistema?.duracionServiciosActiva ?? false;
 
   const crearMutation = useCreateServicioMutation();
   const actualizarMutation = useUpdateServicioMutation();
   const estadoMutation = useUpdateServicioEstadoMutation();
+  const duracionMutation = useUpdateConfiguracionSistemaMutation();
 
   const [mostrarModal, setMostrarModal] = useState(false);
   const [servicioEditando, setServicioEditando] =
     useState<ServicioResponse | null>(null);
   const [nombre, setNombre] = useState("");
   const [orden, setOrden] = useState(0);
+  const [duracionMinutos, setDuracionMinutos] = useState<number | undefined>(
+    undefined
+  );
   const [descripcion, setDescripcion] = useState("");
   const [imagenUrl, setImagenUrl] = useState("");
   const [imagenPublicId, setImagenPublicId] = useState("");
@@ -34,6 +42,7 @@ export const useServicios = () => {
     setServicioEditando(null);
     setNombre("");
     setOrden(servicios.length);
+    setDuracionMinutos(undefined);
     setDescripcion("");
     setImagenUrl("");
     setImagenPublicId("");
@@ -46,6 +55,7 @@ export const useServicios = () => {
     setServicioEditando(servicio);
     setNombre(servicio.nombre);
     setOrden(servicio.orden);
+    setDuracionMinutos(servicio.duracionMinutos);
     setDescripcion(servicio.descripcion || "");
     setImagenUrl(servicio.imagenUrl || "");
     setImagenPublicId(servicio.imagenPublicId || "");
@@ -71,6 +81,7 @@ export const useServicios = () => {
           data: {
             nombre,
             orden,
+            duracionMinutos,
             imagenPublicId: imagenPublicId || undefined,
             imagenAlt: imagenAlt || undefined,
             descripcion: descripcion || undefined,
@@ -80,6 +91,7 @@ export const useServicios = () => {
         await crearMutation.mutateAsync({
           nombre,
           orden,
+          duracionMinutos,
           imagenPublicId: imagenPublicId || undefined,
           imagenAlt: imagenAlt || undefined,
           descripcion: descripcion || undefined,
@@ -103,13 +115,21 @@ export const useServicios = () => {
     }
   };
 
+  const handleToggleDuracionActiva = async () => {
+    await duracionMutation.mutateAsync({
+      duracionServiciosActiva: !duracionActiva,
+    });
+  };
+
   return {
     servicios,
     cargando,
+    duracionActiva,
     mostrarModal,
     servicioEditando,
     nombre,
     orden,
+    duracionMinutos,
     descripcion,
     imagenUrl,
     error,
@@ -122,6 +142,7 @@ export const useServicios = () => {
     actions: {
       setNombre,
       setOrden,
+      setDuracionMinutos,
       setDescripcion,
       handleAbrirCrear,
       handleAbrirEditar,
@@ -129,6 +150,7 @@ export const useServicios = () => {
       handleFotoChange,
       handleGuardar,
       handleToggleEstado,
+      handleToggleDuracionActiva,
     },
   };
 };

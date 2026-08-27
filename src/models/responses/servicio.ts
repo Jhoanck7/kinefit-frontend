@@ -3,6 +3,7 @@ export interface ServicioResponse {
   nombre: string;
   orden: number;
   activo: boolean;
+  duracionMinutos?: number;
   imagenUrl?: string;
   imagenPublicId?: string;
   imagenAlt?: string;

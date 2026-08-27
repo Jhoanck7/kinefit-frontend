@@ -24,6 +24,9 @@ function HorarioContent() {
     horaTerminoCalculada,
     manana,
     tarde,
+    duracionActiva,
+    bloquesExigidos,
+    servicioDuracionMinutos,
     nombreServicio,
     especialistaNombre,
     pacienteNombre,
@@ -83,6 +86,12 @@ function HorarioContent() {
                   ({duracionMin} minutos)
                 </p>
               )}
+              {duracionActiva && servicioDuracionMinutos && (
+                <p className="font-sans text-xs text-slate-500 pt-1">
+                  Este servicio requiere {servicioDuracionMinutos} min (
+                  {bloquesExigidos} bloque(s) de 30 min).
+                </p>
+              )}
             </div>
             <div className="sm:pl-6">
               {!fecha ? (
@@ -138,7 +147,12 @@ function HorarioContent() {
             }
             avanzar={
               <Button
-                disabled={!fecha || horasSeleccionadas.length === 0}
+                disabled={
+                  !fecha ||
+                  horasSeleccionadas.length === 0 ||
+                  (duracionActiva &&
+                    horasSeleccionadas.length !== bloquesExigidos)
+                }
                 onClick={actions.handleContinuar}
               >
                 Continuar

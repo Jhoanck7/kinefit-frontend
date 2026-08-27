@@ -25,7 +25,7 @@ export const useServicio = () => {
   const { data: servicios = [], isLoading } = useGetServicios();
 
   const handleSeleccionar = (servicio: ServicioResponse) =>
-    setServicio(servicio.id, servicio.nombre);
+    setServicio(servicio.id, servicio.nombre, servicio.duracionMinutos);
   const handleCancelar = () => router.push("/panel/agenda");
   const handleContinuar = () => router.push("/panel/nueva-reserva/horario");
 

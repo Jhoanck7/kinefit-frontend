@@ -18,11 +18,13 @@ export interface CreateComisionTerminalRequest {
   porcentaje: number;
   tipoModelo?: "Porcentual" | "Mixto";
   cargoFijo?: number;
+  impuestoIncluidoEnTasa?: boolean;
 }
 
 export interface CreateTerminalPagoRequest {
   nombre: string;
   plazoAbonoDias: number;
+  notas?: string;
   comisiones: CreateComisionTerminalRequest[];
 }
 

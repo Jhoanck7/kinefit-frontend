@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Alerta, Modal } from "@/components/shared";
 import {
   useCreateVentaMutation,
+  useGetEmpresas,
   useGetPacientes,
   useGetServicios,
 } from "@/hooks/api";
@@ -39,7 +40,9 @@ export function NuevaVentaModal({
       busquedaValida && !pacienteSeleccionado
     );
   const { data: servicios = [] } = useGetServicios();
+  const { data: empresas = [] } = useGetEmpresas(false);
   const [descripcion, setDescripcion] = useState("");
+  const [servicioId, setServicioId] = useState<string>("");
   const [monto, setMonto] = useState(40000);
   const [metodoPago, setMetodoPago] = useState<MetodoPago>("Debito");
   const [terminalPagoId, setTerminalPagoId] = useState<string>(
@@ -54,6 +57,7 @@ export function NuevaVentaModal({
     setBusquedaPaciente("");
     setPacienteSeleccionado(null);
     setDescripcion("");
+    setServicioId("");
     setMonto(40000);
     setMetodoPago("Debito");
     setTerminalPagoId(String(terminales[0]?.id ?? ""));
@@ -79,6 +83,7 @@ export function NuevaVentaModal({
         items: [
           {
             tipo: "Servicio",
+            servicioId: servicioId ? Number(servicioId) : undefined,
             descripcion: descripcion.trim(),
             monto,
           },
@@ -167,15 +172,19 @@ export function NuevaVentaModal({
             </label>
             <select
               required
-              value={descripcion}
-              onChange={e => setDescripcion(e.target.value)}
+              value={servicioId}
+              onChange={e => {
+                setServicioId(e.target.value);
+                const s = servicios.find(sv => sv.id === Number(e.target.value));
+                setDescripcion(s?.nombre ?? "");
+              }}
               className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
             >
               <option value="" disabled>
                 Selecciona un servicio...
               </option>
               {servicios.map(s => (
-                <option key={s.id} value={s.nombre}>
+                <option key={s.id} value={s.id}>
                   {s.nombre}
                 </option>
               ))}
@@ -196,6 +205,24 @@ export function NuevaVentaModal({
                 onChange={e => setMonto(parseFloat(e.target.value) || 0)}
                 className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               />
+              {(() => {
+                const empresa = empresas.find(
+                  e => e.id === pacienteSeleccionado?.empresaId
+                );
+                const convenio = empresa?.convenios.find(
+                  c => c.servicioId === Number(servicioId) && c.activo
+                );
+                if (!empresa || !convenio) return null;
+                const totalConDescuento = Math.round(
+                  monto * (1 - convenio.porcentaje / 100)
+                );
+                return (
+                  <p className="mt-1 text-xs text-emerald-700 font-medium">
+                    Convenio {empresa.nombre}: -{convenio.porcentaje}% → Total a
+                    cobrar ${totalConDescuento.toLocaleString("es-CL")}
+                  </p>
+                );
+              })()}
             </div>
 
             <div>
