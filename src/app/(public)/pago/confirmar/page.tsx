@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 
 import { transaccionService } from "@/services";
@@ -8,8 +9,9 @@ import { ConfirmarTransaccionResponseData } from "@/types";
 
 function ConfirmarPagoContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const tokenWs = searchParams.get("token_ws") || searchParams.get("TBK_TOKEN");
+  const tokenWs = searchParams.get("token_ws");
+  const tbkToken = searchParams.get("TBK_TOKEN");
+  const tbkOrdenCompra = searchParams.get("TBK_ORDEN_COMPRA");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,12 +21,23 @@ function ConfirmarPagoContent() {
 
   useEffect(() => {
     async function confirmar() {
+      // 1. Caso Abandono / Cancelación por el usuario en Webpay
+      if (tbkToken || (tbkOrdenCompra && !tokenWs)) {
+        setError(
+          "El pago fue cancelado por el usuario en Webpay o la sesión fue anulada."
+        );
+        setLoading(false);
+        return;
+      }
+
+      // 2. Caso Sin Token
       if (!tokenWs) {
         setError("No se proporcionó el token de la transacción de Webpay.");
         setLoading(false);
         return;
       }
 
+      // 3. Confirmar con el backend
       try {
         const response = await transaccionService.confirmarTransaccion(tokenWs);
         setResult(response.data.data);
@@ -40,7 +53,7 @@ function ConfirmarPagoContent() {
     }
 
     confirmar();
-  }, [tokenWs]);
+  }, [tokenWs, tbkToken, tbkOrdenCompra]);
 
   if (loading) {
     return (
@@ -59,36 +72,82 @@ function ConfirmarPagoContent() {
     );
   }
 
-  if (error || (result && result.resultado === "Rechazado")) {
+  // Verificación estricta de aprobación:
+  const esAprobado = Boolean(
+    !error &&
+      result &&
+      result.estado === "Aprobado" &&
+      result.estadoCita === "Confirmada"
+  );
+
+  if (!esAprobado) {
+    let mensajeError =
+      error ||
+      "La transacción de pago no pudo ser completada o fue rechazada por el banco.";
+    if (result) {
+      if (result.advertencia) {
+        mensajeError = result.advertencia;
+      } else if (result.estado === "Rechazado") {
+        mensajeError =
+          "El pago fue rechazado por Webpay o el emisor de tu tarjeta bancaria. Los fondos no fueron cobrados.";
+      } else if (result.estado === "Expirado") {
+        mensajeError =
+          "El tiempo límite para realizar el pago en Webpay expiró. Tu reserva no fue confirmada.";
+      }
+    }
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
         <div className="bg-white border border-slate-200 rounded-3xl p-8 max-w-md w-full text-center shadow-xl animate-fade-in">
-          <div className="w-16 h-16 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-500 text-3xl mx-auto mb-4">
+          <div className="w-16 h-16 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-500 text-3xl mx-auto mb-4 font-bold">
             ✕
           </div>
           <h2 className="text-xl font-extrabold text-slate-900 mb-2">
-            Pago Rechazado o Incompleto
+            Pago Rechazado o Cancelado
           </h2>
           <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-            {error ||
-              "La transacción de pago no pudo ser completada o fue cancelada en Webpay."}
+            {mensajeError}
           </p>
 
-          <button
-            onClick={() => router.push("/")}
-            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider cursor-pointer"
+          {result && (
+            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 text-left mb-6 flex flex-col gap-2 text-xs">
+              <div className="flex justify-between border-b border-slate-200/60 pb-1.5">
+                <span className="text-slate-400">Orden de Compra:</span>
+                <span className="font-semibold text-slate-700">
+                  {result.buyOrder || "—"}
+                </span>
+              </div>
+              <div className="flex justify-between border-b border-slate-200/60 pb-1.5">
+                <span className="text-slate-400">Estado Transacción:</span>
+                <span className="font-bold text-rose-600">
+                  {result.estado || "Rechazado"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Estado de Cita:</span>
+                <span className="font-bold text-slate-700">
+                  {result.estadoCita || "Cancelada"}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <Link
+            href="/"
+            className="block w-full bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider text-center"
           >
             Volver a Intentar
-          </button>
+          </Link>
         </div>
       </div>
     );
   }
 
+  // PANTALLA DE ÉXITO (Solo si esAprobado === true)
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
       <div className="bg-white border border-slate-200 rounded-3xl p-8 max-w-md w-full text-center shadow-xl animate-fade-in">
-        <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-500 text-3xl mx-auto mb-4">
+        <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-500 text-3xl mx-auto mb-4 font-bold">
           ✓
         </div>
         <h2 className="text-2xl font-extrabold text-slate-900 mb-1">
@@ -102,50 +161,41 @@ function ConfirmarPagoContent() {
           <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 text-left mb-6 flex flex-col gap-3 text-xs">
             <div className="flex justify-between border-b border-slate-200/60 pb-2">
               <span className="text-slate-400 font-medium">
+                N° de Reserva / Cita:
+              </span>
+              <span className="font-bold text-slate-900">
+                #{result.citaId}
+              </span>
+            </div>
+            <div className="flex justify-between border-b border-slate-200/60 pb-2">
+              <span className="text-slate-400 font-medium">
                 Orden de Compra:
               </span>
               <span className="font-bold text-slate-800">
-                {String(result.transaccion?.buyOrder || "KF-CITA")}
+                {result.buyOrder}
               </span>
             </div>
             <div className="flex justify-between border-b border-slate-200/60 pb-2">
-              <span className="text-slate-400 font-medium">Servicio:</span>
-              <span className="font-semibold text-slate-900">
-                {String(result.cita?.servicio || "Kinesiología")}
-              </span>
-            </div>
-            <div className="flex justify-between border-b border-slate-200/60 pb-2">
-              <span className="text-slate-400 font-medium">Especialista:</span>
-              <span className="font-semibold text-slate-900">
-                {String(result.cita?.especialista || "KineFit")}
-              </span>
-            </div>
-            <div className="flex justify-between border-b border-slate-200/60 pb-2">
-              <span className="text-slate-400 font-medium">Fecha y Hora:</span>
-              <span className="font-semibold text-slate-900">
-                {String(result.cita?.fecha || "")}{" "}
-                {String(result.cita?.hora || "")} hrs
+              <span className="text-slate-400 font-medium">Estado del Pago:</span>
+              <span className="font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
+                Aprobado
               </span>
             </div>
             <div className="flex justify-between pt-1">
               <span className="text-slate-400 font-medium">Monto Pagado:</span>
-              <span className="font-bold text-emerald-600">
-                $
-                {Number(result.transaccion?.monto || 10000).toLocaleString(
-                  "es-CL"
-                )}{" "}
-                CLP
+              <span className="font-bold text-emerald-600 text-sm">
+                ${Number(result.monto || 10000).toLocaleString("es-CL")} CLP
               </span>
             </div>
           </div>
         )}
 
-        <button
-          onClick={() => router.push("/")}
-          className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
+        <Link
+          href="/"
+          className="block w-full bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider text-center shadow-md"
         >
           Volver al Inicio
-        </button>
+        </Link>
       </div>
     </div>
   );
