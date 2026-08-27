@@ -200,12 +200,12 @@ export default function BookingCard() {
     script.defer = true;
 
     script.onload = () => {
+      const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((window as any).google?.accounts?.id) {
+      if (googleClientId && (window as any).google?.accounts?.id) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).google.accounts.id.initialize({
-          client_id:
-            "590926291917-p4rge48fltejn313oi24ujs5oc4vr6v1.apps.googleusercontent.com",
+          client_id: googleClientId,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           callback: async (response: any) => {
             if (response && response.credential) {
