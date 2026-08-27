@@ -105,6 +105,15 @@ export interface ConfirmarTransaccionResponseData {
     monto: number;
     estado: string;
   };
+  id: number;
+  citaId: number;
+  buyOrder: string;
+  monto: number;
+  estado: "Aprobado" | "Rechazado" | "Expirado" | "Iniciado" | string;
+  estadoCita: "Confirmada" | "Cancelada" | "Expirada" | "PendientePago" | string;
+  createdAt: string;
+  updatedAt: string;
+  advertencia?: string | null;
 }
 
 // Legacy CMS Interfaces
