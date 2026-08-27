@@ -13,6 +13,7 @@ export { CollapsibleSection } from "./collapsible-section";
 export { EmptyState } from "./empty-state";
 export { FileDropzone } from "./file-dropzone";
 export { ImageUploader } from "./image-uploader";
+export { InstagramVideoCard } from "./instagram-video-card";
 export { Modal } from "./modal";
 export type { OpcionSelector } from "./option-selector";
 export { OptionSelector } from "./option-selector";
