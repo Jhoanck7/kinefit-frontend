@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { LandingConfigResponse } from "@/models/responses";
 import { useBookingStore } from "@/stores";
-
+ 
 import BookingCard from "./booking-card";
 
 export default function HeroSection({
