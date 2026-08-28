@@ -13,7 +13,19 @@ export function AdminPanelButton({
   className = "",
   variant = "navbar",
 }: AdminPanelButtonProps) {
-  const { data: session, status } = useSession();
+  const [mounted, setMounted] = React.useState(false);
+  const sessionResult = useSession();
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  const session = sessionResult?.data;
+  const status = sessionResult?.status;
 
   if (status === "loading" || session?.user?.rol !== "Administrador") {
     return null;
