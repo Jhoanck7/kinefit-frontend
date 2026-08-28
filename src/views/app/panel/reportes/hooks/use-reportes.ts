@@ -6,10 +6,15 @@ import { fechaISO } from "@/lib/formato";
 
 import { TabReporte } from "../components";
 
-function rangoAFechas(rango: string): {
-  fechaDesde?: string;
-  fechaHasta?: string;
-} {
+function rangoAFechas(
+  rango: string,
+  customDesde?: string,
+  customHasta?: string
+): { fechaDesde?: string; fechaHasta?: string } {
+  if (rango === "personalizado") {
+    return { fechaDesde: customDesde, fechaHasta: customHasta };
+  }
+
   const hoy = new Date();
   const hoyStr = fechaISO(hoy);
 
@@ -52,22 +57,34 @@ export const useReportes = () => {
   const [tabActivo, setTabActivo] = useState<TabReporte>("reservas");
   const [rangoFecha, setRangoFecha] = useState("30dias");
   const [compararConAnterior, setCompararConAnterior] = useState(true);
+  const [vista, setVista] = useState<"dia" | "semana" | "mes">("dia");
 
-  const { fechaDesde, fechaHasta } = rangoAFechas(rangoFecha);
+  const hoyStr = fechaISO(new Date());
+  const [customDesde, setCustomDesde] = useState(hoyStr);
+  const [customHasta, setCustomHasta] = useState(hoyStr);
+
+  const { fechaDesde, fechaHasta } = rangoAFechas(
+    rangoFecha,
+    customDesde,
+    customHasta
+  );
 
   return {
-    // Data
     tabActivo,
     rangoFecha,
     compararConAnterior,
+    vista,
+    customDesde,
+    customHasta,
     fechaDesde,
     fechaHasta,
-
-    // Actions
     actions: {
       setTabActivo,
       setRangoFecha,
       setCompararConAnterior,
+      setVista,
+      setCustomDesde,
+      setCustomHasta,
     },
   };
 };

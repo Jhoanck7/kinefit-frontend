@@ -7,17 +7,20 @@ interface ReporteReservasViewProps {
   fechaDesde?: string;
   fechaHasta?: string;
   compararCon?: boolean;
+  vista?: "dia" | "semana" | "mes";
 }
 
 export function ReporteReservasView({
   fechaDesde,
   fechaHasta,
   compararCon,
+  vista = "dia",
 }: ReporteReservasViewProps) {
   const { data, isLoading: cargando } = useGetReporteReservas({
     fechaDesde,
     fechaHasta,
     compararCon,
+    vista,
   });
 
   const indicadores = data?.indicadores;
@@ -38,6 +41,10 @@ export function ReporteReservasView({
     ...evolucionTemporal.map(p => p.reservas),
     1
   );
+  const maxIngresos = Math.max(
+    ...evolucionTemporal.map(p => p.ingresos),
+    1
+  );
   const maxHora = Math.max(...distribucionPorHora.map(p => p.cantidad), 1);
   const maxDia = Math.max(...distribucionPorDiaSemana.map(p => p.cantidad), 1);
 
@@ -49,6 +56,24 @@ export function ReporteReservasView({
   const pctRecurrentes = Math.round(
     (clientesRecurrentes / totalRetencion) * 100
   );
+
+  /**
+   * Color del badge de variación.
+   * esInverso = true → bajar es bueno (ej. inasistencias)
+   */
+  function colorVariacion(
+    valor: number | null | undefined,
+    esInverso = false
+  ): string {
+    if (valor === null || valor === undefined) return "bg-slate-400";
+    const esBueno = esInverso ? valor <= 0 : valor >= 0;
+    return esBueno ? "bg-emerald-700" : "bg-rose-600";
+  }
+
+  function formatVariacion(valor: number | null | undefined): string {
+    if (valor === null || valor === undefined) return "sin datos prev.";
+    return `${valor >= 0 ? "+" : ""}${valor}% vs anterior`;
+  }
 
   if (cargando) {
     return (
@@ -81,9 +106,10 @@ export function ReporteReservasView({
               Reservas Totales
             </span>
             {comparacion?.variacionReservasTotales !== undefined && (
-              <span className="rounded-none bg-emerald-700 px-2.5 py-1 text-sm font-bold text-white">
-                {comparacion.variacionReservasTotales >= 0 ? "+" : ""}
-                {comparacion.variacionReservasTotales}% vs anterior
+              <span
+                className={`rounded-none px-2.5 py-1 text-xs font-bold text-white ${colorVariacion(comparacion.variacionReservasTotales)}`}
+              >
+                {formatVariacion(comparacion.variacionReservasTotales)}
               </span>
             )}
           </div>
@@ -102,9 +128,10 @@ export function ReporteReservasView({
               Tasa de Ocupación
             </span>
             {comparacion?.variacionPorcentajeOcupacion !== undefined && (
-              <span className="rounded-none bg-emerald-700 px-2.5 py-1 text-sm font-bold text-white">
-                {comparacion.variacionPorcentajeOcupacion >= 0 ? "+" : ""}
-                {comparacion.variacionPorcentajeOcupacion}% vs anterior
+              <span
+                className={`rounded-none px-2.5 py-1 text-xs font-bold text-white ${colorVariacion(comparacion.variacionPorcentajeOcupacion)}`}
+              >
+                {formatVariacion(comparacion.variacionPorcentajeOcupacion)}
               </span>
             )}
           </div>
@@ -116,15 +143,17 @@ export function ReporteReservasView({
           </p>
         </Card>
 
-        {/* KPI 3: Tasa de Inasistencias */}
+        {/* KPI 3: Tasa de Inasistencias — negativo es BUENO */}
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">
               Tasa de Inasistencias
             </span>
             {comparacion?.variacionTasaInasistencias !== undefined && (
-              <span className="rounded-none bg-emerald-700 px-2.5 py-1 text-sm font-bold text-white">
-                {comparacion.variacionTasaInasistencias}% vs anterior
+              <span
+                className={`rounded-none px-2.5 py-1 text-xs font-bold text-white ${colorVariacion(comparacion.variacionTasaInasistencias, true)}`}
+              >
+                {formatVariacion(comparacion.variacionTasaInasistencias)}
               </span>
             )}
           </div>
@@ -137,7 +166,7 @@ export function ReporteReservasView({
         </Card>
       </div>
 
-      {/* 2. Gráfico de Evolución Temporal */}
+      {/* 2. Gráfico de Evolución Temporal — doble barra */}
       {evolucionTemporal.length > 0 && (
         <Card className="p-6">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
@@ -146,43 +175,69 @@ export function ReporteReservasView({
                 Evolución Temporal de Reservas e Ingresos
               </h3>
               <p className="text-sm text-brand-muted">
-                Comportamiento diario/semanal durante el rango seleccionado
+                Comportamiento durante el rango seleccionado
               </p>
             </div>
-            <div className="flex items-center gap-4 text-sm font-semibold text-panel-sidebar">
+            <div className="flex items-center gap-4 text-xs font-semibold text-panel-sidebar">
               <span className="flex items-center gap-1.5">
-                <span className="h-3 w-3 rounded-full bg-panel-sidebar inline-block" />{" "}
+                <span className="h-3 w-3 rounded-sm bg-panel-sidebar inline-block" />
                 Reservas (N°)
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-3 w-3 rounded-full bg-slate-400 inline-block" />{" "}
+                <span className="h-3 w-3 rounded-sm bg-emerald-700 inline-block" />
                 Ingresos ($ CLP)
               </span>
             </div>
           </div>
 
-          <div className="h-48 flex items-end justify-between gap-2 pt-6 border-b border-brand-border pb-2">
+          {/* Doble barra agrupada, escalas independientes */}
+          <div className="h-52 flex items-end justify-between gap-1 border-b border-brand-border pb-2 pt-2 overflow-x-auto">
             {evolucionTemporal.map(item => {
-              const alturaPct = Math.round(
+              const alturaReservas = Math.round(
                 (item.reservas / maxReservasEvolucion) * 100
+              );
+              const alturaIngresos = Math.round(
+                (item.ingresos / maxIngresos) * 100
               );
               return (
                 <div
                   key={item.periodo}
-                  className="flex-1 flex flex-col items-center gap-2 group relative"
+                  className="flex-1 min-w-[32px] flex flex-col items-center gap-1 group relative"
                 >
-                  <div className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-panel-sidebar text-white text-xs py-1 px-2 rounded pointer-events-none whitespace-nowrap z-10">
-                    {item.reservas} citas | $
-                    {item.ingresos.toLocaleString("es-CL")}
+                  {/* Tooltip hover */}
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-panel-sidebar text-white text-[10px] py-1 px-2 rounded pointer-events-none whitespace-nowrap z-10 shadow-lg">
+                    <span className="font-bold">{item.reservas}</span> citas
+                    <br />
+                    <span className="font-bold">
+                      ${item.ingresos.toLocaleString("es-CL")}
+                    </span>
                   </div>
-                  <span className="text-xs font-bold text-panel-sidebar">
-                    {item.reservas}
-                  </span>
-                  <div
-                    style={{ height: `${alturaPct}%` }}
-                    className="w-full max-w-[36px] rounded-t-lg bg-panel-sidebar transition-all group-hover:opacity-80"
-                  />
-                  <span className="text-xs font-semibold text-brand-muted mt-1">
+
+                  {/* Barras agrupadas */}
+                  <div className="w-full flex items-end justify-center gap-0.5 h-44">
+                    <div className="flex flex-col items-center justify-end h-full w-[45%]">
+                      <span className="text-[9px] font-bold text-panel-sidebar mb-0.5 leading-none">
+                        {item.reservas > 0 ? item.reservas : ""}
+                      </span>
+                      <div
+                        style={{ height: `${alturaReservas}%` }}
+                        className="w-full bg-panel-sidebar rounded-t transition-all group-hover:opacity-80 min-h-[2px]"
+                      />
+                    </div>
+                    <div className="flex flex-col items-center justify-end h-full w-[45%]">
+                      <span className="text-[9px] font-bold text-emerald-700 mb-0.5 leading-none">
+                        {item.ingresos > 0
+                          ? `$${Math.round(item.ingresos / 1000)}k`
+                          : ""}
+                      </span>
+                      <div
+                        style={{ height: `${alturaIngresos}%` }}
+                        className="w-full bg-emerald-700 rounded-t transition-all group-hover:opacity-80 min-h-[2px]"
+                      />
+                    </div>
+                  </div>
+
+                  <span className="text-[9px] font-semibold text-brand-muted mt-1 text-center leading-tight">
                     {item.periodo}
                   </span>
                 </div>
