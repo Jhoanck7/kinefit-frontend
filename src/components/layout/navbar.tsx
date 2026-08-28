@@ -3,6 +3,7 @@
 import Image from "next/image";
 import React, { useState } from "react";
 
+import { AdminPanelButton } from "@/components/shared";
 import { NAV_LINKS } from "@/lib/utils";
 import { LandingConfigResponse } from "@/models/responses";
 
@@ -59,6 +60,7 @@ export default function Navbar({
                 {link.name}
               </a>
             ))}
+            <AdminPanelButton />
           </div>
 
           {/* Mobile Toggle Button */}
@@ -119,6 +121,7 @@ export default function Navbar({
                 {link.name}
               </a>
             ))}
+            <AdminPanelButton variant="drawer" />
           </div>
         </div>
       )}

@@ -1,3 +1,5 @@
+export type { AdminPanelButtonProps } from "./admin-panel-button";
+export { AdminPanelButton } from "./admin-panel-button";
 export type { TonoAlerta } from "./alerta";
 export { Alerta } from "./alerta";
 export { BottomActionBar } from "./bottom-action-bar";

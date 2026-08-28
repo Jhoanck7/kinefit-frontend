@@ -2,6 +2,8 @@ import "../globals.css";
 
 import { Geist, JetBrains_Mono } from "next/font/google";
 
+import { SessionProvider } from "next-auth/react";
+
 import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
 import { WhatsAppButton } from "@/components/shared";
@@ -130,6 +132,14 @@ export default async function RootLayout({
           <Footer />
           <WhatsAppButton />
         </ReactQueryProvider>
+        <SessionProvider>
+          <ReactQueryProvider>
+            <Navbar config={config} />
+            <div className="flex-grow">{children}</div>
+            <Footer />
+            <WhatsAppButton />
+          </ReactQueryProvider>
+        </SessionProvider>
       </body>
     </html>
   );
