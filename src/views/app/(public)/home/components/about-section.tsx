@@ -41,7 +41,7 @@ export default function AboutSection({
           </div>
 
           {/* 4. Botón CTA y Redes Sociales: Cuarto en móvil, tercera fila izquierda en escritorio */}
-          <div className="order-4 lg:col-span-7 flex flex-wrap items-center gap-50 pt-2">
+          <div className="order-4 lg:col-span-7 flex flex-wrap items-center gap-25 pt-2">
             {config.reservasHabilitadas !== false ? (
               <a
                 href="#agendamiento"

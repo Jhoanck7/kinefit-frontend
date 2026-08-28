@@ -118,7 +118,35 @@ export default function HeroSection({
           className="absolute inset-0 w-full h-full z-[2] bg-slate-100"
           style={{ clipPath: "url(#quiebreNube)" }}
         />
+
+        {/* CUADRÍCULA TÉCNICA / DOT GRID PATTERN (ESCRITORIO) */}
+        <div
+          className="absolute inset-0 w-full h-full z-[3] pointer-events-none opacity-[0.08]"
+          style={{
+            backgroundImage:
+              "radial-gradient(rgb(15 23 42) 1.5px, transparent 1.5px)",
+            backgroundSize: "24px 24px",
+            maskImage:
+              "radial-gradient(ellipse 70% 70% at 30% 50%, black 50%, transparent 90%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 70% 70% at 30% 50%, black 50%, transparent 90%)",
+          }}
+        />
       </div>
+
+      {/* CUADRÍCULA TÉCNICA EN MÓVIL */}
+      <div
+        className="lg:hidden absolute inset-0 w-full h-full z-0 pointer-events-none opacity-[0.05]"
+        style={{
+          backgroundImage:
+            "radial-gradient(rgb(15 23 42) 1.5px, transparent 1.5px)",
+          backgroundSize: "20px 20px",
+          maskImage:
+            "radial-gradient(ellipse 80% 80% at 50% 30%, black 40%, transparent 90%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 80% 80% at 50% 30%, black 40%, transparent 90%)",
+        }}
+      />
 
       {/* CONTENIDO DEL HERO */}
       <div className="relative z-30 mx-auto max-w-7xl px-4 sm:px-6 lg:pl-4 lg:pr-8 w-full">

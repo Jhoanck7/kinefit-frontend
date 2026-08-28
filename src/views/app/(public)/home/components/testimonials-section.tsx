@@ -108,7 +108,8 @@ export default function TestimonialsSection({
       id="testimonials"
       className="scroll-mt-24 py-20 sm:py-28 bg-blue-950 border-b border-blue-900 text-white overflow-hidden w-full"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="w-full  mx-auto px-4 sm:px-6 lg:px-20">
+  {/* El encabezado sí mantiene su ancho centrado y legible */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
             {config.testimonialsTitle ||
@@ -150,11 +151,12 @@ export default function TestimonialsSection({
             </a>
           </div>
         </div>
+        
 
-        <div className="relative w-full overflow-hidden">
+       <div className="relative mx-auto overflow-hidden">
           {/* Sombras difuminadas en los extremos */}
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-r from-blue-950 to-transparent z-10" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-l from-blue-950 to-transparent z-10" />
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-24 sm:w-12 bg-gradient-to-r from-blue-950 to-transparent z-10" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-24 sm:w-12 bg-gradient-to-l from-blue-950 to-transparent z-10" />
 
           <div
             ref={scrollRef}
