@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -39,6 +40,7 @@ function tituloDeLaRuta(pathname: string): string {
  * Barra Superior Canónica (Header) con estilo Frameless Satoshi:
  * - Tipografía Satoshi (font-sans) para el título y nombre de usuario
  * - Iniciales en font-mono
+ * - Enlace directo al sitio web público / landing
  * - Botón de cerrar sesión sobrio y limpio
  */
 export function Header() {
@@ -53,6 +55,29 @@ export function Header() {
         {titulo}
       </h1>
       <div className="flex items-center gap-4 font-sans">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-slate-700 transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-95 shadow-sm"
+          title="Ver Sitio Web / Landing Page"
+        >
+          <svg
+            className="w-3.5 h-3.5 text-slate-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            />
+          </svg>
+          <span>Ir a la Web</span>
+        </Link>
+
+        <div className="h-4 w-px bg-slate-200" />
+
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-700">
             {nombre}
