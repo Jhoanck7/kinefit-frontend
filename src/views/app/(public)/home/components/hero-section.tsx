@@ -20,6 +20,8 @@ export default function HeroSection({
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
+  const heroSectionRef = useRef<HTMLElement | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   const reservasHabilitadas = config.reservasHabilitadas !== false;
 
@@ -30,6 +32,18 @@ export default function HeroSection({
       }
     };
   }, []);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (!heroSectionRef.current) return;
+    const rect = heroSectionRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+    const y = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
+    setMousePos({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos({ x: 0, y: 0 });
+  };
 
   const handleCtaClick = () => {
     if (highlightTimeoutRef.current) {
@@ -58,7 +72,12 @@ export default function HeroSection({
   }, [bgImages.length]);
 
   return (
-    <section className="relative min-h-0 lg:min-h-screen flex items-start lg:items-center justify-center text-slate-900 pt-[300px] lg:pt-28 pb-16 bg-white lg:bg-slate-100 overflow-hidden w-full border-b border-slate-200">
+    <section
+      ref={heroSectionRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative min-h-0 lg:min-h-screen flex items-start lg:items-center justify-center text-slate-900 pt-[300px] lg:pt-28 pb-16 bg-white lg:bg-slate-100 overflow-hidden w-full border-b border-slate-200"
+    >
       {/* SVG DEFS: MÁSCARA ORGÁNICA QUIEBRE DE NUBE */}
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
         <defs>
@@ -90,10 +109,15 @@ export default function HeroSection({
         <div className="absolute inset-0 z-20 bg-gradient-to-b from-transparent via-transparent to-white" />
       </div>
 
-      {/* BACKGROUND ESCRITORIO: SPLIT-SCREEN CON QUIEBRE DE NUBE */}
+      {/* BACKGROUND ESCRITORIO: SPLIT-SCREEN CON QUIEBRE DE NUBE Y PARALLAX 3D */}
       <div className="hidden lg:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        {/* Split-Right: Ocupa el 70% derecho de la pantalla (left: 30%, right: 0) */}
-        <div className="absolute inset-y-0 left-[30%] right-0 w-auto h-full z-[1] overflow-hidden">
+        {/* Split-Right: Ocupa el fondo fotográfico con parallax inverso suave */}
+        <div
+          className="absolute inset-y-0 left-[28%] -right-8 w-auto h-full z-[1] overflow-hidden transition-transform duration-300 ease-out will-change-transform"
+          style={{
+            transform: `translate3d(${mousePos.x * -18}px, ${mousePos.y * -12}px, 0) scale(1.05)`,
+          }}
+        >
           {bgImages.map((imgUrl, idx) => (
             <div
               key={idx}
@@ -113,15 +137,18 @@ export default function HeroSection({
           ))}
         </div>
 
-        {/* Split-Left: Capa izquierda con clipPath (#quiebreNube) sobrepuesta */}
+        {/* Split-Left: Capa izquierda con clipPath (#quiebreNube) con parallax directo */}
         <div
-          className="absolute inset-0 w-full h-full z-[2] bg-slate-100"
-          style={{ clipPath: "url(#quiebreNube)" }}
+          className="absolute inset-0 w-full h-full z-[2] bg-slate-100 transition-transform duration-300 ease-out will-change-transform"
+          style={{
+            clipPath: "url(#quiebreNube)",
+            transform: `translate3d(${mousePos.x * 12}px, ${mousePos.y * 8}px, 0)`,
+          }}
         />
 
-        {/* CUADRÍCULA TÉCNICA / DOT GRID PATTERN (ESCRITORIO) */}
+        {/* CUADRÍCULA TÉCNICA / DOT GRID PATTERN (ESCRITORIO) con parallax */}
         <div
-          className="absolute inset-0 w-full h-full z-[3] pointer-events-none opacity-[0.08]"
+          className="absolute inset-0 w-full h-full z-[3] pointer-events-none opacity-[0.08] transition-transform duration-500 ease-out will-change-transform"
           style={{
             backgroundImage:
               "radial-gradient(rgb(15 23 42) 1.5px, transparent 1.5px)",
@@ -130,6 +157,7 @@ export default function HeroSection({
               "radial-gradient(ellipse 70% 70% at 30% 50%, black 50%, transparent 90%)",
             WebkitMaskImage:
               "radial-gradient(ellipse 70% 70% at 30% 50%, black 50%, transparent 90%)",
+            transform: `translate3d(${mousePos.x * 6}px, ${mousePos.y * 4}px, 0)`,
           }}
         />
       </div>
@@ -149,17 +177,27 @@ export default function HeroSection({
       />
 
       {/* CONTENIDO DEL HERO */}
-      <div className="relative z-30 mx-auto max-w-7xl px-4 sm:px-6 lg:pl-4 lg:pr-8 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
+      <div className="relative z-30 mx-auto max-w-[1650px] w-full px-6 sm:px-10 md:px-12 lg:px-14 xl:px-20 2xl:px-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center w-full">
           {/* Lado Izquierdo: Textos e Información con Tarjeta de Cristal en Móvil */}
           <div
-            className={`${reservasHabilitadas ? "lg:col-span-6" : "lg:col-span-12"} flex flex-col items-start text-left`}
+            className={`${reservasHabilitadas ? "lg:col-span-7 xl:col-span-7" : "lg:col-span-12"} flex flex-col items-start text-left w-full`}
           >
             {/* Tagline / Titular Principal */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-4xl lg:max-w-lg font-extrabold text-slate-900 tracking-tight leading-tight uppercase">
-              {config.heroTagline}{" "}
-              <span className="text-brand-primary block sm:inline font-black">
-                {config.heroBrandName}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight uppercase max-w-md sm:max-w-lg lg:max-w-md xl:max-w-lg">
+              <span className="block max-w-xs sm:max-w-sm md:max-w-md leading-tight">
+                {config.heroTagline}
+              </span>
+              <span className="font-bowlby text-brand-primary text-3xl sm:text-4xl md:text-5xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-normal block mt-2 sm:mt-3 tracking-normal leading-normal py-1 overflow-visible">
+                {config.heroBrandName.split("").map((letra, idx) => (
+                  <span
+                    key={idx}
+                    className="animate-letter-reveal inline-block overflow-visible"
+                    style={{ animationDelay: `${0.1 + idx * 0.05}s` }}
+                  >
+                    {letra === " " ? "\u00A0" : letra}
+                  </span>
+                ))}
               </span>
             </h1>
 
@@ -205,7 +243,7 @@ export default function HeroSection({
           {reservasHabilitadas && (
             <div
               id="agendamiento"
-              className="lg:col-span-6 relative w-full z-30"
+              className="lg:col-span-5 xl:col-span-5 relative w-full z-30 flex justify-end"
             >
               <div
                 className={`rounded-global border bg-white/90 backdrop-blur-md p-6 sm:p-8 flex flex-col sm:flex-row gap-6 sm:gap-8 items-stretch shadow-2xl shadow-slate-200/50 text-slate-900 transition-all duration-500 motion-reduce:transition-none ${destacarReserva

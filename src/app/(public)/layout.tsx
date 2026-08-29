@@ -1,6 +1,6 @@
 import "../globals.css";
 
-import { Geist, JetBrains_Mono } from "next/font/google";
+import { Bowlby_One, Geist, JetBrains_Mono } from "next/font/google";
 
 import { SessionProvider } from "next-auth/react";
 
@@ -19,6 +19,13 @@ const geistSans = Geist({
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const bowlbyOne = Bowlby_One({
+  weight: "400",
+  variable: "--font-bowlby-one",
   subsets: ["latin"],
   display: "swap",
 });
@@ -111,7 +118,7 @@ export default async function RootLayout({
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${jetbrainsMono.variable} h-full antialiased scroll-smooth`}
+      className={`${geistSans.variable} ${jetbrainsMono.variable} ${bowlbyOne.variable} h-full antialiased scroll-smooth`}
       style={
         {
           "--font-sans":
