@@ -11,3 +11,10 @@ export interface PersonalLoginResponse {
   expiraEn: string;
   usuario: UsuarioPersonalResponse;
 }
+
+export interface MiPerfilResponse {
+  nombre: string;
+  email: string;
+  rol: "Administrador" | "Especialista";
+  tieneFirma: boolean;
+}

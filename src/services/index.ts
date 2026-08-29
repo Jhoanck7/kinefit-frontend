@@ -16,6 +16,12 @@ export {
   DisponibilidadService,
   disponibilidadService,
 } from "./disponibilidad-service";
+export {
+  DocumentoPublicoService,
+  documentoPublicoService,
+  DocumentoService,
+  documentoService,
+} from "./documento-service";
 export { EmpresaService, empresaService } from "./empresa-service";
 export {
   EspecialistaService,
@@ -23,6 +29,7 @@ export {
 } from "./especialista-service";
 export type { FiltrosFichas } from "./ficha-service";
 export { FichaService, fichaService } from "./ficha-service";
+export { FormatoService, formatoService } from "./formato-service";
 export {
   HorarioCentroService,
   horarioCentroService,

@@ -12,6 +12,7 @@ export interface FichaResponse {
   citaId: number;
   tipo: string;
   tipoNombre: string;
+  formatoFichaId?: number;
   contenido: Record<string, string>;
   estructuraVersion: number;
   creadoPorUsuarioId: number;

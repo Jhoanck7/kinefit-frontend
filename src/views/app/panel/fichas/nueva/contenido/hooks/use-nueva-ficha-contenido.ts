@@ -44,17 +44,22 @@ export const useNuevaFichaContenido = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formatosDisponibles]);
 
+  // El selector trabaja con ids de texto; el formato se identifica por número.
   const opcionesFormato = formatosDisponibles.map(f => ({
-    id: f.id,
+    id: String(f.id),
     titulo: f.nombre,
   }));
   const formato = formatosDisponibles.find(f => f.id === formatoId) ?? null;
   const nombreFormato = formato?.nombre;
 
   // Actions
+  const handleSeleccionarFormato = (id: string) => setFormato(Number(id));
+
   const handleCambiarCampo = (
     campoId: string,
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => setCampo(campoId, e.target.value);
 
   const handleCancelar = () => {
@@ -75,10 +80,11 @@ export const useNuevaFichaContenido = () => {
     setErrorMsg(null);
 
     try {
+      // El tipo lo decide el formato elegido, no el asistente.
       const creada = await crearFichaMutation.mutateAsync({
         citaId: Number(citaId),
-        tipo:
-          formatoId === "fmt-masoterapia" ? "Recomendacion" : "FichaClinica",
+        tipo: formato?.tipo,
+        formatoFichaId: formatoId,
         contenido: (contenido as Record<string, string>) || {},
       });
 
@@ -124,7 +130,7 @@ export const useNuevaFichaContenido = () => {
 
     // Actions
     actions: {
-      setFormato,
+      handleSeleccionarFormato,
       handleCambiarCampo,
       agregarAdjunto,
       quitarAdjunto,

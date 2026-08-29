@@ -16,3 +16,10 @@ export interface UpdateServicioRequest {
   imagenAlt?: string;
   descripcion?: string;
 }
+
+export interface ServicioDocumentoInput {
+  formatoFichaId: number;
+  obligatorio: boolean;
+  momento: "TrasConfirmarReserva" | "AlFinalizarAtencion";
+  vigenciaDias?: number;
+}

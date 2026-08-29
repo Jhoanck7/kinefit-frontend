@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Alerta, Modal } from "@/components/shared";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
 import { useGetCita, useUpdateCitaEstadoMutation } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
 import { definicionEstado, IdAccionCita } from "@/lib/estados";
@@ -12,6 +13,9 @@ import {
   formatearRangoHorario,
 } from "@/lib/formato";
 import { CitaDetalleResponse, CodigoEstadoCita } from "@/models/responses";
+
+import { DocumentosTab } from "./documentos-tab";
+import { HitosBoard } from "./hitos-board";
 
 const MAPA_ESTADO_NUEVO: Record<string, string> = {
   confirmar: "Confirmada",
@@ -124,6 +128,7 @@ function DetalleCita({
   const definicion = definicionEstado(cita.estado as CodigoEstadoCita);
   const dotColor = DOT_COLOR[definicion.colorRol] ?? "bg-slate-400";
   const textoColor = TEXTO_COLOR[definicion.colorRol] ?? "text-slate-600";
+  const [tab, setTab] = useState("detalle");
 
   return (
     <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
@@ -164,150 +169,173 @@ function DetalleCita({
         </Alerta>
       )}
 
-      {/* Cuerpo en Layout de 2 Columnas (Principal + Lateral Interno Paciente) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-        {/* COLUMNA IZQUIERDA PRINCIPAL (2/3) */}
-        <div className="md:col-span-2 p-6 space-y-6">
-          {/* DETALLES DE LA ATENCIÓN */}
-          <div>
-            <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
-              DETALLES DE LA ATENCIÓN
-            </h3>
-            <div className="space-y-3">
+      <HitosBoard
+        hitos={cita.hitos}
+        onIrADocumentos={() => setTab("documentos")}
+      />
+
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList
+          variant="line"
+          className="border-b border-slate-200 px-6 pt-2"
+        >
+          <TabsTrigger value="detalle">Detalle</TabsTrigger>
+          <TabsTrigger value="documentos">Documentos</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="detalle">
+          {/* Cuerpo en Layout de 2 Columnas (Principal + Lateral Interno Paciente) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+            {/* COLUMNA IZQUIERDA PRINCIPAL (2/3) */}
+            <div className="md:col-span-2 p-6 space-y-6">
+              {/* DETALLES DE LA ATENCIÓN */}
               <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                  Servicio
-                </span>
-                <span className="font-sans font-medium text-sm text-slate-900 capitalize block mt-0.5">
-                  {cita.servicio.nombre}
-                </span>
+                <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
+                  DETALLES DE LA ATENCIÓN
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                      Servicio
+                    </span>
+                    <span className="font-sans font-medium text-sm text-slate-900 capitalize block mt-0.5">
+                      {cita.servicio.nombre}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                      Especialista
+                    </span>
+                    <span className="font-sans font-medium text-sm text-slate-900 block mt-0.5">
+                      {cita.especialista.nombre} ({cita.especialista.cargo})
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                      Fecha y Horario
+                    </span>
+                    <span className="font-sans font-medium text-sm text-slate-900 block mt-0.5">
+                      {formatearFechaExtensa(
+                        new Date(`${cita.fecha}T00:00:00`)
+                      )}{" "}
+                      · {formatearRangoHorario(cita.horaInicio, cita.horaFin)}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                      Estado Actual
+                    </span>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span
+                        className={`h-2 w-2 rounded-full ${dotColor}`}
+                        aria-hidden
+                      />
+                      <span
+                        className={`font-sans text-xs font-bold uppercase tracking-wider ${textoColor}`}
+                      >
+                        {definicion.etiqueta}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
+              {/* INFORMACIÓN DE PAGO */}
               <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                  Especialista
-                </span>
-                <span className="font-sans font-medium text-sm text-slate-900 block mt-0.5">
-                  {cita.especialista.nombre} ({cita.especialista.cargo})
-                </span>
-              </div>
-
-              <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                  Fecha y Horario
-                </span>
-                <span className="font-sans font-medium text-sm text-slate-900 block mt-0.5">
-                  {formatearFechaExtensa(new Date(`${cita.fecha}T00:00:00`))} ·{" "}
-                  {formatearRangoHorario(cita.horaInicio, cita.horaFin)}
-                </span>
-              </div>
-
-              <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                  Estado Actual
-                </span>
-                <div className="flex items-center gap-1.5 mt-1">
-                  <span
-                    className={`h-2 w-2 rounded-full ${dotColor}`}
-                    aria-hidden
-                  />
-                  <span
-                    className={`font-sans text-xs font-bold uppercase tracking-wider ${textoColor}`}
-                  >
-                    {definicion.etiqueta}
-                  </span>
+                <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
+                  INFORMACIÓN DE PAGO
+                </h3>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div>
+                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                      Monto Anticipo
+                    </span>
+                    <span className="font-sans font-medium text-sm text-slate-900 mt-0.5 block">
+                      {cita.transaccion
+                        ? `$${cita.transaccion.monto.toLocaleString("es-CL")} CLP`
+                        : "Sin anticipo / Pago presencial"}
+                    </span>
+                  </div>
+                  {cita.transaccion && (
+                    <div>
+                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                        N° Transacción Webpay
+                      </span>
+                      <span className="font-sans font-medium text-sm text-slate-900 mt-0.5 block">
+                        {cita.transaccion.buyOrder}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* INFORMACIÓN DE PAGO */}
-          <div>
-            <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
-              INFORMACIÓN DE PAGO
-            </h3>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                  Monto Anticipo
-                </span>
-                <span className="font-sans font-medium text-sm text-slate-900 mt-0.5 block">
-                  {cita.transaccion
-                    ? `$${cita.transaccion.monto.toLocaleString("es-CL")} CLP`
-                    : "Sin anticipo / Pago presencial"}
-                </span>
-              </div>
-              {cita.transaccion && (
+            {/* COLUMNA DERECHA SECUNDARIA (1/3) - FICHA RÁPIDA PACIENTE */}
+            <div className="md:col-span-1 bg-slate-50/80 p-6 flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400">
+                  FICHA DEL PACIENTE
+                </h3>
+
                 <div>
                   <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                    N° Transacción Webpay
+                    Nombre
                   </span>
-                  <span className="font-sans font-medium text-sm text-slate-900 mt-0.5 block">
-                    {cita.transaccion.buyOrder}
-                  </span>
+                  <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                    {cita.paciente.nombre} {cita.paciente.apellido}
+                  </p>
                 </div>
-              )}
+
+                <div>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    RUT
+                  </span>
+                  <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                    {cita.paciente.rut || "—"}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    Teléfono
+                  </span>
+                  <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                    {cita.paciente.telefono || "—"}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    Correo Electrónico
+                  </span>
+                  <p
+                    className="font-sans font-medium text-sm text-slate-900 mt-0.5 truncate"
+                    title={cita.paciente.email}
+                  >
+                    {cita.paciente.email}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    Convenio
+                  </span>
+                  <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                    Sin convenio
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </TabsContent>
 
-        {/* COLUMNA DERECHA SECUNDARIA (1/3) - FICHA RÁPIDA PACIENTE */}
-        <div className="md:col-span-1 bg-slate-50/80 p-6 flex flex-col justify-between space-y-6">
-          <div className="space-y-4">
-            <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400">
-              FICHA DEL PACIENTE
-            </h3>
-
-            <div>
-              <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                Nombre
-              </span>
-              <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                {cita.paciente.nombre} {cita.paciente.apellido}
-              </p>
-            </div>
-
-            <div>
-              <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                RUT
-              </span>
-              <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                {cita.paciente.rut || "—"}
-              </p>
-            </div>
-
-            <div>
-              <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                Teléfono
-              </span>
-              <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                {cita.paciente.telefono || "—"}
-              </p>
-            </div>
-
-            <div>
-              <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                Correo Electrónico
-              </span>
-              <p
-                className="font-sans font-medium text-sm text-slate-900 mt-0.5 truncate"
-                title={cita.paciente.email}
-              >
-                {cita.paciente.email}
-              </p>
-            </div>
-
-            <div>
-              <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                Convenio
-              </span>
-              <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                Sin convenio
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+        <TabsContent value="documentos">
+          <DocumentosTab citaId={cita.id} />
+        </TabsContent>
+      </Tabs>
 
       {/* Pie de Acciones */}
       <div className="border-t border-slate-200 bg-slate-50/60 p-4">

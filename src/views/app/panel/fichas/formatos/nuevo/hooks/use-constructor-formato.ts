@@ -3,8 +3,18 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useGetFormatoById, useGuardarFormatoMutation } from "@/hooks/api";
-import { TipoCampoFormato } from "@/models/responses";
+import {
+  useCreateFormatoMutation,
+  useGetFormatoById,
+  useUpdateFormatoMutation,
+} from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
+import { UpdateFormatoFichaRequest } from "@/models/requests";
+import {
+  CompletadoPor,
+  TipoCampoFormato,
+  TipoDocumentoClinico,
+} from "@/models/responses";
 
 export interface CampoBorrador {
   id: string;
@@ -12,6 +22,7 @@ export interface CampoBorrador {
   tipo: TipoCampoFormato;
   obligatorio: boolean;
   opciones: string[];
+  completadoPor: CompletadoPor;
 }
 
 export interface SeccionBorrador {
@@ -23,16 +34,17 @@ export interface SeccionBorrador {
 let contadorId = 0;
 function idUnico(prefijo: string): string {
   contadorId += 1;
-  return `${prefijo}-${contadorId}`;
+  return `${prefijo}-${Date.now()}-${contadorId}`;
 }
 
 function campoNuevo(): CampoBorrador {
   return {
     id: idUnico("campo"),
     nombre: "",
-    tipo: "texto_corto",
+    tipo: "TextoCorto",
     obligatorio: false,
     opciones: [],
+    completadoPor: "Profesional",
   };
 }
 
@@ -45,11 +57,26 @@ function seccionNueva(): SeccionBorrador {
 }
 
 export const TIPOS_CAMPO: { valor: TipoCampoFormato; etiqueta: string }[] = [
-  { valor: "texto_corto", etiqueta: "Texto corto" },
-  { valor: "texto_largo", etiqueta: "Texto largo" },
-  { valor: "numerico", etiqueta: "Numérico" },
-  { valor: "fecha", etiqueta: "Fecha" },
-  { valor: "seleccion", etiqueta: "Selección" },
+  { valor: "TextoCorto", etiqueta: "Texto corto" },
+  { valor: "TextoLargo", etiqueta: "Texto largo" },
+  { valor: "Numerico", etiqueta: "Numérico" },
+  { valor: "Fecha", etiqueta: "Fecha" },
+  { valor: "Seleccion", etiqueta: "Selección" },
+  { valor: "TextoInformativo", etiqueta: "Texto informativo" },
+];
+
+export const TIPOS_DOCUMENTO: {
+  valor: TipoDocumentoClinico;
+  etiqueta: string;
+}[] = [
+  { valor: "FichaClinica", etiqueta: "Ficha clínica" },
+  { valor: "Recomendacion", etiqueta: "Recomendaciones" },
+  { valor: "Consentimiento", etiqueta: "Consentimiento informado" },
+];
+
+export const COMPLETADO_POR: { valor: CompletadoPor; etiqueta: string }[] = [
+  { valor: "Profesional", etiqueta: "La profesional" },
+  { valor: "Paciente", etiqueta: "El paciente" },
 ];
 
 function mover<T>(lista: T[], indice: number, direccion: -1 | 1): T[] {
@@ -63,11 +90,20 @@ function mover<T>(lista: T[], indice: number, direccion: -1 | 1): T[] {
 export const useConstructorFormato = () => {
   const router = useRouter();
   const [nombreFormato, setNombreFormato] = useState("");
+  const [tipoDocumento, setTipoDocumento] =
+    useState<TipoDocumentoClinico>("FichaClinica");
+  const [requiereFirmaPaciente, setRequiereFirmaPaciente] = useState(false);
+  const [requiereFirmaProfesional, setRequiereFirmaProfesional] =
+    useState(false);
   const [secciones, setSecciones] = useState<SeccionBorrador[]>([
     seccionNueva(),
   ]);
   const [errorNombre, setErrorNombre] = useState<string | undefined>();
   const [errorSecciones, setErrorSecciones] = useState<string | undefined>();
+  const [errorGuardado, setErrorGuardado] = useState<string | undefined>();
+  const [confirmacionPendiente, setConfirmacionPendiente] = useState<
+    string | null
+  >(null);
   const [seccionAEliminar, setSeccionAEliminar] = useState<string | null>(null);
   const [fichasDelFormatoEditado, setFichasDelFormatoEditado] = useState(0);
 
@@ -80,21 +116,26 @@ export const useConstructorFormato = () => {
   );
 
   const searchParams = useSearchParams();
-  const idEditado = searchParams.get("editar");
+  const idEditado = Number(searchParams.get("editar")) || null;
 
   const { data: formatoEditado } = useGetFormatoById(
-    idEditado ?? "",
+    idEditado ?? 0,
     Boolean(idEditado)
   );
-  const guardarFormatoMutation = useGuardarFormatoMutation();
+  const crearMutation = useCreateFormatoMutation();
+  const actualizarMutation = useUpdateFormatoMutation();
 
   useEffect(() => {
     if (!formatoEditado) return;
-    setFichasDelFormatoEditado(formatoEditado.fichasCreadas);
+    setFichasDelFormatoEditado(formatoEditado.fichasAsociadas);
     setNombreFormato(formatoEditado.nombre);
-    if (formatoEditado.secciones && formatoEditado.secciones.length > 0) {
+    setTipoDocumento(formatoEditado.tipo);
+    setRequiereFirmaPaciente(formatoEditado.requiereFirmaPaciente);
+    setRequiereFirmaProfesional(formatoEditado.requiereFirmaProfesional);
+    const seccionesGuardadas = formatoEditado.cuerpo?.secciones ?? [];
+    if (seccionesGuardadas.length > 0) {
       setSecciones(
-        formatoEditado.secciones.map(s => ({
+        seccionesGuardadas.map(s => ({
           id: s.id,
           nombre: s.nombre,
           campos: s.campos.map(c => ({
@@ -103,6 +144,7 @@ export const useConstructorFormato = () => {
             tipo: c.tipo,
             obligatorio: c.obligatorio,
             opciones: c.opciones || [],
+            completadoPor: c.completadoPor ?? "Profesional",
           })),
         }))
       );
@@ -211,6 +253,48 @@ export const useConstructorFormato = () => {
     setSecciones(prev => [...prev, seccionNueva()]);
   }
 
+  function construirPeticion(): UpdateFormatoFichaRequest {
+    return {
+      nombre: nombreFormato.trim(),
+      tipo: tipoDocumento,
+      cuerpo: {
+        secciones: secciones.map((s, indiceSeccion) => ({
+          id: s.id,
+          nombre: s.nombre,
+          orden: indiceSeccion,
+          campos: s.campos.map((c, indiceCampo) => ({
+            id: c.id,
+            nombre: c.nombre,
+            tipo: c.tipo,
+            obligatorio: c.obligatorio,
+            opciones: c.opciones,
+            completadoPor: c.completadoPor,
+            orden: indiceCampo,
+          })),
+        })),
+      },
+      requiereFirmaPaciente,
+      requiereFirmaProfesional,
+    };
+  }
+
+  async function guardar(confirmar: boolean) {
+    const peticion = construirPeticion();
+    if (idEditado) {
+      await actualizarMutation.mutateAsync({
+        id: idEditado,
+        data: peticion,
+        confirmar,
+      });
+    } else {
+      await crearMutation.mutateAsync({
+        ...peticion,
+        cuerpo: peticion.cuerpo!,
+      });
+    }
+    router.push("/panel/fichas/formatos");
+  }
+
   async function alGuardar() {
     let valido = true;
     if (!nombreFormato.trim()) {
@@ -233,24 +317,29 @@ export const useConstructorFormato = () => {
     } else {
       setErrorSecciones(undefined);
     }
-    if (valido) {
-      const formatoIdCalculado = idEditado || `fmt-${Date.now()}`;
-      await guardarFormatoMutation.mutateAsync({
-        id: formatoIdCalculado,
-        nombre: nombreFormato.trim(),
-        secciones: secciones.map(s => ({
-          id: s.id,
-          nombre: s.nombre,
-          campos: s.campos.map(c => ({
-            id: c.id,
-            nombre: c.nombre,
-            tipo: c.tipo,
-            obligatorio: c.obligatorio,
-            opciones: c.opciones,
-          })),
-        })),
-      });
-      router.push("/panel/fichas/formatos");
+    if (!valido) return;
+
+    setErrorGuardado(undefined);
+    try {
+      await guardar(false);
+    } catch (err: unknown) {
+      const error = handleApiError(err);
+      // El servidor avisa que el formato ya se usó: se pide confirmación.
+      if (error.details === "FORMATO_EN_USO") {
+        setConfirmacionPendiente(error.message);
+        return;
+      }
+      setErrorGuardado(error.message);
+    }
+  }
+
+  async function confirmarGuardado() {
+    setConfirmacionPendiente(null);
+    setErrorGuardado(undefined);
+    try {
+      await guardar(true);
+    } catch (err: unknown) {
+      setErrorGuardado(handleApiError(err).message);
     }
   }
 
@@ -262,20 +351,30 @@ export const useConstructorFormato = () => {
   return {
     // Data
     nombreFormato,
+    tipoDocumento,
+    requiereFirmaPaciente,
+    requiereFirmaProfesional,
     secciones,
     errorNombre,
     errorSecciones,
+    errorGuardado,
+    confirmacionPendiente,
     seccionAEliminar,
     fichasDelFormatoEditado,
     draggedCampo,
     draggedSeccionIndex,
     idEditado,
     seccionEnBorrado,
+    guardando: crearMutation.isPending || actualizarMutation.isPending,
 
     // Actions
     actions: {
       setNombreFormato,
+      setTipoDocumento,
+      setRequiereFirmaPaciente,
+      setRequiereFirmaProfesional,
       setSeccionAEliminar,
+      setConfirmacionPendiente,
       setDraggedCampo,
       setDraggedSeccionIndex,
       actualizarSeccion,
@@ -289,6 +388,7 @@ export const useConstructorFormato = () => {
       eliminarSeccionConfirmado,
       agregarSeccion,
       alGuardar,
+      confirmarGuardado,
       handleVolver,
       handleCancelar,
     },

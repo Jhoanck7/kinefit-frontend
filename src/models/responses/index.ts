@@ -7,7 +7,11 @@ export type {
   PacienteEnAgendaResponse,
 } from "./agenda";
 export type { AuditoriaCitaResponse } from "./auditoria";
-export type { PersonalLoginResponse, UsuarioPersonalResponse } from "./auth";
+export type {
+  MiPerfilResponse,
+  PersonalLoginResponse,
+  UsuarioPersonalResponse,
+} from "./auth";
 export type {
   BloqueHorarioCitaResponse,
   CitaCreadaResponse,
@@ -18,6 +22,7 @@ export type {
   CitaTransaccionResumenResponse,
   CodigoEstadoCita,
   EspecialistaCitaResponse,
+  HitosCitaResponse,
   ImpactoCancelacionResponse,
   PacienteCitaResponse,
   ServicioCitaResponse,
@@ -25,6 +30,10 @@ export type {
 } from "./cita";
 export type { ConfiguracionSistemaResponse } from "./configuracion-sistema";
 export type { FranjaDisponibleResponse } from "./disponibilidad";
+export type {
+  DocumentoPacienteResponse,
+  DocumentoPublicoResponse,
+} from "./documento";
 export type { EmpresaResponse } from "./empresa";
 export type {
   EspecialistaAdminResponse,
@@ -39,10 +48,13 @@ export type {
 } from "./ficha";
 export type {
   CampoFormato,
-  Formato,
-  FormatoResuelto,
+  CompletadoPor,
+  CuerpoFormato,
+  FormatoFichaResponse,
+  OrigenFormato,
   SeccionFormato,
   TipoCampoFormato,
+  TipoDocumentoClinico,
 } from "./formato";
 export type {
   HorarioCentroResponse,
@@ -71,7 +83,7 @@ export type {
   ReporteReservasResponse,
   ReporteVentasResponse,
 } from "./reporte";
-export type { ServicioResponse } from "./servicio";
+export type { ServicioDocumentoResponse, ServicioResponse } from "./servicio";
 export type {
   ComisionTerminalResponse,
   DesgloseCobroResponse,

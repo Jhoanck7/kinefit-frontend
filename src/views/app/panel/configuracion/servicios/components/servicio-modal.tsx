@@ -7,7 +7,10 @@ import {
   TextField,
 } from "@/components/shared";
 import { Button } from "@/components/ui";
-import { ServicioResponse } from "@/models/responses";
+import { ServicioDocumentoInput } from "@/models/requests";
+import { FormatoFichaResponse, ServicioResponse } from "@/models/responses";
+
+import { DocumentosServicioSelector } from "./documentos-servicio-selector";
 
 interface ServicioModalProps {
   abierto: boolean;
@@ -19,6 +22,8 @@ interface ServicioModalProps {
   duracionActiva: boolean;
   descripcion: string;
   imagenUrl: string;
+  formatos: FormatoFichaResponse[];
+  documentos: ServicioDocumentoInput[];
   error: string | null;
   guardando: boolean;
   onNombreChange: (v: string) => void;
@@ -26,6 +31,7 @@ interface ServicioModalProps {
   onDuracionMinutosChange: (v: number | undefined) => void;
   onDescripcionChange: (v: string) => void;
   onFotoChange: (secureUrl: string, publicId?: string) => void;
+  onDocumentosChange: (documentos: ServicioDocumentoInput[]) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
 
@@ -41,6 +47,8 @@ export function ServicioModal({
   duracionActiva,
   descripcion,
   imagenUrl,
+  formatos,
+  documentos,
   error,
   guardando,
   onNombreChange,
@@ -48,6 +56,7 @@ export function ServicioModal({
   onDuracionMinutosChange,
   onDescripcionChange,
   onFotoChange,
+  onDocumentosChange,
   onSubmit,
 }: ServicioModalProps) {
   return (
@@ -121,6 +130,17 @@ export function ServicioModal({
                 placeholder="Descripción del servicio..."
               />
             </div>
+          </div>
+
+          <div>
+            <p className="mb-2 font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
+              Documentos exigidos
+            </p>
+            <DocumentosServicioSelector
+              formatos={formatos}
+              documentos={documentos}
+              onCambiar={onDocumentosChange}
+            />
           </div>
 
           <div className="flex justify-end gap-3 border-t border-slate-200 pt-5">

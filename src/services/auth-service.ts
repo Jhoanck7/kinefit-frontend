@@ -1,10 +1,11 @@
 import { ApiResponse } from "@/models/generics";
 import {
   CambiarPasswordRequest,
+  GuardarFirmaRequest,
   LoginPersonalRequest,
   UpdatePerfilRequest,
 } from "@/models/requests";
-import { PersonalLoginResponse } from "@/models/responses";
+import { MiPerfilResponse, PersonalLoginResponse } from "@/models/responses";
 import { AuthGoogleResponse } from "@/types";
 
 import { BaseApiService } from "./base-api-service";
@@ -39,6 +40,19 @@ export class AuthService extends BaseApiService {
       `${this.baseURL}/perfil`,
       data,
       { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  getMiPerfil() {
+    return this.httpClient.get<ApiResponse<MiPerfilResponse>>(
+      `${this.baseURL}/personal/me`
+    );
+  }
+
+  guardarMiFirma(data: GuardarFirmaRequest) {
+    return this.httpClient.patch<ApiResponse<MiPerfilResponse>>(
+      `${this.baseURL}/personal/firma`,
+      data
     );
   }
 }

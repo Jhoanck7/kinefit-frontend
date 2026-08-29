@@ -7,6 +7,7 @@ import {
   FileDropzone,
   NumberField,
   OptionSelector,
+  SelectField,
   StepIndicator,
   SummaryPanel,
   TextAreaField,
@@ -90,8 +91,8 @@ export default function NuevaFichaContenidoView() {
             </p>
             <OptionSelector
               opciones={opcionesFormato}
-              seleccionId={formatoId}
-              onSeleccionar={actions.setFormato}
+              seleccionId={formatoId === null ? null : String(formatoId)}
+              onSeleccionar={actions.handleSeleccionarFormato}
               orientacion="horizontal"
             />
           </div>
@@ -99,7 +100,7 @@ export default function NuevaFichaContenidoView() {
 
         {formato && (
           <div className="space-y-4">
-            {formato.secciones.map(seccion => (
+            {(formato.cuerpo?.secciones ?? []).map(seccion => (
               <CollapsibleSection
                 key={seccion.id}
                 titulo={seccion.nombre}
@@ -111,22 +112,51 @@ export default function NuevaFichaContenidoView() {
                       etiqueta: campo.nombre,
                       obligatorio: campo.obligatorio,
                       ayuda: campo.ayuda,
-                      placeholder: campo.placeholder,
                       value: contenido[campo.id] ?? "",
                       onChange: (
                         e: React.ChangeEvent<
-                          HTMLInputElement | HTMLTextAreaElement
+                          | HTMLInputElement
+                          | HTMLTextAreaElement
+                          | HTMLSelectElement
                         >
                       ) => actions.handleCambiarCampo(campo.id, e),
                     };
-                    if (campo.tipo === "numerico") {
+                    // El texto informativo es el articulado del documento: se lee, no se llena.
+                    if (campo.tipo === "TextoInformativo") {
+                      return (
+                        <p
+                          key={campo.id}
+                          className="sm:col-span-3 font-sans text-xs leading-relaxed text-slate-700 whitespace-pre-line"
+                        >
+                          {campo.nombre}
+                        </p>
+                      );
+                    }
+                    if (campo.tipo === "Numerico") {
                       return <NumberField key={campo.id} {...comun} />;
                     }
-                    if (campo.tipo === "texto_largo") {
+                    if (campo.tipo === "TextoLargo") {
                       return (
                         <div key={campo.id} className="sm:col-span-3">
                           <TextAreaField {...comun} />
                         </div>
+                      );
+                    }
+                    if (campo.tipo === "Fecha") {
+                      return (
+                        <TextField key={campo.id} type="date" {...comun} />
+                      );
+                    }
+                    if (campo.tipo === "Seleccion") {
+                      return (
+                        <SelectField key={campo.id} {...comun}>
+                          <option value="">Seleccionar…</option>
+                          {(campo.opciones ?? []).map(opcion => (
+                            <option key={opcion} value={opcion}>
+                              {opcion}
+                            </option>
+                          ))}
+                        </SelectField>
                       );
                     }
                     return <TextField key={campo.id} {...comun} />;

@@ -81,6 +81,13 @@ export interface TransaccionDetalleResponse {
   createdAt: string;
 }
 
+export interface HitosCitaResponse {
+  anticipoPagado: boolean;
+  pagoTotalRegistrado: boolean;
+  documentosFirmados: boolean;
+  recomendacionesEnviadas: boolean;
+}
+
 export interface CitaDetalleResponse {
   id: number;
   estado: string;
@@ -97,6 +104,7 @@ export interface CitaDetalleResponse {
   motivoCancelacion?: string;
   confirmadoPor?: string;
   createdAt: string;
+  hitos: HitosCitaResponse;
 }
 
 export interface CitaEstadoActualizadoResponse {

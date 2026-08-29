@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: "/panel",
+      disallow: ["/panel", "/documentos"],
     },
     sitemap: "https://kinefitchile.com/sitemap.xml",
   };

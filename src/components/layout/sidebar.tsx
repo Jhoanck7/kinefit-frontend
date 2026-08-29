@@ -5,9 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
+import { useGetTotalDocumentosPendientes } from "@/hooks/api";
+
 import {
   IconoAgenda,
   IconoCerrarSesion,
+  IconoEspecialistas,
   IconoFichas,
   IconoLanding,
   IconoNuevaReserva,
@@ -40,6 +43,7 @@ const ITEMS_NAVEGACION = [
     etiqueta: "Fichas clínicas",
     prefijos: ["/panel/fichas"],
     Icono: IconoFichas,
+    badge: "documentosPendientes" as const,
   },
   {
     href: "/panel/ventas",
@@ -64,6 +68,12 @@ const ITEMS_NAVEGACION = [
     ],
     Icono: IconoLanding,
   },
+  {
+    href: "/panel/perfil",
+    etiqueta: "Mi perfil",
+    prefijos: ["/panel/perfil"],
+    Icono: IconoEspecialistas,
+  },
 ];
 
 /**
@@ -72,6 +82,7 @@ const ITEMS_NAVEGACION = [
  */
 export function Sidebar() {
   const pathname = usePathname();
+  const { data: pendientes } = useGetTotalDocumentosPendientes();
 
   function cerrarSesion() {
     signOut({ callbackUrl: "/panel/acceso" });
@@ -94,13 +105,15 @@ export function Sidebar() {
       </div>
 
       <ul className="flex-1 px-3 space-y-1">
-        {ITEMS_NAVEGACION.map(({ href, etiqueta, prefijos, Icono }) => {
+        {ITEMS_NAVEGACION.map(({ href, etiqueta, prefijos, Icono, badge }) => {
           const activo = prefijos.some(
             p =>
               pathname === p ||
               pathname.startsWith(`${p}/`) ||
               pathname.startsWith(`${p}?`)
           );
+          const badgeCount =
+            badge === "documentosPendientes" ? (pendientes?.total ?? 0) : 0;
           return (
             <li key={href}>
               <Link
@@ -114,6 +127,11 @@ export function Sidebar() {
               >
                 <Icono />
                 {etiqueta}
+                {badgeCount > 0 && (
+                  <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
+                    {badgeCount}
+                  </span>
+                )}
               </Link>
             </li>
           );

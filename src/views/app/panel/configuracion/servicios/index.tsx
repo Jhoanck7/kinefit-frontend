@@ -28,6 +28,8 @@ export default function ServiciosView() {
     duracionMinutos,
     descripcion,
     imagenUrl,
+    formatos,
+    documentos,
     error,
     errorEstado,
     guardando,
@@ -158,6 +160,8 @@ export default function ServiciosView() {
         duracionActiva={duracionActiva}
         descripcion={descripcion}
         imagenUrl={imagenUrl}
+        formatos={formatos}
+        documentos={documentos}
         error={error}
         guardando={guardando}
         onNombreChange={actions.setNombre}
@@ -165,6 +169,7 @@ export default function ServiciosView() {
         onDuracionMinutosChange={actions.setDuracionMinutos}
         onDescripcionChange={actions.setDescripcion}
         onFotoChange={actions.handleFotoChange}
+        onDocumentosChange={actions.setDocumentos}
         onSubmit={actions.handleGuardar}
       />
     </div>

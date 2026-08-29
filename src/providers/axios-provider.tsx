@@ -38,3 +38,12 @@ axiosInstance.interceptors.request.use(async config => {
 
   return config;
 });
+
+// Sin interceptor de sesión: para flujos públicos con token propio (firma de documentos).
+export const axiosInstanceSinSesion = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});

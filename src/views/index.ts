@@ -19,5 +19,6 @@ export { default as ResumenView } from "./app/panel/nueva-reserva/resumen";
 export { default as ServicioView } from "./app/panel/nueva-reserva/servicio";
 export { default as PacientesView } from "./app/panel/pacientes";
 export { default as RegistrarPacienteView } from "./app/panel/pacientes/nuevo";
+export { default as PerfilView } from "./app/panel/perfil";
 export { default as ReportesView } from "./app/panel/reportes";
 export { default as VentasView } from "./app/panel/ventas";

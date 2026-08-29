@@ -11,7 +11,11 @@ export {
   useSubmitBookingMutation,
 } from "./use-appointment-service";
 export { useGetAuditoriaCita } from "./use-auditoria-service";
-export { useAuthenticateWithGoogleMutation } from "./use-auth-service";
+export {
+  useAuthenticateWithGoogleMutation,
+  useGetMiPerfil,
+  useGuardarFirmaMutation,
+} from "./use-auth-service";
 export { useGetBloquesDisponibles } from "./use-bloque-horario-service";
 export {
   useCreateCitaManualMutation,
@@ -28,6 +32,18 @@ export {
   useGetFechasDisponibles,
   useGetHorasDisponibles,
 } from "./use-disponibilidad-service";
+export {
+  useFirmarDocumentoPropioMutation,
+  useFirmarDocumentoPublicoMutation,
+  useFirmarProfesionalMutation,
+  useGetDocumentoPropio,
+  useGetDocumentoPublico,
+  useGetDocumentosPendientes,
+  useGetDocumentosPorCita,
+  useGetTotalDocumentosPendientes,
+  useReemitirTokenMutation,
+  useSubirEscaneoMutation,
+} from "./use-documento-service";
 export {
   useCreateEmpresaMutation,
   useGetEmpresas,
@@ -50,9 +66,12 @@ export {
   useSubirAdjuntoMutation,
 } from "./use-ficha-service";
 export {
+  useCreateFormatoMutation,
   useGetFormatoById,
   useGetFormatos,
-  useGuardarFormatoMutation,
+  useImportarFormatoMutation,
+  useUpdateFormatoEstadoMutation,
+  useUpdateFormatoMutation,
 } from "./use-formato-service";
 export {
   useCreateHorarioCentroMutation,
@@ -85,6 +104,7 @@ export {
   useGetReporteVentas,
 } from "./use-reporte-service";
 export {
+  useActualizarDocumentosServicioMutation,
   useCreateServicioMutation,
   useGetServicios,
   useUpdateServicioEstadoMutation,

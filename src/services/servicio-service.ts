@@ -1,6 +1,7 @@
 import { ApiResponse } from "@/models/generics";
 import {
   CreateServicioRequest,
+  ServicioDocumentoInput,
   UpdateServicioRequest,
 } from "@/models/requests";
 import { ServicioResponse } from "@/models/responses";
@@ -36,6 +37,13 @@ export class ServicioService extends BaseApiService {
     return this.httpClient.patch<ApiResponse<{ id: number; activo: boolean }>>(
       `${this.baseURL}/${id}/estado`,
       { activo }
+    );
+  }
+
+  actualizarDocumentos(id: number, documentos: ServicioDocumentoInput[]) {
+    return this.httpClient.put<ApiResponse<ServicioResponse>>(
+      `${this.baseURL}/${id}/documentos`,
+      documentos
     );
   }
 }

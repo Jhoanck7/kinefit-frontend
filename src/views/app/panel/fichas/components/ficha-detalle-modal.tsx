@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui";
 import {
   useGetCita,
   useGetFichaById,
+  useGetFormatoById,
   useGetHistorialPorPaciente,
 } from "@/hooks/api";
 import {
@@ -15,7 +16,16 @@ import {
   formatearFechaHora,
   formatearRangoHorario,
 } from "@/lib/formato";
-import { obtenerEtiquetaCampo } from "@/lib/formatos-ficha";
+import { CuerpoFormato } from "@/models/responses";
+
+/** El nombre del campo lo da el formato; si ya no existe ahí, se muestra la clave legible. */
+function etiquetaDeCampo(campoId: string, cuerpo?: CuerpoFormato): string {
+  const campo = cuerpo?.secciones
+    .flatMap(seccion => seccion.campos)
+    .find(c => c.id === campoId);
+  if (campo?.nombre.trim()) return campo.nombre.trim();
+  return campoId.replace(/_/g, " ").replace(/^campo-\d+/i, "Campo");
+}
 
 function OutOfScopeInlineLink({ etiqueta }: { etiqueta: string }) {
   const [mostrar, setMostrar] = useState(false);
@@ -59,6 +69,10 @@ export function FichaDetalleModal({
     Boolean(fichaId)
   );
   const { data: cita } = useGetCita(ficha?.citaId ?? 0, Boolean(ficha));
+  const { data: formato } = useGetFormatoById(
+    ficha?.formatoFichaId ?? 0,
+    Boolean(ficha?.formatoFichaId)
+  );
   const { data: historial = [] } = useGetHistorialPorPaciente(
     cita?.paciente.id ?? 0,
     Boolean(cita) && Boolean(ficha)
@@ -104,7 +118,7 @@ export function FichaDetalleModal({
             .map(
               ([clave, valor]) => `
             <div class="field">
-              <div class="label">${obtenerEtiquetaCampo(clave)}</div>
+              <div class="label">${etiquetaDeCampo(clave, formato?.cuerpo)}</div>
               <div class="value">${valor || "—"}</div>
             </div>
           `
@@ -188,7 +202,7 @@ export function FichaDetalleModal({
                     {Object.entries(ficha.contenido).map(([clave, valor]) => (
                       <div key={clave}>
                         <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                          {obtenerEtiquetaCampo(clave)}
+                          {etiquetaDeCampo(clave, formato?.cuerpo)}
                         </span>
                         <p className="font-sans font-medium text-sm text-slate-900 mt-0.5 whitespace-pre-wrap">
                           {String(valor || "—")}

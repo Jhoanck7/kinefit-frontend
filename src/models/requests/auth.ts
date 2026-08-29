@@ -12,3 +12,7 @@ export interface UpdatePerfilRequest {
   rut: string;
   telefono: string;
 }
+
+export interface GuardarFirmaRequest {
+  firmaBase64: string;
+}

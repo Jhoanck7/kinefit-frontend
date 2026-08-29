@@ -2,17 +2,33 @@
 
 import { Suspense } from "react";
 
-import { Alerta, Modal, SwitchField, TextField } from "@/components/shared";
+import {
+  Alerta,
+  Modal,
+  SelectField,
+  SwitchField,
+  TextField,
+} from "@/components/shared";
 import { Button, Card } from "@/components/ui";
 
-import { TIPOS_CAMPO, useConstructorFormato } from "./hooks";
+import {
+  COMPLETADO_POR,
+  TIPOS_CAMPO,
+  TIPOS_DOCUMENTO,
+  useConstructorFormato,
+} from "./hooks";
 
 function ConstructorFormatoContenido() {
   const {
     nombreFormato,
+    tipoDocumento,
+    requiereFirmaPaciente,
+    requiereFirmaProfesional,
     secciones,
     errorNombre,
     errorSecciones,
+    errorGuardado,
+    confirmacionPendiente,
     seccionAEliminar,
     fichasDelFormatoEditado,
     draggedCampo,
@@ -62,9 +78,45 @@ function ConstructorFormatoContenido() {
               onChange={e => actions.setNombreFormato(e.target.value)}
               error={errorNombre}
             />
+
+            <div className="mt-4">
+              <SelectField
+                etiqueta="Tipo de documento"
+                value={tipoDocumento}
+                onChange={e =>
+                  actions.setTipoDocumento(
+                    e.target.value as typeof tipoDocumento
+                  )
+                }
+                ayuda="Decide cómo se rotula el documento y quién debe firmarlo."
+              >
+                {TIPOS_DOCUMENTO.map(t => (
+                  <option key={t.valor} value={t.valor}>
+                    {t.etiqueta}
+                  </option>
+                ))}
+              </SelectField>
+            </div>
+
+            <div className="mt-4 space-y-2 border-t border-slate-200 pt-4">
+              <p className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                Firmas requeridas
+              </p>
+              <SwitchField
+                etiqueta="Requiere firma del paciente"
+                checked={requiereFirmaPaciente}
+                onChange={actions.setRequiereFirmaPaciente}
+              />
+              <SwitchField
+                etiqueta="Requiere firma de la profesional"
+                checked={requiereFirmaProfesional}
+                onChange={actions.setRequiereFirmaProfesional}
+              />
+            </div>
           </Card>
 
           {errorSecciones && <Alerta tono="error">{errorSecciones}</Alerta>}
+          {errorGuardado && <Alerta tono="error">{errorGuardado}</Alerta>}
 
           {secciones.map((seccion, indiceSeccion) => (
             <div
@@ -207,6 +259,24 @@ function ConstructorFormatoContenido() {
                         ))}
                       </select>
 
+                      <select
+                        value={campo.completadoPor}
+                        onChange={e =>
+                          actions.actualizarCampo(seccion.id, campo.id, {
+                            completadoPor: e.target
+                              .value as typeof campo.completadoPor,
+                          })
+                        }
+                        title="Quién completa este campo"
+                        className="rounded-none border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900"
+                      >
+                        {COMPLETADO_POR.map(c => (
+                          <option key={c.valor} value={c.valor}>
+                            Completa: {c.etiqueta}
+                          </option>
+                        ))}
+                      </select>
+
                       <SwitchField
                         id={`obligatorio-${seccion.id}-${campo.id}`}
                         etiqueta="Obligatorio"
@@ -280,7 +350,7 @@ function ConstructorFormatoContenido() {
                       </button>
                     </div>
 
-                    {campo.tipo === "seleccion" && (
+                    {campo.tipo === "Seleccion" && (
                       <div className="mt-3 space-y-2 border-t border-slate-200 pt-3">
                         <p className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                           Opciones de selección
@@ -386,9 +456,9 @@ function ConstructorFormatoContenido() {
                           <span className="ml-0.5 text-red-700">*</span>
                         )}
                       </label>
-                      {campo.tipo === "texto_largo" ? (
+                      {campo.tipo === "TextoLargo" ? (
                         <div className="h-16 rounded-none border border-slate-200 bg-slate-50" />
-                      ) : campo.tipo === "seleccion" ? (
+                      ) : campo.tipo === "Seleccion" ? (
                         <select
                           disabled
                           className="w-full rounded-none border border-slate-200 bg-slate-50 px-2 py-1 text-sm text-slate-500"
@@ -431,6 +501,32 @@ function ConstructorFormatoContenido() {
             </Button>
             <Button onClick={actions.eliminarSeccionConfirmado}>
               Eliminar sección
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        abierto={Boolean(confirmacionPendiente)}
+        onCerrar={() => actions.setConfirmacionPendiente(null)}
+      >
+        <div className="p-6">
+          <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+            ¿Guardar los cambios?
+          </h3>
+          <p className="mt-2 font-sans text-xs text-slate-500">
+            {confirmacionPendiente} Las fichas ya creadas conservan lo que se
+            respondió en ellas.
+          </p>
+          <div className="mt-6 flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => actions.setConfirmacionPendiente(null)}
+            >
+              Volver
+            </Button>
+            <Button onClick={actions.confirmarGuardado}>
+              Guardar de todas formas
             </Button>
           </div>
         </div>

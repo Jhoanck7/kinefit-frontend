@@ -3,25 +3,30 @@
 import { useState } from "react";
 
 import {
+  useActualizarDocumentosServicioMutation,
   useCreateServicioMutation,
   useGetConfiguracionSistema,
+  useGetFormatos,
   useGetServicios,
   useUpdateConfiguracionSistemaMutation,
   useUpdateServicioEstadoMutation,
   useUpdateServicioMutation,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
+import { ServicioDocumentoInput } from "@/models/requests";
 import { ServicioResponse } from "@/models/responses";
 
 export const useServicios = () => {
   const { data: servicios = [], isLoading: cargando } = useGetServicios(false);
   const { data: configuracionSistema } = useGetConfiguracionSistema();
+  const { data: formatos = [] } = useGetFormatos(true);
   const duracionActiva = configuracionSistema?.duracionServiciosActiva ?? false;
 
   const crearMutation = useCreateServicioMutation();
   const actualizarMutation = useUpdateServicioMutation();
   const estadoMutation = useUpdateServicioEstadoMutation();
   const duracionMutation = useUpdateConfiguracionSistemaMutation();
+  const documentosMutation = useActualizarDocumentosServicioMutation();
 
   const [mostrarModal, setMostrarModal] = useState(false);
   const [servicioEditando, setServicioEditando] =
@@ -35,6 +40,7 @@ export const useServicios = () => {
   const [imagenUrl, setImagenUrl] = useState("");
   const [imagenPublicId, setImagenPublicId] = useState("");
   const [imagenAlt, setImagenAlt] = useState("");
+  const [documentos, setDocumentos] = useState<ServicioDocumentoInput[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [errorEstado, setErrorEstado] = useState<string | null>(null);
 
@@ -47,6 +53,7 @@ export const useServicios = () => {
     setImagenUrl("");
     setImagenPublicId("");
     setImagenAlt("");
+    setDocumentos([]);
     setError(null);
     setMostrarModal(true);
   };
@@ -60,6 +67,14 @@ export const useServicios = () => {
     setImagenUrl(servicio.imagenUrl || "");
     setImagenPublicId(servicio.imagenPublicId || "");
     setImagenAlt(servicio.imagenAlt || "");
+    setDocumentos(
+      servicio.documentos.map(d => ({
+        formatoFichaId: d.formatoFichaId,
+        obligatorio: d.obligatorio,
+        momento: d.momento,
+        vigenciaDias: d.vigenciaDias,
+      }))
+    );
     setError(null);
     setMostrarModal(true);
   };
@@ -75,9 +90,11 @@ export const useServicios = () => {
     e.preventDefault();
     setError(null);
     try {
+      let id: number;
       if (servicioEditando) {
+        id = servicioEditando.id;
         await actualizarMutation.mutateAsync({
-          id: servicioEditando.id,
+          id,
           data: {
             nombre,
             orden,
@@ -88,7 +105,7 @@ export const useServicios = () => {
           },
         });
       } else {
-        await crearMutation.mutateAsync({
+        const creado = await crearMutation.mutateAsync({
           nombre,
           orden,
           duracionMinutos,
@@ -96,7 +113,9 @@ export const useServicios = () => {
           imagenAlt: imagenAlt || undefined,
           descripcion: descripcion || undefined,
         });
+        id = creado!.id;
       }
+      await documentosMutation.mutateAsync({ id, documentos });
       setMostrarModal(false);
     } catch (err: unknown) {
       setError(handleApiError(err).message);
@@ -132,9 +151,14 @@ export const useServicios = () => {
     duracionMinutos,
     descripcion,
     imagenUrl,
+    formatos,
+    documentos,
     error,
     errorEstado,
-    guardando: crearMutation.isPending || actualizarMutation.isPending,
+    guardando:
+      crearMutation.isPending ||
+      actualizarMutation.isPending ||
+      documentosMutation.isPending,
     actualizandoEstadoId: estadoMutation.isPending
       ? estadoMutation.variables?.id
       : null,
@@ -144,6 +168,7 @@ export const useServicios = () => {
       setOrden,
       setDuracionMinutos,
       setDescripcion,
+      setDocumentos,
       handleAbrirCrear,
       handleAbrirEditar,
       handleCerrarModal,

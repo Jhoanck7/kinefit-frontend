@@ -90,21 +90,15 @@ export interface IniciarTransaccionResponseData {
 }
 
 export interface ConfirmarTransaccionResponseData {
-  resultado: "Aprobado" | "Rechazado";
-  cita?: {
-    id: number;
-    estado: string;
-    especialista: string;
-    servicio: string;
-    fecha: string;
-    hora: string;
-  };
-  transaccion?: {
-    id: number;
-    buyOrder: string;
-    monto: number;
-    estado: string;
-  };
+  id: number;
+  citaId: number;
+  buyOrder: string;
+  monto: number;
+  estado: "Iniciado" | "Aprobado" | "Rechazado" | "Expirado";
+  createdAt: string;
+  updatedAt: string;
+  estadoCita: string;
+  advertencia?: string;
 }
 
 // Legacy CMS Interfaces

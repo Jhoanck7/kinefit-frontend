@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   CreateServicioRequest,
+  ServicioDocumentoInput,
   UpdateServicioRequest,
 } from "@/models/requests";
 import { servicioService } from "@/services";
@@ -41,6 +42,25 @@ export const useUpdateServicioEstadoMutation = () => {
   return useMutation({
     mutationFn: ({ id, activo }: { id: number; activo: boolean }) =>
       servicioService.updateEstado(id, activo).then(res => res.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["servicios"] });
+    },
+  });
+};
+
+export const useActualizarDocumentosServicioMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      documentos,
+    }: {
+      id: number;
+      documentos: ServicioDocumentoInput[];
+    }) =>
+      servicioService
+        .actualizarDocumentos(id, documentos)
+        .then(res => res.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["servicios"] });
     },

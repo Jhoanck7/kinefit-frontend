@@ -8,7 +8,7 @@ interface NuevaFichaState {
   pacienteId: string | null;
   pacienteNombre: string | null;
   citaId: string | null;
-  formatoId: string | null;
+  formatoId: number | null;
   contenido: Record<string, string>;
   adjuntos: string[];
   setReserva: (
@@ -16,7 +16,7 @@ interface NuevaFichaState {
     pacienteNombre: string,
     citaId: string
   ) => void;
-  setFormato: (formatoId: string) => void;
+  setFormato: (formatoId: number) => void;
   setCampo: (campoId: string, valor: string) => void;
   agregarAdjunto: (nombre: string) => void;
   quitarAdjunto: (nombre: string) => void;
