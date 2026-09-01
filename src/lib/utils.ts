@@ -25,9 +25,9 @@ export const defaultMetadata: Metadata = {
   ],
   authors: [{ name: "Kinefit" }],
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/Kinefit color.png",
+    icon: "/Kinefit Negro ver.png",
+    shortcut: "/Kinefit Negro ver.png",
+    apple: "/Kinefit Negro ver.png",
   },
   creator: "Kinefit",
   publisher: "Kinefit",

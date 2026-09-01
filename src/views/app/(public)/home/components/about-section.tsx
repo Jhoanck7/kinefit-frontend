@@ -20,7 +20,7 @@ export default function AboutSection({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-x-16 lg:gap-y-6 items-center">
           {/* 1. Título: Primero en móvil y primera fila izquierda en escritorio */}
-          <div className="order-1 lg:col-span-7">
+          <div className="order-1 lg:col-span-7 scroll-reveal">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight text-left">
               {config.aboutTitle ||
                 "Un Enfoque Integral para tu Cuerpo y Salud"}
@@ -28,50 +28,39 @@ export default function AboutSection({
           </div>
 
           {/* 2. Video: Segundo en móvil (entre título y descripción), columna derecha completa en escritorio */}
-          <div className="order-2 lg:col-span-5 lg:row-span-3 flex justify-center w-full my-2 lg:my-0">
+          <div className="order-2 lg:col-span-5 lg:row-span-3 flex justify-center w-full my-2 lg:my-0 scroll-reveal-scale delay-150">
             <InstagramVideoCard videoUrl={videoUrl} />
           </div>
 
           {/* 3. Descripción: Tercero en móvil, segunda fila izquierda en escritorio */}
-          <div className="order-3 lg:col-span-7">
+          <div className="order-3 lg:col-span-7 scroll-reveal delay-200">
             <p className="text-slate-600 text-base sm:text-lg leading-relaxed whitespace-pre-line text-left">
               {config.aboutDescription ||
                 "En Kinefit Chile combinamos kinesiología clínica ortopédica, entrenamiento de readaptación funcional y masoterapia de alta gama. Nuestro equipo trabaja de forma personalizada para diagnosticar, tratar y prevenir lesiones, acompañándote paso a paso en tu proceso de recuperación."}
             </p>
           </div>
 
-          {/* 4. Botón CTA y Redes Sociales: Cuarto en móvil, tercera fila izquierda en escritorio */}
-          <div className="order-4 lg:col-span-7 flex flex-wrap items-center gap-25 pt-2">
-            {config.reservasHabilitadas !== false ? (
-              <a
-                href="#agendamiento"
-                className="w-full sm:w-auto bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-global px-8 py-4 shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 tracking-wider text-sm cursor-pointer uppercase text-center"
-              >
-                {config.aboutCtaText || "Agendar Atención Kinésica"}
-              </a>
-            ) : (
-              <a
-                href={config.reservasUrlAlterna || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto bg-brand-primary hover:bg-brand-primary-hover text-white font-bold rounded-global px-8 py-4 shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 tracking-wider text-sm cursor-pointer uppercase text-center"
-              >
-                {config.aboutCtaText || "Agendar Atención Kinésica"}
-              </a>
-            )}
+          {/* 4. Redes Sociales: Cuarto en móvil, tercera fila izquierda en escritorio */}
+          <div className="order-4 lg:col-span-7 flex flex-col items-center justify-center text-center gap-3.5 pt-2 w-full scroll-reveal delay-300">
+            <div className="flex flex-col items-center gap-1.5 text-center">
+          
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                ¡Visita nuestras redes sociales!
+              </h3>
+            </div>
 
             {/* Redes Sociales: Instagram, TikTok, Facebook */}
-            <div className="flex gap-3">
+            <div className="flex items-center justify-center gap-4 sm:gap-5 pt-2 w-full">
               {config.socialInstagram && (
                 <a
                   href={config.socialInstagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
-                  className="group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-global bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white shadow-md transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-110 active:scale-95 cursor-pointer"
+                  className="group flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-global bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white shadow-lg shadow-pink-500/20 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-110 hover:shadow-xl hover:shadow-pink-500/30 active:scale-95 cursor-pointer"
                 >
                   <svg
-                    className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-300 group-hover:rotate-6"
+                    className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-300 group-hover:rotate-6"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -86,10 +75,10 @@ export default function AboutSection({
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="TikTok"
-                  className="group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-global bg-black text-white border border-slate-800 shadow-md transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-110 active:scale-95 cursor-pointer"
+                  className="group flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-global bg-black text-white border border-slate-800 shadow-lg shadow-black/20 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-110 hover:shadow-xl hover:shadow-black/30 active:scale-95 cursor-pointer"
                 >
                   <svg
-                    className="w-6 h-6 sm:w-7 sm:h-7 transition-all duration-300 group-hover:-rotate-6"
+                    className="w-7 h-7 sm:w-8 sm:h-8 transition-all duration-300 group-hover:-rotate-6"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -104,10 +93,10 @@ export default function AboutSection({
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Facebook"
-                  className="group flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-global bg-[#1877F2] text-white shadow-md transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-110 active:scale-95 cursor-pointer"
+                  className="group flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-global bg-[#1877F2] text-white shadow-lg shadow-blue-500/20 transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-110 hover:shadow-xl hover:shadow-blue-500/30 active:scale-95 cursor-pointer"
                 >
                   <svg
-                    className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-300 group-hover:rotate-6"
+                    className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-300 group-hover:rotate-6"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >

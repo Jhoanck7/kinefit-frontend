@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React, { useEffect } from "react";
 import Script from "next/script";
 
@@ -70,12 +71,16 @@ export function InstagramVideoCard({
             rel="noopener noreferrer"
             className="flex items-center gap-2.5 group/author cursor-pointer"
           >
-            {/* Aro con acento de marca Kinefit */}
-            <div className="w-8 h-8 rounded-full p-[1.8px] bg-gradient-to-tr from-brand-primary via-sky-500 to-teal-400 shrink-0 shadow-xs">
-              <div className="w-full h-full rounded-full bg-white p-[1.5px] flex items-center justify-center">
-                <span className="text-[11px] font-black text-brand-primary tracking-tighter">
-                  K
-                </span>
+            {/* Aro con logo de marca Kinefit */}
+            <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-brand-primary via-sky-500 to-teal-400 shrink-0 shadow-xs overflow-hidden">
+              <div className="relative w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+                <Image
+                  src="/Kinefit Negro ver.png"
+                  alt="Kinefit Logo"
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-contain scale-[1.35]"
+                />
               </div>
             </div>
 

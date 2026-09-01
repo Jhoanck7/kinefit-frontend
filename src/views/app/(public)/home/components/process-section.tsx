@@ -74,9 +74,9 @@ export default function ProcessSection({
       />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-20">
+        <div className="text-center max-w-3xl mx-auto mb-20 scroll-reveal">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
-            El Proceso
+            Paso a Paso
           </h2>
           <p className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             {config.processTitle ||
@@ -162,7 +162,9 @@ export default function ProcessSection({
             {steps.map((step, idx) => (
               <div
                 key={idx}
-                className="group bg-white rounded-global border border-slate-200/60 p-8 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+                className={`group bg-white rounded-global border border-slate-200/60 p-8 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between scroll-reveal-scale ${
+                  idx === 1 ? "delay-100" : idx === 2 ? "delay-200" : idx === 3 ? "delay-300" : ""
+                }`}
               >
                 <div>
                   <div className="w-14 h-14 rounded-2xl bg-brand-primary-glow flex items-center justify-center mb-6 font-black text-2xl text-brand-primary group-hover:scale-110 group-hover:bg-brand-primary group-hover:text-white transition-all duration-300 shadow-sm">

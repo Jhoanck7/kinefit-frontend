@@ -53,7 +53,7 @@ export default function VouchersSection({
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           {/* Móvil: título antes del carrusel */}
-          <div className="lg:hidden text-left">
+          <div className="lg:hidden text-left scroll-reveal">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
               Vouchers de Regalo
             </h2>
@@ -62,7 +62,7 @@ export default function VouchersSection({
             </p>
           </div>
 
-          <div className="lg:col-span-7 relative group">
+          <div className="lg:col-span-7 relative group scroll-reveal-scale">
             <div
               ref={scrollRef}
               onMouseEnter={autoScroll.onMouseEnter}
@@ -145,7 +145,7 @@ export default function VouchersSection({
             )}
           </div>
 
-          <div className="lg:col-span-5 text-left">
+          <div className="lg:col-span-5 text-left scroll-reveal delay-200">
             <h2 className="hidden lg:block text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
               Vouchers de Regalo
             </h2>

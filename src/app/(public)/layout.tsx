@@ -6,7 +6,7 @@ import { SessionProvider } from "next-auth/react";
 
 import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
-import { WhatsAppButton } from "@/components/shared";
+import { ScrollRevealProvider, WhatsAppButton } from "@/components/shared";
 import { CLINIC_INFO, defaultMetadata } from "@/lib/utils";
 import { ReactQueryProvider } from "@/providers";
 import { landingConfigService } from "@/services";
@@ -135,10 +135,12 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col bg-white font-sans">
         <SessionProvider>
           <ReactQueryProvider>
-            <Navbar config={config} />
-            <div className="flex-grow">{children}</div>
-            <Footer />
-            <WhatsAppButton />
+            <ScrollRevealProvider>
+              <Navbar config={config} />
+              <div className="flex-grow">{children}</div>
+              <Footer />
+              <WhatsAppButton />
+            </ScrollRevealProvider>
           </ReactQueryProvider>
         </SessionProvider>
       </body>

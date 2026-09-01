@@ -26,7 +26,7 @@ export default function LocationSection({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Info & Directions */}
-          <div className="lg:col-span-5 flex flex-col items-start text-left">
+          <div className="lg:col-span-5 flex flex-col items-start text-left scroll-reveal">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
               Ubicación
             </h2>
@@ -62,17 +62,17 @@ export default function LocationSection({
                     />
                   </svg>
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900 mb-1">
+                <div className="text-left">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Dirección
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
+                  </p>
+                  <p className="text-base font-bold text-slate-900 mt-0.5">
                     {address}
                   </p>
                 </div>
               </div>
 
-              {/* Hours Card */}
+              {/* Business Hours Card */}
               <div className="flex gap-4 p-5 rounded-global bg-slate-50 border border-slate-200/50">
                 <div className="w-10 h-10 rounded-global bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
                   <svg
@@ -89,13 +89,13 @@ export default function LocationSection({
                     />
                   </svg>
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900 mb-1">
-                    Horarios de Atención
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    {config.hoursWeekday ||
-                      "Lunes a Viernes: 09:00 - 21:00 hrs."}
+                <div className="text-left">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Horario de Atención
+                  </p>
+                  <p className="text-sm font-bold text-slate-900 mt-0.5">
+                    {config.hoursWeekdays ||
+                      "Lunes a Viernes: 08:00 - 21:00 hrs."}
                   </p>
                   <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
                     {config.hoursSaturday || "Sábados: 10:00 - 20:00 hrs."}
@@ -132,7 +132,7 @@ export default function LocationSection({
           </div>
 
           {/* Right Column: Google Maps Embed Frame */}
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-7 scroll-reveal-scale delay-200">
             <div className="w-full h-[400px] lg:h-[480px] rounded-global overflow-hidden border border-slate-200 bg-slate-100 relative">
               <iframe
                 title="KineFit Chile Ubicación en Google Maps"

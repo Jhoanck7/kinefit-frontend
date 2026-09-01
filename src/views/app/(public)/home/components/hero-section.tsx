@@ -111,11 +111,11 @@ export default function HeroSection({
 
       {/* BACKGROUND ESCRITORIO: SPLIT-SCREEN CON QUIEBRE DE NUBE Y PARALLAX 3D */}
       <div className="hidden lg:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        {/* Split-Right: Ocupa el fondo fotográfico con parallax inverso suave */}
+        {/* Split-Right: Ocupa el fondo fotográfico con parallax horizontal suave (Y bloqueado) */}
         <div
-          className="absolute inset-y-0 left-[28%] -right-8 w-auto h-full z-[1] overflow-hidden transition-transform duration-300 ease-out will-change-transform"
+          className="absolute -top-10 -bottom-10 left-[26%] -right-10 w-auto z-[1] overflow-hidden transition-transform duration-300 ease-out will-change-transform"
           style={{
-            transform: `translate3d(${mousePos.x * -18}px, ${mousePos.y * -12}px, 0) scale(1.05)`,
+            transform: `translate3d(${mousePos.x * -18}px, 0, 0) scale(1.05)`,
           }}
         >
           {bgImages.map((imgUrl, idx) => (
@@ -137,16 +137,16 @@ export default function HeroSection({
           ))}
         </div>
 
-        {/* Split-Left: Capa izquierda con clipPath (#quiebreNube) con parallax directo */}
+        {/* Split-Left: Capa izquierda con clipPath (#quiebreNube) con movimiento solo en X (Y bloqueado a 0) */}
         <div
-          className="absolute inset-0 w-full h-full z-[2] bg-slate-100 transition-transform duration-300 ease-out will-change-transform"
+          className="absolute -top-4 -bottom-4 -left-4 w-[calc(100%+32px)] h-[calc(100%+32px)] z-[2] bg-slate-100 transition-transform duration-300 ease-out will-change-transform"
           style={{
             clipPath: "url(#quiebreNube)",
-            transform: `translate3d(${mousePos.x * 12}px, ${mousePos.y * 8}px, 0)`,
+            transform: `translate3d(${mousePos.x * 12}px, 0, 0)`,
           }}
         />
 
-        {/* CUADRÍCULA TÉCNICA / DOT GRID PATTERN (ESCRITORIO) con parallax */}
+        {/* CUADRÍCULA TÉCNICA / DOT GRID PATTERN (ESCRITORIO) con parallax horizontal (Y bloqueado) */}
         <div
           className="absolute inset-0 w-full h-full z-[3] pointer-events-none opacity-[0.08] transition-transform duration-500 ease-out will-change-transform"
           style={{
@@ -157,7 +157,7 @@ export default function HeroSection({
               "radial-gradient(ellipse 70% 70% at 30% 50%, black 50%, transparent 90%)",
             WebkitMaskImage:
               "radial-gradient(ellipse 70% 70% at 30% 50%, black 50%, transparent 90%)",
-            transform: `translate3d(${mousePos.x * 6}px, ${mousePos.y * 4}px, 0)`,
+            transform: `translate3d(${mousePos.x * 6}px, 0, 0)`,
           }}
         />
       </div>

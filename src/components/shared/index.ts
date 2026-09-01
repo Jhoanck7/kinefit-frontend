@@ -21,5 +21,6 @@ export type { OpcionSelector } from "./option-selector";
 export { OptionSelector } from "./option-selector";
 export { Paginacion } from "./paginacion";
 export { StepIndicator } from "./step-indicator";
+export { ScrollRevealProvider } from "./scroll-reveal-provider";
 export { SummaryPanel } from "./summary-panel";
 export { default as WhatsAppButton } from "./whats-app-button";

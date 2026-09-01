@@ -109,8 +109,8 @@ export default function TestimonialsSection({
       className="scroll-mt-24 py-20 sm:py-28 bg-blue-950 border-b border-blue-900 text-white overflow-hidden w-full"
     >
       <div className="w-full  mx-auto px-4 sm:px-6 lg:px-20">
-  {/* El encabezado sí mantiene su ancho centrado y legible */}
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+        {/* El encabezado sí mantiene su ancho centrado y legible */}
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4 scroll-reveal">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
             {config.testimonialsTitle ||
               "Opiniones Reales de Nuestros Pacientes"}
@@ -138,22 +138,22 @@ export default function TestimonialsSection({
               <svg
                 className="w-3.5 h-3.5"
                 fill="none"
-                viewBox="0 0 24 24"
                 stroke="currentColor"
-                strokeWidth="2.5"
+                viewBox="0 0 24 24"
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                  strokeWidth="2"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                 />
               </svg>
             </a>
           </div>
         </div>
-        
 
-       <div className="relative mx-auto overflow-hidden">
+        {/* CONTENEDOR DESBORDANTE: Carrusel Continuo */}
+        <div className="w-full relative scroll-reveal-scale delay-150 mx-auto overflow-hidden">
           {/* Sombras difuminadas en los extremos */}
           <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-24 sm:w-12 bg-gradient-to-r from-blue-950 to-transparent z-10" />
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-24 sm:w-12 bg-gradient-to-l from-blue-950 to-transparent z-10" />
