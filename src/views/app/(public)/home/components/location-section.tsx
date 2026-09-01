@@ -94,7 +94,7 @@ export default function LocationSection({
                     Horario de Atención
                   </p>
                   <p className="text-sm font-bold text-slate-900 mt-0.5">
-                    {config.hoursWeekdays ||
+                    {config.hoursWeekday ||
                       "Lunes a Viernes: 08:00 - 21:00 hrs."}
                   </p>
                   <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
