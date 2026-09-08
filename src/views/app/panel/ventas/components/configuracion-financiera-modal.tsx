@@ -79,12 +79,14 @@ export function ConfiguracionFinancieraModal({
           {
             metodoPago: "Debito",
             porcentaje: pctDebito,
+            tipoModelo: cargoFijoDebito > 0 ? "Mixto" : "Porcentual",
             cargoFijo: cargoFijoDebito,
             impuestoIncluidoEnTasa: impuestoIncluidoDebito,
           },
           {
             metodoPago: "Credito",
             porcentaje: pctCredito,
+            tipoModelo: cargoFijoCredito > 0 ? "Mixto" : "Porcentual",
             cargoFijo: cargoFijoCredito,
             impuestoIncluidoEnTasa: impuestoIncluidoCredito,
           },

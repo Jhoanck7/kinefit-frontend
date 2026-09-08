@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Alerta, Modal } from "@/components/shared";
 import {
   useCreateVentaMutation,
+  useGetCitas,
   useGetEmpresas,
   useGetPacientes,
   useGetServicios,
@@ -15,11 +16,23 @@ import { PacienteResponse, TerminalPagoResponse } from "@/models/responses";
 
 type MetodoPago = CreateVentaRequest["metodoPago"];
 
+export interface CitaAsociadaVenta {
+  id: number;
+  pacienteId: number;
+  pacienteNombre: string;
+  servicioId: number;
+  servicioNombre: string;
+  especialistaNombre: string;
+}
+
+const ESTADOS_CITA_FACTURABLES = ["Confirmada", "Atendida"];
+
 interface NuevaVentaModalProps {
   abierto: boolean;
   onClose: () => void;
   onCrearVenta: () => void;
   terminales: TerminalPagoResponse[];
+  citaAsociada?: CitaAsociadaVenta;
 }
 
 export function NuevaVentaModal({
@@ -27,6 +40,7 @@ export function NuevaVentaModal({
   onClose,
   onCrearVenta,
   terminales,
+  citaAsociada,
 }: NuevaVentaModalProps) {
   const [busquedaPaciente, setBusquedaPaciente] = useState("");
   const [pacienteSeleccionado, setPacienteSeleccionado] =
@@ -41,32 +55,61 @@ export function NuevaVentaModal({
     );
   const { data: servicios = [] } = useGetServicios();
   const { data: empresas = [] } = useGetEmpresas(false);
-  const [descripcion, setDescripcion] = useState("");
-  const [servicioId, setServicioId] = useState<string>("");
+  const [descripcion, setDescripcion] = useState(
+    citaAsociada?.servicioNombre ?? ""
+  );
+  const [servicioId, setServicioId] = useState<string>(
+    citaAsociada ? String(citaAsociada.servicioId) : ""
+  );
   const [monto, setMonto] = useState(40000);
   const [metodoPago, setMetodoPago] = useState<MetodoPago>("Debito");
   const [terminalPagoId, setTerminalPagoId] = useState<string>(
     String(terminales[0]?.id ?? "")
   );
+  const [citaSeleccionadaId, setCitaSeleccionadaId] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const crearVentaMutation = useCreateVentaMutation();
 
+  const pacienteIdParaCitas = citaAsociada
+    ? undefined
+    : pacienteSeleccionado?.id;
+  const { data: citasPaciente = [] } = useGetCitas(
+    { pacienteId: pacienteIdParaCitas },
+    Boolean(pacienteIdParaCitas)
+  );
+  const citasFacturables = citasPaciente.filter(c =>
+    ESTADOS_CITA_FACTURABLES.includes(c.estado)
+  );
+
   const requiereTerminal = metodoPago === "Debito" || metodoPago === "Credito";
+  const citaId = citaAsociada?.id ?? (Number(citaSeleccionadaId) || undefined);
 
   function resetForm() {
     setBusquedaPaciente("");
     setPacienteSeleccionado(null);
-    setDescripcion("");
-    setServicioId("");
+    setDescripcion(citaAsociada?.servicioNombre ?? "");
+    setServicioId(citaAsociada ? String(citaAsociada.servicioId) : "");
     setMonto(40000);
     setMetodoPago("Debito");
     setTerminalPagoId(String(terminales[0]?.id ?? ""));
+    setCitaSeleccionadaId("");
     setErrorMsg(null);
   }
 
   function handleBuscarPaciente(termino: string) {
     setBusquedaPaciente(termino);
     setPacienteSeleccionado(null);
+    setCitaSeleccionadaId("");
+  }
+
+  function handleSeleccionarCita(id: string) {
+    setCitaSeleccionadaId(id);
+    const cita = citasFacturables.find(c => String(c.id) === id);
+    if (cita) {
+      const servicio = servicios.find(s => s.nombre === cita.servicio);
+      if (servicio) setServicioId(String(servicio.id));
+      setDescripcion(cita.servicio);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -77,7 +120,8 @@ export function NuevaVentaModal({
 
     try {
       await crearVentaMutation.mutateAsync({
-        pacienteId: pacienteSeleccionado?.id,
+        citaId,
+        pacienteId: citaAsociada?.pacienteId ?? pacienteSeleccionado?.id,
         metodoPago,
         terminalPagoId: requiereTerminal ? Number(terminalPagoId) : undefined,
         items: [
@@ -128,43 +172,84 @@ export function NuevaVentaModal({
         >
           {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
 
-          <div className="relative">
-            <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
-              Paciente (opcional: dejar vacío para cliente sin registrar)
-            </label>
-            <input
-              type="text"
-              value={
-                pacienteSeleccionado
-                  ? `${pacienteSeleccionado.nombre} ${pacienteSeleccionado.apellido}`
-                  : busquedaPaciente
-              }
-              onChange={e => handleBuscarPaciente(e.target.value)}
-              placeholder="Buscar por nombre o RUT..."
-              className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
-            />
-            {buscandoPaciente && !pacienteSeleccionado && (
-              <p className="mt-1 text-xs text-slate-500">Buscando…</p>
-            )}
-            {resultados.length > 0 && !pacienteSeleccionado && (
-              <ul className="absolute z-10 mt-1 w-full divide-y divide-slate-200 border border-slate-200 bg-white shadow-sm max-h-48 overflow-y-auto">
-                {resultados.map(p => (
-                  <li key={p.id}>
-                    <button
-                      type="button"
-                      onClick={() => setPacienteSeleccionado(p)}
-                      className="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-slate-50"
-                    >
-                      <span className="font-medium text-slate-900">
-                        {p.nombre} {p.apellido}
-                      </span>
-                      <span className="text-xs text-slate-500">{p.rut}</span>
-                    </button>
-                  </li>
+          {citaAsociada ? (
+            <div className="border border-slate-200 bg-slate-50 p-3">
+              <p className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">
+                Cobro asociado a la cita
+              </p>
+              <p className="font-sans text-sm font-medium text-slate-900">
+                {citaAsociada.pacienteNombre} · {citaAsociada.servicioNombre}
+              </p>
+              <p className="font-sans text-xs text-slate-500">
+                Especialista: {citaAsociada.especialistaNombre}
+              </p>
+            </div>
+          ) : (
+            <div className="relative">
+              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                Paciente (opcional: dejar vacío para cliente sin registrar)
+              </label>
+              <input
+                type="text"
+                value={
+                  pacienteSeleccionado
+                    ? `${pacienteSeleccionado.nombre} ${pacienteSeleccionado.apellido}`
+                    : busquedaPaciente
+                }
+                onChange={e => handleBuscarPaciente(e.target.value)}
+                placeholder="Buscar por nombre o RUT..."
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
+              />
+              {buscandoPaciente && !pacienteSeleccionado && (
+                <p className="mt-1 text-xs text-slate-500">Buscando…</p>
+              )}
+              {resultados.length > 0 && !pacienteSeleccionado && (
+                <ul className="absolute z-10 mt-1 w-full divide-y divide-slate-200 border border-slate-200 bg-white shadow-sm max-h-48 overflow-y-auto">
+                  {resultados.map(p => (
+                    <li key={p.id}>
+                      <button
+                        type="button"
+                        onClick={() => setPacienteSeleccionado(p)}
+                        className="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-slate-50"
+                      >
+                        <span className="font-medium text-slate-900">
+                          {p.nombre} {p.apellido}
+                        </span>
+                        <span className="text-xs text-slate-500">{p.rut}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {!citaAsociada && pacienteSeleccionado && (
+            <div>
+              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                Cita asociada (opcional)
+              </label>
+              <select
+                value={citaSeleccionadaId}
+                onChange={e => handleSeleccionarCita(e.target.value)}
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
+              >
+                <option value="">Sin cita asociada</option>
+                {citasFacturables.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.fecha} · {c.servicio} · {c.especialista}
+                  </option>
                 ))}
-              </ul>
-            )}
-          </div>
+              </select>
+            </div>
+          )}
+
+          {!citaId && (
+            <Alerta tono="info">
+              Esta venta no entra en el cálculo de reparto porque no está
+              asociada a una atención.
+            </Alerta>
+          )}
 
           <div>
             <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
@@ -172,13 +257,16 @@ export function NuevaVentaModal({
             </label>
             <select
               required
+              disabled={Boolean(citaAsociada)}
               value={servicioId}
               onChange={e => {
                 setServicioId(e.target.value);
-                const s = servicios.find(sv => sv.id === Number(e.target.value));
+                const s = servicios.find(
+                  sv => sv.id === Number(e.target.value)
+                );
                 setDescripcion(s?.nombre ?? "");
               }}
-              className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
+              className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none disabled:bg-slate-100"
             >
               <option value="" disabled>
                 Selecciona un servicio...

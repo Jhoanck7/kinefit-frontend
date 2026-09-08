@@ -69,12 +69,16 @@ export const useImportarFormatoMutation = () => {
       archivo,
       nombre,
       tipo,
+      requiereFirmaProfesional,
     }: {
       archivo: File;
       nombre: string;
       tipo: string;
+      requiereFirmaProfesional: boolean;
     }) =>
-      formatoService.importar(archivo, nombre, tipo).then(res => res.data.data),
+      formatoService
+        .importar(archivo, nombre, tipo, requiereFirmaProfesional)
+        .then(res => res.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["formatos"] });
     },

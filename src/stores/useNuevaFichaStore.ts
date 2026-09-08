@@ -10,7 +10,7 @@ interface NuevaFichaState {
   citaId: string | null;
   formatoId: number | null;
   contenido: Record<string, string>;
-  adjuntos: string[];
+  adjuntos: File[];
   setReserva: (
     pacienteId: string,
     pacienteNombre: string,
@@ -18,7 +18,7 @@ interface NuevaFichaState {
   ) => void;
   setFormato: (formatoId: number) => void;
   setCampo: (campoId: string, valor: string) => void;
-  agregarAdjunto: (nombre: string) => void;
+  agregarAdjunto: (archivo: File) => void;
   quitarAdjunto: (nombre: string) => void;
   reiniciar: () => void;
 }
@@ -35,10 +35,12 @@ export const useNuevaFichaStore = create<NuevaFichaState>()(set => ({
   setFormato: formatoId => set({ formatoId }),
   setCampo: (campoId, valor) =>
     set(estado => ({ contenido: { ...estado.contenido, [campoId]: valor } })),
-  agregarAdjunto: nombre =>
-    set(estado => ({ adjuntos: [...estado.adjuntos, nombre] })),
+  agregarAdjunto: archivo =>
+    set(estado => ({ adjuntos: [...estado.adjuntos, archivo] })),
   quitarAdjunto: nombre =>
-    set(estado => ({ adjuntos: estado.adjuntos.filter(a => a !== nombre) })),
+    set(estado => ({
+      adjuntos: estado.adjuntos.filter(a => a.name !== nombre),
+    })),
   reiniciar: () =>
     set({
       pacienteId: null,

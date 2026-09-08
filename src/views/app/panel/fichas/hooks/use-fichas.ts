@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { useGetFichas, useGetFormatos } from "@/hooks/api";
+import { useGetFichas } from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
 
 export const TAMANO_PAGINA = 8;
@@ -22,11 +22,11 @@ export const useFichas = () => {
 
   const fichaModalId = searchParams.get("ficha");
 
-  const { data: formatos = [] } = useGetFormatos();
-
-  useEffect(() => {
-    setPagina(1);
-  }, [busqueda, tipo, desde, hasta]);
+  const cambiarFiltro =
+    (aplicar: (valor: string) => void) => (valor: string) => {
+      aplicar(valor);
+      setPagina(1);
+    };
 
   const { data } = useGetFichas({
     busqueda: busqueda || undefined,
@@ -68,7 +68,6 @@ export const useFichas = () => {
     tipo,
     desde,
     hasta,
-    formatos,
     pagina,
     total,
     inicio,
@@ -77,10 +76,10 @@ export const useFichas = () => {
 
     // Actions
     actions: {
-      setBusqueda,
-      setTipo,
-      setDesde,
-      setHasta,
+      setBusqueda: cambiarFiltro(setBusqueda),
+      setTipo: cambiarFiltro(setTipo),
+      setDesde: cambiarFiltro(setDesde),
+      setHasta: cambiarFiltro(setHasta),
       handleIrAFormatos,
       handleNuevaFicha,
       handleAbrirFicha,

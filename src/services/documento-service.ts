@@ -13,31 +13,6 @@ export class DocumentoService extends BaseApiService {
     super("/documentos");
   }
 
-  getMisPendientes(citaId: number) {
-    return this.httpClient.get<ApiResponse<DocumentoPacienteResponse[]>>(
-      `${this.baseURL}/mis-pendientes/${citaId}`
-    );
-  }
-
-  getPropio(id: number) {
-    return this.httpClient.get<ApiResponse<DocumentoPublicoResponse>>(
-      `${this.baseURL}/propio/${id}`
-    );
-  }
-
-  firmarPropio(id: number, data: FirmarDocumentoRequest) {
-    return this.httpClient.post<ApiResponse<DocumentoPacienteResponse>>(
-      `${this.baseURL}/propio/${id}/firmar`,
-      data
-    );
-  }
-
-  getArchivoPropio(id: number) {
-    return this.httpClient.get(`${this.baseURL}/propio/${id}/archivo`, {
-      responseType: "blob",
-    });
-  }
-
   getPorCita(citaId: number) {
     return this.httpClient.get<ApiResponse<DocumentoPacienteResponse[]>>(
       `${this.baseURL}/cita/${citaId}`

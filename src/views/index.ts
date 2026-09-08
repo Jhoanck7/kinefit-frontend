@@ -2,6 +2,7 @@ export { default as HomeView } from "./app/(public)/home";
 export { default as AccesoView } from "./app/panel/acceso";
 export { default as AgendaView } from "./app/panel/agenda";
 export { default as BloqueosView } from "./app/panel/agenda/bloqueos";
+export { default as CambiarPasswordView } from "./app/panel/cambiar-password";
 export { default as ConfiguracionView } from "./app/panel/configuracion";
 export { default as EspecialistasView } from "./app/panel/configuracion/especialistas";
 export { default as HorariosView } from "./app/panel/configuracion/horarios";

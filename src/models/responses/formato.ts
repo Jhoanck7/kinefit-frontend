@@ -11,7 +11,8 @@ export type TipoCampoFormato =
   | "Numerico"
   | "Fecha"
   | "Seleccion"
-  | "TextoInformativo";
+  | "TextoInformativo"
+  | "Firma";
 
 export type CompletadoPor = "Profesional" | "Paciente";
 
@@ -33,7 +34,6 @@ export interface SeccionFormato {
   campos: CampoFormato[];
 }
 
-/** Estructura del formato. Es lo que viaja dentro de `cuerpo`. */
 export interface CuerpoFormato {
   secciones: SeccionFormato[];
 }
@@ -42,10 +42,8 @@ export interface FormatoFichaResponse {
   id: number;
   nombre: string;
   tipo: TipoDocumentoClinico;
-  /** Rótulo emitido por el servidor. Nunca deducirlo en el cliente. */
   tipoNombre: string;
   origen: OrigenFormato;
-  /** Ausente en los formatos subidos como documento. */
   cuerpo?: CuerpoFormato;
   tieneArchivo: boolean;
   requiereFirmaPaciente: boolean;

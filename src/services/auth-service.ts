@@ -29,9 +29,10 @@ export class AuthService extends BaseApiService {
     );
   }
 
-  loginWithGoogleToken(idToken: string) {
+  loginWithGoogleToken(idToken: string, consentimientoAceptado: boolean) {
     return this.httpClient.post<AuthGoogleResponse>(`${this.baseURL}/google`, {
       idToken,
+      consentimientoAceptado,
     });
   }
 

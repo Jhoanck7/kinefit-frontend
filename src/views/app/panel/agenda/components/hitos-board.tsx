@@ -3,16 +3,25 @@ import { HitosCitaResponse } from "@/models/responses";
 interface HitosBoardProps {
   hitos: HitosCitaResponse;
   onIrADocumentos: () => void;
+  onCobrar: () => void;
 }
 
-export function HitosBoard({ hitos, onIrADocumentos }: HitosBoardProps) {
+export function HitosBoard({
+  hitos,
+  onIrADocumentos,
+  onCobrar,
+}: HitosBoardProps) {
   const items: {
     etiqueta: string;
     listo: boolean;
     onClick?: () => void;
   }[] = [
     { etiqueta: "Anticipo pagado", listo: hitos.anticipoPagado },
-    { etiqueta: "Pago total registrado", listo: hitos.pagoTotalRegistrado },
+    {
+      etiqueta: "Pago total registrado",
+      listo: hitos.pagoTotalRegistrado,
+      onClick: hitos.pagoTotalRegistrado ? undefined : onCobrar,
+    },
     {
       etiqueta: "Documentos firmados",
       listo: hitos.documentosFirmados,

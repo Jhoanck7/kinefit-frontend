@@ -38,7 +38,7 @@ export default function AccesoView() {
             etiqueta="Correo electrónico"
             type="email"
             name="correo"
-            placeholder="admin@kinefit.cl"
+            placeholder="tu@correo.cl"
             required
           />
           <TextField

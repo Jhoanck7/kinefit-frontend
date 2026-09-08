@@ -2,17 +2,13 @@
 
 import { useRef } from "react";
 
-/**
- * Zona de arrastre de archivos, visual únicamente (DD-10): sin carga real,
- * sin almacenamiento. Seleccionar un archivo solo añade su chip a la lista.
- */
 export function FileDropzone({
   archivos,
   onAgregar,
   onQuitar,
 }: {
-  archivos: string[];
-  onAgregar: (nombre: string) => void;
+  archivos: File[];
+  onAgregar: (archivo: File) => void;
   onQuitar: (nombre: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -48,15 +44,15 @@ export function FileDropzone({
         className="hidden"
         onChange={e => {
           const archivo = e.target.files?.[0];
-          if (archivo) onAgregar(archivo.name);
+          if (archivo) onAgregar(archivo);
           e.target.value = "";
         }}
       />
       {archivos.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-2">
-          {archivos.map(nombre => (
+          {archivos.map(archivo => (
             <li
-              key={nombre}
+              key={archivo.name}
               className="inline-flex items-center gap-2 rounded-lg border border-brand-border bg-white px-3 py-1.5 text-sm text-panel-sidebar"
             >
               <svg
@@ -73,11 +69,11 @@ export function FileDropzone({
                   d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6"
                 />
               </svg>
-              {nombre}
+              {archivo.name}
               <button
                 type="button"
-                onClick={() => onQuitar(nombre)}
-                aria-label={`Quitar ${nombre}`}
+                onClick={() => onQuitar(archivo.name)}
+                aria-label={`Quitar ${archivo.name}`}
                 className="text-brand-muted hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded"
               >
                 &times;

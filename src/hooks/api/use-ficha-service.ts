@@ -56,6 +56,13 @@ export const useSubirAdjuntoMutation = () => {
   });
 };
 
+export const useDescargarAdjuntoMutation = () => {
+  return useMutation({
+    mutationFn: (adjuntoId: number) =>
+      fichaService.descargarAdjunto(adjuntoId).then(res => res.data),
+  });
+};
+
 export const useEliminarAdjuntoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

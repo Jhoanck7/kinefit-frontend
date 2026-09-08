@@ -1,65 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
-  useFirmarDocumentoPropioMutation,
   useFirmarDocumentoPublicoMutation,
-  useGetDocumentoPropio,
   useGetDocumentoPublico,
 } from "@/hooks/api";
-import { documentoService } from "@/services";
 
 interface UseFirmaDocumentoParams {
-  token?: string;
-  documentoId?: number;
+  token: string;
 }
 
-export function useFirmaDocumento({
-  token,
-  documentoId,
-}: UseFirmaDocumentoParams) {
-  const esPropio = documentoId !== undefined;
-
-  const publico = useGetDocumentoPublico(esPropio ? null : (token ?? null));
-  const propio = useGetDocumentoPropio(esPropio ? (documentoId ?? null) : null);
-
-  const data = esPropio ? propio.data : publico.data;
-  const isLoading = esPropio ? propio.isLoading : publico.isLoading;
-  const error = esPropio ? propio.error : publico.error;
-
+export function useFirmaDocumento({ token }: UseFirmaDocumentoParams) {
+  const { data, isLoading, error } = useGetDocumentoPublico(token);
   const firmarPublico = useFirmarDocumentoPublicoMutation();
-  const firmarPropio = useFirmarDocumentoPropioMutation();
 
   const [contenido, setContenido] = useState<Record<string, string>>({});
   const [firmado, setFirmado] = useState(false);
-  const [archivoObjectUrl, setArchivoObjectUrl] = useState<string | null>(null);
 
   const handleCambiarCampo = (campoId: string, valor: string) => {
     setContenido(prev => ({ ...prev, [campoId]: valor }));
   };
 
-  // el archivo público es una URL directa; el propio exige el Bearer, así que se trae como blob
-  useEffect(() => {
-    if (!esPropio || !documentoId || !data?.tieneArchivo) return;
-
-    let objectUrl: string | null = null;
-    let cancelado = false;
-    documentoService.getArchivoPropio(documentoId).then(res => {
-      if (cancelado) return;
-      objectUrl = URL.createObjectURL(res.data as Blob);
-      setArchivoObjectUrl(objectUrl);
-    });
-    return () => {
-      cancelado = true;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
-  }, [esPropio, documentoId, data?.tieneArchivo]);
-
-  const archivoUrl =
-    !esPropio && token && data?.tieneArchivo
-      ? `${process.env.NEXT_PUBLIC_API_URL}/documentos/publico/${token}/archivo`
-      : archivoObjectUrl;
+  const archivoUrl = data?.tieneArchivo
+    ? `${process.env.NEXT_PUBLIC_API_URL}/documentos/publico/${token}/archivo`
+    : null;
 
   const handleFirmar = async (firmaBase64: string) => {
     if (!data) return;
@@ -69,16 +34,9 @@ export function useFirmaDocumento({
       huellaMostrada: data.huellaMostrada,
     };
 
-    if (esPropio && documentoId) {
-      await firmarPropio.mutateAsync({ id: documentoId, data: payload });
-    } else if (token) {
-      await firmarPublico.mutateAsync({ token, data: payload });
-    }
+    await firmarPublico.mutateAsync({ token, data: payload });
     setFirmado(true);
   };
-
-  const guardando = esPropio ? firmarPropio.isPending : firmarPublico.isPending;
-  const errorFirma = esPropio ? firmarPropio.error : firmarPublico.error;
 
   return {
     data,
@@ -88,8 +46,8 @@ export function useFirmaDocumento({
     contenido,
     handleCambiarCampo,
     handleFirmar,
-    guardando,
-    errorFirma,
+    guardando: firmarPublico.isPending,
+    errorFirma: firmarPublico.error,
     firmado,
   };
 }

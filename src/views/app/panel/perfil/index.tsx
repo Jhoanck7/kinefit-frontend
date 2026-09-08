@@ -4,14 +4,12 @@ import { useRef, useState } from "react";
 
 import { Button, Card } from "@/components/ui";
 import { useGetMiPerfil, useGuardarFirmaMutation } from "@/hooks/api";
-import SignaturePad, {
-  SignaturePadHandle,
-} from "@/views/app/(documentos)/documentos/components/signature-pad";
+import SignaturePad from "@/views/app/(documentos)/documentos/components/signature-pad";
 
 export default function PerfilView() {
   const { data: perfil, isLoading } = useGetMiPerfil();
   const guardarFirma = useGuardarFirmaMutation();
-  const firmaRef = useRef<SignaturePadHandle>(null);
+  const firmaRef = useRef<React.ComponentRef<typeof SignaturePad>>(null);
   const [firmaVacia, setFirmaVacia] = useState(true);
 
   const handleGuardarFirma = async () => {

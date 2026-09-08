@@ -4,6 +4,7 @@ export interface UsuarioPersonalResponse {
   email: string;
   rol: "Administrador" | "Especialista";
   especialistaId?: number;
+  debeCambiarPassword: boolean;
 }
 
 export interface PersonalLoginResponse {

@@ -5,7 +5,7 @@ export interface LoginPersonalRequest {
 
 export interface CambiarPasswordRequest {
   passwordActual: string;
-  nuevaPassword: string;
+  passwordNueva: string;
 }
 
 export interface UpdatePerfilRequest {

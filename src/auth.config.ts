@@ -23,6 +23,7 @@ export const authConfig = {
             nombre: user.nombre,
             rol: user.rol,
             especialistaId: user.especialistaId,
+            debeCambiarPassword: user.debeCambiarPassword,
             accessToken: credentials.token as string,
             exp: user.exp,
           };
@@ -40,6 +41,7 @@ export const authConfig = {
         token.nombre = user.nombre;
         token.rol = user.rol;
         token.especialistaId = user.especialistaId;
+        token.debeCambiarPassword = user.debeCambiarPassword;
         token.customExp = user.exp;
       }
       return token;
@@ -53,6 +55,7 @@ export const authConfig = {
         session.user.rol = token.rol as string;
         session.user.especialistaId = token.especialistaId as
           string | undefined;
+        session.user.debeCambiarPassword = token.debeCambiarPassword as boolean;
       }
       return session;
     },

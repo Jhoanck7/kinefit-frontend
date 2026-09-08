@@ -67,6 +67,13 @@ export class FichaService extends BaseApiService {
       `${this.baseURL}/adjuntos/${adjuntoId}`
     );
   }
+
+  descargarAdjunto(adjuntoId: number) {
+    return this.httpClient.get<Blob>(
+      `${this.baseURL}/adjuntos/${adjuntoId}`,
+      { responseType: "blob" }
+    );
+  }
 }
 
 export const fichaService = new FichaService();

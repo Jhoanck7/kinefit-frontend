@@ -15,6 +15,7 @@ import { BaseApiService } from "./base-api-service";
 
 export interface FiltrosCitas {
   especialistaId?: number;
+  pacienteId?: number;
   estado?: string;
   fechaDesde?: string;
   fechaHasta?: string;

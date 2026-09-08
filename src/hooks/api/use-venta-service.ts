@@ -30,6 +30,7 @@ export const useCreateVentaMutation = () => {
       ventaService.create(data).then(res => res.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ventas"] });
+      queryClient.invalidateQueries({ queryKey: ["citas"] });
     },
   });
 };

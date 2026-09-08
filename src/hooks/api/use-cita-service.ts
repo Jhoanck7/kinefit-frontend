@@ -4,7 +4,15 @@ import {
   CreateCitaManualRequest,
   UpdateCitaEstadoRequest,
 } from "@/models/requests";
-import { citaService } from "@/services";
+import { citaService, FiltrosCitas } from "@/services";
+
+export const useGetCitas = (filtros: FiltrosCitas, habilitado = true) => {
+  return useQuery({
+    queryKey: ["citas", "listado", filtros],
+    queryFn: () => citaService.getAll(filtros).then(res => res.data.data.items),
+    enabled: habilitado,
+  });
+};
 
 export const useGetCita = (id: number, habilitado = true) => {
   return useQuery({

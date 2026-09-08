@@ -4,7 +4,11 @@ import { useState } from "react";
 
 import { Alerta, Modal } from "@/components/shared";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
-import { useGetCita, useUpdateCitaEstadoMutation } from "@/hooks/api";
+import {
+  useGetCita,
+  useGetTerminales,
+  useUpdateCitaEstadoMutation,
+} from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
 import { definicionEstado, IdAccionCita } from "@/lib/estados";
 import {
@@ -13,6 +17,7 @@ import {
   formatearRangoHorario,
 } from "@/lib/formato";
 import { CitaDetalleResponse, CodigoEstadoCita } from "@/models/responses";
+import { NuevaVentaModal } from "@/views/app/panel/ventas/components";
 
 import { DocumentosTab } from "./documentos-tab";
 import { HitosBoard } from "./hitos-board";
@@ -129,6 +134,8 @@ function DetalleCita({
   const dotColor = DOT_COLOR[definicion.colorRol] ?? "bg-slate-400";
   const textoColor = TEXTO_COLOR[definicion.colorRol] ?? "text-slate-600";
   const [tab, setTab] = useState("detalle");
+  const [mostrarCobro, setMostrarCobro] = useState(false);
+  const { data: terminales = [] } = useGetTerminales();
 
   return (
     <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
@@ -172,6 +179,22 @@ function DetalleCita({
       <HitosBoard
         hitos={cita.hitos}
         onIrADocumentos={() => setTab("documentos")}
+        onCobrar={() => setMostrarCobro(true)}
+      />
+
+      <NuevaVentaModal
+        abierto={mostrarCobro}
+        onClose={() => setMostrarCobro(false)}
+        onCrearVenta={() => setMostrarCobro(false)}
+        terminales={terminales}
+        citaAsociada={{
+          id: cita.id,
+          pacienteId: cita.paciente.id,
+          pacienteNombre: `${cita.paciente.nombre} ${cita.paciente.apellido}`,
+          servicioId: cita.servicio.id,
+          servicioNombre: cita.servicio.nombre,
+          especialistaNombre: cita.especialista.nombre,
+        }}
       />
 
       <Tabs value={tab} onValueChange={setTab}>

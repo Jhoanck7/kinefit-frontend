@@ -16,7 +16,7 @@ import {
   TipoDocumentoClinico,
 } from "@/models/responses";
 
-export interface CampoBorrador {
+interface CampoBorrador {
   id: string;
   nombre: string;
   tipo: TipoCampoFormato;
@@ -25,7 +25,7 @@ export interface CampoBorrador {
   completadoPor: CompletadoPor;
 }
 
-export interface SeccionBorrador {
+interface SeccionBorrador {
   id: string;
   nombre: string;
   campos: CampoBorrador[];
@@ -63,16 +63,17 @@ export const TIPOS_CAMPO: { valor: TipoCampoFormato; etiqueta: string }[] = [
   { valor: "Fecha", etiqueta: "Fecha" },
   { valor: "Seleccion", etiqueta: "Selección" },
   { valor: "TextoInformativo", etiqueta: "Texto informativo" },
+  { valor: "Firma", etiqueta: "Firma" },
 ];
 
 export const TIPOS_DOCUMENTO: {
   valor: TipoDocumentoClinico;
   etiqueta: string;
 }[] = [
-  { valor: "FichaClinica", etiqueta: "Ficha clínica" },
-  { valor: "Recomendacion", etiqueta: "Recomendaciones" },
-  { valor: "Consentimiento", etiqueta: "Consentimiento informado" },
-];
+    { valor: "FichaClinica", etiqueta: "Ficha clínica" },
+    { valor: "Recomendacion", etiqueta: "Recomendaciones" },
+    { valor: "Consentimiento", etiqueta: "Consentimiento informado" },
+  ];
 
 export const COMPLETADO_POR: { valor: CompletadoPor; etiqueta: string }[] = [
   { valor: "Profesional", etiqueta: "La profesional" },
@@ -167,11 +168,11 @@ export const useConstructorFormato = () => {
         s.id !== seccionId
           ? s
           : {
-              ...s,
-              campos: s.campos.map(c =>
-                c.id === campoId ? { ...c, ...cambios } : c
-              ),
-            }
+            ...s,
+            campos: s.campos.map(c =>
+              c.id === campoId ? { ...c, ...cambios } : c
+            ),
+          }
       )
     );
   }

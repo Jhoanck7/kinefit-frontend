@@ -1,15 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 import { Modal } from "@/components/shared";
 import { Badge } from "@/components/ui";
 import {
+  useDescargarAdjuntoMutation,
   useGetCita,
   useGetFichaById,
   useGetFormatoById,
   useGetHistorialPorPaciente,
+  useSubirAdjuntoMutation,
 } from "@/hooks/api";
 import {
   formatearFechaCorta,
@@ -25,29 +26,6 @@ function etiquetaDeCampo(campoId: string, cuerpo?: CuerpoFormato): string {
     .find(c => c.id === campoId);
   if (campo?.nombre.trim()) return campo.nombre.trim();
   return campoId.replace(/_/g, " ").replace(/^campo-\d+/i, "Campo");
-}
-
-function OutOfScopeInlineLink({ etiqueta }: { etiqueta: string }) {
-  const [mostrar, setMostrar] = useState(false);
-  return (
-    <span className="relative inline-block">
-      <button
-        type="button"
-        onClick={() => setMostrar(v => !v)}
-        className="text-panel-sidebar underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded"
-      >
-        {etiqueta}
-      </button>
-      {mostrar && (
-        <span
-          role="status"
-          className="absolute left-0 top-full z-20 mt-2 w-64 rounded-lg border border-brand-border bg-white p-3 text-xs text-brand-muted shadow-lg"
-        >
-          Esta funcionalidad está fuera del alcance de este prototipo.
-        </span>
-      )}
-    </span>
-  );
 }
 
 interface FichaDetalleModalProps {
@@ -78,11 +56,8 @@ export function FichaDetalleModal({
     Boolean(cita) && Boolean(ficha)
   );
   const anteriores = historial.filter(f => f.id !== ficha?.id);
-  const [adjuntosSimulados, setAdjuntosSimulados] = useState<string[]>([]);
-  const adjuntosLocales = [
-    ...(ficha?.adjuntos.map(a => a.nombreOriginal) ?? []),
-    ...adjuntosSimulados,
-  ];
+  const subirAdjuntoMutation = useSubirAdjuntoMutation();
+  const descargarAdjuntoMutation = useDescargarAdjuntoMutation();
 
   function handleImprimirFicha() {
     if (!ficha || !cita) return;
@@ -137,10 +112,26 @@ export function FichaDetalleModal({
     ventanaImpresion.document.close();
   }
 
-  function handleSubirAdjuntoSimulado(e: React.ChangeEvent<HTMLInputElement>) {
-    if (!e.target.files || e.target.files.length === 0) return;
+  function handleSubirAdjunto(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!ficha || !e.target.files || e.target.files.length === 0) return;
     const archivo = e.target.files[0];
-    setAdjuntosSimulados(prev => [...prev, archivo.name]);
+    e.target.value = "";
+    subirAdjuntoMutation.mutate({ fichaId: ficha.id, archivo });
+  }
+
+  async function handleVerAdjunto(adjuntoId: number) {
+    const blob = await descargarAdjuntoMutation.mutateAsync(adjuntoId);
+    window.open(URL.createObjectURL(blob), "_blank");
+  }
+
+  async function handleDescargarAdjunto(adjuntoId: number, nombre: string) {
+    const blob = await descargarAdjuntoMutation.mutateAsync(adjuntoId);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = nombre;
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   return (
@@ -220,31 +211,51 @@ export function FichaDetalleModal({
                     Archivos Adjuntos de Respaldo
                   </span>
                   <label className="cursor-pointer font-sans text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950">
-                    Adjuntar
+                    {subirAdjuntoMutation.isPending
+                      ? "Subiendo..."
+                      : "Adjuntar"}
                     <input
                       type="file"
                       accept=".pdf,.png,.jpg,.jpeg"
-                      onChange={handleSubirAdjuntoSimulado}
+                      onChange={handleSubirAdjunto}
+                      disabled={subirAdjuntoMutation.isPending}
                       className="hidden"
                     />
                   </label>
                 </div>
 
-                {adjuntosLocales.length === 0 ? (
+                {ficha.adjuntos.length === 0 ? (
                   <p className="font-sans text-xs text-slate-400 italic">
                     Sin archivos adjuntos.
                   </p>
                 ) : (
                   <ul className="divide-y divide-slate-200 border border-slate-200 rounded-none bg-slate-50/50">
-                    {adjuntosLocales.map(nombre => (
+                    {ficha.adjuntos.map(adjunto => (
                       <li
-                        key={nombre}
+                        key={adjunto.id}
                         className="flex items-center justify-between p-2.5 text-xs font-sans font-medium text-slate-800"
                       >
-                        <span>{nombre}</span>
+                        <span>{adjunto.nombreOriginal}</span>
                         <div className="flex items-center gap-3">
-                          <OutOfScopeInlineLink etiqueta="Ver" />
-                          <OutOfScopeInlineLink etiqueta="Descargar" />
+                          <button
+                            type="button"
+                            onClick={() => handleVerAdjunto(adjunto.id)}
+                            className="text-panel-sidebar underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded"
+                          >
+                            Ver
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleDescargarAdjunto(
+                                adjunto.id,
+                                adjunto.nombreOriginal
+                              )
+                            }
+                            className="text-panel-sidebar underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-panel-sidebar rounded"
+                          >
+                            Descargar
+                          </button>
                         </div>
                       </li>
                     ))}

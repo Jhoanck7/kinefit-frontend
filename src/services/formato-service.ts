@@ -48,11 +48,20 @@ export class FormatoService extends BaseApiService {
     );
   }
 
-  importar(archivo: File, nombre: string, tipo: string) {
+  importar(
+    archivo: File,
+    nombre: string,
+    tipo: string,
+    requiereFirmaProfesional: boolean
+  ) {
     const formData = new FormData();
     formData.append("archivo", archivo);
     formData.append("nombre", nombre);
     formData.append("tipo", tipo);
+    formData.append(
+      "requiereFirmaProfesional",
+      String(requiereFirmaProfesional)
+    );
     return this.httpClient.post<ApiResponse<FormatoFichaResponse>>(
       `${this.baseURL}/importar`,
       formData,

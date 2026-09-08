@@ -7,6 +7,7 @@ export {
   BloqueHorarioService,
   bloqueHorarioService,
 } from "./bloque-horario-service";
+export type { FiltrosCitas } from "./cita-service";
 export { CitaService, citaService } from "./cita-service";
 export {
   ConfiguracionSistemaService,

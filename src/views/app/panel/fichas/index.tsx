@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui";
 import { formatearFechaCorta } from "@/lib/formato";
+import { TIPOS_DOCUMENTO } from "@/views/app/panel/fichas/formatos/nuevo/hooks";
 
 import { FichaDetalleModal } from "./components";
 import { TAMANO_PAGINA, useFichas } from "./hooks";
@@ -34,7 +35,6 @@ function FichasContenido() {
     tipo,
     desde,
     hasta,
-    formatos,
     total,
     inicio,
     visibles,
@@ -66,9 +66,9 @@ function FichasContenido() {
               className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
             >
               <option value="">TODOS LOS TIPOS</option>
-              {formatos.map(f => (
-                <option key={f.id} value={f.nombre}>
-                  {f.nombre.toUpperCase()}
+              {TIPOS_DOCUMENTO.map(t => (
+                <option key={t.valor} value={t.valor}>
+                  {t.etiqueta.toUpperCase()}
                 </option>
               ))}
             </select>

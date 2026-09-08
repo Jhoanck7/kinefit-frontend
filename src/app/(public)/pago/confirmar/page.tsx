@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 
-import { useGetDocumentosPendientes } from "@/hooks/api";
 import { transaccionService } from "@/services";
 import { ConfirmarTransaccionResponseData } from "@/types";
 
@@ -18,10 +17,6 @@ function ConfirmarPagoContent() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ConfirmarTransaccionResponseData | null>(
     null
-  );
-
-  const { data: documentosPendientes } = useGetDocumentosPendientes(
-    result?.citaId ?? null
   );
 
   useEffect(() => {
@@ -238,9 +233,9 @@ function ConfirmarPagoContent() {
           </div>
         )}
 
-        {documentosPendientes && documentosPendientes.length > 0 && (
+        {result?.documentoParaFirmarToken && (
           <Link
-            href={`/documentos/propio/${documentosPendientes[0].id}`}
+            href={`/documentos/${result.documentoParaFirmarToken}`}
             className="block w-full mb-3 bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider text-center shadow-md"
           >
             Firmar ahora
@@ -250,7 +245,7 @@ function ConfirmarPagoContent() {
         <Link
           href="/"
           className={
-            documentosPendientes && documentosPendientes.length > 0
+            result?.documentoParaFirmarToken
               ? "block w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider text-center"
               : "block w-full bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider text-center shadow-md"
           }

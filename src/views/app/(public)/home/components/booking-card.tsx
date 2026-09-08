@@ -129,6 +129,11 @@ export default function BookingCard() {
   } = useBookingStore();
 
   const [authError, setAuthError] = useState<string | null>(null);
+  const [consentimientoAceptado, setConsentimientoAceptado] = useState(false);
+  const consentimientoRef = useRef(consentimientoAceptado);
+  useEffect(() => {
+    consentimientoRef.current = consentimientoAceptado;
+  }, [consentimientoAceptado]);
   const [errorSeleccion, setErrorSeleccion] = useState<string | null>(null);
   const [resolviendoEspecialistaId, setResolviendoEspecialistaId] = useState<
     number | null
@@ -209,11 +214,13 @@ export default function BookingCard() {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           callback: async (response: any) => {
             if (response && response.credential) {
+              if (!consentimientoRef.current) return;
               setAuthError(null);
               try {
-                const result = await authMutation.mutateAsync(
-                  response.credential
-                );
+                const result = await authMutation.mutateAsync({
+                  idToken: response.credential,
+                  consentimientoAceptado: true,
+                });
                 setAuthToken(result.data.token);
                 setPatientInfo({
                   name: `${result.data.paciente.nombre} ${result.data.paciente.apellido}`.trim(),
@@ -366,21 +373,10 @@ export default function BookingCard() {
     });
   };
 
-  const handleDemoAuth = () => {
-    setAuthToken("demo-paciente-jwt-token");
-    if (!patientName) {
-      setPatientInfo({
-        name: "Jhoan Montero",
-        email: "jhoanck777@gmail.com",
-        phone: "+56975516503",
-        rut: "11111111-1",
-      });
-    }
-  };
-
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (
+      !authToken ||
       !patientName ||
       !patientEmail ||
       !patientPhone ||
@@ -393,12 +389,6 @@ export default function BookingCard() {
       return;
     }
 
-    let tokenToUse = authToken;
-    if (!tokenToUse) {
-      handleDemoAuth();
-      tokenToUse = "demo-paciente-jwt-token";
-    }
-
     submitMutation.mutate({
       selectedServiceId,
       selectedSpecialistId,
@@ -407,7 +397,7 @@ export default function BookingCard() {
       patientName,
       patientPhone,
       patientRut,
-      authToken: tokenToUse,
+      authToken,
     });
   };
 
@@ -785,23 +775,40 @@ export default function BookingCard() {
                 Inicia sesión con tu cuenta de Google
               </span>
 
+              <label className="flex items-start gap-2 text-left text-xs text-slate-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consentimientoAceptado}
+                  onChange={e => setConsentimientoAceptado(e.target.checked)}
+                  className="mt-0.5"
+                />
+                <span>
+                  He leído y acepto la{" "}
+                  <a
+                    href="/politica-de-privacidad"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand-primary underline underline-offset-2"
+                  >
+                    Política de Privacidad
+                  </a>
+                </span>
+              </label>
+
               <div
                 id="google-btn-container"
-                className="flex justify-center min-h-[40px]"
+                className={`flex justify-center min-h-[40px] ${consentimientoAceptado ? "" : "opacity-40 pointer-events-none"}`}
               />
+              {!consentimientoAceptado && (
+                <p className="text-[11px] text-slate-400">
+                  Aceptá la política de privacidad para continuar
+                </p>
+              )}
 
-              {authToken ? (
+              {authToken && (
                 <div className="text-xs text-emerald-600 font-bold bg-emerald-50 rounded-lg p-2 border border-emerald-200">
                   ✓ Sesión iniciada correctamente
                 </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleDemoAuth}
-                  className="text-[11px] text-brand-primary hover:underline font-semibold cursor-pointer"
-                >
-                  (Opción 2) Usar Sesión de Paciente de Pruebas
-                </button>
               )}
             </div>
 

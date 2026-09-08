@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 import { useGetTotalDocumentosPendientes } from "@/hooks/api";
 
@@ -56,6 +56,7 @@ const ITEMS_NAVEGACION = [
     etiqueta: "Reportes",
     prefijos: ["/panel/reportes"],
     Icono: IconoReportes,
+    soloAdministrador: true,
   },
   {
     href: "/panel/configuracion",
@@ -82,7 +83,12 @@ const ITEMS_NAVEGACION = [
  */
 export function Sidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const { data: pendientes } = useGetTotalDocumentosPendientes();
+  const esAdministrador = session?.user?.rol === "Administrador";
+  const items = ITEMS_NAVEGACION.filter(
+    item => !item.soloAdministrador || esAdministrador
+  );
 
   function cerrarSesion() {
     signOut({ callbackUrl: "/panel/acceso" });
@@ -105,7 +111,7 @@ export function Sidebar() {
       </div>
 
       <ul className="flex-1 px-3 space-y-1">
-        {ITEMS_NAVEGACION.map(({ href, etiqueta, prefijos, Icono, badge }) => {
+        {items.map(({ href, etiqueta, prefijos, Icono, badge }) => {
           const activo = prefijos.some(
             p =>
               pathname === p ||

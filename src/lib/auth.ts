@@ -19,6 +19,7 @@ export function extractUserFromJwt(token: string) {
       decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
     rol: decoded.rol,
     especialistaId: decoded.especialista_id,
+    debeCambiarPassword: decoded.debe_cambiar_password === "true",
     exp: decoded.exp,
   };
 

@@ -3,34 +3,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FirmarDocumentoRequest } from "@/models/requests";
 import { documentoPublicoService, documentoService } from "@/services";
 
-export const useGetDocumentosPendientes = (citaId: number | null) => {
-  return useQuery({
-    queryKey: ["documentos", "pendientes", citaId],
-    queryFn: () =>
-      documentoService.getMisPendientes(citaId!).then(res => res.data.data),
-    enabled: citaId !== null && citaId > 0,
-  });
-};
-
-export const useGetDocumentoPropio = (id: number | null) => {
-  return useQuery({
-    queryKey: ["documentos", "propio", id],
-    queryFn: () => documentoService.getPropio(id!).then(res => res.data.data),
-    enabled: id !== null && id > 0,
-  });
-};
-
-export const useFirmarDocumentoPropioMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: FirmarDocumentoRequest }) =>
-      documentoService.firmarPropio(id, data).then(res => res.data.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["documentos"] });
-    },
-  });
-};
-
 export const useGetDocumentoPublico = (token: string | null) => {
   return useQuery({
     queryKey: ["documentos", "publico", token],

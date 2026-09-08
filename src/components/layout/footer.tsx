@@ -165,7 +165,10 @@ export default function Footer() {
             <a href="#" className="hover:text-brand-primary transition-colors">
               Términos y condiciones
             </a>
-            <a href="#" className="hover:text-brand-primary transition-colors">
+            <a
+              href="/politica-de-privacidad"
+              className="hover:text-brand-primary transition-colors"
+            >
               Política de privacidad
             </a>
           </div>

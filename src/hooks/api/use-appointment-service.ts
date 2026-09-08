@@ -51,16 +51,9 @@ export const useSubmitBookingMutation = () => {
       patientRut,
       authToken,
     }: SubmitBookingParams) => {
-      const rutFormatted =
-        patientRut && patientRut.trim() ? patientRut.trim() : "11111111-1";
-      const phoneFormatted =
-        patientPhone && patientPhone.trim()
-          ? patientPhone.trim()
-          : "+56975516503";
-
       try {
         await authService.updatePerfil(
-          { rut: rutFormatted, telefono: phoneFormatted },
+          { rut: patientRut.trim(), telefono: patientPhone.trim() },
           authToken
         );
       } catch (perfilErr: unknown) {

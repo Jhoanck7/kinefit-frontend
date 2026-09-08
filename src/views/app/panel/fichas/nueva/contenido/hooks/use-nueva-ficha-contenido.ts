@@ -88,20 +88,25 @@ export const useNuevaFichaContenido = () => {
         contenido: (contenido as Record<string, string>) || {},
       });
 
+      const nombresFallidos: string[] = [];
       if (adjuntos && adjuntos.length > 0) {
-        for (const nombreArch of adjuntos) {
+        for (const archivo of adjuntos) {
           try {
-            const dummyFile = new File(["contenido"], nombreArch, {
-              type: "text/plain",
-            });
             await subirAdjuntoMutation.mutateAsync({
               fichaId: creada.id,
-              archivo: dummyFile,
+              archivo,
             });
           } catch {
-            // Ignorar fallo individual
+            nombresFallidos.push(archivo.name);
           }
         }
+      }
+
+      if (nombresFallidos.length > 0) {
+        setErrorMsg(
+          `La ficha se guardó, pero estos adjuntos no se pudieron subir: ${nombresFallidos.join(", ")}. Volvé a intentarlo desde el detalle de la ficha.`
+        );
+        return;
       }
 
       reiniciar();

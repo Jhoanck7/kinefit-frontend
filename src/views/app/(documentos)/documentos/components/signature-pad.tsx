@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 
-export interface SignaturePadHandle {
+interface SignaturePadHandle {
   exportarBase64: () => string | null;
   limpiar: () => void;
 }

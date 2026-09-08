@@ -13,6 +13,7 @@ export {
 export { useGetAuditoriaCita } from "./use-auditoria-service";
 export {
   useAuthenticateWithGoogleMutation,
+  useCambiarPasswordMutation,
   useGetMiPerfil,
   useGuardarFirmaMutation,
 } from "./use-auth-service";
@@ -20,6 +21,7 @@ export { useGetBloquesDisponibles } from "./use-bloque-horario-service";
 export {
   useCreateCitaManualMutation,
   useGetCita,
+  useGetCitas,
   useGetImpactoCancelacion,
   useUpdateCitaEstadoMutation,
 } from "./use-cita-service";
@@ -33,12 +35,9 @@ export {
   useGetHorasDisponibles,
 } from "./use-disponibilidad-service";
 export {
-  useFirmarDocumentoPropioMutation,
   useFirmarDocumentoPublicoMutation,
   useFirmarProfesionalMutation,
-  useGetDocumentoPropio,
   useGetDocumentoPublico,
-  useGetDocumentosPendientes,
   useGetDocumentosPorCita,
   useGetTotalDocumentosPendientes,
   useReemitirTokenMutation,
@@ -59,6 +58,7 @@ export {
 } from "./use-especialista-service";
 export {
   useCreateFichaMutation,
+  useDescargarAdjuntoMutation,
   useEliminarAdjuntoMutation,
   useGetFichaById,
   useGetFichas,

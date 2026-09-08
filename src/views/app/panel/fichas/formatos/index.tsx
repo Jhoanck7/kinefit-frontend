@@ -4,6 +4,7 @@ import { Alerta, EmptyState } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
 import { formatearFechaExtensa } from "@/lib/formato";
 
+import { ImportarFormatoModal } from "./components/importar-formato-modal";
 import { useFormatos } from "./hooks";
 
 export default function FormatosView() {
@@ -32,7 +33,10 @@ export default function FormatosView() {
             clínica.
           </p>
         </div>
-        <Button onClick={actions.handleNuevoFormato}>Nuevo formato</Button>
+        <div className="flex items-center gap-2">
+          <ImportarFormatoModal />
+          <Button onClick={actions.handleNuevoFormato}>Nuevo formato</Button>
+        </div>
       </div>
 
       {avisoMigracion && <Alerta tono="info">{avisoMigracion}</Alerta>}
