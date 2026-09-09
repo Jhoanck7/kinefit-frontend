@@ -34,7 +34,7 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_NAME }}
           build-args: |
-            NEXT_PUBLIC_API_URL=https://api.kinefitchile.com/api
+            NEXT_PUBLIC_API_URL=https://api-test.kinefitchile.com/api
             NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
 
       - name: Deploy to VPS
