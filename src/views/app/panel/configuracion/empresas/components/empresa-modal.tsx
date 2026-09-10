@@ -117,7 +117,10 @@ export function EmpresaModal({
                           step="0.01"
                           value={convenios[s.id]}
                           onChange={e =>
-                            onPorcentajeConvenio(s.id, parseFloat(e.target.value) || 0)
+                            onPorcentajeConvenio(
+                              s.id,
+                              parseFloat(e.target.value) || 0
+                            )
                           }
                           className="w-20 rounded-none border border-slate-200 bg-white px-2 py-1 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                         />

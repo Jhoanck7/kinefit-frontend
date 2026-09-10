@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { LandingConfigResponse } from "@/models/responses";
+
 import { InstagramVideoCard } from "@/components/shared";
+import { LandingConfigResponse } from "@/models/responses";
 
 export default function AboutSection({
   config,

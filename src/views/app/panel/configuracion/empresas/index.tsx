@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui";
-
 import { fechaISO } from "@/lib/formato";
 
 import { EmpresaModal } from "./components";
@@ -88,51 +87,52 @@ export default function EmpresasView() {
                 const vigente =
                   (!empresa.vigenteDesde || empresa.vigenteDesde <= hoy) &&
                   (!empresa.vigenteHasta || empresa.vigenteHasta >= hoy);
-                const sinLimite = !empresa.vigenteDesde && !empresa.vigenteHasta;
+                const sinLimite =
+                  !empresa.vigenteDesde && !empresa.vigenteHasta;
                 return (
-                <TableRow key={empresa.id} className="hover:bg-slate-50/70">
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-900">
-                    {empresa.nombre}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <SwitchField
-                      etiqueta={empresa.activo ? "Activo" : "Inactivo"}
-                      checked={empresa.activo}
-                      onChange={() => actions.handleToggleEstado(empresa)}
-                    />
-                    {actualizandoEstadoId === empresa.id && (
-                      <span className="ml-2 text-[11px] text-slate-400">
-                        Guardando...
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className={`h-1.5 w-1.5 rounded-full ${vigente ? "bg-emerald-700" : "bg-slate-400"}`}
-                        aria-hidden
+                  <TableRow key={empresa.id} className="hover:bg-slate-50/70">
+                    <TableCell className="px-4 py-3 font-medium text-sm text-slate-900">
+                      {empresa.nombre}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <SwitchField
+                        etiqueta={empresa.activo ? "Activo" : "Inactivo"}
+                        checked={empresa.activo}
+                        onChange={() => actions.handleToggleEstado(empresa)}
                       />
-                      <span
-                        className={`font-sans text-[11px] font-bold uppercase tracking-wider ${vigente ? "text-emerald-700" : "text-slate-500"}`}
+                      {actualizandoEstadoId === empresa.id && (
+                        <span className="ml-2 text-[11px] text-slate-400">
+                          Guardando...
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className={`h-1.5 w-1.5 rounded-full ${vigente ? "bg-emerald-700" : "bg-slate-400"}`}
+                          aria-hidden
+                        />
+                        <span
+                          className={`font-sans text-[11px] font-bold uppercase tracking-wider ${vigente ? "text-emerald-700" : "text-slate-500"}`}
+                        >
+                          {sinLimite
+                            ? "Sin Límite"
+                            : vigente
+                              ? "Vigente"
+                              : "Fuera de Vigencia"}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => actions.handleAbrirEditar(empresa)}
+                        className="text-xs font-bold text-blue-900 hover:underline"
                       >
-                        {sinLimite
-                          ? "Sin Límite"
-                          : vigente
-                            ? "Vigente"
-                            : "Fuera de Vigencia"}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-right">
-                    <button
-                      type="button"
-                      onClick={() => actions.handleAbrirEditar(empresa)}
-                      className="text-xs font-bold text-blue-900 hover:underline"
-                    >
-                      Editar
-                    </button>
-                  </TableCell>
-                </TableRow>
+                        Editar
+                      </button>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
             </TableBody>

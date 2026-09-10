@@ -28,7 +28,7 @@ export default function ServiciosView() {
     duracionMinutos,
     descripcion,
     imagenUrl,
-    formatos,
+    plantillas,
     documentos,
     error,
     errorEstado,
@@ -160,7 +160,7 @@ export default function ServiciosView() {
         duracionActiva={duracionActiva}
         descripcion={descripcion}
         imagenUrl={imagenUrl}
-        formatos={formatos}
+        plantillas={plantillas}
         documentos={documentos}
         error={error}
         guardando={guardando}

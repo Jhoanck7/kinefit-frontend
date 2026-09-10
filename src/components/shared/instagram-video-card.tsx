@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
 import Script from "next/script";
+import React, { useEffect } from "react";
 
 export interface InstagramVideoCardProps {
   videoUrl?: string;

@@ -137,8 +137,9 @@ export default function HeroSection({
 
             {/* Párrafo descriptivo claro y nítido */}
             <p
-              className={`text-slate-700 text-base md:text-lg max-w-2xl mt-4 leading-relaxed font-semibold whitespace-pre-line ${descripcionExpandida ? "" : "line-clamp-3"
-                }`}
+              className={`text-slate-700 text-base md:text-lg max-w-2xl mt-4 leading-relaxed font-semibold whitespace-pre-line ${
+                descripcionExpandida ? "" : "line-clamp-3"
+              }`}
             >
               {config.heroDescription}
             </p>
@@ -180,10 +181,11 @@ export default function HeroSection({
               className="lg:col-span-6 relative w-full z-30"
             >
               <div
-                className={`rounded-global border bg-white/90 backdrop-blur-md p-6 sm:p-8 flex flex-col sm:flex-row gap-6 sm:gap-8 items-stretch shadow-2xl shadow-slate-200/50 text-slate-900 transition-all duration-500 motion-reduce:transition-none ${destacarReserva
+                className={`rounded-global border bg-white/90 backdrop-blur-md p-6 sm:p-8 flex flex-col sm:flex-row gap-6 sm:gap-8 items-stretch shadow-2xl shadow-slate-200/50 text-slate-900 transition-all duration-500 motion-reduce:transition-none ${
+                  destacarReserva
                     ? "border-brand-primary ring-4 ring-brand-primary/30 motion-reduce:ring-2"
                     : "border-slate-200/80 ring-0"
-                  }`}
+                }`}
               >
                 {/* Stepper lateral plano */}
                 <div className="flex sm:flex-col justify-between sm:justify-center gap-2 sm:gap-6 border-b sm:border-b-0 sm:border-r border-slate-200 pb-4 sm:pb-0 sm:pr-6 shrink-0">
@@ -199,22 +201,24 @@ export default function HeroSection({
                     return (
                       <div key={s.step} className="flex items-center gap-3">
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${isCompleted
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                            isCompleted
                               ? "bg-emerald-500 text-white shadow-xs"
                               : isActive
                                 ? "bg-brand-primary text-white ring-4 ring-brand-primary/20 shadow-md"
                                 : "bg-slate-100 text-slate-400 border border-slate-200"
-                            }`}
+                          }`}
                         >
                           {isCompleted ? "✓" : s.step}
                         </div>
                         <span
-                          className={`text-xs font-semibold hidden sm:inline transition-colors ${isActive
+                          className={`text-xs font-semibold hidden sm:inline transition-colors ${
+                            isActive
                               ? "text-slate-900"
                               : isCompleted
                                 ? "text-emerald-600"
                                 : "text-slate-400"
-                            }`}
+                          }`}
                         >
                           {s.label}
                         </span>

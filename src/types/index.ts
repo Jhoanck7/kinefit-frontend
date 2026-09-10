@@ -99,7 +99,7 @@ export interface ConfirmarTransaccionResponseData {
   updatedAt: string;
   estadoCita: string;
   advertencia?: string;
-  documentoParaFirmarToken?: string;
+  documentosParaFirmarTokens: string[];
 }
 
 // Legacy CMS Interfaces

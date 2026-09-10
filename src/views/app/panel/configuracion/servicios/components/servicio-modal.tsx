@@ -8,7 +8,7 @@ import {
 } from "@/components/shared";
 import { Button } from "@/components/ui";
 import { ServicioDocumentoInput } from "@/models/requests";
-import { FormatoFichaResponse, ServicioResponse } from "@/models/responses";
+import { PlantillaResponse, ServicioResponse } from "@/models/responses";
 
 import { DocumentosServicioSelector } from "./documentos-servicio-selector";
 
@@ -22,7 +22,7 @@ interface ServicioModalProps {
   duracionActiva: boolean;
   descripcion: string;
   imagenUrl: string;
-  formatos: FormatoFichaResponse[];
+  plantillas: PlantillaResponse[];
   documentos: ServicioDocumentoInput[];
   error: string | null;
   guardando: boolean;
@@ -47,7 +47,7 @@ export function ServicioModal({
   duracionActiva,
   descripcion,
   imagenUrl,
-  formatos,
+  plantillas,
   documentos,
   error,
   guardando,
@@ -137,7 +137,7 @@ export function ServicioModal({
               Documentos exigidos
             </p>
             <DocumentosServicioSelector
-              formatos={formatos}
+              plantillas={plantillas}
               documentos={documentos}
               onCambiar={onDocumentosChange}
             />

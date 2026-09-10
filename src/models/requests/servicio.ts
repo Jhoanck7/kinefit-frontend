@@ -18,7 +18,7 @@ export interface UpdateServicioRequest {
 }
 
 export interface ServicioDocumentoInput {
-  formatoFichaId: number;
+  plantillaId: number;
   obligatorio: boolean;
   momento: "TrasConfirmarReserva" | "AlFinalizarAtencion";
   vigenciaDias?: number;

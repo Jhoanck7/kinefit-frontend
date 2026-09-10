@@ -5,8 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 
-import { useGetTotalDocumentosPendientes } from "@/hooks/api";
-
 import {
   IconoAgenda,
   IconoCerrarSesion,
@@ -39,11 +37,10 @@ const ITEMS_NAVEGACION = [
     Icono: IconoPacientes,
   },
   {
-    href: "/panel/fichas",
-    etiqueta: "Fichas clínicas",
-    prefijos: ["/panel/fichas"],
+    href: "/panel/documentos",
+    etiqueta: "Documentos",
+    prefijos: ["/panel/documentos"],
     Icono: IconoFichas,
-    badge: "documentosPendientes" as const,
   },
   {
     href: "/panel/ventas",
@@ -84,7 +81,6 @@ const ITEMS_NAVEGACION = [
 export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { data: pendientes } = useGetTotalDocumentosPendientes();
   const esAdministrador = session?.user?.rol === "Administrador";
   const items = ITEMS_NAVEGACION.filter(
     item => !item.soloAdministrador || esAdministrador
@@ -111,15 +107,13 @@ export function Sidebar() {
       </div>
 
       <ul className="flex-1 px-3 space-y-1">
-        {items.map(({ href, etiqueta, prefijos, Icono, badge }) => {
+        {items.map(({ href, etiqueta, prefijos, Icono }) => {
           const activo = prefijos.some(
             p =>
               pathname === p ||
               pathname.startsWith(`${p}/`) ||
               pathname.startsWith(`${p}?`)
           );
-          const badgeCount =
-            badge === "documentosPendientes" ? (pendientes?.total ?? 0) : 0;
           return (
             <li key={href}>
               <Link
@@ -133,11 +127,6 @@ export function Sidebar() {
               >
                 <Icono />
                 {etiqueta}
-                {badgeCount > 0 && (
-                  <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
-                    {badgeCount}
-                  </span>
-                )}
               </Link>
             </li>
           );

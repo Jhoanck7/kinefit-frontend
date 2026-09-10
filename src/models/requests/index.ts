@@ -4,7 +4,6 @@ export type {
 } from "./agenda";
 export type {
   CambiarPasswordRequest,
-  GuardarFirmaRequest,
   LoginPersonalRequest,
   UpdatePerfilRequest,
 } from "./auth";
@@ -14,17 +13,18 @@ export type {
   UpdateCitaEstadoRequest,
 } from "./cita";
 export type { UpdateConfiguracionSistemaRequest } from "./configuracion-sistema";
-export type { FirmarDocumentoRequest } from "./documento";
+export type {
+  CreateFichaRequest,
+  EnviarRecomendacionRequest,
+  FirmarDocumentoRequest,
+  FirmarProfesionalRequest,
+  UpdateFichaRequest,
+} from "./documento";
 export type { CreateEmpresaRequest, UpdateEmpresaRequest } from "./empresa";
 export type {
   CreateEspecialistaRequest,
   UpdateEspecialistaRequest,
 } from "./especialista";
-export type { CreateFichaRequest, UpdateFichaRequest } from "./ficha";
-export type {
-  CreateFormatoFichaRequest,
-  UpdateFormatoFichaRequest,
-} from "./formato";
 export type {
   CreateHorarioCentroRequest,
   CreatePlantillaHorarioRequest,
@@ -34,6 +34,12 @@ export type {
   CreatePacienteManualRequest,
   UpdatePacienteRequest,
 } from "./paciente";
+export type {
+  CreatePlantillaConsentimientoRequest,
+  CreatePlantillaFichaRequest,
+  CreatePlantillaRecomendacionRequest,
+  UpdatePlantillaRequest,
+} from "./plantilla";
 export type {
   CreateServicioRequest,
   ServicioDocumentoInput,

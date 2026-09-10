@@ -17,7 +17,7 @@ const TITULOS_POR_RUTA: { prefijo: string; titulo: string }[] = [
   { prefijo: "/panel/nueva-reserva", titulo: "Nueva Reserva Manual" },
   { prefijo: "/panel/pacientes/nuevo", titulo: "Registrar Paciente" },
   { prefijo: "/panel/pacientes", titulo: "Pacientes" },
-  { prefijo: "/panel/fichas", titulo: "Fichas clínicas" },
+  { prefijo: "/panel/documentos", titulo: "Documentos" },
   {
     prefijo: "/panel/ventas",
     titulo: "Planilla de Ventas y Registro de Cobros",

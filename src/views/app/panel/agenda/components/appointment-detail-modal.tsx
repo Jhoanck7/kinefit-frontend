@@ -20,6 +20,7 @@ import { CitaDetalleResponse, CodigoEstadoCita } from "@/models/responses";
 import { NuevaVentaModal } from "@/views/app/panel/ventas/components";
 
 import { DocumentosTab } from "./documentos-tab";
+import { EnviarRecomendacionModal } from "./enviar-recomendacion-modal";
 import { HitosBoard } from "./hitos-board";
 
 const MAPA_ESTADO_NUEVO: Record<string, string> = {
@@ -63,6 +64,7 @@ export function AppointmentDetailModal({
     Boolean(citaId)
   );
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [citaAtendidaId, setCitaAtendidaId] = useState<number | null>(null);
   const actualizarEstadoMutation = useUpdateCitaEstadoMutation();
 
   function alCerrar() {
@@ -91,6 +93,11 @@ export function AppointmentDetailModal({
         },
       });
       onEstadoCambiar?.();
+      // ES17 → ES18: recién al cerrar la atención se pregunta por la
+      // recomendación, nunca antes.
+      if (estadoNuevo === "Atendida") {
+        setCitaAtendidaId(cita.id);
+      }
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
     }
@@ -100,6 +107,10 @@ export function AppointmentDetailModal({
 
   return (
     <Modal abierto={Boolean(citaId)} onCerrar={alCerrar}>
+      <EnviarRecomendacionModal
+        citaId={citaAtendidaId}
+        onCerrar={() => setCitaAtendidaId(null)}
+      />
       {!cita ? (
         <div className="p-8 text-center font-sans text-xs text-slate-500">
           Cargando reserva…

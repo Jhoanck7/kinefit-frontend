@@ -15,7 +15,6 @@ export {
   useAuthenticateWithGoogleMutation,
   useCambiarPasswordMutation,
   useGetMiPerfil,
-  useGuardarFirmaMutation,
 } from "./use-auth-service";
 export { useGetBloquesDisponibles } from "./use-bloque-horario-service";
 export {
@@ -35,12 +34,27 @@ export {
   useGetHorasDisponibles,
 } from "./use-disponibilidad-service";
 export {
+  useAbrirArchivoDocumentoMutation,
+  useActualizarFichaMutation,
+  useAdjuntarFichaMutation,
+  useAdjuntarRecomendacionMutation,
+  useCerrarFichaMutation,
+  useCreateFichaMutation,
+  useDescargarAdjuntoMutation,
+  useDescargarArchivoDocumentoMutation,
+  useEliminarAdjuntoMutation,
+  useEnviarRecomendacionMutation,
   useFirmarDocumentoPublicoMutation,
   useFirmarProfesionalMutation,
+  useGetAuditoriaDocumento,
+  useGetDocumentoDetalle,
   useGetDocumentoPublico,
+  useGetDocumentos,
   useGetDocumentosPorCita,
-  useGetTotalDocumentosPendientes,
-  useReemitirTokenMutation,
+  useGetHistorialPorPaciente,
+  useReenviarPorCorreoMutation,
+  useReenviarTokenMutation,
+  useSubirAdjuntoMutation,
   useSubirEscaneoMutation,
 } from "./use-documento-service";
 export {
@@ -56,23 +70,6 @@ export {
   useUpdateEspecialistaEstadoMutation,
   useUpdateEspecialistaMutation,
 } from "./use-especialista-service";
-export {
-  useCreateFichaMutation,
-  useDescargarAdjuntoMutation,
-  useEliminarAdjuntoMutation,
-  useGetFichaById,
-  useGetFichas,
-  useGetHistorialPorPaciente,
-  useSubirAdjuntoMutation,
-} from "./use-ficha-service";
-export {
-  useCreateFormatoMutation,
-  useGetFormatoById,
-  useGetFormatos,
-  useImportarFormatoMutation,
-  useUpdateFormatoEstadoMutation,
-  useUpdateFormatoMutation,
-} from "./use-formato-service";
 export {
   useCreateHorarioCentroMutation,
   useCreatePlantillaHorarioMutation,
@@ -98,6 +95,18 @@ export {
   useUpdatePacienteEstadoMutation,
   useUpdatePacienteMutation,
 } from "./use-paciente-service";
+export {
+  useAbrirArchivoPlantillaMutation,
+  useCrearPlantillaConsentimientoMutation,
+  useCrearPlantillaFichaMutation,
+  useCrearPlantillaRecomendacionMutation,
+  useGetPlantillaById,
+  useGetPlantillas,
+  useImportarPlantillaConsentimientoMutation,
+  useImportarPlantillaRecomendacionMutation,
+  useUpdatePlantillaEstadoMutation,
+  useUpdatePlantillaMutation,
+} from "./use-plantilla-service";
 export {
   useGetReporteComisiones,
   useGetReporteReservas,

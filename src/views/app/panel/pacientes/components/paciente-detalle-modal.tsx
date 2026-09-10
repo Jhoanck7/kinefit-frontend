@@ -254,7 +254,7 @@ export function PacienteDetalleModal({
                         >
                           <div>
                             <span className="font-sans font-medium text-sm text-slate-900 block">
-                              {ficha.tipoNombre}
+                              {ficha.nombre}
                             </span>
                             <span className="font-sans text-xs text-slate-500">
                               {formatearFechaCorta(new Date(ficha.createdAt))}
@@ -264,7 +264,9 @@ export function PacienteDetalleModal({
                             type="button"
                             onClick={() => {
                               onCerrar();
-                              router.push(`/panel/fichas/${ficha.id}`);
+                              router.push(
+                                `/panel/documentos?documento=${ficha.id}`
+                              );
                             }}
                             className="font-sans text-xs font-bold uppercase tracking-wider text-slate-800 hover:text-slate-950 border border-slate-200 px-3 py-1 bg-white hover:bg-slate-50 rounded-none shadow-none"
                           >

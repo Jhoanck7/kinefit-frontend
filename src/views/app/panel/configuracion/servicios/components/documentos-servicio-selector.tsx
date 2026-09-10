@@ -1,30 +1,30 @@
 import Link from "next/link";
 
 import { ServicioDocumentoInput } from "@/models/requests";
-import { FormatoFichaResponse } from "@/models/responses";
+import { PlantillaResponse } from "@/models/responses";
 
 interface DocumentosServicioSelectorProps {
-  formatos: FormatoFichaResponse[];
+  plantillas: PlantillaResponse[];
   documentos: ServicioDocumentoInput[];
   onCambiar: (documentos: ServicioDocumentoInput[]) => void;
 }
 
 export function DocumentosServicioSelector({
-  formatos,
+  plantillas,
   documentos,
   onCambiar,
 }: DocumentosServicioSelectorProps) {
-  const porFormatoId = new Map(documentos.map(d => [d.formatoFichaId, d]));
+  const porPlantillaId = new Map(documentos.map(d => [d.plantillaId, d]));
 
-  const toggle = (formatoId: number) => {
-    if (porFormatoId.has(formatoId)) {
-      onCambiar(documentos.filter(d => d.formatoFichaId !== formatoId));
+  const toggle = (plantillaId: number) => {
+    if (porPlantillaId.has(plantillaId)) {
+      onCambiar(documentos.filter(d => d.plantillaId !== plantillaId));
       return;
     }
     onCambiar([
       ...documentos,
       {
-        formatoFichaId: formatoId,
+        plantillaId,
         obligatorio: true,
         momento: "TrasConfirmarReserva",
       },
@@ -32,25 +32,25 @@ export function DocumentosServicioSelector({
   };
 
   const actualizar = (
-    formatoId: number,
+    plantillaId: number,
     cambios: Partial<ServicioDocumentoInput>
   ) => {
     onCambiar(
       documentos.map(d =>
-        d.formatoFichaId === formatoId ? { ...d, ...cambios } : d
+        d.plantillaId === plantillaId ? { ...d, ...cambios } : d
       )
     );
   };
 
-  if (formatos.length === 0) {
+  if (plantillas.length === 0) {
     return (
       <p className="font-sans text-xs text-slate-500">
-        No hay formatos creados todavía.{" "}
+        No hay plantillas creadas todavía.{" "}
         <Link
-          href="/panel/fichas/formatos/nuevo"
+          href="/panel/documentos/plantillas/nuevo"
           className="font-bold text-slate-900 underline"
         >
-          Crear uno
+          Crear una
         </Link>
       </p>
     );
@@ -58,18 +58,18 @@ export function DocumentosServicioSelector({
 
   return (
     <div className="divide-y divide-slate-200 border border-slate-200">
-      {formatos.map(formato => {
-        const asignado = porFormatoId.get(formato.id);
+      {plantillas.map(plantilla => {
+        const asignado = porPlantillaId.get(plantilla.id);
         return (
-          <div key={formato.id} className="p-3">
+          <div key={plantilla.id} className="p-3">
             <label className="flex items-center gap-2 font-sans">
               <input
                 type="checkbox"
                 checked={!!asignado}
-                onChange={() => toggle(formato.id)}
+                onChange={() => toggle(plantilla.id)}
               />
               <span className="text-sm font-medium text-slate-900">
-                {formato.nombre}
+                {plantilla.nombre}
               </span>
             </label>
 
@@ -80,7 +80,9 @@ export function DocumentosServicioSelector({
                     type="checkbox"
                     checked={asignado.obligatorio}
                     onChange={e =>
-                      actualizar(formato.id, { obligatorio: e.target.checked })
+                      actualizar(plantilla.id, {
+                        obligatorio: e.target.checked,
+                      })
                     }
                   />
                   Obligatorio
@@ -89,7 +91,7 @@ export function DocumentosServicioSelector({
                 <select
                   value={asignado.momento}
                   onChange={e =>
-                    actualizar(formato.id, {
+                    actualizar(plantilla.id, {
                       momento: e.target
                         .value as ServicioDocumentoInput["momento"],
                     })
@@ -109,7 +111,7 @@ export function DocumentosServicioSelector({
                     min={0}
                     value={asignado.vigenciaDias ?? ""}
                     onChange={e =>
-                      actualizar(formato.id, {
+                      actualizar(plantilla.id, {
                         vigenciaDias: e.target.value
                           ? Number(e.target.value)
                           : undefined,

@@ -1,6 +1,6 @@
 export interface ServicioDocumentoResponse {
-  formatoFichaId: number;
-  formatoFichaNombre: string;
+  plantillaId: number;
+  plantillaNombre: string;
   obligatorio: boolean;
   momento: "TrasConfirmarReserva" | "AlFinalizarAtencion";
   vigenciaDias?: number;

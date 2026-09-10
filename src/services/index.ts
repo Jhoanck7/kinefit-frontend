@@ -17,6 +17,7 @@ export {
   DisponibilidadService,
   disponibilidadService,
 } from "./disponibilidad-service";
+export type { FiltrosDocumentos } from "./documento-service";
 export {
   DocumentoPublicoService,
   documentoPublicoService,
@@ -28,9 +29,6 @@ export {
   EspecialistaService,
   especialistaService,
 } from "./especialista-service";
-export type { FiltrosFichas } from "./ficha-service";
-export { FichaService, fichaService } from "./ficha-service";
-export { FormatoService, formatoService } from "./formato-service";
 export {
   HorarioCentroService,
   horarioCentroService,
@@ -43,6 +41,7 @@ export {
 } from "./landing-config-service";
 export { MediaService, mediaService } from "./media-service";
 export { PacienteService, pacienteService } from "./paciente-service";
+export { PlantillaService, plantillaService } from "./plantilla-service";
 export type {
   FiltrosReporteComisiones,
   FiltrosReporteReservas,

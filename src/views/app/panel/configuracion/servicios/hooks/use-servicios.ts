@@ -6,7 +6,7 @@ import {
   useActualizarDocumentosServicioMutation,
   useCreateServicioMutation,
   useGetConfiguracionSistema,
-  useGetFormatos,
+  useGetPlantillas,
   useGetServicios,
   useUpdateConfiguracionSistemaMutation,
   useUpdateServicioEstadoMutation,
@@ -19,7 +19,7 @@ import { ServicioResponse } from "@/models/responses";
 export const useServicios = () => {
   const { data: servicios = [], isLoading: cargando } = useGetServicios(false);
   const { data: configuracionSistema } = useGetConfiguracionSistema();
-  const { data: formatos = [] } = useGetFormatos(true);
+  const { data: plantillas = [] } = useGetPlantillas(true);
   const duracionActiva = configuracionSistema?.duracionServiciosActiva ?? false;
 
   const crearMutation = useCreateServicioMutation();
@@ -69,7 +69,7 @@ export const useServicios = () => {
     setImagenAlt(servicio.imagenAlt || "");
     setDocumentos(
       servicio.documentos.map(d => ({
-        formatoFichaId: d.formatoFichaId,
+        plantillaId: d.plantillaId,
         obligatorio: d.obligatorio,
         momento: d.momento,
         vigenciaDias: d.vigenciaDias,
@@ -151,7 +151,7 @@ export const useServicios = () => {
     duracionMinutos,
     descripcion,
     imagenUrl,
-    formatos,
+    plantillas,
     documentos,
     error,
     errorEstado,

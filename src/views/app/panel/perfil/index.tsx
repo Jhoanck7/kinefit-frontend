@@ -1,24 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
-
-import { Button, Card } from "@/components/ui";
-import { useGetMiPerfil, useGuardarFirmaMutation } from "@/hooks/api";
-import SignaturePad from "@/views/app/(documentos)/documentos/components/signature-pad";
+import { Card } from "@/components/ui";
+import { useGetMiPerfil } from "@/hooks/api";
 
 export default function PerfilView() {
   const { data: perfil, isLoading } = useGetMiPerfil();
-  const guardarFirma = useGuardarFirmaMutation();
-  const firmaRef = useRef<React.ComponentRef<typeof SignaturePad>>(null);
-  const [firmaVacia, setFirmaVacia] = useState(true);
-
-  const handleGuardarFirma = async () => {
-    const base64 = firmaRef.current?.exportarBase64();
-    if (!base64) return;
-    await guardarFirma.mutateAsync({ firmaBase64: base64 });
-    firmaRef.current?.limpiar();
-  };
-
   if (isLoading || !perfil) {
     return <p className="p-6 font-sans text-xs text-slate-500">Cargando…</p>;
   }
@@ -61,33 +47,6 @@ export default function PerfilView() {
             </dd>
           </div>
         </dl>
-      </Card>
-
-      <Card className="border border-border p-6">
-        <h2 className="mb-1 font-sans text-sm font-bold text-slate-900">
-          Firma
-        </h2>
-        <p className="mb-4 font-sans text-xs text-slate-500">
-          {perfil.tieneFirma
-            ? "Ya tenés una firma guardada. Dibujá una nueva para reemplazarla."
-            : "Dibujá tu firma una vez: se va a estampar en cada documento que firmes desde el panel."}
-        </p>
-        <SignaturePad ref={firmaRef} onCambiar={setFirmaVacia} />
-        <div className="mt-4 flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={() => firmaRef.current?.limpiar()}
-            className="font-sans text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-900"
-          >
-            Borrar
-          </button>
-          <Button
-            disabled={firmaVacia || guardarFirma.isPending}
-            onClick={handleGuardarFirma}
-          >
-            {guardarFirma.isPending ? "Guardando…" : "Guardar firma"}
-          </Button>
-        </div>
       </Card>
     </div>
   );

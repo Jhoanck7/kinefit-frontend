@@ -233,19 +233,22 @@ function ConfirmarPagoContent() {
           </div>
         )}
 
-        {result?.documentoParaFirmarToken && (
+        {(result?.documentosParaFirmarTokens ?? []).map((token, indice) => (
           <Link
-            href={`/documentos/${result.documentoParaFirmarToken}`}
+            key={token}
+            href={`/documentos/${token}`}
             className="block w-full mb-3 bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider text-center shadow-md"
           >
-            Firmar ahora
+            {(result?.documentosParaFirmarTokens ?? []).length > 1
+              ? `Firmar documento ${indice + 1} de ${result!.documentosParaFirmarTokens.length}`
+              : "Firmar ahora"}
           </Link>
-        )}
+        ))}
 
         <Link
           href="/"
           className={
-            result?.documentoParaFirmarToken
+            (result?.documentosParaFirmarTokens ?? []).length > 0
               ? "block w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider text-center"
               : "block w-full bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider text-center shadow-md"
           }

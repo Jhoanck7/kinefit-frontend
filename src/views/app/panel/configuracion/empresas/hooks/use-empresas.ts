@@ -44,7 +44,9 @@ export const useEmpresas = () => {
     setVigenteDesde(empresa.vigenteDesde ?? "");
     setVigenteHasta(empresa.vigenteHasta ?? "");
     setConvenios(
-      Object.fromEntries(empresa.convenios.map(c => [c.servicioId, c.porcentaje]))
+      Object.fromEntries(
+        empresa.convenios.map(c => [c.servicioId, c.porcentaje])
+      )
     );
     setError(null);
     setMostrarModal(true);
@@ -76,10 +78,12 @@ export const useEmpresas = () => {
         nombre,
         vigenteDesde: vigenteDesde || undefined,
         vigenteHasta: vigenteHasta || undefined,
-        convenios: Object.entries(convenios).map(([servicioId, porcentaje]) => ({
-          servicioId: Number(servicioId),
-          porcentaje,
-        })),
+        convenios: Object.entries(convenios).map(
+          ([servicioId, porcentaje]) => ({
+            servicioId: Number(servicioId),
+            porcentaje,
+          })
+        ),
       };
       if (empresaEditando) {
         await actualizarMutation.mutateAsync({

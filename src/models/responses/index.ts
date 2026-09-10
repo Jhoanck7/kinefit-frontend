@@ -31,8 +31,17 @@ export type {
 export type { ConfiguracionSistemaResponse } from "./configuracion-sistema";
 export type { FranjaDisponibleResponse } from "./disponibilidad";
 export type {
-  DocumentoPacienteResponse,
+  AdjuntoResumenResponse,
+  AuditoriaEventoResponse,
+  AuditoriaEventosPaginadasResponse,
+  ConsentimientoCitaResponse,
+  DocumentoDetalleResponse,
   DocumentoPublicoResponse,
+  DocumentoResumenResponse,
+  DocumentosPaginadosResponse,
+  FichaResponse,
+  RecomendacionResponse,
+  ReenviarCorreoResponse,
 } from "./documento";
 export type { EmpresaResponse } from "./empresa";
 export type {
@@ -40,22 +49,6 @@ export type {
   EspecialistaResponse,
   EspecialistaServicioResponse,
 } from "./especialista";
-export type {
-  FichaAdjuntoResponse,
-  FichaResponse,
-  FichaResumenResponse,
-  FichasPaginadasResponse,
-} from "./ficha";
-export type {
-  CampoFormato,
-  CompletadoPor,
-  CuerpoFormato,
-  FormatoFichaResponse,
-  OrigenFormato,
-  SeccionFormato,
-  TipoCampoFormato,
-  TipoDocumentoClinico,
-} from "./formato";
 export type {
   HorarioCentroResponse,
   PlantillaHorarioResponse,
@@ -70,6 +63,16 @@ export type {
   PacienteResponse,
   VerificarRutResponse,
 } from "./paciente";
+export type {
+  CampoFormato,
+  CompletadoPor,
+  CuerpoFormato,
+  OrigenFormato,
+  PlantillaResponse,
+  SeccionFormato,
+  TipoCampoFormato,
+  TipoDocumentoClinico,
+} from "./plantilla";
 export type {
   ConteoResponse,
   EvolucionTemporalPuntoResponse,

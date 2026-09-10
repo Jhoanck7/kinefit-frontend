@@ -1,7 +1,6 @@
 import { ApiResponse } from "@/models/generics";
 import {
   CambiarPasswordRequest,
-  GuardarFirmaRequest,
   LoginPersonalRequest,
   UpdatePerfilRequest,
 } from "@/models/requests";
@@ -47,13 +46,6 @@ export class AuthService extends BaseApiService {
   getMiPerfil() {
     return this.httpClient.get<ApiResponse<MiPerfilResponse>>(
       `${this.baseURL}/personal/me`
-    );
-  }
-
-  guardarMiFirma(data: GuardarFirmaRequest) {
-    return this.httpClient.patch<ApiResponse<MiPerfilResponse>>(
-      `${this.baseURL}/personal/firma`,
-      data
     );
   }
 }

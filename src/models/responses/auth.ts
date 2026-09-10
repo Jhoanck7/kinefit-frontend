@@ -17,5 +17,4 @@ export interface MiPerfilResponse {
   nombre: string;
   email: string;
   rol: "Administrador" | "Especialista";
-  tieneFirma: boolean;
 }

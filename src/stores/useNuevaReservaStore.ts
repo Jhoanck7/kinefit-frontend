@@ -25,11 +25,7 @@ interface NuevaReservaState {
     nombre: string,
     bloqueHorarioIds: number[]
   ) => void;
-  setServicio: (
-    id: number,
-    nombre: string,
-    duracionMinutos?: number
-  ) => void;
+  setServicio: (id: number, nombre: string, duracionMinutos?: number) => void;
   setNotaPaciente: (valor: string) => void;
   setNotaInterna: (valor: string) => void;
   reiniciar: () => void;

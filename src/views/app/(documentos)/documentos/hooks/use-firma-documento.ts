@@ -26,15 +26,16 @@ export function useFirmaDocumento({ token }: UseFirmaDocumentoParams) {
     ? `${process.env.NEXT_PUBLIC_API_URL}/documentos/publico/${token}/archivo`
     : null;
 
-  const handleFirmar = async (firmaBase64: string) => {
+  const handleFirmar = async (documentoFirmadoBase64: string) => {
     if (!data) return;
-    const payload = {
-      contenido,
-      firmaPacienteBase64: firmaBase64,
-      huellaMostrada: data.huellaMostrada,
-    };
-
-    await firmarPublico.mutateAsync({ token, data: payload });
+    await firmarPublico.mutateAsync({
+      token,
+      data: {
+        huellaMostrada: data.huellaMostrada,
+        documentoFirmadoBase64,
+        contenido: data.tieneArchivo ? undefined : contenido,
+      },
+    });
     setFirmado(true);
   };
 
