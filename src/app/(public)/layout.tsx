@@ -1,10 +1,12 @@
 import "../globals.css";
 
-import { Geist, JetBrains_Mono } from "next/font/google";
+import { Bowlby_One, Geist, JetBrains_Mono } from "next/font/google";
+
+import { SessionProvider } from "next-auth/react";
 
 import Footer from "@/components/layout/footer";
 import Navbar from "@/components/layout/navbar";
-import { WhatsAppButton } from "@/components/shared";
+import { ScrollRevealProvider, WhatsAppButton } from "@/components/shared";
 import { CLINIC_INFO, defaultMetadata } from "@/lib/utils";
 import { ReactQueryProvider } from "@/providers";
 import { landingConfigService } from "@/services";
@@ -17,6 +19,13 @@ const geistSans = Geist({
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const bowlbyOne = Bowlby_One({
+  weight: "400",
+  variable: "--font-bowlby-one",
   subsets: ["latin"],
   display: "swap",
 });
@@ -109,7 +118,7 @@ export default async function RootLayout({
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${jetbrainsMono.variable} h-full antialiased scroll-smooth`}
+      className={`${geistSans.variable} ${jetbrainsMono.variable} ${bowlbyOne.variable} h-full antialiased scroll-smooth`}
       style={
         {
           "--font-sans":
@@ -124,12 +133,16 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-white font-sans">
-        <ReactQueryProvider>
-          <Navbar config={config} />
-          <div className="flex-grow">{children}</div>
-          <Footer />
-          <WhatsAppButton />
-        </ReactQueryProvider>
+        <SessionProvider>
+          <ReactQueryProvider>
+            <ScrollRevealProvider>
+              <Navbar config={config} />
+              <div className="flex-grow">{children}</div>
+              <Footer />
+              <WhatsAppButton />
+            </ScrollRevealProvider>
+          </ReactQueryProvider>
+        </SessionProvider>
       </body>
     </html>
   );

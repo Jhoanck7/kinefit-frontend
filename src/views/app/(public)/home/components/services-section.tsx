@@ -128,7 +128,7 @@ export default function ServicesSection({
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
+        <div className="text-center max-w-3xl mx-auto mb-20 scroll-reveal">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
             Especialidades
           </h2>
@@ -146,7 +146,9 @@ export default function ServicesSection({
           {displayServices.map((service, index) => (
             <div
               key={service.nombre}
-              className="group flex flex-col justify-between rounded-3xl bg-slate-50 border border-slate-200/60 p-8 hover:bg-white hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
+              className={`group flex flex-col justify-between rounded-3xl bg-slate-50 border border-slate-200/60 p-8 hover:bg-white hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden scroll-reveal-scale ${
+                index === 1 ? "delay-150" : index === 2 ? "delay-300" : ""
+              }`}
             >
               <div>
                 {/* Icon Box */}

@@ -819,7 +819,7 @@ export default function BookingCard() {
               <input
                 type="text"
                 required
-                placeholder="JHOAN MONTERO"
+                placeholder="Ej:Maximiliano Montero"
                 value={patientName}
                 onChange={e => handlePatientInfoChange("name", e.target.value)}
                 className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"

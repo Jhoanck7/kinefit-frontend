@@ -95,9 +95,9 @@ export interface ConfirmarTransaccionResponseData {
   buyOrder: string;
   monto: number;
   estado: "Iniciado" | "Aprobado" | "Rechazado" | "Expirado";
+  estadoCita: "Confirmada" | "Cancelada" | "Expirada" | "PendientePago" | string;
   createdAt: string;
   updatedAt: string;
-  estadoCita: string;
   advertencia?: string;
   documentosParaFirmarTokens: string[];
 }
