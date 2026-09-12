@@ -1,7 +1,6 @@
 import "../globals.css";
 
 import { Bowlby_One, Geist, JetBrains_Mono } from "next/font/google";
-
 import { SessionProvider } from "next-auth/react";
 
 import Footer from "@/components/layout/footer";

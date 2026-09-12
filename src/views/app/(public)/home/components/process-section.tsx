@@ -163,7 +163,13 @@ export default function ProcessSection({
               <div
                 key={idx}
                 className={`group bg-white rounded-global border border-slate-200/60 p-8 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-100/50 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between scroll-reveal-scale ${
-                  idx === 1 ? "delay-100" : idx === 2 ? "delay-200" : idx === 3 ? "delay-300" : ""
+                  idx === 1
+                    ? "delay-100"
+                    : idx === 2
+                      ? "delay-200"
+                      : idx === 3
+                        ? "delay-300"
+                        : ""
                 }`}
               >
                 <div>

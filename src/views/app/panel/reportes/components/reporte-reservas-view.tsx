@@ -41,10 +41,7 @@ export function ReporteReservasView({
     ...evolucionTemporal.map(p => p.reservas),
     1
   );
-  const maxIngresos = Math.max(
-    ...evolucionTemporal.map(p => p.ingresos),
-    1
-  );
+  const maxIngresos = Math.max(...evolucionTemporal.map(p => p.ingresos), 1);
   const maxHora = Math.max(...distribucionPorHora.map(p => p.cantidad), 1);
   const maxDia = Math.max(...distribucionPorDiaSemana.map(p => p.cantidad), 1);
 

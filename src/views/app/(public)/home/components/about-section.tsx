@@ -44,7 +44,6 @@ export default function AboutSection({
           {/* 4. Redes Sociales: Cuarto en móvil, tercera fila izquierda en escritorio */}
           <div className="order-4 lg:col-span-7 flex flex-col items-center justify-center text-center gap-3.5 pt-2 w-full scroll-reveal delay-300">
             <div className="flex flex-col items-center gap-1.5 text-center">
-          
               <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                 ¡Visita nuestras redes sociales!
               </h3>
