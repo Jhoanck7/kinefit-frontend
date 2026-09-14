@@ -140,8 +140,15 @@ export const landingConfigSchema: SectionSchema[] = [
     fields: [],
   },
   {
+    id: "embarazadas",
+    title: "6. Kinesiología para Embarazadas",
+    description: "Título, subtítulo y fotos de la sección de embarazadas.",
+    hasCustomRenderer: true,
+    fields: [],
+  },
+  {
     id: "team",
-    title: "6. Especialistas",
+    title: "7. Especialistas",
     description: "Configuración visual de la sección del equipo.",
     fields: [
       {
@@ -160,7 +167,7 @@ export const landingConfigSchema: SectionSchema[] = [
   },
   {
     id: "location",
-    title: "7. Ubicación y Contacto",
+    title: "8. Ubicación y Contacto",
     description: "Dirección, horarios, teléfonos y correos.",
     fields: [
       {
@@ -234,7 +241,7 @@ export const landingConfigSchema: SectionSchema[] = [
   },
   {
     id: "social",
-    title: "8. Redes Sociales",
+    title: "9. Redes Sociales",
     description: "Links a tus perfiles de redes sociales y Footer.",
     fields: [
       {
@@ -271,7 +278,7 @@ export const landingConfigSchema: SectionSchema[] = [
   },
   {
     id: "reviews",
-    title: "9. Reseñas Google",
+    title: "10. Reseñas Google",
     description: "Sincronización de API Places y testimonios.",
     hasCustomRenderer: true,
     fields: [
