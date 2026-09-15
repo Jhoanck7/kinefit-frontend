@@ -53,7 +53,11 @@ export type {
   HorarioCentroResponse,
   PlantillaHorarioResponse,
 } from "./horario";
-export type { LandingConfigResponse, VoucherItem } from "./landing-config";
+export type {
+  EmbarazadaItem,
+  LandingConfigResponse,
+  VoucherItem,
+} from "./landing-config";
 export type { ImageUploadResponse } from "./media";
 export type {
   ContadoresPacienteResponse,

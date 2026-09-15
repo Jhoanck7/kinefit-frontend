@@ -1,5 +1,6 @@
 export { default as AboutSection } from "./about-section";
 export { default as BookingCard } from "./booking-card";
+export { default as EmbarazadasSection } from "./embarazadas-section";
 export { default as HeroSection } from "./hero-section";
 export { default as LocationSection } from "./location-section";
 export { default as ProcessSection } from "./process-section";

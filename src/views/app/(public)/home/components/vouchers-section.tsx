@@ -153,7 +153,7 @@ export default function VouchersSection({
               {config.vouchersTitle || "Regala Bienestar"}
             </p>
             {config.vouchersSubtitle && (
-              <p className="text-slate-500 text-base sm:text-lg whitespace-pre-line">
+              <p className="text-slate-500 text-base sm:text-lg whitespace-pre-line text-justify">
                 {config.vouchersSubtitle}
               </p>
             )}
@@ -173,7 +173,7 @@ export default function VouchersSection({
                     <DialogTitle className="sr-only">
                       Nota importante
                     </DialogTitle>
-                    <DialogDescription className="whitespace-pre-line">
+                    <DialogDescription className="whitespace-pre-line text-justify">
                       {config.vouchersNota}
                     </DialogDescription>
                   </DialogHeader>

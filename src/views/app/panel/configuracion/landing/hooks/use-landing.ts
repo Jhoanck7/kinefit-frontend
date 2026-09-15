@@ -7,7 +7,11 @@ import {
   useSincronizarGoogleReviewsMutation,
   useUpdateLandingConfigMutation,
 } from "@/hooks/api";
-import { LandingConfigResponse, VoucherItem } from "@/models/responses";
+import {
+  EmbarazadaItem,
+  LandingConfigResponse,
+  VoucherItem,
+} from "@/models/responses";
 
 export interface ProcessStepItem {
   num: string;
@@ -57,6 +61,7 @@ export const useLanding = () => {
   const [processSteps, setProcessSteps] = useState<ProcessStepItem[]>([]);
   const [reviewsList, setReviewsList] = useState<GoogleReviewItem[]>([]);
   const [vouchers, setVouchers] = useState<VoucherItem[]>([]);
+  const [embarazadas, setEmbarazadas] = useState<EmbarazadaItem[]>([]);
   const [limiteResenas, setLimiteResenas] = useState<number>(5);
   const [confirmacionGuardar, setConfirmacionGuardar] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -80,6 +85,13 @@ export const useLanding = () => {
         try {
           const parsedVouchers = JSON.parse(configData.vouchersJson);
           if (Array.isArray(parsedVouchers)) setVouchers(parsedVouchers);
+        } catch {}
+      }
+      if (configData.embarazadasJson) {
+        try {
+          const parsedEmbarazadas = JSON.parse(configData.embarazadasJson);
+          if (Array.isArray(parsedEmbarazadas))
+            setEmbarazadas(parsedEmbarazadas);
         } catch {}
       }
     }
@@ -199,6 +211,74 @@ export const useLanding = () => {
     });
   }
 
+  function handleAgregarEmbarazada() {
+    setEmbarazadas(prev => [
+      ...prev,
+      {
+        alt: "",
+        imagenUrl: "",
+        ancho: 0,
+        alto: 0,
+      },
+    ]);
+  }
+
+  function handleEmbarazadaAltChange(index: number, alt: string) {
+    setEmbarazadas(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], alt };
+      return copy;
+    });
+  }
+
+  function handleEmbarazadaImagenChange(
+    index: number,
+    imagenUrl: string,
+    ancho: number,
+    alto: number
+  ) {
+    setEmbarazadas(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], imagenUrl, ancho, alto };
+      return copy;
+    });
+  }
+
+  function handleEmbarazadaImagenSecundariaChange(
+    index: number,
+    imagenSecundaria: string,
+    anchoSecundaria: number,
+    altoSecundaria: number
+  ) {
+    setEmbarazadas(prev => {
+      const copy = [...prev];
+      copy[index] = {
+        ...copy[index],
+        imagenSecundaria,
+        anchoSecundaria,
+        altoSecundaria,
+      };
+      return copy;
+    });
+  }
+
+  function handleEliminarEmbarazada(index: number) {
+    setEmbarazadas(prev => prev.filter((_, i) => i !== index));
+  }
+
+  function handleMoverEmbarazada(
+    index: number,
+    direccion: "arriba" | "abajo"
+  ) {
+    setEmbarazadas(prev => {
+      const destino = direccion === "arriba" ? index - 1 : index + 1;
+      if (destino < 0 || destino >= prev.length) return prev;
+      const copy = [...prev];
+      [copy[index], copy[destino]] = [copy[destino], copy[index]];
+      return copy;
+    });
+  }
+
   async function handleSincronizarGoogle() {
     setErrorMsg(null);
     try {
@@ -231,6 +311,7 @@ export const useLanding = () => {
         processStepsJson: JSON.stringify(processSteps),
         reviewsJson: JSON.stringify(reviewsList),
         vouchersJson: JSON.stringify(vouchers),
+        embarazadasJson: JSON.stringify(embarazadas),
       };
       const res = await updateMutation.mutateAsync(dataToSave);
       setFormData(res);
@@ -249,6 +330,7 @@ export const useLanding = () => {
     processSteps,
     reviewsList,
     vouchers,
+    embarazadas,
     limiteResenas,
     cargando,
     guardando: updateMutation.isPending,
@@ -273,6 +355,12 @@ export const useLanding = () => {
       handleVoucherImagenBlancoChange,
       handleEliminarVoucher,
       handleMoverVoucher,
+      handleAgregarEmbarazada,
+      handleEmbarazadaAltChange,
+      handleEmbarazadaImagenChange,
+      handleEmbarazadaImagenSecundariaChange,
+      handleEliminarEmbarazada,
+      handleMoverEmbarazada,
       handleSincronizarGoogle,
       handleGuardar,
       ejecutarGuardar,

@@ -8,6 +8,16 @@ export interface VoucherItem {
   altoBlanco: number;
 }
 
+export interface EmbarazadaItem {
+  alt: string;
+  imagenUrl: string;
+  ancho: number;
+  alto: number;
+  imagenSecundaria?: string;
+  anchoSecundaria?: number;
+  altoSecundaria?: number;
+}
+
 export interface LandingConfigResponse {
   heroTagline: string;
   heroBrandName: string;
@@ -71,6 +81,10 @@ export interface LandingConfigResponse {
   vouchersNota?: string;
   vouchersMostrarNota: boolean;
   vouchersJson?: string;
+
+  embarazadasTitle?: string;
+  embarazadasSubtitle?: string;
+  embarazadasJson?: string;
 
   updatedAt?: string;
 }
