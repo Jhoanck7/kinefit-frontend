@@ -542,7 +542,7 @@ export default function LandingView() {
                       <div className="space-y-4 pt-4 border-t border-slate-200">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                            <h3 className="font-sans text-label font-bold text-foreground">
                               Fotos del Carrusel ({embarazadas.length})
                             </h3>
                             <p className="text-xs text-slate-500 mt-0.5">
@@ -552,9 +552,10 @@ export default function LandingView() {
                           <Button
                             type="button"
                             variant="outline"
+                            className="rounded-overlay"
                             onClick={actions.handleAgregarEmbarazada}
                           >
-                            + Agregar Foto
+                            Agregar Foto
                           </Button>
                         </div>
 
@@ -574,7 +575,7 @@ export default function LandingView() {
                                   onClick={() =>
                                     actions.handleMoverEmbarazada(idx, "arriba")
                                   }
-                                  className="text-xs text-blue-900 font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                                  className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
                                 >
                                   Subir
                                 </button>
@@ -584,7 +585,7 @@ export default function LandingView() {
                                   onClick={() =>
                                     actions.handleMoverEmbarazada(idx, "abajo")
                                   }
-                                  className="text-xs text-blue-900 font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                                  className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
                                 >
                                   Bajar
                                 </button>
@@ -593,7 +594,7 @@ export default function LandingView() {
                                   onClick={() =>
                                     actions.handleEliminarEmbarazada(idx)
                                   }
-                                  className="text-xs text-blue-900 font-bold hover:underline"
+                                  className="text-xs text-primary font-bold hover:underline"
                                 >
                                   Eliminar
                                 </button>
@@ -661,7 +662,8 @@ export default function LandingView() {
 
                         {embarazadas.length === 0 && (
                           <p className="text-xs text-slate-400 italic text-center py-4 border border-dashed border-slate-200">
-                            No hay fotos configuradas. Haz clic en "+ Agregar Foto".
+                            No hay fotos configuradas. Haz clic en
+                            &ldquo;Agregar Foto&rdquo;.
                           </p>
                         )}
                       </div>
@@ -846,9 +848,7 @@ export default function LandingView() {
                               !v.imagenSofa || !v.imagenBlanco || !v.alt.trim()
                           )) ||
                         (seccionActiva === "embarazadas" &&
-                          embarazadas.some(
-                            e => !e.imagenUrl || !e.alt.trim()
-                          ))
+                          embarazadas.some(e => !e.imagenUrl || !e.alt.trim()))
                       }
                     >
                       {guardando ? "Guardando…" : "Guardar Cambios"}
