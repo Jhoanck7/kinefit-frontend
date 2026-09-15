@@ -28,7 +28,7 @@ export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
   {
     PendientePago: {
       codigo: "PendientePago",
-      etiqueta: "Pendiente de pago",
+      etiqueta: "Pendiente de Pago",
       colorRol: "azul-seleccion",
       origenes: ["web"],
       soloLectura: false,
@@ -39,14 +39,14 @@ export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
     },
     PorConfirmar: {
       codigo: "PorConfirmar",
-      etiqueta: "Por confirmar",
+      etiqueta: "Por Confirmar",
       colorRol: "ambar",
       origenes: ["manual"],
       soloLectura: false,
       expiraSola: false,
       acciones: [
-        { id: "confirmar", etiqueta: "Confirmar cita", estilo: "primario" },
-        { id: "cancelar", etiqueta: "Cancelar cita", estilo: "peligro" },
+        { id: "confirmar", etiqueta: "Confirmar Cita", estilo: "primario" },
+        { id: "cancelar", etiqueta: "Cancelar Cita", estilo: "peligro" },
       ],
     },
     Confirmada: {
@@ -59,15 +59,15 @@ export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
       acciones: [
         {
           id: "marcar_no_asistida",
-          etiqueta: "Marcar no asistida",
+          etiqueta: "Marcar No Asistida",
           estilo: "secundario",
         },
         {
           id: "marcar_asistida",
-          etiqueta: "Marcar como asistida",
+          etiqueta: "Marcar como Asistida",
           estilo: "primario",
         },
-        { id: "cancelar", etiqueta: "Cancelar cita", estilo: "peligro" },
+        { id: "cancelar", etiqueta: "Cancelar Cita", estilo: "peligro" },
       ],
     },
     Atendida: {
@@ -81,7 +81,7 @@ export const CATALOGO_ESTADOS: Record<CodigoEstadoCita, DefinicionEstadoCita> =
     },
     NoAsistida: {
       codigo: "NoAsistida",
-      etiqueta: "No asistida",
+      etiqueta: "No Asistida",
       colorRol: "rojo",
       origenes: ["web", "manual"],
       soloLectura: true,

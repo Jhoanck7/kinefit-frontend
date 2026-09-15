@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Alerta, Modal } from "@/components/shared";
+import { Alerta, Modal, ModalCloseButton } from "@/components/shared";
 import {
   useCreateVentaMutation,
   useGetCitas,
@@ -47,12 +47,15 @@ export function NuevaVentaModal({
     useState<PacienteResponse | null>(null);
   const busquedaDebounced = useDebounce(busquedaPaciente.trim(), 300);
   const busquedaValida = busquedaDebounced.length >= 2;
-  const { data: resultados = [], isFetching: buscandoPaciente } =
+  const { data: resultadosPagina, isFetching: buscandoPaciente } =
     useGetPacientes(
       busquedaValida ? busquedaDebounced : undefined,
       undefined,
+      1,
+      20,
       busquedaValida && !pacienteSeleccionado
     );
+  const resultados = resultadosPagina?.items ?? [];
   const { data: servicios = [] } = useGetServicios();
   const { data: empresas = [] } = useGetEmpresas(false);
   const [descripcion, setDescripcion] = useState(
@@ -151,19 +154,12 @@ export function NuevaVentaModal({
         onClose();
       }}
     >
-      <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
+      <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
-          <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+          <h3 className="font-sans text-section-title font-bold text-foreground">
             Registrar Cobro Manual
           </h3>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar modal"
-            className="p-1 font-sans text-sm text-slate-400 hover:text-slate-900 rounded-none focus:outline-none"
-          >
-            ✕
-          </button>
+          <ModalCloseButton onClick={onClose} />
         </div>
 
         <form
@@ -174,11 +170,11 @@ export function NuevaVentaModal({
 
           {citaAsociada ? (
             <div className="border border-slate-200 bg-slate-50 p-3">
-              <p className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-1">
-                Cobro asociado a la cita
+              <p className="font-sans text-label font-medium text-muted-foreground mb-1">
+                Cobro Asociado a la Cita
               </p>
-              <p className="font-sans text-sm font-medium text-slate-900">
-                {citaAsociada.pacienteNombre} · {citaAsociada.servicioNombre}
+              <p className="font-sans text-value font-medium text-foreground">
+                {citaAsociada.pacienteNombre}, {citaAsociada.servicioNombre}
               </p>
               <p className="font-sans text-xs text-slate-500">
                 Especialista: {citaAsociada.especialistaNombre}
@@ -186,7 +182,7 @@ export function NuevaVentaModal({
             </div>
           ) : (
             <div className="relative">
-              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                 Paciente (opcional: dejar vacío para cliente sin registrar)
               </label>
               <input
@@ -226,7 +222,7 @@ export function NuevaVentaModal({
 
           {!citaAsociada && pacienteSeleccionado && (
             <div>
-              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                 Cita asociada (opcional)
               </label>
               <select
@@ -237,7 +233,7 @@ export function NuevaVentaModal({
                 <option value="">Sin cita asociada</option>
                 {citasFacturables.map(c => (
                   <option key={c.id} value={c.id}>
-                    {c.fecha} · {c.servicio} · {c.especialista}
+                    {c.fecha}, {c.servicio}, {c.especialista}
                   </option>
                 ))}
               </select>
@@ -252,7 +248,7 @@ export function NuevaVentaModal({
           )}
 
           <div>
-            <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+            <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
               Servicio
             </label>
             <select
@@ -281,7 +277,7 @@ export function NuevaVentaModal({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                 Monto ($ CLP) *
               </label>
               <input
@@ -314,7 +310,7 @@ export function NuevaVentaModal({
             </div>
 
             <div>
-              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                 Método de Pago *
               </label>
               <select
@@ -332,7 +328,7 @@ export function NuevaVentaModal({
 
           {requiereTerminal && (
             <div>
-              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                 Terminal POS *
               </label>
               <select
@@ -357,7 +353,7 @@ export function NuevaVentaModal({
             <button
               type="button"
               onClick={onClose}
-              className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+              className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
             >
               Cancelar
             </button>
@@ -367,9 +363,9 @@ export function NuevaVentaModal({
                 crearVentaMutation.isPending ||
                 (requiereTerminal && !terminalPagoId)
               }
-              className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none disabled:opacity-50"
+              className="font-sans text-xs font-bold px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none disabled:opacity-50"
             >
-              {crearVentaMutation.isPending ? "Guardando..." : "Guardar Cobro"}
+              {crearVentaMutation.isPending ? "Guardando…" : "Guardar Cobro"}
             </button>
           </div>
         </form>

@@ -1,6 +1,14 @@
 import { type ClassValue, clsx } from "clsx";
 import { Metadata } from "next";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      rounded: ["rounded-overlay", "rounded-pill", "rounded-global"],
+    },
+  },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

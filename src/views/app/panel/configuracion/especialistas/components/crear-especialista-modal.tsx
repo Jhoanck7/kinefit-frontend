@@ -2,6 +2,7 @@ import {
   Alerta,
   ImageUploader,
   Modal,
+  ModalCloseButton,
   TextAreaField,
   TextField,
 } from "@/components/shared";
@@ -53,18 +54,21 @@ export function CrearEspecialistaModal({
 }: CrearEspecialistaModalProps) {
   return (
     <Modal abierto={abierto} onCerrar={onCerrar}>
-      <div className="p-2 sm:p-4">
-        <h2 className="text-xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-200">
-          Agregar Integrante del Equipo
-        </h2>
+      <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
+          <h2 className="font-sans text-section-title font-bold text-foreground">
+            Agregar Integrante del Equipo
+          </h2>
+          <ModalCloseButton onClick={onCerrar} />
+        </div>
 
         {error && (
-          <Alerta tono="error" className="mb-4">
+          <Alerta tono="error" className="mx-6 mt-4">
             {error}
           </Alerta>
         )}
 
-        <div className="pt-2 bg-slate-50 p-4 rounded-none border border-slate-200 mb-6">
+        <div className="mx-6 mt-6 bg-slate-50 p-4 rounded-none border border-slate-200">
           <ImageUploader
             etiqueta="Foto de Perfil"
             value={fotoUrl}
@@ -73,7 +77,7 @@ export function CrearEspecialistaModal({
           />
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-6">
+        <form onSubmit={onSubmit} className="p-6 pt-0 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextField
               etiqueta="Nombre Completo"
@@ -90,8 +94,8 @@ export function CrearEspecialistaModal({
               required
             />
             <div className="md:col-span-2">
-              <label className="mb-1 block text-xs font-medium text-slate-900">
-                Servicios que presta *
+              <label className="mb-1 block font-sans text-label font-medium text-muted-foreground">
+                Servicios que Presta *
               </label>
               <ServiciosSelector
                 servicios={servicios}
@@ -117,11 +121,20 @@ export function CrearEspecialistaModal({
           </div>
 
           <div className="flex justify-end gap-3 border-t border-slate-200 pt-5">
-            <Button type="button" variant="outline" onClick={onCerrar}>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-overlay"
+              onClick={onCerrar}
+            >
               Cancelar
             </Button>
-            <Button type="submit" disabled={guardando}>
-              {guardando ? "Guardando..." : "Registrar Integrante"}
+            <Button
+              type="submit"
+              className="rounded-overlay"
+              disabled={guardando}
+            >
+              {guardando ? "Guardando…" : "Registrar Integrante"}
             </Button>
           </div>
         </form>

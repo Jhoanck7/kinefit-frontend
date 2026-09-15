@@ -58,7 +58,7 @@ export function BloquesSemanaEditor({
             key={dia.id}
             className="border border-slate-200 bg-slate-50/50 p-2.5 rounded-none flex flex-col gap-1.5"
           >
-            <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-400 text-center">
+            <p className="font-sans text-[10px] font-bold text-muted-foreground text-center">
               {dia.etiqueta}
             </p>
 
@@ -114,9 +114,9 @@ export function BloquesSemanaEditor({
               <button
                 type="button"
                 onClick={() => handleAgregar(dia.id)}
-                className="text-[11px] font-bold text-blue-900 hover:underline"
+                className="text-[11px] font-bold text-primary hover:underline"
               >
-                + Agregar
+                Agregar
               </button>
             </div>
           </div>

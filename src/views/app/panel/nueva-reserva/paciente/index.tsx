@@ -36,7 +36,7 @@ export default function PacienteView() {
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
         <Card className="border border-border p-6">
-          <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900 mb-4">
+          <h2 className="font-sans text-section-title font-bold text-foreground mb-4">
             ¿Para quién es la cita?
           </h2>
 
@@ -66,9 +66,9 @@ export default function PacienteView() {
               <button
                 type="button"
                 onClick={actions.handleCambiarPaciente}
-                className="pt-2 font-sans text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950 underline block"
+                className="pt-2 font-sans text-xs font-bold text-muted-foreground hover:text-foreground underline block"
               >
-                Cambiar paciente
+                Cambiar Paciente
               </button>
             </div>
           ) : (
@@ -88,8 +88,8 @@ export default function PacienteView() {
 
               {buscado && (
                 <div className="mt-4">
-                  <p className="mb-2 font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
-                    Resultados de búsqueda
+                  <p className="mb-2 font-sans text-label font-medium text-muted-foreground">
+                    Resultados de Búsqueda
                   </p>
                   {resultados.length === 0 ? (
                     <p className="font-sans text-xs text-slate-400">
@@ -109,7 +109,7 @@ export default function PacienteView() {
                               {paciente.nombre} {paciente.apellido}
                             </span>
                             <span className="text-slate-500">
-                              {paciente.rut} ›
+                              {paciente.rut}
                             </span>
                           </button>
                         </li>
@@ -130,7 +130,7 @@ export default function PacienteView() {
                 className="w-full text-xs"
                 onClick={actions.handleRegistrarNuevo}
               >
-                Registrar paciente nuevo
+                Registrar Paciente Nuevo
               </Button>
             </>
           )}
@@ -140,9 +140,9 @@ export default function PacienteView() {
               <button
                 type="button"
                 onClick={actions.handleCancelar}
-                className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
+                className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
               >
-                Cancelar reserva
+                Cancelar Reserva
               </button>
             }
             volver={

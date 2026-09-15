@@ -101,15 +101,24 @@ export const useHorario = () => {
   );
 
   // Computed values
-  const manana = horas.filter(h => h < LIMITE_MANANA);
-  const tarde = horas.filter(h => h >= LIMITE_MANANA);
+  const esFechaHoy =
+    Boolean(fecha) && Boolean(hoy) && fechaIso === fechaISO(hoy!);
+  const horaActualHHMM = hoy
+    ? `${hoy.getHours().toString().padStart(2, "0")}:${hoy.getMinutes().toString().padStart(2, "0")}`
+    : null;
+  const horasVigentes =
+    esFechaHoy && horaActualHHMM
+      ? horas.filter(h => h > horaActualHHMM)
+      : horas;
+  const manana = horasVigentes.filter(h => h < LIMITE_MANANA);
+  const tarde = horasVigentes.filter(h => h >= LIMITE_MANANA);
   const duracionMin = horasSeleccionadas.length * DURACION_BLOQUE_MIN;
   const horaInicio = [...horasSeleccionadas].sort()[0] ?? null;
   const horaTerminoCalculada = horaInicio
     ? sumarMinutos(horaInicio, duracionMin)
     : null;
   const sinDisponibilidadEnFecha =
-    Boolean(fecha) && !isLoading && horas.length === 0;
+    Boolean(fecha) && !isLoading && horasVigentes.length === 0;
 
   // Actions
   const handleSeleccionarHora = (hora: string) => {

@@ -57,10 +57,9 @@ export default function NuevaFichaContenidoView() {
           <button
             type="button"
             onClick={actions.handleCerrarError}
-            aria-label="Cerrar aviso de error"
-            className="text-white hover:text-white/70 font-bold px-2"
+            className="text-white hover:text-white/70 font-bold text-xs px-2"
           >
-            ✕
+            Cerrar
           </button>
         </Alerta>
       )}
@@ -70,32 +69,32 @@ export default function NuevaFichaContenidoView() {
           Contenido privado. No visible para el paciente.
         </div>
 
-        <h2 className="mb-4 font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
-          Completa la ficha clínica
+        <h2 className="mb-4 font-sans text-section-title font-bold text-foreground">
+          Completa la Ficha Clínica
         </h2>
 
         <div className="mb-6 flex gap-2 border-b border-slate-200 pb-4">
           <button
             type="button"
             onClick={() => actions.handleCambiarModo("plantilla")}
-            className={`font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border ${
+            className={`font-sans text-xs font-bold px-3 py-1.5 border ${
               modo === "plantilla"
                 ? "border-slate-900 bg-slate-900 text-white"
                 : "border-slate-200 text-slate-600"
             }`}
           >
-            Con plantilla del sistema
+            Con Plantilla del Sistema
           </button>
           <button
             type="button"
             onClick={() => actions.handleCambiarModo("archivo")}
-            className={`font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border ${
+            className={`font-sans text-xs font-bold px-3 py-1.5 border ${
               modo === "archivo"
                 ? "border-slate-900 bg-slate-900 text-white"
                 : "border-slate-200 text-slate-600"
             }`}
           >
-            La ficha ya está hecha
+            La Ficha ya Está Hecha
           </button>
         </div>
 
@@ -108,8 +107,8 @@ export default function NuevaFichaContenidoView() {
               onChange={e => actions.setNombreArchivoFicha(e.target.value)}
             />
             <div>
-              <p className="mb-2 font-sans text-[11px] font-bold uppercase tracking-widest text-slate-400">
-                Archivo de la ficha (PDF)
+              <p className="mb-2 font-sans text-label font-bold text-muted-foreground">
+                Archivo de la Ficha (PDF)
               </p>
               <input
                 type="file"
@@ -128,21 +127,21 @@ export default function NuevaFichaContenidoView() {
           </div>
         ) : opcionesPlantilla.length === 0 ? (
           <div className="mb-6 border border-slate-200 bg-slate-50 p-6 text-center space-y-3 rounded-none">
-            <p className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
-              No tienes plantillas de ficha creadas
+            <p className="font-sans text-xs font-bold text-foreground">
+              No Tienes Plantillas de Ficha Creadas
             </p>
             <p className="font-sans text-xs text-slate-500">
               Crea tu primera plantilla de ficha clínica para personalizar las
               evaluaciones de tus pacientes.
             </p>
             <Button onClick={actions.handleIrACrearPlantilla}>
-              Crear plantilla de ficha
+              Crear Plantilla de Ficha
             </Button>
           </div>
         ) : (
           <div className="mb-6">
-            <p className="mb-2 font-sans text-[11px] font-bold uppercase tracking-widest text-slate-400">
-              Seleccionar plantilla de ficha
+            <p className="mb-2 font-sans text-label font-bold text-muted-foreground">
+              Seleccionar Plantilla de Ficha
             </p>
             <OptionSelector
               opciones={opcionesPlantilla}
@@ -221,8 +220,8 @@ export default function NuevaFichaContenidoView() {
             ))}
 
             <div className="pt-2">
-              <p className="mb-2 font-sans text-[11px] font-bold uppercase tracking-widest text-slate-400">
-                Archivos adjuntos
+              <p className="mb-2 font-sans text-label font-bold text-muted-foreground">
+                Archivos Adjuntos
               </p>
               <FileDropzone
                 archivos={adjuntos}
@@ -238,7 +237,7 @@ export default function NuevaFichaContenidoView() {
             <button
               type="button"
               onClick={actions.handleCancelar}
-              className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
+              className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
             >
               Cancelar
             </button>
@@ -255,7 +254,7 @@ export default function NuevaFichaContenidoView() {
               }
               onClick={actions.handleGuardar}
             >
-              {guardando ? "Guardando..." : "Guardar ficha"}
+              {guardando ? "Guardando..." : "Guardar Ficha"}
             </Button>
           }
         />
@@ -263,17 +262,17 @@ export default function NuevaFichaContenidoView() {
 
       <SummaryPanel
         filas={[
-          { etiqueta: "PACIENTE", valor: pacienteNombre ?? undefined },
+          { etiqueta: "Paciente", valor: pacienteNombre ?? undefined },
           {
-            etiqueta: "FECHA Y HORA",
+            etiqueta: "Fecha y Hora",
             valor: cita
               ? `${formatearFechaExtensa(new Date(`${cita.fecha}T00:00:00`))} | ${formatearRangoHorario(cita.horaInicio, cita.horaFin)}`
               : undefined,
           },
           {
-            etiqueta: "TIPO DE FICHA",
+            etiqueta: "Tipo de Ficha",
             valor: nombrePlantilla ? (
-              <Badge className="rounded-none border-slate-200 bg-slate-50 text-[11px] font-medium text-slate-700">
+              <Badge className="border-0 bg-slate-700 text-[11px] font-medium text-white">
                 {nombrePlantilla}
               </Badge>
             ) : undefined,

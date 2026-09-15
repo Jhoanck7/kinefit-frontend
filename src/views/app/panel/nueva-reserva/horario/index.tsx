@@ -46,7 +46,7 @@ function HorarioContent() {
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
         <Card className="border border-border p-6">
-          <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900 mb-4">
+          <h2 className="font-sans text-section-title font-bold text-foreground mb-4">
             ¿Cuándo será la atención?
           </h2>
 
@@ -58,7 +58,7 @@ function HorarioContent() {
 
           <div className="grid grid-cols-1 gap-6 divide-y divide-slate-200 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
             <div className="sm:pr-6 space-y-3">
-              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                 Seleccionar Fecha de Atención
               </label>
               <input
@@ -108,7 +108,7 @@ function HorarioContent() {
                 </p>
               ) : (
                 <>
-                  <p className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-2">
+                  <p className="font-sans text-label font-medium text-muted-foreground block mb-2">
                     Mañana
                   </p>
                   <BloquesSelector
@@ -117,7 +117,7 @@ function HorarioContent() {
                     onSeleccionar={actions.handleSeleccionarHora}
                   />
                   <div className="my-4 border-t border-slate-200" />
-                  <p className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-2">
+                  <p className="font-sans text-label font-medium text-muted-foreground block mb-2">
                     Tarde
                   </p>
                   <BloquesSelector
@@ -135,9 +135,9 @@ function HorarioContent() {
               <button
                 type="button"
                 onClick={actions.handleCancelar}
-                className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
+                className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
               >
-                Cancelar reserva
+                Cancelar Reserva
               </button>
             }
             volver={
@@ -165,14 +165,12 @@ function HorarioContent() {
           filas={[
             { etiqueta: "Servicio", valor: nombreServicio },
             {
-              etiqueta: "Duración",
-              valor: duracionMin
-                ? `${duracionMin} min (${horasSeleccionadas.length} bloques)`
-                : undefined,
-            },
-            {
               etiqueta: "Fecha",
               valor: fecha ? formatearFechaExtensa(fecha) : undefined,
+            },
+            {
+              etiqueta: "Duración",
+              valor: duracionMin ? `${duracionMin} min` : undefined,
             },
             {
               etiqueta: "Horario",

@@ -33,8 +33,8 @@ export function HorarioCentroCard() {
   };
 
   return (
-    <Card className="rounded-none border-slate-200 shadow-none p-5">
-      <p className="mb-3 font-sans font-medium text-sm text-slate-900 border-b border-slate-200 pb-2">
+    <Card className="rounded-none border border-slate-200 shadow-none p-5">
+      <p className="mb-3 border-b border-slate-200 pb-2 font-sans text-micro-header font-medium text-muted-foreground">
         Horario del Centro
       </p>
       <p className="mb-3 font-sans text-xs text-slate-500">
@@ -55,7 +55,7 @@ export function HorarioCentroCard() {
 
       {isLoading ? (
         <p className="font-sans text-xs text-slate-400">
-          Cargando horario del centro...
+          Cargando horario del centro…
         </p>
       ) : (
         <BloquesSemanaEditor

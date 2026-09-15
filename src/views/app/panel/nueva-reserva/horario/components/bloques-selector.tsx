@@ -33,7 +33,6 @@ export function BloquesSelector({
             }`}
           >
             <span>{hora}</span>
-            {seleccionado && <span className="text-[10px] font-bold">✓</span>}
           </button>
         );
       })}

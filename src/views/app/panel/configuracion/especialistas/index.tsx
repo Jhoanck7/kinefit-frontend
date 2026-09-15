@@ -41,15 +41,18 @@ export default function EspecialistasView() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
-            Gestión del Equipo y Gerencia
-          </h1>
-          <p className="text-sm text-slate-500">
+          <h2 className="font-sans text-section-title font-bold text-foreground">
+            Equipo
+          </h2>
+          <p className="font-sans text-xs text-slate-500 mt-0.5">
             Agrega, edita o elimina integrantes del equipo.
           </p>
         </div>
 
-        <Button onClick={actions.handleAbrirFormNuevo}>
+        <Button
+          className="rounded-overlay"
+          onClick={actions.handleAbrirFormNuevo}
+        >
           Agregar Integrante del Equipo
         </Button>
       </div>
@@ -58,7 +61,7 @@ export default function EspecialistasView() {
       {cargando ? (
         <Card className="p-6">
           <p className="text-sm text-slate-500 py-8 text-center">
-            Cargando equipo desde el servidor...
+            Cargando equipo desde el servidor…
           </p>
         </Card>
       ) : especialistas.length === 0 ? (
@@ -130,12 +133,12 @@ export default function EspecialistasView() {
         onCerrar={actions.handleCerrarNotificacion}
       >
         <div className="p-8 text-center">
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="font-sans text-section-title font-bold text-foreground">
             Acción Completada
           </h2>
           <p className="mt-2 text-sm text-slate-500">{notificacion}</p>
           <Button
-            className="mt-6"
+            className="mt-6 rounded-overlay"
             onClick={actions.handleCerrarNotificacion}
             autoFocus
           >

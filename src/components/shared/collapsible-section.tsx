@@ -31,7 +31,7 @@ export function CollapsibleSection({
           onClick={() => setAbierta(v => !v)}
           aria-expanded={abierta}
           aria-controls={contenidoId}
-          className="flex flex-1 items-center gap-2 text-left font-sans text-xs font-bold uppercase tracking-wider text-slate-800 focus-visible:outline-none"
+          className="flex flex-1 items-center gap-2 text-left font-sans text-section-title font-bold text-foreground focus-visible:outline-none"
         >
           <svg
             className={`h-3.5 w-3.5 shrink-0 transition-transform ${abierta ? "rotate-90" : ""}`}

@@ -2,14 +2,21 @@
 
 import { useState } from "react";
 
-import { Alerta, Modal } from "@/components/shared";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
+import { Alerta, Modal, ModalCloseButton } from "@/components/shared";
+import {
+  Badge,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui";
 import {
   useGetCita,
   useGetTerminales,
   useUpdateCitaEstadoMutation,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
+import { COLOR_ROL } from "@/lib/color-rol";
 import { definicionEstado, IdAccionCita } from "@/lib/estados";
 import {
   formatearFechaExtensa,
@@ -27,24 +34,6 @@ const MAPA_ESTADO_NUEVO: Record<string, string> = {
   confirmar: "Confirmada",
   marcar_asistida: "Atendida",
   marcar_no_asistida: "NoAsistida",
-};
-
-const DOT_COLOR: Record<string, string> = {
-  "azul-seleccion": "bg-blue-600",
-  ambar: "bg-amber-500",
-  verde: "bg-emerald-500",
-  "azul-profundo": "bg-indigo-700",
-  rojo: "bg-red-500",
-  gris: "bg-slate-400",
-};
-
-const TEXTO_COLOR: Record<string, string> = {
-  "azul-seleccion": "text-blue-700",
-  ambar: "text-amber-700",
-  verde: "text-emerald-700",
-  "azul-profundo": "text-indigo-800",
-  rojo: "text-red-700",
-  gris: "text-slate-600",
 };
 
 export function AppointmentDetailModal({
@@ -142,26 +131,25 @@ function DetalleCita({
   onAccion: (idAccion: IdAccionCita) => void;
 }) {
   const definicion = definicionEstado(cita.estado as CodigoEstadoCita);
-  const dotColor = DOT_COLOR[definicion.colorRol] ?? "bg-slate-400";
-  const textoColor = TEXTO_COLOR[definicion.colorRol] ?? "text-slate-600";
+  const colorEstado = COLOR_ROL[definicion.colorRol] ?? COLOR_ROL.gris;
   const [tab, setTab] = useState("detalle");
   const [mostrarCobro, setMostrarCobro] = useState(false);
   const { data: terminales = [] } = useGetTerminales();
 
   return (
-    <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
+    <div className="bg-white text-foreground font-sans shadow-none rounded-none">
       {/* Encabezado del Modal */}
       <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+            <h2 className="font-sans text-section-title font-bold text-foreground">
               Detalle de Reserva{" "}
-              <span className="font-sans font-bold text-slate-900">
+              <span className="font-sans font-bold text-foreground">
                 #{cita.id}
               </span>
             </h2>
-            <span className="border border-slate-200 bg-white px-2 py-0.5 font-sans text-[10px] font-medium uppercase tracking-wider text-slate-700 rounded-none">
-              {cita.origen === "web" ? "WEB" : "MANUAL"}
+            <span className="border border-slate-200 bg-white px-2 py-0.5 font-sans text-micro-header font-medium text-muted-foreground rounded-none">
+              {cita.origen === "web" ? "Web" : "Manual"}
             </span>
           </div>
           <p className="font-sans text-xs text-slate-500 mt-0.5">
@@ -171,14 +159,7 @@ function DetalleCita({
             </span>
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onCerrar}
-          aria-label="Cerrar"
-          className="p-1 font-sans text-sm text-slate-400 hover:text-slate-900 rounded-none focus:outline-none"
-        >
-          ✕
-        </button>
+        <ModalCloseButton onClick={onCerrar} />
       </div>
 
       {errorMsg && (
@@ -224,54 +205,51 @@ function DetalleCita({
             <div className="md:col-span-2 p-6 space-y-6">
               {/* DETALLES DE LA ATENCIÓN */}
               <div>
-                <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
-                  DETALLES DE LA ATENCIÓN
+                <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
+                  Detalles de la Atención
                 </h3>
                 <div className="space-y-3">
                   <div>
-                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    <span className="font-sans text-label font-medium text-muted-foreground block">
                       Servicio
                     </span>
-                    <span className="font-sans font-medium text-sm text-slate-900 capitalize block mt-0.5">
+                    <span className="font-sans font-medium text-value text-foreground capitalize block mt-0.5">
                       {cita.servicio.nombre}
                     </span>
                   </div>
 
                   <div>
-                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    <span className="font-sans text-label font-medium text-muted-foreground block">
                       Especialista
                     </span>
-                    <span className="font-sans font-medium text-sm text-slate-900 block mt-0.5">
+                    <span className="font-sans font-medium text-value text-foreground block mt-0.5">
                       {cita.especialista.nombre} ({cita.especialista.cargo})
                     </span>
                   </div>
 
                   <div>
-                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    <span className="font-sans text-label font-medium text-muted-foreground block">
                       Fecha y Horario
                     </span>
-                    <span className="font-sans font-medium text-sm text-slate-900 block mt-0.5">
+                    <span className="font-sans font-medium text-value text-foreground block mt-0.5">
                       {formatearFechaExtensa(
                         new Date(`${cita.fecha}T00:00:00`)
-                      )}{" "}
-                      · {formatearRangoHorario(cita.horaInicio, cita.horaFin)}
+                      )}
+                      , {formatearRangoHorario(cita.horaInicio, cita.horaFin)}
                     </span>
                   </div>
 
                   <div>
-                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    <span className="font-sans text-label font-medium text-muted-foreground block">
                       Estado Actual
                     </span>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <span
-                        className={`h-2 w-2 rounded-full ${dotColor}`}
-                        aria-hidden
-                      />
-                      <span
-                        className={`font-sans text-xs font-bold uppercase tracking-wider ${textoColor}`}
+                    <div className="mt-1">
+                      <Badge
+                        className="rounded-overlay border-0 text-[11px] font-medium text-white"
+                        style={{ backgroundColor: colorEstado.fondoSolido }}
                       >
                         {definicion.etiqueta}
-                      </span>
+                      </Badge>
                     </div>
                   </div>
                 </div>
@@ -279,15 +257,15 @@ function DetalleCita({
 
               {/* INFORMACIÓN DE PAGO */}
               <div>
-                <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
-                  INFORMACIÓN DE PAGO
+                <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
+                  Información de Pago
                 </h3>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
-                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                    <span className="font-sans text-label font-medium text-muted-foreground block">
                       Monto Anticipo
                     </span>
-                    <span className="font-sans font-medium text-sm text-slate-900 mt-0.5 block">
+                    <span className="font-sans font-medium text-value text-foreground mt-0.5 block">
                       {cita.transaccion
                         ? `$${cita.transaccion.monto.toLocaleString("es-CL")} CLP`
                         : "Sin anticipo / Pago presencial"}
@@ -295,10 +273,10 @@ function DetalleCita({
                   </div>
                   {cita.transaccion && (
                     <div>
-                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                      <span className="font-sans text-label font-medium text-muted-foreground block">
                         N° Transacción Webpay
                       </span>
-                      <span className="font-sans font-medium text-sm text-slate-900 mt-0.5 block">
+                      <span className="font-sans font-medium text-value text-foreground mt-0.5 block">
                         {cita.transaccion.buyOrder}
                       </span>
                     </div>
@@ -310,43 +288,43 @@ function DetalleCita({
             {/* COLUMNA DERECHA SECUNDARIA (1/3) - FICHA RÁPIDA PACIENTE */}
             <div className="md:col-span-1 bg-slate-50/80 p-6 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400">
-                  FICHA DEL PACIENTE
+                <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground">
+                  Ficha del Paciente
                 </h3>
 
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
                     Nombre
                   </span>
-                  <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
                     {cita.paciente.nombre} {cita.paciente.apellido}
                   </p>
                 </div>
 
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
                     RUT
                   </span>
-                  <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
                     {cita.paciente.rut || "—"}
                   </p>
                 </div>
 
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
                     Teléfono
                   </span>
-                  <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
                     {cita.paciente.telefono || "—"}
                   </p>
                 </div>
 
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
                     Correo Electrónico
                   </span>
                   <p
-                    className="font-sans font-medium text-sm text-slate-900 mt-0.5 truncate"
+                    className="font-sans font-medium text-value text-foreground mt-0.5 truncate"
                     title={cita.paciente.email}
                   >
                     {cita.paciente.email}
@@ -354,11 +332,11 @@ function DetalleCita({
                 </div>
 
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
                     Convenio
                   </span>
-                  <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                    Sin convenio
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
+                    Sin Convenio
                   </p>
                 </div>
               </div>
@@ -384,17 +362,17 @@ function DetalleCita({
                 accion.estilo === "primario" || accion.estilo === "peligro";
 
               const estiloBtn = esDestacado
-                ? "bg-[#003366] text-white hover:bg-[#002244] border-0 font-bold shadow-none"
-                : "border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 shadow-none";
+                ? "bg-primary text-white hover:bg-primary-hover border-0 font-bold shadow-none"
+                : "border border-slate-200 bg-white hover:bg-slate-50 text-foreground shadow-none";
 
               return (
                 <button
                   key={accion.id}
                   disabled={guardando}
                   onClick={() => onAccion(accion.id)}
-                  className={`font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-none transition-all focus:outline-none ${estiloBtn} disabled:opacity-50`}
+                  className={`font-sans text-xs font-bold px-4 py-2 rounded-none transition-all focus:outline-none ${estiloBtn} disabled:opacity-50`}
                 >
-                  {guardando ? "PROCESANDO..." : accion.etiqueta}
+                  {guardando ? "Procesando..." : accion.etiqueta}
                 </button>
               );
             })}

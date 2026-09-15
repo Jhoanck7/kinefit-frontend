@@ -51,13 +51,18 @@ function PacientesContent() {
             ayuda={buscando ? "Buscando…" : undefined}
           />
         </div>
-        <Button onClick={actions.handleNuevoPaciente}>NUEVO PACIENTE</Button>
+        <Button
+          className="rounded-overlay"
+          onClick={actions.handleNuevoPaciente}
+        >
+          Nuevo Paciente
+        </Button>
       </div>
 
       <div className="overflow-hidden rounded-none border border-slate-200 shadow-none font-sans">
         <div className="px-6 py-3.5 border-b border-slate-200 bg-white font-sans">
-          <p className="font-sans font-bold text-xs uppercase tracking-wider text-slate-900">
-            {total} pacientes registrados
+          <p className="font-sans font-bold text-label text-foreground">
+            {total} Pacientes Registrados
           </p>
         </div>
 
@@ -67,12 +72,11 @@ function PacientesContent() {
               {COLUMNAS.map(titulo => (
                 <TableHead
                   key={titulo}
-                  className="px-4 py-3 text-[11px] font-medium uppercase tracking-wider text-slate-400 whitespace-nowrap"
+                  className="px-4 py-3 text-table-head font-bold text-muted-foreground whitespace-nowrap"
                 >
                   {titulo}
                 </TableHead>
               ))}
-              <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-slate-200 bg-white">
@@ -90,53 +94,23 @@ function PacientesContent() {
                 }}
                 className="cursor-pointer hover:bg-slate-50/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-slate-900"
               >
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-900">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {paciente.nombre}
-                  <span
-                    title={
-                      paciente.origenRegistro === "web"
-                        ? "Registrado desde la web"
-                        : "Registrado por el personal"
-                    }
-                    className="ml-2 inline-block h-1.5 w-1.5 rounded-full align-middle"
-                    style={{
-                      backgroundColor:
-                        paciente.origenRegistro === "web"
-                          ? "#003366"
-                          : "#94a3b8",
-                    }}
-                  />
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-900">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {paciente.apellido}
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {paciente.rut || "Sin RUT"}
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {paciente.email || "Sin Correo"}
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700 whitespace-nowrap">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground whitespace-nowrap">
                   {paciente.telefono || "Sin Teléfono"}
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {paciente.convenio || "Sin Convenio"}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-right">
-                  <svg
-                    className="inline h-4 w-4 text-slate-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    aria-hidden
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                    />
-                  </svg>
                 </TableCell>
               </TableRow>
             ))}
@@ -158,7 +132,7 @@ function PacientesContent() {
 
       {total === 0 && (
         <EmptyState
-          titulo="Sin resultados"
+          titulo="Sin Resultados"
           descripcion="Ningún paciente coincide con la búsqueda. Prueba con otro nombre, RUT o correo."
         />
       )}

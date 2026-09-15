@@ -38,6 +38,7 @@ function ConstructorPlantillaContenido() {
     draggedSeccionIndex,
     idEditado,
     seccionEnBorrado,
+    urlArchivoActual,
     actions,
   } = useConstructorPlantilla();
 
@@ -47,14 +48,13 @@ function ConstructorPlantillaContenido() {
         <button
           type="button"
           onClick={actions.handleVolver}
-          aria-label="Volver"
-          className="flex h-9 w-9 items-center justify-center rounded-none border border-slate-200 text-slate-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900"
+          className="flex h-9 items-center justify-center rounded-overlay border border-slate-200 px-3 font-sans text-xs font-bold text-foreground hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900"
         >
-          ←
+          Volver
         </button>
         <div>
-          <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
-            {idEditado ? "Editar plantilla" : "Nueva plantilla"}
+          <h2 className="font-sans text-section-title font-bold text-foreground">
+            {idEditado ? "Editar Plantilla" : "Nueva Plantilla"}
           </h2>
           <p className="font-sans text-xs text-slate-500 mt-0.5">
             Configura los campos y secciones para el documento clínico. Puedes
@@ -66,8 +66,11 @@ function ConstructorPlantillaContenido() {
       {idEditado && documentosDeLaPlantillaEditada > 0 && (
         <Alerta tono="advertencia" className="mb-4">
           Esta plantilla tiene{" "}
-          <strong>{documentosDeLaPlantillaEditada} documento(s)</strong> ya
-          creados. Los cambios no alterarán esos documentos históricos:
+          <strong>
+            {documentosDeLaPlantillaEditada}{" "}
+            {documentosDeLaPlantillaEditada === 1 ? "documento" : "documentos"}
+          </strong>{" "}
+          ya creados. Los cambios no alterarán esos documentos históricos:
           conservan la estructura vigente al momento de su creación.
         </Alerta>
       )}
@@ -118,17 +121,17 @@ function ConstructorPlantillaContenido() {
                   <button
                     type="button"
                     onClick={() => actions.elegirModo("elegir")}
-                    className="mt-1.5 font-sans text-[11px] font-bold uppercase tracking-wider text-slate-500 underline underline-offset-2 hover:text-slate-900"
+                    className="mt-1.5 font-sans text-label font-bold text-muted-foreground underline underline-offset-2 hover:text-foreground"
                   >
-                    Cambiar forma de armado
+                    Cambiar Forma de Armado
                   </button>
                 )}
             </div>
 
             {tipoDocumento === "Consentimiento" && modo !== "elegir" && (
               <div className="mt-4 space-y-2 border-t border-slate-200 pt-4">
-                <p className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                  Firmas requeridas
+                <p className="font-sans text-label font-semibold text-muted-foreground">
+                  Firmas Requeridas
                 </p>
                 {modo !== "archivo" && (
                   <SwitchField
@@ -148,7 +151,7 @@ function ConstructorPlantillaContenido() {
 
           {modo === "elegir" && (
             <Card className="rounded-none border-slate-200 shadow-none p-6">
-              <p className="mb-4 font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              <p className="mb-4 font-sans text-label font-semibold text-muted-foreground">
                 ¿Cómo se arma este documento?
               </p>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -157,8 +160,8 @@ function ConstructorPlantillaContenido() {
                   onClick={() => actions.elegirModo("campos")}
                   className="rounded-none border border-slate-200 p-4 text-left hover:border-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900"
                 >
-                  <span className="block font-sans text-sm font-bold text-slate-900">
-                    Con campos
+                  <span className="block font-sans text-value font-bold text-foreground">
+                    Con Campos
                   </span>
                   <span className="mt-1 block font-sans text-xs text-slate-500">
                     Arma el documento sección por sección con el constructor.
@@ -169,8 +172,8 @@ function ConstructorPlantillaContenido() {
                   onClick={() => actions.elegirModo("archivo")}
                   className="rounded-none border border-slate-200 p-4 text-left hover:border-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900"
                 >
-                  <span className="block font-sans text-sm font-bold text-slate-900">
-                    Documento externo
+                  <span className="block font-sans text-value font-bold text-foreground">
+                    Documento Externo
                   </span>
                   <span className="mt-1 block font-sans text-xs text-slate-500">
                     Sube un PDF ya redactado.
@@ -180,9 +183,43 @@ function ConstructorPlantillaContenido() {
             </Card>
           )}
 
-          {modo === "archivo" && (
+          {modo === "archivo" && idEditado && (
             <Card className="rounded-none border-slate-200 shadow-none p-4">
-              <label className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+              <label className="font-sans text-label font-semibold text-muted-foreground">
+                Archivo Actual
+              </label>
+              <div className="mt-2 flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={actions.handleAbrirArchivoActual}
+                  className="font-sans text-xs font-bold text-panel-sidebar underline underline-offset-2"
+                >
+                  Abrir en Otra Pestaña
+                </button>
+                <button
+                  type="button"
+                  onClick={actions.handleVerArchivoActualAqui}
+                  className="font-sans text-xs font-bold text-panel-sidebar underline underline-offset-2"
+                >
+                  {urlArchivoActual ? "Ocultar Visor" : "Ver Aquí"}
+                </button>
+              </div>
+              {urlArchivoActual && (
+                <iframe
+                  src={urlArchivoActual}
+                  title="Archivo de la plantilla"
+                  className="mt-3 h-[70vh] w-full rounded-overlay border border-slate-200"
+                />
+              )}
+              <p className="mt-3 font-sans text-xs text-slate-500">
+                Reemplazar este archivo aún no está disponible.
+              </p>
+            </Card>
+          )}
+
+          {modo === "archivo" && !idEditado && (
+            <Card className="rounded-none border-slate-200 shadow-none p-4">
+              <label className="font-sans text-label font-semibold text-muted-foreground">
                 Archivo PDF
               </label>
               <input
@@ -283,7 +320,7 @@ function ConstructorPlantillaContenido() {
                     type="button"
                     onClick={() => actions.setSeccionAEliminar(seccion.id)}
                     aria-label="Eliminar sección"
-                    className="ml-2 text-xs font-bold text-slate-900 border border-slate-200 bg-white hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 rounded-none px-2 py-1"
+                    className="ml-2 text-xs font-bold text-slate-900 border border-slate-200 bg-white hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 rounded-overlay px-2 py-1"
                   >
                     Eliminar
                   </button>
@@ -447,8 +484,8 @@ function ConstructorPlantillaContenido() {
 
                       {campo.tipo === "Seleccion" && (
                         <div className="mt-3 space-y-2 border-t border-slate-200 pt-3">
-                          <p className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                            Opciones de selección
+                          <p className="font-sans text-label font-semibold text-muted-foreground">
+                            Opciones de Selección
                           </p>
                           {campo.opciones.map((opcion, indiceOpcion) => (
                             <div
@@ -531,10 +568,16 @@ function ConstructorPlantillaContenido() {
 
           {modo !== "elegir" && (
             <div className="flex justify-end gap-3 border-t border-slate-200 pt-6">
-              <Button variant="outline" onClick={actions.handleCancelar}>
+              <Button
+                variant="outline"
+                className="rounded-overlay"
+                onClick={actions.handleCancelar}
+              >
                 Cancelar
               </Button>
-              <Button onClick={actions.alGuardar}>Guardar plantilla</Button>
+              <Button className="rounded-overlay" onClick={actions.alGuardar}>
+                Guardar Plantilla
+              </Button>
             </div>
           )}
         </div>
@@ -542,24 +585,22 @@ function ConstructorPlantillaContenido() {
         {modo === "campos" && (
           <div className="border border-slate-200 rounded-none h-fit sticky top-6">
             <div className="flex items-center justify-between bg-slate-900 px-4 py-3 text-white">
-              <span className="font-sans text-xs font-bold uppercase tracking-wider">
-                Vista Previa
-              </span>
+              <span className="font-sans text-xs font-bold">Vista Previa</span>
             </div>
             <div className="space-y-5 bg-white p-4">
-              <p className="font-sans text-sm font-bold text-slate-900">
-                {nombrePlantilla || "Sin nombre"}
+              <p className="font-sans text-value font-bold text-foreground">
+                {nombrePlantilla || "Sin Nombre"}
               </p>
               {secciones.map(seccion => (
                 <div key={seccion.id}>
-                  <p className="mb-2 border-b border-slate-200 pb-1 font-sans text-xs font-bold uppercase tracking-wider text-slate-400">
-                    {seccion.nombre || "Sin nombre"}
+                  <p className="mb-2 border-b border-slate-200 pb-1 font-sans text-label font-bold text-muted-foreground">
+                    {seccion.nombre || "Sin Nombre"}
                   </p>
                   <div className="space-y-3">
                     {seccion.campos.map(campo => (
                       <div key={campo.id}>
-                        <label className="mb-1 block font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
-                          {campo.nombre || "Sin nombre"}
+                        <label className="mb-1 block font-sans text-label font-medium text-muted-foreground">
+                          {campo.nombre || "Sin Nombre"}
                           {campo.obligatorio && (
                             <span className="ml-0.5 text-red-700">*</span>
                           )}
@@ -594,22 +635,28 @@ function ConstructorPlantillaContenido() {
         onCerrar={() => actions.setSeccionAEliminar(null)}
       >
         <div className="p-6">
-          <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+          <h3 className="font-sans text-section-title font-bold text-foreground">
             ¿Eliminar esta sección?
           </h3>
           <p className="mt-2 font-sans text-xs text-slate-500">
-            Se perderán {seccionEnBorrado?.campos.length ?? 0} campo(s) de
-            &ldquo;{seccionEnBorrado?.nombre}&rdquo;.
+            Se perderá{(seccionEnBorrado?.campos.length ?? 0) === 1 ? "" : "n"}{" "}
+            {seccionEnBorrado?.campos.length ?? 0}{" "}
+            {(seccionEnBorrado?.campos.length ?? 0) === 1 ? "campo" : "campos"}{" "}
+            de &ldquo;{seccionEnBorrado?.nombre}&rdquo;.
           </p>
           <div className="mt-6 flex justify-end gap-3">
             <Button
               variant="outline"
+              className="rounded-overlay"
               onClick={() => actions.setSeccionAEliminar(null)}
             >
               Volver
             </Button>
-            <Button onClick={actions.eliminarSeccionConfirmado}>
-              Eliminar sección
+            <Button
+              className="rounded-overlay"
+              onClick={actions.eliminarSeccionConfirmado}
+            >
+              Eliminar Sección
             </Button>
           </div>
         </div>
@@ -620,7 +667,7 @@ function ConstructorPlantillaContenido() {
         onCerrar={() => actions.setConfirmacionPendiente(null)}
       >
         <div className="p-6">
-          <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+          <h3 className="font-sans text-section-title font-bold text-foreground">
             ¿Guardar los cambios?
           </h3>
           <p className="mt-2 font-sans text-xs text-slate-500">
@@ -630,12 +677,16 @@ function ConstructorPlantillaContenido() {
           <div className="mt-6 flex justify-end gap-3">
             <Button
               variant="outline"
+              className="rounded-overlay"
               onClick={() => actions.setConfirmacionPendiente(null)}
             >
               Volver
             </Button>
-            <Button onClick={actions.confirmarGuardado}>
-              Guardar de todas formas
+            <Button
+              className="rounded-overlay"
+              onClick={actions.confirmarGuardado}
+            >
+              Guardar de Todas Formas
             </Button>
           </div>
         </div>

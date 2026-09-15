@@ -75,26 +75,28 @@ export function ReporteVentasView({
       {/* Tarjetas Resumen del Flujo de Caja */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card className="p-6">
-          <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+          <span className="text-section-title font-bold text-muted-foreground">
             Monto Total del Período
           </span>
           <p className="mt-2 text-2xl font-bold text-emerald-800">
             ${montoTotalPeriodo.toLocaleString("es-CL")}{" "}
-            <span className="text-sm font-normal text-brand-muted">CLP</span>
+            <span className="text-sm font-normal text-muted-foreground">
+              CLP
+            </span>
           </p>
-          <p className="mt-1 text-sm text-brand-muted">
+          <p className="mt-1 text-sm text-muted-foreground">
             Suma total recaudada en el filtro actual
           </p>
         </Card>
 
         <Card className="p-6">
-          <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+          <span className="text-section-title font-bold text-muted-foreground">
             Transacciones Registradas
           </span>
           <p className="mt-2 text-2xl font-bold text-panel-sidebar">
             {total} ventas
           </p>
-          <p className="mt-1 text-sm text-brand-muted">
+          <p className="mt-1 text-sm text-muted-foreground">
             Movimientos de caja procesados
           </p>
         </Card>
@@ -103,10 +105,10 @@ export function ReporteVentasView({
       {/* Exportación */}
       <Card className="p-6 flex flex-wrap items-center justify-center gap-4 text-center text-sm text-panel-sidebar">
         <div>
-          <h3 className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+          <h3 className="text-section-title font-bold text-muted-foreground">
             Exportar Flujo de Caja
           </h3>
-          <p className="text-sm text-brand-muted">
+          <p className="text-sm text-muted-foreground">
             Descarga directa para contabilidad y conciliación bancaria
           </p>
         </div>
@@ -133,7 +135,7 @@ export function ReporteVentasView({
               {COLUMNAS_REPORTE_VENTAS.map(titulo => (
                 <TableHead
                   key={titulo}
-                  className={`px-4 py-3 text-[11px] font-medium uppercase tracking-wider text-slate-400 whitespace-nowrap ${
+                  className={`px-4 py-3 text-table-head font-medium text-muted-foreground whitespace-nowrap ${
                     titulo === "Monto Total ($)" ? "text-right" : ""
                   }`}
                 >
@@ -145,19 +147,19 @@ export function ReporteVentasView({
           <TableBody className="divide-y divide-slate-200 bg-white">
             {movimientos.map(m => (
               <TableRow key={m.id} className="hover:bg-slate-50/70">
-                <TableCell className="px-4 py-3 font-bold text-panel-sidebar">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   #{m.id}
                 </TableCell>
-                <TableCell className="px-4 py-3 text-brand-muted">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {m.fecha}
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-panel-sidebar">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {m.pacienteNombre}
                 </TableCell>
-                <TableCell className="px-4 py-3 text-panel-sidebar">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {m.metodoPago}
                 </TableCell>
-                <TableCell className="px-4 py-3 text-right font-bold text-panel-sidebar">
+                <TableCell className="px-4 py-3 text-right font-normal text-table-cell text-foreground">
                   ${m.monto.toLocaleString("es-CL")}
                 </TableCell>
               </TableRow>

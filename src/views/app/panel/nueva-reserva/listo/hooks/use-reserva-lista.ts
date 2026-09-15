@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { definicionEstado } from "@/lib/estados";
 import { fechaISO } from "@/lib/formato";
@@ -18,8 +18,10 @@ export const useReservaLista = () => {
     reiniciar,
   } = useNuevaReservaStore();
   const definicion = definicionEstado("PorConfirmar");
+  const saliendoRef = useRef(false);
 
   useEffect(() => {
+    if (saliendoRef.current) return;
     if (!fecha || !hora || !pacienteNombre || !servicioNombre) {
       router.replace("/panel/nueva-reserva/servicio");
     }
@@ -40,11 +42,13 @@ export const useReservaLista = () => {
   // Actions
   const handleIrALaAgenda = () => {
     if (!fecha) return;
+    saliendoRef.current = true;
     reiniciar();
     router.push(`/panel/agenda?fecha=${fechaISO(fecha)}`);
   };
 
   const handleRegistrarOtra = () => {
+    saliendoRef.current = true;
     reiniciar();
     router.push("/panel/nueva-reserva/servicio");
   };
@@ -58,6 +62,7 @@ export const useReservaLista = () => {
     pacienteNombre,
     nombreServicio: servicioNombre,
     etiquetaEstado: definicion.etiqueta,
+    colorRolEstado: definicion.colorRol,
 
     // Actions
     actions: {

@@ -38,6 +38,13 @@ export interface PacientePerfilResponse extends PacienteResponse {
   historial: HistorialCitaResponse[];
 }
 
+export interface PacientesPaginadasResponse {
+  total: number;
+  page: number;
+  pageSize: number;
+  items: PacienteResponse[];
+}
+
 export interface VerificarRutResponse {
   existe: boolean;
   paciente?: PacienteResponse;

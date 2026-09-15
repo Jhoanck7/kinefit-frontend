@@ -41,7 +41,7 @@ export default function NuevaFichaReservaView() {
       </div>
 
       <Card className="border border-border p-6">
-        <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900 mb-1">
+        <h2 className="font-sans text-section-title font-bold text-foreground mb-1">
           ¿A qué atención corresponde la ficha?
         </h2>
         <p className="font-sans text-xs text-slate-500 mb-4">
@@ -88,12 +88,12 @@ export default function NuevaFichaReservaView() {
 
         {pacienteId && (
           <div className="mt-6">
-            <p className="mb-3 font-sans text-[11px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-200 pb-1">
+            <p className="mb-3 font-sans text-label font-bold text-muted-foreground border-b border-slate-200 pb-1">
               Reservas de {pacienteNombre}
             </p>
             {reservas.length === 0 ? (
               <EmptyState
-                titulo="Sin reservas"
+                titulo="Sin Reservas"
                 descripcion="Este paciente no tiene reservas registradas."
               />
             ) : (
@@ -134,7 +134,7 @@ export default function NuevaFichaReservaView() {
                           </p>
                         </div>
                         <span
-                          className={`shrink-0 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none text-white ${
+                          className={`shrink-0 px-2 py-0.5 font-sans text-[10px] font-bold rounded-none text-white ${
                             cita.conFicha
                               ? "bg-emerald-700"
                               : esAtendida
@@ -143,9 +143,9 @@ export default function NuevaFichaReservaView() {
                           }`}
                         >
                           {cita.conFicha
-                            ? "Con ficha"
+                            ? "Con Ficha"
                             : esAtendida
-                              ? "Atendida (Lista para ficha)"
+                              ? "Atendida (Lista para Ficha)"
                               : `Estado: ${cita.estado}`}
                         </span>
                       </button>
@@ -197,7 +197,7 @@ export default function NuevaFichaReservaView() {
             <button
               type="button"
               onClick={actions.handleCancelar}
-              className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
+              className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
             >
               Cancelar
             </button>
@@ -217,14 +217,14 @@ export default function NuevaFichaReservaView() {
 
       <SummaryPanel
         filas={[
-          { etiqueta: "PACIENTE", valor: pacienteNombre ?? undefined },
+          { etiqueta: "Paciente", valor: pacienteNombre ?? undefined },
           {
-            etiqueta: "RESERVA",
+            etiqueta: "Reserva",
             valor: citaSeleccionada
               ? `${formatearFechaExtensa(new Date(`${citaSeleccionada.fecha}T00:00:00`))} · ${citaSeleccionada.horaInicio}`
               : undefined,
           },
-          { etiqueta: "TIPO DE FICHA", valor: undefined },
+          { etiqueta: "Tipo de Ficha", valor: undefined },
         ]}
       />
 

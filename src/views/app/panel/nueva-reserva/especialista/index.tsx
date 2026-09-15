@@ -31,14 +31,6 @@ export default function EspecialistaView() {
   const opciones = especialistas.map(esp => ({
     id: String(esp.id),
     titulo: esp.nombre,
-    icono: (
-      <span className="flex h-7 w-7 items-center justify-center rounded-none bg-slate-100 text-xs font-bold font-sans text-slate-800">
-        {esp.nombre
-          .split(" ")
-          .map(n => n[0])
-          .join("")}
-      </span>
-    ),
   }));
 
   return (
@@ -49,7 +41,7 @@ export default function EspecialistaView() {
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_320px]">
         <Card className="border border-border p-6">
-          <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900 mb-1">
+          <h2 className="font-sans text-section-title font-bold text-foreground mb-1">
             ¿Qué profesional atenderá?
           </h2>
           <p className="font-sans text-xs text-slate-500 mb-4">
@@ -88,9 +80,9 @@ export default function EspecialistaView() {
               <button
                 type="button"
                 onClick={actions.handleCancelar}
-                className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
+                className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
               >
-                Cancelar reserva
+                Cancelar Reserva
               </button>
             }
             volver={

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
+import { Button } from "@/components/ui";
+
 function iniciales(nombre: string): string {
   return nombre
     .split(" ")
@@ -24,9 +26,19 @@ const TITULOS_POR_RUTA: { prefijo: string; titulo: string }[] = [
     titulo: "Planilla de Ventas y Registro de Cobros",
   },
   { prefijo: "/panel/reportes", titulo: "Reportes y Métricas" },
+  {
+    prefijo: "/panel/configuracion/especialistas",
+    titulo: "Gestión del Equipo y Gerencia",
+  },
+  {
+    prefijo: "/panel/configuracion/landing",
+    titulo: "Configuración de la Página Web Principal",
+  },
   { prefijo: "/panel/configuracion", titulo: "Configuración" },
-  { prefijo: "/panel/agenda/bloqueos", titulo: "Bloqueos de agenda" },
+  { prefijo: "/panel/agenda/bloqueos", titulo: "Bloqueos de Agenda" },
   { prefijo: "/panel/agenda", titulo: "Agenda" },
+  { prefijo: "/panel/perfil", titulo: "Mi Perfil" },
+  { prefijo: "/panel/cambiar-password", titulo: "Cambiar Contraseña" },
 ];
 
 function tituloDeLaRuta(pathname: string): string {
@@ -50,39 +62,24 @@ export function Header() {
   const titulo = tituloDeLaRuta(pathname);
 
   return (
-    <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-8 font-sans shadow-none">
-      <h1 className="text-xs font-bold uppercase tracking-widest text-slate-900 font-sans">
+    <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b border-border bg-white px-8 font-sans shadow-none">
+      <h1 className="text-page-title font-bold text-foreground font-sans">
         {titulo}
       </h1>
       <div className="flex items-center gap-4 font-sans">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-slate-700 transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-95 shadow-sm"
-          title="Ver Sitio Web / Landing Page"
-        >
-          <svg
-            className="w-3.5 h-3.5 text-slate-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-            />
-          </svg>
-          <span>Ir a la Web</span>
-        </Link>
+        <Button asChild variant="outline" className="rounded-overlay">
+          <Link href="/" title="Ver Sitio Web / Landing Page">
+            Ir a la Web
+          </Link>
+        </Button>
 
-        <div className="h-4 w-px bg-slate-200" />
+        <div className="h-4 w-px bg-border" />
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-700">
+          <span className="text-xs font-semibold text-muted-foreground">
             {nombre}
           </span>
-          <span className="flex h-7 w-7 items-center justify-center rounded-none bg-slate-100 text-xs font-sans font-bold text-slate-800 border border-slate-200">
+          <span className="flex h-7 w-7 items-center justify-center rounded-none bg-muted text-xs font-sans font-bold text-foreground border border-border">
             {iniciales(nombre)}
           </span>
         </div>

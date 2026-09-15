@@ -16,7 +16,7 @@ export function AuditTrail({
   historial: AuditoriaCitaResponse[];
 }) {
   return (
-    <CollapsibleSection titulo="Historial de la cita" abiertaPorDefecto={false}>
+    <CollapsibleSection titulo="Historial de la Cita" abiertaPorDefecto={false}>
       <ol className="space-y-3">
         {historial.map(cambio => (
           <li
@@ -30,16 +30,16 @@ export function AuditTrail({
                     .etiqueta
                 }
               </p>
-              <p className="text-xs text-brand-muted">
+              <p className="text-xs text-muted-foreground">
                 {ETIQUETA_ACTOR[cambio.tipoActor] ?? cambio.tipoActor}
               </p>
               {cambio.motivo && (
-                <p className="text-xs text-brand-muted italic">
+                <p className="text-xs text-muted-foreground italic">
                   {cambio.motivo}
                 </p>
               )}
             </div>
-            <span className="shrink-0 text-xs text-brand-muted">
+            <span className="shrink-0 text-xs text-muted-foreground">
               {formatearFechaHora(new Date(cambio.createdAt))}
             </span>
           </li>

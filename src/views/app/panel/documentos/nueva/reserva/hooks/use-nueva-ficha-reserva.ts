@@ -31,11 +31,14 @@ export const useNuevaFichaReserva = () => {
 
   const busquedaDebounced = useDebounce(busqueda.trim(), 300);
   const busquedaValida = busquedaDebounced.length >= MIN_CARACTERES_BUSQUEDA;
-  const { data: resultados = [], isFetching: buscando } = useGetPacientes(
+  const { data: resultadosPagina, isFetching: buscando } = useGetPacientes(
     busquedaValida ? busquedaDebounced : undefined,
     undefined,
+    1,
+    20,
     busquedaValida
   );
+  const resultados = resultadosPagina?.items ?? [];
 
   const pacienteIdNum = pacienteId ? Number(pacienteId) : undefined;
   const { data: perfil } = useGetPacientePerfil(

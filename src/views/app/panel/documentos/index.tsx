@@ -13,6 +13,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui";
+import {
+  CATALOGO_ESTADOS_DOCUMENTO,
+  CodigoEstadoDocumento,
+  etiquetaTipoDocumento,
+  ORDEN_ESTADOS_DOCUMENTO,
+} from "@/lib/estados-documento";
 import { formatearFechaCorta } from "@/lib/formato";
 import { TIPOS_DOCUMENTO } from "@/views/app/panel/documentos/plantillas/nuevo/hooks";
 
@@ -28,30 +34,6 @@ const COLUMNAS = [
   "Especialista",
   "Fecha de atención",
 ];
-
-const ESTADOS = [
-  { valor: "Borrador", etiqueta: "Borrador" },
-  { valor: "Pendiente", etiqueta: "Pendiente" },
-  { valor: "Completado", etiqueta: "Completado" },
-  { valor: "Bloqueado", etiqueta: "Bloqueado" },
-  { valor: "CerradoPorBaja", etiqueta: "Cerrado por baja" },
-  { valor: "Anulado", etiqueta: "Anulado" },
-];
-
-const ETIQUETA_ESTADO: Record<string, string> = Object.fromEntries(
-  ESTADOS.map(e => [e.valor, e.etiqueta])
-);
-
-const COLOR_ESTADO: Record<string, string> = {
-  Borrador: "bg-slate-400",
-  Pendiente: "bg-amber-500",
-  Completado: "bg-emerald-600",
-  Bloqueado: "bg-red-500",
-  CerradoPorBaja: "bg-red-500",
-  Anulado: "bg-slate-500",
-};
-
-const ESTADOS_INTERRUMPIDOS = new Set(["Bloqueado", "CerradoPorBaja"]);
 
 function DocumentosContenido() {
   const {
@@ -85,7 +67,7 @@ function DocumentosContenido() {
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+            <span className="font-medium text-muted-foreground text-label">
               Tipo:
             </span>
             <select
@@ -93,17 +75,17 @@ function DocumentosContenido() {
               onChange={e => actions.setTipo(e.target.value)}
               className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
             >
-              <option value="">TODOS LOS TIPOS</option>
+              <option value="">Todos los Tipos</option>
               {TIPOS_DOCUMENTO.map(t => (
                 <option key={t.valor} value={t.valor}>
-                  {t.etiqueta.toUpperCase()}
+                  {t.etiqueta}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+            <span className="font-medium text-muted-foreground text-label">
               Estado:
             </span>
             <select
@@ -111,17 +93,17 @@ function DocumentosContenido() {
               onChange={e => actions.setEstado(e.target.value)}
               className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
             >
-              <option value="">TODOS</option>
-              {ESTADOS.map(e => (
-                <option key={e.valor} value={e.valor}>
-                  {e.etiqueta.toUpperCase()}
+              <option value="">Todos</option>
+              {ORDEN_ESTADOS_DOCUMENTO.map(codigo => (
+                <option key={codigo} value={codigo}>
+                  {CATALOGO_ESTADOS_DOCUMENTO[codigo].etiqueta}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+            <span className="font-medium text-muted-foreground text-label">
               Especialista:
             </span>
             <select
@@ -129,17 +111,17 @@ function DocumentosContenido() {
               onChange={e => actions.setEspecialistaId(e.target.value)}
               className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
             >
-              <option value="">TODOS</option>
+              <option value="">Todos</option>
               {especialistas.map(esp => (
                 <option key={esp.id} value={String(esp.id)}>
-                  {esp.nombre.toUpperCase()}
+                  {esp.nombre}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+            <span className="font-medium text-muted-foreground text-label">
               Desde:
             </span>
             <input
@@ -151,7 +133,7 @@ function DocumentosContenido() {
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+            <span className="font-medium text-muted-foreground text-label">
               Hasta:
             </span>
             <input
@@ -163,20 +145,27 @@ function DocumentosContenido() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" onClick={actions.handleIrAPlantillas}>
+            <Button
+              variant="outline"
+              className="rounded-overlay"
+              onClick={actions.handleIrAPlantillas}
+            >
               Plantillas
             </Button>
-            <Button onClick={actions.handleRegistrarFicha}>
-              Registrar ficha
+            <Button
+              className="rounded-overlay"
+              onClick={actions.handleRegistrarFicha}
+            >
+              Registrar Ficha
             </Button>
           </div>
         </div>
       </Card>
 
-      <Card className="p-0 overflow-hidden rounded-none border-slate-200 shadow-none font-sans">
+      <div className="overflow-hidden rounded-none border border-slate-200 shadow-none font-sans">
         <div className="px-6 py-3.5 border-b border-slate-200 bg-white font-sans">
-          <p className="font-sans font-bold text-xs uppercase tracking-wider text-slate-900">
-            {total} documento(s)
+          <p className="font-sans font-bold text-label text-foreground">
+            {total} Documento(s)
           </p>
         </div>
 
@@ -186,12 +175,11 @@ function DocumentosContenido() {
               {COLUMNAS.map(titulo => (
                 <TableHead
                   key={titulo}
-                  className="px-4 py-3 text-[11px] font-medium uppercase tracking-wider text-slate-400 whitespace-nowrap"
+                  className="px-4 py-3 text-table-head font-bold text-muted-foreground whitespace-nowrap"
                 >
                   {titulo}
                 </TableHead>
               ))}
-              <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-slate-200 bg-white">
@@ -209,63 +197,35 @@ function DocumentosContenido() {
                 }}
                 className="cursor-pointer hover:bg-slate-50/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-slate-900"
               >
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-900">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {documento.nombre}
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                  {documento.tipo}
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
+                  {etiquetaTipoDocumento(documento.tipo)}
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
-                  <span className="flex items-center gap-1.5">
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${COLOR_ESTADO[documento.estado] ?? "bg-slate-400"}`}
-                      aria-hidden
-                    />
-                    <span
-                      className={
-                        ESTADOS_INTERRUMPIDOS.has(documento.estado)
-                          ? "text-amber-800"
-                          : "text-slate-700"
-                      }
-                    >
-                      {ETIQUETA_ESTADO[documento.estado] ?? documento.estado}
-                    </span>
-                  </span>
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
+                  {CATALOGO_ESTADOS_DOCUMENTO[
+                    documento.estado as CodigoEstadoDocumento
+                  ]?.etiqueta ?? documento.estado}
                   {documento.motivoCierre && (
                     <span className="mt-0.5 block text-xs text-slate-500">
                       {documento.motivoCierre}
                     </span>
                   )}
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {documento.pacienteNombre}
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {documento.pacienteRut || "Sin RUT"}
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {documento.especialistaNombre}
                 </TableCell>
-                <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {formatearFechaCorta(
                     new Date(`${documento.fechaAtencion}T00:00:00`)
                   )}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-right">
-                  <svg
-                    className="inline h-4 w-4 text-slate-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    aria-hidden
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                    />
-                  </svg>
                 </TableCell>
               </TableRow>
             ))}
@@ -283,11 +243,11 @@ function DocumentosContenido() {
             puedeSiguiente={inicio + TAMANO_PAGINA < total}
           />
         )}
-      </Card>
+      </div>
 
       {total === 0 && (
         <EmptyState
-          titulo="Sin resultados"
+          titulo="Sin Resultados"
           descripcion="Ningún documento coincide con la búsqueda o el filtro seleccionado."
         />
       )}

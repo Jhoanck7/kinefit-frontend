@@ -1,6 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui";
+import { Badge, Button } from "@/components/ui";
+import { COLOR_ROL } from "@/lib/color-rol";
 import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/formato";
 
 import { useReservaLista } from "./hooks";
@@ -14,19 +15,22 @@ export default function ListoView() {
     pacienteNombre,
     nombreServicio,
     etiquetaEstado,
+    colorRolEstado,
     actions,
   } = useReservaLista();
 
   if (!listo || !fecha || !hora || !horaTermino) return <div aria-hidden />;
 
+  const color = COLOR_ROL[colorRolEstado] ?? COLOR_ROL["azul-seleccion"];
+
   return (
     <div className="flex min-h-[65vh] items-center justify-center font-sans shadow-none">
-      <div className="max-w-md w-full border border-slate-200 bg-white p-8 text-center space-y-5 rounded-none">
-        <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+      <div className="max-w-md w-full rounded-overlay border border-slate-200 bg-white p-8 text-center space-y-5">
+        <h2 className="font-sans text-section-title font-bold text-foreground">
           Cita Registrada Correctamente
         </h2>
 
-        <div className="border border-slate-200 bg-slate-50/70 p-4 text-xs space-y-1.5 rounded-none">
+        <div className="rounded-overlay border border-slate-200 bg-slate-50/70 p-4 text-xs space-y-1.5">
           <p className="font-sans font-medium text-sm text-slate-900">
             {pacienteNombre}
           </p>
@@ -39,11 +43,13 @@ export default function ListoView() {
           </p>
         </div>
 
-        <div className="flex items-center justify-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden />
-          <span className="font-sans text-xs font-bold uppercase tracking-wider text-blue-700">
+        <div className="flex justify-center">
+          <Badge
+            className="rounded-overlay border-0 text-[11px] font-medium text-white"
+            style={{ backgroundColor: color.fondoSolido }}
+          >
             {etiquetaEstado}
-          </span>
+          </Badge>
         </div>
 
         <p className="font-sans text-xs text-slate-500">
@@ -52,10 +58,19 @@ export default function ListoView() {
         </p>
 
         <div className="pt-3 flex justify-center gap-3 border-t border-slate-200">
-          <Button variant="outline" onClick={actions.handleRegistrarOtra}>
-            Registrar otra cita
+          <Button
+            variant="outline"
+            className="rounded-overlay"
+            onClick={actions.handleRegistrarOtra}
+          >
+            Registrar Otra Cita
           </Button>
-          <Button onClick={actions.handleIrALaAgenda}>Ir a la agenda</Button>
+          <Button
+            className="rounded-overlay"
+            onClick={actions.handleIrALaAgenda}
+          >
+            Ir a la Agenda
+          </Button>
         </div>
       </div>
     </div>

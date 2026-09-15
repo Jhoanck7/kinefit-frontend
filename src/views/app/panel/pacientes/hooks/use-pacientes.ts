@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useGetPacientes } from "@/hooks/api";
 import { useDebounce, useHoyPanel } from "@/hooks/common";
 
-export const TAMANO_PAGINA = 8;
+export const TAMANO_PAGINA = 10;
 
 export const usePacientes = () => {
   const router = useRouter();
@@ -17,12 +17,15 @@ export const usePacientes = () => {
   const [pagina, setPagina] = useState(1);
   const busquedaDebounced = useDebounce(busqueda.trim(), 300);
   const { data: pacientes, isFetching: buscando } = useGetPacientes(
-    busquedaDebounced || undefined
+    busquedaDebounced || undefined,
+    undefined,
+    pagina,
+    TAMANO_PAGINA
   );
   const pacienteModalId = searchParams.get("paciente");
-  const total = pacientes?.length ?? 0;
+  const total = pacientes?.total ?? 0;
   const inicio = (pagina - 1) * TAMANO_PAGINA;
-  const visibles = pacientes?.slice(inicio, inicio + TAMANO_PAGINA) ?? [];
+  const visibles = pacientes?.items ?? [];
 
   // Actions
   const abrirParametros = (params: Record<string, string | undefined>) => {

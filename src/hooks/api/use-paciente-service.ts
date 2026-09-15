@@ -14,12 +14,16 @@ import { pacienteService } from "@/services";
 export const useGetPacientes = (
   busqueda?: string,
   soloActivos?: boolean,
+  page = 1,
+  pageSize = 20,
   enabled = true
 ) => {
   return useQuery({
-    queryKey: ["pacientes", { busqueda, soloActivos }],
+    queryKey: ["pacientes", { busqueda, soloActivos, page, pageSize }],
     queryFn: () =>
-      pacienteService.getAll(busqueda, soloActivos).then(res => res.data.data),
+      pacienteService
+        .getAll(busqueda, soloActivos, page, pageSize)
+        .then(res => res.data.data),
     enabled,
     placeholderData: keepPreviousData,
   });

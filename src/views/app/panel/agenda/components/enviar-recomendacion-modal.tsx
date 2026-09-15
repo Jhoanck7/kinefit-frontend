@@ -131,10 +131,10 @@ export function EnviarRecomendacionModal({
       onCerrar={reiniciarYCerrar}
       ancho={paso === "plantilla" ? "sm:max-w-2xl" : "sm:max-w-md"}
     >
-      <div className="bg-white text-slate-900 font-sans p-6 space-y-4">
+      <div className="bg-white text-foreground font-sans p-6 space-y-4">
         {enviado ? (
           <>
-            <p className="font-sans text-sm font-bold text-slate-900">
+            <p className="font-sans text-sm font-bold text-foreground">
               {enviado}
             </p>
             <div className="flex justify-end">
@@ -143,7 +143,7 @@ export function EnviarRecomendacionModal({
           </>
         ) : paso === "preguntar" ? (
           <>
-            <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+            <h3 className="font-sans text-section-title font-bold text-foreground">
               ¿Enviar una recomendación?
             </h3>
             <p className="font-sans text-xs text-slate-500">
@@ -154,7 +154,7 @@ export function EnviarRecomendacionModal({
               <button
                 type="button"
                 onClick={handleNoEnviar}
-                className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-slate-200"
+                className="font-sans text-xs font-bold px-4 py-2 border border-slate-200"
               >
                 No
               </button>
@@ -163,7 +163,7 @@ export function EnviarRecomendacionModal({
           </>
         ) : paso === "elegir" ? (
           <>
-            <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+            <h3 className="font-sans text-section-title font-bold text-foreground">
               ¿Cuál recomendación?
             </h3>
             {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
@@ -172,14 +172,14 @@ export function EnviarRecomendacionModal({
                 type="button"
                 onClick={handleEstandar}
                 disabled={enviando}
-                className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-3 border border-slate-200 hover:bg-slate-50 text-left"
+                className="font-sans text-xs font-bold px-4 py-3 border border-slate-200 hover:bg-slate-50 text-left"
               >
-                La estándar del servicio
+                La Estándar del Servicio
               </button>
               <button
                 type="button"
                 onClick={() => setPaso("personalizada")}
-                className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-3 border border-slate-200 hover:bg-slate-50 text-left"
+                className="font-sans text-xs font-bold px-4 py-3 border border-slate-200 hover:bg-slate-50 text-left"
               >
                 Personalizada
               </button>
@@ -187,21 +187,21 @@ export function EnviarRecomendacionModal({
           </>
         ) : paso === "personalizada" ? (
           <>
-            <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+            <h3 className="font-sans text-section-title font-bold text-foreground">
               ¿Cómo se arma?
             </h3>
             <div className="flex flex-col gap-2">
               <button
                 type="button"
                 onClick={() => setPaso("plantilla")}
-                className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-3 border border-slate-200 hover:bg-slate-50 text-left"
+                className="font-sans text-xs font-bold px-4 py-3 border border-slate-200 hover:bg-slate-50 text-left"
               >
-                Completar una plantilla de recomendación
+                Completar una Plantilla de Recomendación
               </button>
               <button
                 type="button"
                 onClick={() => setPaso("adjuntar")}
-                className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-3 border border-slate-200 hover:bg-slate-50 text-left"
+                className="font-sans text-xs font-bold px-4 py-3 border border-slate-200 hover:bg-slate-50 text-left"
               >
                 Adjuntar un PDF
               </button>
@@ -210,7 +210,7 @@ export function EnviarRecomendacionModal({
               <button
                 type="button"
                 onClick={() => setPaso("elegir")}
-                className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-slate-200"
+                className="font-sans text-xs font-bold px-4 py-2 border border-slate-200"
               >
                 Volver
               </button>
@@ -218,8 +218,8 @@ export function EnviarRecomendacionModal({
           </>
         ) : paso === "plantilla" ? (
           <>
-            <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
-              Completar plantilla de recomendación
+            <h3 className="font-sans text-section-title font-bold text-foreground">
+              Completar Plantilla de Recomendación
             </h3>
             {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
 
@@ -309,7 +309,7 @@ export function EnviarRecomendacionModal({
               <button
                 type="button"
                 onClick={() => setPaso("personalizada")}
-                className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-slate-200"
+                className="font-sans text-xs font-bold px-4 py-2 border border-slate-200"
               >
                 Volver
               </button>
@@ -323,8 +323,8 @@ export function EnviarRecomendacionModal({
           </>
         ) : (
           <>
-            <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
-              Adjuntar recomendación personalizada
+            <h3 className="font-sans text-section-title font-bold text-foreground">
+              Adjuntar Recomendación Personalizada
             </h3>
             {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
             <input
@@ -344,7 +344,7 @@ export function EnviarRecomendacionModal({
               <button
                 type="button"
                 onClick={() => setPaso("personalizada")}
-                className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-slate-200"
+                className="font-sans text-xs font-bold px-4 py-2 border border-slate-200"
               >
                 Volver
               </button>

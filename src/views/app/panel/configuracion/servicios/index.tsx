@@ -41,7 +41,7 @@ export default function ServiciosView() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+          <h2 className="font-sans text-section-title font-bold text-foreground">
             Catálogo de Servicios
           </h2>
           <p className="font-sans text-xs text-slate-500 mt-0.5">
@@ -49,12 +49,14 @@ export default function ServiciosView() {
             formulario público.
           </p>
         </div>
-        <Button onClick={actions.handleAbrirCrear}>Nuevo Servicio</Button>
+        <Button className="rounded-overlay" onClick={actions.handleAbrirCrear}>
+          Nuevo Servicio
+        </Button>
       </div>
 
       <div className="border border-slate-200 bg-slate-50/50 p-4 flex items-center justify-between gap-4">
         <div>
-          <p className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+          <p className="font-sans text-label font-bold text-foreground">
             Duración Configurable de Servicios
           </p>
           <p className="font-sans text-xs text-slate-500 mt-0.5">
@@ -74,15 +76,18 @@ export default function ServiciosView() {
 
       {cargando ? (
         <p className="text-xs text-slate-500 py-8 text-center">
-          Cargando servicios...
+          Cargando servicios…
         </p>
       ) : servicios.length === 0 ? (
         <EmptyState
-          titulo="Sin servicios registrados"
+          titulo="Sin Servicios Registrados"
           descripcion="Aún no se ha creado ningún servicio en el catálogo."
           accion={
-            <Button onClick={actions.handleAbrirCrear}>
-              Crear primer servicio
+            <Button
+              className="rounded-overlay"
+              onClick={actions.handleAbrirCrear}
+            >
+              Crear Primer Servicio
             </Button>
           }
         />
@@ -94,7 +99,7 @@ export default function ServiciosView() {
                 {COLUMNAS.map(titulo => (
                   <TableHead
                     key={titulo}
-                    className="px-4 py-3 text-[11px] font-medium uppercase tracking-wider text-slate-400 whitespace-nowrap"
+                    className="px-4 py-3 text-table-head font-bold text-muted-foreground whitespace-nowrap"
                   >
                     {titulo}
                   </TableHead>
@@ -108,18 +113,18 @@ export default function ServiciosView() {
                 .sort((a, b) => a.orden - b.orden)
                 .map(servicio => (
                   <TableRow key={servicio.id} className="hover:bg-slate-50/70">
-                    <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                    <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                       {servicio.orden}
                     </TableCell>
-                    <TableCell className="px-4 py-3 font-medium text-sm text-slate-900">
+                    <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                       {servicio.nombre}
                     </TableCell>
-                    <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                    <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                       {servicio.duracionMinutos
                         ? `${servicio.duracionMinutos} min`
                         : "Sin Duración"}
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-sm text-slate-700 max-w-xs truncate">
+                    <TableCell className="px-4 py-3 text-table-cell font-normal text-foreground max-w-xs truncate">
                       {servicio.descripcion || "Sin Descripción"}
                     </TableCell>
                     <TableCell className="px-4 py-3">
@@ -130,7 +135,7 @@ export default function ServiciosView() {
                       />
                       {actualizandoEstadoId === servicio.id && (
                         <span className="ml-2 text-[11px] text-slate-400">
-                          Guardando...
+                          Guardando…
                         </span>
                       )}
                     </TableCell>
@@ -138,7 +143,7 @@ export default function ServiciosView() {
                       <button
                         type="button"
                         onClick={() => actions.handleAbrirEditar(servicio)}
-                        className="text-xs font-bold text-blue-900 hover:underline"
+                        className="text-xs font-bold text-primary hover:underline"
                       >
                         Editar
                       </button>

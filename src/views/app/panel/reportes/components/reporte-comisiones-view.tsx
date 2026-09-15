@@ -22,7 +22,7 @@ export function ReporteComisionesView({
   if (cargando) {
     return (
       <Card className="p-6">
-        <p className="py-8 text-center text-sm text-brand-muted">
+        <p className="py-8 text-center text-sm text-muted-foreground">
           Cargando liquidación de comisiones...
         </p>
       </Card>
@@ -32,7 +32,7 @@ export function ReporteComisionesView({
   if (profesionales.length === 0) {
     return (
       <Card className="p-6">
-        <p className="py-8 text-center text-sm text-brand-muted">
+        <p className="py-8 text-center text-sm text-muted-foreground">
           Sin ventas registradas en el período seleccionado.
         </p>
       </Card>
@@ -47,7 +47,7 @@ export function ReporteComisionesView({
           <h3 className="text-sm font-bold text-panel-sidebar">
             Liquidación de Sueldos y Reparto de Comisiones
           </h3>
-          <p className="text-sm text-brand-muted">
+          <p className="text-sm text-muted-foreground">
             Desglose de recaudación bruta, impuestos, cargos POS y honorarios a
             pagar por profesional
           </p>
@@ -65,7 +65,7 @@ export function ReporteComisionesView({
           return (
             <Card key={p.especialistaId} className="p-6 space-y-4">
               {/* Encabezado del profesional */}
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-brand-border pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-panel-sidebar text-white font-bold text-sm">
                     {p.especialistaNombre[0]}
@@ -74,7 +74,7 @@ export function ReporteComisionesView({
                     <h4 className="font-bold text-panel-sidebar text-sm">
                       {p.especialistaNombre}
                     </h4>
-                    <span className="text-sm text-brand-muted">
+                    <span className="text-sm text-muted-foreground">
                       {p.totalVentas} atenciones procesadas
                     </span>
                   </div>
@@ -95,8 +95,8 @@ export function ReporteComisionesView({
 
               {/* Grid de desglose de importes */}
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
-                <div className="bg-panel-fondo p-3 rounded-xl border border-brand-border">
-                  <span className="text-brand-muted block font-medium">
+                <div className="bg-panel-fondo p-3 rounded-xl border border-border">
+                  <span className="text-muted-foreground block font-medium">
                     Recaudación Bruta
                   </span>
                   <span className="text-sm font-bold text-panel-sidebar mt-0.5 block">
@@ -104,8 +104,8 @@ export function ReporteComisionesView({
                   </span>
                 </div>
 
-                <div className="bg-panel-fondo p-3 rounded-xl border border-brand-border">
-                  <span className="text-brand-muted block font-medium">
+                <div className="bg-panel-fondo p-3 rounded-xl border border-border">
+                  <span className="text-muted-foreground block font-medium">
                     Retención IVA
                   </span>
                   <span className="text-sm font-semibold text-panel-sidebar mt-0.5 block">
@@ -113,8 +113,8 @@ export function ReporteComisionesView({
                   </span>
                 </div>
 
-                <div className="bg-panel-fondo p-3 rounded-xl border border-brand-border">
-                  <span className="text-brand-muted block font-medium">
+                <div className="bg-panel-fondo p-3 rounded-xl border border-border">
+                  <span className="text-muted-foreground block font-medium">
                     Comisión POS Descontada
                   </span>
                   <span className="text-sm font-semibold text-rose-700 mt-0.5 block">
@@ -129,8 +129,8 @@ export function ReporteComisionesView({
                   )}
                 </div>
 
-                <div className="bg-panel-fondo p-3 rounded-xl border border-brand-border">
-                  <span className="text-brand-muted block font-medium">
+                <div className="bg-panel-fondo p-3 rounded-xl border border-border">
+                  <span className="text-muted-foreground block font-medium">
                     Ventas Sin Reparto
                   </span>
                   <span className="text-sm font-bold text-panel-sidebar mt-0.5 block">
@@ -156,12 +156,12 @@ export function ReporteComisionesView({
                     </span>
                   </div>
 
-                  <div className="rounded-xl bg-panel-seleccion p-4 border border-brand-border flex justify-between items-center">
+                  <div className="rounded-xl bg-panel-seleccion p-4 border border-border flex justify-between items-center">
                     <div>
                       <span className="text-sm font-semibold text-panel-sidebar block">
                         Margen Neto de la Empresa
                       </span>
-                      <span className="text-xs text-brand-muted">
+                      <span className="text-xs text-muted-foreground">
                         {100 - (p.porcentajeProfesionalVigente ?? 50)}% de la
                         base líquida
                       </span>

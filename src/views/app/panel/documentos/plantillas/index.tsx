@@ -1,7 +1,7 @@
 "use client";
 
 import { EmptyState } from "@/components/shared";
-import { Button, Card } from "@/components/ui";
+import { Badge, Button, Card } from "@/components/ui";
 import { formatearFechaExtensa } from "@/lib/formato";
 
 import { usePlantillas } from "./hooks";
@@ -16,14 +16,14 @@ export default function PlantillasView() {
       <button
         type="button"
         onClick={actions.handleVolver}
-        className="mb-2 font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
+        className="mb-2 font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
       >
-        ← Volver a Documentos
+        Volver a Documentos
       </button>
 
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+          <h2 className="font-sans text-section-title font-bold text-foreground">
             Plantillas
           </h2>
           <p className="font-sans text-xs text-slate-500 mt-0.5">
@@ -34,8 +34,11 @@ export default function PlantillasView() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={actions.handleNuevaPlantilla}>
-            Nueva plantilla
+          <Button
+            className="rounded-overlay"
+            onClick={actions.handleNuevaPlantilla}
+          >
+            Nueva Plantilla
           </Button>
         </div>
       </div>
@@ -43,11 +46,14 @@ export default function PlantillasView() {
       {plantillas.length === 0 ? (
         <Card className="rounded-none border-slate-200 shadow-none p-8">
           <EmptyState
-            titulo="Sin plantillas registradas"
+            titulo="Sin Plantillas Registradas"
             descripcion="Aún no se ha creado ninguna plantilla en el sistema."
             accion={
-              <Button onClick={actions.handleNuevaPlantilla}>
-                Crear primera plantilla
+              <Button
+                className="rounded-overlay"
+                onClick={actions.handleNuevaPlantilla}
+              >
+                Crear Primera Plantilla
               </Button>
             }
           />
@@ -63,7 +69,7 @@ export default function PlantillasView() {
             const estructura =
               plantilla.origen === "Documento"
                 ? "Documento cargado"
-                : `${secciones.length} secciones · ${totalCampos} campos`;
+                : `${secciones.length} secciones, ${totalCampos} campos`;
             return (
               <div
                 key={plantilla.id}
@@ -71,55 +77,41 @@ export default function PlantillasView() {
               >
                 <div>
                   <div className="flex items-center gap-3">
-                    <p className="font-sans font-bold text-sm text-slate-900">
+                    <p className="font-sans font-bold text-value text-foreground">
                       {plantilla.nombre}
                     </p>
-                    <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                    <span className="font-sans text-label font-medium text-muted-foreground">
                       {plantilla.tipoNombre}
                     </span>
                     {plantilla.documentosAsociados > 0 && (
-                      <span className="flex items-center gap-1.5">
-                        <span
-                          className="h-1.5 w-1.5 rounded-full bg-emerald-700"
-                          aria-hidden
-                        />
-                        <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-emerald-700">
-                          En uso · {plantilla.documentosAsociados} documentos
-                        </span>
-                      </span>
+                      <Badge className="rounded-overlay border-0 bg-emerald-700 text-[10px] font-medium text-white">
+                        En Uso, {plantilla.documentosAsociados}{" "}
+                        {plantilla.documentosAsociados === 1
+                          ? "Documento"
+                          : "Documentos"}
+                      </Badge>
                     )}
                     {plantilla.tipo !== "FichaClinica" &&
                       plantilla.serviciosAsignados === 0 &&
                       plantilla.activo && (
-                        <span className="flex items-center gap-1.5">
-                          <span
-                            className="h-1.5 w-1.5 rounded-full bg-amber-500"
-                            aria-hidden
-                          />
-                          <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-amber-700">
-                            Sin servicios asignados
-                          </span>
-                        </span>
+                        <Badge className="rounded-overlay border-0 bg-amber-600 text-[10px] font-medium text-white">
+                          Sin Servicios Asignados
+                        </Badge>
                       )}
                     {!plantilla.activo && (
-                      <span className="flex items-center gap-1.5">
-                        <span
-                          className="h-1.5 w-1.5 rounded-full bg-slate-400"
-                          aria-hidden
-                        />
-                        <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                          Inactivo
-                        </span>
-                      </span>
+                      <Badge className="rounded-overlay border-0 bg-slate-400 text-[10px] font-medium text-white">
+                        Inactivo
+                      </Badge>
                     )}
                   </div>
                   <p className="mt-1 font-sans text-xs text-slate-500">
-                    {estructura} · Modificado{" "}
+                    {estructura}, Modificado{" "}
                     {formatearFechaExtensa(new Date(plantilla.updatedAt))}
                   </p>
                 </div>
                 <Button
                   variant="outline"
+                  className="rounded-overlay"
                   onClick={() => actions.handleEditarPlantilla(plantilla.id)}
                 >
                   Editar

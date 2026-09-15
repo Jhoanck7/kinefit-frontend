@@ -48,7 +48,7 @@ export function DocumentosServicioSelector({
         No hay plantillas creadas todavía.{" "}
         <Link
           href="/panel/documentos/plantillas/nuevo"
-          className="font-bold text-slate-900 underline"
+          className="font-bold text-foreground underline"
         >
           Crear una
         </Link>
@@ -68,7 +68,7 @@ export function DocumentosServicioSelector({
                 checked={!!asignado}
                 onChange={() => toggle(plantilla.id)}
               />
-              <span className="text-sm font-medium text-slate-900">
+              <span className="text-value font-medium text-foreground">
                 {plantilla.nombre}
               </span>
             </label>

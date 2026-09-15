@@ -1,4 +1,9 @@
-import { Alerta, Modal, TextField } from "@/components/shared";
+import {
+  Alerta,
+  Modal,
+  ModalCloseButton,
+  TextField,
+} from "@/components/shared";
 import { Button } from "@/components/ui";
 import { useGetServicios } from "@/hooks/api";
 import { EmpresaResponse } from "@/models/responses";
@@ -41,20 +46,23 @@ export function EmpresaModal({
   const { data: servicios = [] } = useGetServicios(false);
   return (
     <Modal abierto={abierto} onCerrar={onCerrar}>
-      <div className="p-2 sm:p-4">
-        <h2 className="text-xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-200">
-          {empresaEditando
-            ? "Editar Empresa / Convenio"
-            : "Nueva Empresa / Convenio"}
-        </h2>
+      <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
+          <h2 className="font-sans text-section-title font-bold text-foreground">
+            {empresaEditando
+              ? "Editar Empresa / Convenio"
+              : "Nueva Empresa / Convenio"}
+          </h2>
+          <ModalCloseButton onClick={onCerrar} />
+        </div>
 
         {error && (
-          <Alerta tono="error" className="mb-4">
+          <Alerta tono="error" className="mx-6 mt-4">
             {error}
           </Alerta>
         )}
 
-        <form onSubmit={onSubmit} className="space-y-6">
+        <form onSubmit={onSubmit} className="p-6 space-y-6">
           <TextField
             etiqueta="Nombre de la Empresa"
             value={nombre}
@@ -65,8 +73,8 @@ export function EmpresaModal({
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
-                Vigente Desde (opcional)
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
+                Vigente Desde (Opcional)
               </label>
               <input
                 type="date"
@@ -76,8 +84,8 @@ export function EmpresaModal({
               />
             </div>
             <div>
-              <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
-                Vigente Hasta (opcional)
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
+                Vigente Hasta (Opcional)
               </label>
               <input
                 type="date"
@@ -89,7 +97,7 @@ export function EmpresaModal({
           </div>
 
           <div>
-            <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-2">
+            <label className="font-sans text-label font-medium text-muted-foreground block mb-2">
               Descuentos por Servicio
             </label>
             <div className="border border-slate-200 divide-y divide-slate-200 max-h-64 overflow-y-auto">
@@ -134,12 +142,21 @@ export function EmpresaModal({
           </div>
 
           <div className="flex justify-end gap-3 border-t border-slate-200 pt-5">
-            <Button type="button" variant="outline" onClick={onCerrar}>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-overlay"
+              onClick={onCerrar}
+            >
               Cancelar
             </Button>
-            <Button type="submit" disabled={guardando}>
+            <Button
+              type="submit"
+              className="rounded-overlay"
+              disabled={guardando}
+            >
               {guardando
-                ? "Guardando..."
+                ? "Guardando…"
                 : empresaEditando
                   ? "Guardar Cambios"
                   : "Crear Empresa"}

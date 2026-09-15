@@ -22,7 +22,7 @@ export default function AccesoView() {
             className="h-16 w-full object-contain"
             priority
           />
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-500 font-sans">
+          <p className="text-label font-bold text-muted-foreground font-sans">
             Panel Administrativo
           </p>
         </div>
@@ -49,7 +49,7 @@ export default function AccesoView() {
             required
           />
           <Button type="submit" className="w-full mt-2" disabled={cargando}>
-            {cargando ? "INICIANDO SESIÓN..." : "INGRESAR AL PANEL"}
+            {cargando ? "Iniciando Sesión..." : "Ingresar al Panel"}
           </Button>
         </form>
       </div>

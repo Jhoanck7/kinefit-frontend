@@ -56,7 +56,7 @@ function ConfiguracionContent() {
           <TabsTrigger
             key={valor}
             value={valor}
-            className="rounded-none border-0 px-1 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 data-active:bg-transparent data-active:text-blue-900 data-active:shadow-none after:bg-blue-900"
+            className="rounded-none border-0 px-1 py-3 text-xs font-bold text-muted-foreground data-active:bg-transparent data-active:text-primary data-active:shadow-none after:bg-primary"
           >
             {etiqueta}
           </TabsTrigger>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Alerta, Modal } from "@/components/shared";
+import { Alerta, Modal, ModalCloseButton } from "@/components/shared";
 import {
   useCreateRepartoMutation,
   useCreateTasaImpuestoMutation,
@@ -170,35 +170,28 @@ export function ConfiguracionFinancieraModal({
 
   return (
     <Modal abierto={abierto} onCerrar={onClose}>
-      <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
+      <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
         {/* Encabezado */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
           <div>
-            <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+            <h2 className="font-sans text-section-title font-bold text-foreground">
               Configuración Financiera
             </h2>
             <p className="font-sans text-xs text-slate-500 mt-0.5">
               Gestión de comisiones POS, repartos de honorarios e IVA
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar modal"
-            className="p-1 font-sans text-sm text-slate-400 hover:text-slate-900 rounded-none focus:outline-none"
-          >
-            ✕
-          </button>
+          <ModalCloseButton onClick={onClose} />
         </div>
 
         {/* Selector de pestañas */}
-        <div className="flex border-b border-slate-200 px-6 bg-white gap-4 text-xs font-bold uppercase tracking-wider">
+        <div className="flex border-b border-slate-200 px-6 bg-white gap-4 text-xs font-bold">
           <button
             type="button"
             onClick={() => setTab("terminales")}
             className={`py-3 border-b-2 transition-colors ${
               tab === "terminales"
-                ? "border-[#003366] text-[#003366]"
+                ? "border-primary text-primary"
                 : "border-transparent text-slate-400 hover:text-slate-800"
             }`}
           >
@@ -209,7 +202,7 @@ export function ConfiguracionFinancieraModal({
             onClick={() => setTab("repartos")}
             className={`py-3 border-b-2 transition-colors ${
               tab === "repartos"
-                ? "border-[#003366] text-[#003366]"
+                ? "border-primary text-primary"
                 : "border-transparent text-slate-400 hover:text-slate-800"
             }`}
           >
@@ -220,7 +213,7 @@ export function ConfiguracionFinancieraModal({
             onClick={() => setTab("iva")}
             className={`py-3 border-b-2 transition-colors ${
               tab === "iva"
-                ? "border-[#003366] text-[#003366]"
+                ? "border-primary text-primary"
                 : "border-transparent text-slate-400 hover:text-slate-800"
             }`}
           >
@@ -249,9 +242,9 @@ export function ConfiguracionFinancieraModal({
                       <button
                         type="button"
                         onClick={() => setMostrarFormTerminal(true)}
-                        className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+                        className="font-sans text-xs font-bold px-3 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
                       >
-                        AGREGAR POS
+                        Agregar POS
                       </button>
                     )}
                   </div>
@@ -261,13 +254,13 @@ export function ConfiguracionFinancieraModal({
                       onSubmit={handleGuardarTerminal}
                       className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none"
                     >
-                      <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+                      <h4 className="font-sans text-section-title font-bold text-foreground">
                         Registrar Nueva Terminal POS
                       </h4>
 
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <div>
-                          <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                             Nombre Terminal
                           </label>
                           <input
@@ -281,7 +274,7 @@ export function ConfiguracionFinancieraModal({
                         </div>
 
                         <div>
-                          <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                             Plazo de Abono (Días Hábiles)
                           </label>
                           <input
@@ -297,7 +290,7 @@ export function ConfiguracionFinancieraModal({
                       </div>
 
                       <div>
-                        <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                        <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                           Notas
                         </label>
                         <textarea
@@ -310,12 +303,12 @@ export function ConfiguracionFinancieraModal({
                       </div>
 
                       <div className="p-3 border border-slate-200 bg-white space-y-2 rounded-none">
-                        <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-800 block">
+                        <span className="font-sans text-label font-bold text-foreground block">
                           Comisión Débito
                         </span>
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                           <div>
-                            <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                            <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                               % Débito
                             </label>
                             <input
@@ -330,7 +323,7 @@ export function ConfiguracionFinancieraModal({
                             />
                           </div>
                           <div>
-                            <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                            <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                               Cargo Fijo (CLP)
                             </label>
                             <input
@@ -363,12 +356,12 @@ export function ConfiguracionFinancieraModal({
                       </div>
 
                       <div className="p-3 border border-slate-200 bg-white space-y-2 rounded-none">
-                        <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-800 block">
+                        <span className="font-sans text-label font-bold text-foreground block">
                           Comisión Crédito
                         </span>
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                           <div>
-                            <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                            <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                               % Crédito
                             </label>
                             <input
@@ -383,7 +376,7 @@ export function ConfiguracionFinancieraModal({
                             />
                           </div>
                           <div>
-                            <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                            <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                               Cargo Fijo (CLP)
                             </label>
                             <input
@@ -419,17 +412,17 @@ export function ConfiguracionFinancieraModal({
                         <button
                           type="button"
                           onClick={resetFormTerminal}
-                          className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+                          className="font-sans text-xs font-bold px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
                         >
                           Cancelar
                         </button>
                         <button
                           type="submit"
                           disabled={crearTerminalMutation.isPending}
-                          className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none disabled:opacity-50"
+                          className="font-sans text-xs font-bold px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none disabled:opacity-50"
                         >
                           {crearTerminalMutation.isPending
-                            ? "Guardando..."
+                            ? "Guardando…"
                             : "Guardar"}
                         </button>
                       </div>
@@ -455,11 +448,14 @@ export function ConfiguracionFinancieraModal({
                           className="p-4 flex flex-wrap justify-between items-center gap-3"
                         >
                           <div>
-                            <span className="font-sans font-medium text-sm text-slate-900 block">
+                            <span className="font-sans font-medium text-value text-foreground block">
                               {t.nombre}
                             </span>
                             <span className="font-sans text-xs text-slate-500">
-                              Abono en {t.plazoAbonoDias} día(s) hábil(es)
+                              Abono en {t.plazoAbonoDias}{" "}
+                              {t.plazoAbonoDias === 1
+                                ? "día hábil"
+                                : "días hábiles"}
                             </span>
                             {t.notas && (
                               <span className="font-sans text-xs text-slate-400 block mt-0.5">
@@ -504,9 +500,9 @@ export function ConfiguracionFinancieraModal({
                           resetFormReparto();
                           setMostrarFormReparto(true);
                         }}
-                        className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+                        className="font-sans text-xs font-bold px-3 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
                       >
-                        NUEVO ACUERDO
+                        Nuevo Acuerdo
                       </button>
                     )}
                   </div>
@@ -516,7 +512,7 @@ export function ConfiguracionFinancieraModal({
                       onSubmit={handleGuardarReparto}
                       className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none"
                     >
-                      <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+                      <h4 className="font-sans text-section-title font-bold text-foreground">
                         Definir Acuerdo
                       </h4>
                       <p className="font-sans text-[11px] text-slate-500">
@@ -527,7 +523,7 @@ export function ConfiguracionFinancieraModal({
 
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <div>
-                          <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                             Especialista
                           </label>
                           <select
@@ -546,7 +542,7 @@ export function ConfiguracionFinancieraModal({
                         </div>
 
                         <div>
-                          <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                             % Profesional ({pctProf}% / {100 - pctProf}% Centro)
                           </label>
                           <input
@@ -562,7 +558,7 @@ export function ConfiguracionFinancieraModal({
                         </div>
 
                         <div>
-                          <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                             Vigente Desde
                           </label>
                           <input
@@ -580,17 +576,17 @@ export function ConfiguracionFinancieraModal({
                         <button
                           type="button"
                           onClick={resetFormReparto}
-                          className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+                          className="font-sans text-xs font-bold px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
                         >
                           Cancelar
                         </button>
                         <button
                           type="submit"
                           disabled={crearRepartoMutation.isPending}
-                          className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none disabled:opacity-50"
+                          className="font-sans text-xs font-bold px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none disabled:opacity-50"
                         >
                           {crearRepartoMutation.isPending
-                            ? "Guardando..."
+                            ? "Guardando…"
                             : "Guardar"}
                         </button>
                       </div>
@@ -609,7 +605,7 @@ export function ConfiguracionFinancieraModal({
                         className="p-4 flex justify-between items-center gap-3"
                       >
                         <div>
-                          <span className="font-sans font-medium text-sm text-slate-900 block">
+                          <span className="font-sans font-medium text-value text-foreground block">
                             {a.especialistaNombre}
                           </span>
                           <span className="font-sans text-xs text-slate-500">
@@ -619,10 +615,10 @@ export function ConfiguracionFinancieraModal({
 
                         <div className="flex items-center gap-3">
                           <div className="flex gap-2">
-                            <span className="bg-slate-900 text-white px-2.5 py-0.5 font-sans text-xs font-medium rounded-none">
+                            <span className="rounded-overlay bg-slate-900 text-white px-2.5 py-0.5 font-sans text-xs font-medium">
                               {a.porcentajeProfesional}% Prof.
                             </span>
-                            <span className="bg-slate-900 text-white px-2.5 py-0.5 font-sans text-xs font-medium rounded-none">
+                            <span className="rounded-overlay bg-slate-900 text-white px-2.5 py-0.5 font-sans text-xs font-medium">
                               {a.porcentajeCentro}% Empresa
                             </span>
                           </div>
@@ -630,9 +626,9 @@ export function ConfiguracionFinancieraModal({
                           <button
                             type="button"
                             onClick={() => handleEditarReparto(a)}
-                            className="font-sans text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950 underline border-l border-slate-200 pl-3"
+                            className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground underline border-l border-slate-200 pl-3"
                           >
-                            Nueva versión
+                            Nueva Versión
                           </button>
                         </div>
                       </div>
@@ -653,9 +649,9 @@ export function ConfiguracionFinancieraModal({
                       <button
                         type="button"
                         onClick={() => setMostrarFormIva(true)}
-                        className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+                        className="font-sans text-xs font-bold px-3 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
                       >
-                        MODIFICAR TASA IVA
+                        Modificar Tasa IVA
                       </button>
                     )}
                   </div>
@@ -665,12 +661,12 @@ export function ConfiguracionFinancieraModal({
                       onSubmit={handleGuardarIva}
                       className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none"
                     >
-                      <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+                      <h4 className="font-sans text-section-title font-bold text-foreground">
                         Definir Nueva Tasa de IVA
                       </h4>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <div>
-                          <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                             % IVA
                           </label>
                           <input
@@ -687,7 +683,7 @@ export function ConfiguracionFinancieraModal({
                         </div>
 
                         <div>
-                          <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                          <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                             Vigente Desde
                           </label>
                           <input
@@ -703,17 +699,17 @@ export function ConfiguracionFinancieraModal({
                         <button
                           type="button"
                           onClick={() => setMostrarFormIva(false)}
-                          className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+                          className="font-sans text-xs font-bold px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
                         >
                           Cancelar
                         </button>
                         <button
                           type="submit"
                           disabled={crearTasaIvaMutation.isPending}
-                          className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none disabled:opacity-50"
+                          className="font-sans text-xs font-bold px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none disabled:opacity-50"
                         >
                           {crearTasaIvaMutation.isPending
-                            ? "Guardando..."
+                            ? "Guardando…"
                             : "Actualizar"}
                         </button>
                       </div>
@@ -733,11 +729,11 @@ export function ConfiguracionFinancieraModal({
                       >
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-sans font-medium text-sm text-slate-900">
+                            <span className="font-sans font-medium text-value text-foreground">
                               IVA Débito Fiscal Chile
                             </span>
                             {idx === 0 && (
-                              <span className="bg-emerald-700 text-white px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none">
+                              <span className="rounded-overlay bg-emerald-700 text-white px-2 py-0.5 font-sans text-[10px] font-bold">
                                 Vigente
                               </span>
                             )}
@@ -746,7 +742,7 @@ export function ConfiguracionFinancieraModal({
                             Vigente desde: {item.vigenteDesde}
                           </span>
                         </div>
-                        <span className="font-sans font-medium text-lg text-slate-900">
+                        <span className="font-sans font-medium text-lg text-foreground">
                           {item.porcentaje}%
                         </span>
                       </div>
@@ -763,9 +759,9 @@ export function ConfiguracionFinancieraModal({
           <button
             type="button"
             onClick={onClose}
-            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none"
+            className="font-sans text-xs font-bold px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none"
           >
-            ENTENDIDO
+            Entendido
           </button>
         </div>
       </div>

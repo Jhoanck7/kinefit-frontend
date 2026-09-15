@@ -124,7 +124,7 @@ export function ImageUploader({
   return (
     <div className="space-y-2">
       {etiqueta && (
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-800">
+        <label className="block text-label font-medium text-muted-foreground">
           {etiqueta}
         </label>
       )}

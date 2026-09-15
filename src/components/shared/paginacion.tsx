@@ -20,7 +20,7 @@ export function Paginacion({
       <p className="text-xs text-slate-500 font-medium">
         Mostrando {inicio}–{fin} de {total}
       </p>
-      <div className="flex overflow-hidden rounded-none border border-slate-200 divide-x divide-slate-200">
+      <div className="flex overflow-hidden rounded-overlay border border-slate-200 divide-x divide-slate-200">
         <button
           type="button"
           onClick={onAnterior}

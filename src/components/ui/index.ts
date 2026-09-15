@@ -19,7 +19,7 @@ export {
   AlertDialogTrigger,
 } from "./alert-dialog";
 export { Badge, badgeVariants } from "./badge";
-export { Button, buttonVariants } from "./Button";
+export { Button, buttonVariants } from "./button";
 export {
   Card,
   CardAction,

@@ -15,29 +15,29 @@ export interface FilaResumen {
  */
 export function SummaryPanel({
   filas,
-  titulo = "RESUMEN",
+  titulo = "Resumen",
 }: {
   filas: FilaResumen[];
   titulo?: string;
 }) {
   return (
-    <Card className="sticky top-6 h-fit rounded-none border-slate-200 shadow-none font-sans p-5 bg-white">
-      <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-200 pb-1 mb-3">
+    <Card className="sticky top-6 h-fit rounded-none border-border shadow-none font-sans p-5 bg-white">
+      <p className="font-sans text-micro-header font-medium text-muted-foreground border-b border-border pb-1 mb-3">
         {titulo}
       </p>
-      <dl className="divide-y divide-slate-200">
+      <dl className="divide-y divide-border">
         {filas.map(fila => (
           <div
             key={fila.etiqueta}
             className="flex flex-col gap-0.5 py-2.5 first:pt-0 last:pb-0"
           >
-            <dt className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
+            <dt className="font-sans text-label font-medium text-muted-foreground">
               {fila.etiqueta}
             </dt>
-            <dd className="flex items-center gap-2 font-sans font-medium text-sm text-slate-900">
+            <dd className="flex items-center gap-2 font-sans font-medium text-value text-foreground">
               {fila.icono}
               {fila.valor ?? (
-                <span className="italic text-slate-400 font-normal text-xs">
+                <span className="italic text-muted-foreground font-normal text-xs">
                   Por definir
                 </span>
               )}

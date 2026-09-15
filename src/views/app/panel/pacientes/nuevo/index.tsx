@@ -23,10 +23,10 @@ function RegistrarPacienteContent() {
   } = useRegistrarPaciente();
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <Card className="p-6">
-        <h2 className="mb-6 text-lg font-bold text-panel-sidebar">
-          Registrar paciente nuevo
+    <div className="mx-auto max-w-2xl font-sans shadow-none">
+      <Card className="border border-border p-6">
+        <h2 className="mb-6 font-sans text-section-title font-bold text-foreground">
+          Registrar Paciente Nuevo
         </h2>
 
         {errorMsg && (
@@ -95,7 +95,7 @@ function RegistrarPacienteContent() {
             value={convenioId}
             onChange={e => actions.setConvenioId(e.target.value)}
           >
-            <option value="">Sin convenio</option>
+            <option value="">Sin Convenio</option>
             {convenios.map(c => (
               <option key={c.id} value={c.id}>
                 {c.nombre}
@@ -103,17 +103,22 @@ function RegistrarPacienteContent() {
             ))}
           </SelectField>
 
-          <div className="flex justify-end gap-3 border-t border-brand-border pt-6">
+          <div className="flex justify-end gap-3 border-t border-border pt-6">
             <Button
               type="button"
               variant="outline"
+              className="rounded-overlay"
               onClick={actions.handleCancelar}
               disabled={guardando}
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={guardando}>
-              {guardando ? "Registrando..." : "Registrar paciente"}
+            <Button
+              type="submit"
+              className="rounded-overlay"
+              disabled={guardando}
+            >
+              {guardando ? "Registrando…" : "Registrar Paciente"}
             </Button>
           </div>
         </form>

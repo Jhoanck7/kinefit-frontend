@@ -23,12 +23,10 @@ export function ServicioOption({
       <div
         className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-none border ${
           seleccionado
-            ? "border-primary bg-primary text-primary-foreground"
+            ? "border-primary bg-primary"
             : "border-slate-300 bg-white"
         }`}
-      >
-        {seleccionado && <span className="text-[10px] font-bold">✓</span>}
-      </div>
+      />
     </div>
   );
 }

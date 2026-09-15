@@ -63,10 +63,10 @@ export function CancelAppointmentModal({
 
   return (
     <Modal abierto={abierto} onCerrar={onVolver}>
-      <div className="p-6 bg-white text-slate-900 font-sans rounded-none shadow-none">
-        <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
-          CANCELAR RESERVA{" "}
-          <span className="font-sans text-slate-900 font-bold">#{citaId}</span>
+      <div className="p-6 bg-white text-slate-900 font-sans rounded-overlay shadow-none">
+        <h2 className="font-sans text-section-title font-bold text-foreground">
+          Cancelar Reserva{" "}
+          <span className="font-sans text-foreground font-bold">#{citaId}</span>
         </h2>
         <p className="mt-1 text-xs text-slate-600">
           Se cancelará la atención de{" "}
@@ -97,8 +97,8 @@ export function CancelAppointmentModal({
         )}
 
         <div className="mt-4 space-y-1">
-          <label className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400 block">
-            MOTIVO DE LA CANCELACIÓN *
+          <label className="font-sans text-label font-medium text-muted-foreground block">
+            Motivo de la Cancelación *
           </label>
           <textarea
             rows={3}
@@ -118,17 +118,17 @@ export function CancelAppointmentModal({
             type="button"
             onClick={onVolver}
             disabled={guardando}
-            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+            className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-none shadow-none"
           >
-            VOLVER
+            Volver
           </button>
           <button
             type="button"
             disabled={!motivo.trim() || guardando}
             onClick={handleConfirmarCancelacion}
-            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#003366] text-white hover:bg-[#002244] border-0 rounded-none shadow-none disabled:opacity-50"
+            className="font-sans text-xs font-bold px-4 py-2 bg-primary text-white hover:bg-primary-hover border-0 rounded-none shadow-none disabled:opacity-50"
           >
-            {guardando ? "CANCELANDO..." : "CONFIRMAR CANCELACIÓN"}
+            {guardando ? "Cancelando..." : "Confirmar Cancelación"}
           </button>
         </div>
       </div>

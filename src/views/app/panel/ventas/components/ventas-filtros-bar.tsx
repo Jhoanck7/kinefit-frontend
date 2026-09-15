@@ -27,7 +27,7 @@ export function VentasFiltrosBar({
   onExportar,
 }: VentasFiltrosBarProps) {
   return (
-    <Card className="p-4 rounded-none border-slate-200 shadow-none font-sans">
+    <Card className="p-4 rounded-none border border-slate-200 shadow-none font-sans">
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
         {/* Buscador de Paciente */}
         <div className="w-64 min-w-[200px]">
@@ -40,7 +40,7 @@ export function VentasFiltrosBar({
 
         {/* Rango de Fecha */}
         <div className="flex items-center gap-1.5">
-          <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+          <span className="font-medium text-muted-foreground text-label">
             Fecha:
           </span>
           <select
@@ -48,17 +48,17 @@ export function VentasFiltrosBar({
             onChange={e => setRangoFecha(e.target.value)}
             className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
           >
-            <option value="hoy">HOY</option>
-            <option value="ayer">AYER</option>
-            <option value="7dias">ÚLTIMOS 7 DÍAS</option>
-            <option value="30dias">ÚLTIMOS 30 DÍAS</option>
-            <option value="personalizado">PERSONALIZADO</option>
+            <option value="hoy">Hoy</option>
+            <option value="ayer">Ayer</option>
+            <option value="7dias">Últimos 7 Días</option>
+            <option value="30dias">Últimos 30 Días</option>
+            <option value="personalizado">Personalizado</option>
           </select>
         </div>
 
         {/* Método de Pago */}
         <div className="flex items-center gap-1.5">
-          <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+          <span className="font-medium text-muted-foreground text-label">
             Pago:
           </span>
           <select
@@ -66,11 +66,11 @@ export function VentasFiltrosBar({
             onChange={e => setMetodoPago(e.target.value)}
             className="rounded-none border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-800 focus:border-slate-900 focus:outline-none"
           >
-            <option value="todos">TODOS LOS MÉTODOS</option>
-            <option value="Efectivo">EFECTIVO</option>
-            <option value="Transferencia">TRANSFERENCIA</option>
-            <option value="Debito">DÉBITO</option>
-            <option value="Credito">CRÉDITO</option>
+            <option value="todos">Todos los Métodos</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Debito">Débito</option>
+            <option value="Credito">Crédito</option>
           </select>
         </div>
 
@@ -78,22 +78,25 @@ export function VentasFiltrosBar({
         <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
-            className="px-3.5 py-2 text-xs"
+            className="rounded-overlay px-3.5 py-2 text-xs"
             onClick={onAbrirConfiguracion}
           >
-            TARIFAS / POS
+            Tarifas / POS
           </Button>
 
           <Button
             variant="outline"
-            className="px-3.5 py-2 text-xs"
+            className="rounded-overlay px-3.5 py-2 text-xs"
             onClick={onExportar}
           >
-            EXPORTAR
+            Exportar
           </Button>
 
-          <Button className="px-4 py-2 text-xs" onClick={onAbrirNuevaVenta}>
-            REGISTRAR VENTA
+          <Button
+            className="rounded-overlay px-4 py-2 text-xs"
+            onClick={onAbrirNuevaVenta}
+          >
+            Registrar Venta
           </Button>
         </div>
       </div>

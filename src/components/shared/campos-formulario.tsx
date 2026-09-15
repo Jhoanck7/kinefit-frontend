@@ -23,7 +23,7 @@ function Etiqueta({
   return (
     <Label
       htmlFor={htmlFor}
-      className="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5 font-sans"
+      className="block text-label font-medium text-muted-foreground mb-1.5 font-sans"
     >
       {texto}
       {obligatorio && <span className="text-red-600 ml-0.5">*</span>}

@@ -4,6 +4,7 @@ import {
   Alerta,
   ImageUploader,
   Modal,
+  ModalCloseButton,
   SelectField,
   TextAreaField,
   TextField,
@@ -110,7 +111,7 @@ export default function LandingView() {
                   key={f.key + "_wrap"}
                   className="md:col-span-2 pt-4 border-t border-slate-200"
                 >
-                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-4">
+                  <h3 className="font-sans text-label font-bold text-foreground mb-4">
                     {f.sectionHeader}
                   </h3>
                   {renderField(f)}
@@ -134,9 +135,6 @@ export default function LandingView() {
   return (
     <div className="mx-auto max-w-5xl space-y-6 pb-12">
       <div className="flex flex-col gap-1 border-b border-slate-200 pb-4">
-        <h1 className="text-2xl font-bold text-slate-900">
-          Configuración de la Página Web Principal
-        </h1>
         <p className="text-sm text-slate-500">
           Edita en tiempo real los textos, pasos de atención, imágenes
           Cloudinary y reseñas de Google.
@@ -144,9 +142,9 @@ export default function LandingView() {
       </div>
 
       {cargando ? (
-        <Card className="rounded-none border-slate-200 shadow-none p-6">
+        <Card className="rounded-none border border-slate-200 shadow-none p-6">
           <p className="text-sm text-slate-500 py-8 text-center">
-            Cargando configuración actual del servidor...
+            Cargando configuración actual del servidor…
           </p>
         </Card>
       ) : (
@@ -155,19 +153,19 @@ export default function LandingView() {
             {landingConfigSchema.map(section => (
               <Card
                 key={section.id}
-                className="rounded-none border-slate-200 shadow-none p-6 cursor-pointer hover:border-blue-900/50 transition-all flex flex-col justify-between group"
+                className="rounded-none border border-slate-200 shadow-none p-6 cursor-pointer hover:border-primary/50 transition-all flex flex-col justify-between group"
                 onClick={() => actions.setSeccionActiva(section.id)}
               >
                 <div>
-                  <h3 className="font-bold text-slate-900 group-hover:text-blue-900 transition-colors">
+                  <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">
                     {section.title}
                   </h3>
                   <p className="text-sm text-slate-500 mt-2">
                     {section.description}
                   </p>
                 </div>
-                <div className="mt-4 text-blue-900 text-xs font-bold self-end group-hover:underline">
-                  Editar →
+                <div className="mt-4 text-primary text-xs font-bold self-end group-hover:underline">
+                  Editar
                 </div>
               </Card>
             ))}
@@ -178,9 +176,9 @@ export default function LandingView() {
             onCerrar={() => actions.setSeccionActiva(null)}
           >
             {seccionActiva && (
-              <div className="p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
-                <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
-                  <h2 className="text-xl font-bold text-slate-900">
+              <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
+                <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
+                  <h2 className="font-sans text-section-title font-bold text-foreground">
                     Configuración:{" "}
                     {
                       landingConfigSchema
@@ -188,17 +186,23 @@ export default function LandingView() {
                         ?.title.split(". ")[1]
                     }
                   </h2>
+                  <ModalCloseButton
+                    onClick={() => actions.setSeccionActiva(null)}
+                  />
                 </div>
 
-                <form onSubmit={actions.handleGuardar} className="space-y-6">
+                <form
+                  onSubmit={actions.handleGuardar}
+                  className="max-h-[75vh] overflow-y-auto p-6 space-y-6"
+                >
                   {renderDynamicFields(seccionActiva)}
 
                   {seccionActiva === "reservas" && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between rounded-none border border-slate-200 bg-slate-50 p-4">
                         <div>
-                          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
-                            Formulario de reserva activo
+                          <h3 className="font-sans text-label font-bold text-foreground">
+                            Formulario de Reserva Activo
                           </h3>
                           <p className="text-xs text-slate-500 mt-0.5">
                             Apagado, el sitio deja de mostrar el formulario y el
@@ -253,15 +257,16 @@ export default function LandingView() {
                   {seccionActiva === "process" && (
                     <div className="space-y-4 pt-4 border-t border-slate-200 mt-4">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                        <h3 className="font-sans text-label font-bold text-foreground">
                           Lista de Pasos
                         </h3>
                         <Button
                           type="button"
                           variant="outline"
+                          className="rounded-overlay"
                           onClick={actions.handleAgregarProcessStep}
                         >
-                          + Agregar Paso
+                          Agregar Paso
                         </Button>
                       </div>
                       {processSteps.map((step, idx) => (
@@ -278,7 +283,7 @@ export default function LandingView() {
                               onClick={() =>
                                 actions.handleEliminarProcessStep(idx)
                               }
-                              className="text-xs text-blue-900 font-bold hover:underline"
+                              className="text-xs text-primary font-bold hover:underline"
                             >
                               Eliminar
                             </button>
@@ -355,8 +360,8 @@ export default function LandingView() {
 
                       <div className="flex items-center justify-between rounded-none border border-slate-200 bg-slate-50 p-4">
                         <div>
-                          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
-                            Mostrar nota
+                          <h3 className="font-sans text-label font-bold text-foreground">
+                            Mostrar Nota
                           </h3>
                           <p className="text-xs text-slate-500 mt-0.5">
                             Texto chico debajo del subtítulo, por ejemplo
@@ -383,7 +388,7 @@ export default function LandingView() {
                       )}
 
                       <div className="space-y-4 pt-4 border-t border-slate-200">
-                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                        <h3 className="font-sans text-label font-bold text-foreground">
                           Fotos ({vouchers.length})
                         </h3>
 
@@ -403,7 +408,7 @@ export default function LandingView() {
                                   onClick={() =>
                                     actions.handleMoverVoucher(idx, "arriba")
                                   }
-                                  className="text-xs text-blue-900 font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                                  className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
                                 >
                                   Subir
                                 </button>
@@ -413,7 +418,7 @@ export default function LandingView() {
                                   onClick={() =>
                                     actions.handleMoverVoucher(idx, "abajo")
                                   }
-                                  className="text-xs text-blue-900 font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                                  className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
                                 >
                                   Bajar
                                 </button>
@@ -422,7 +427,7 @@ export default function LandingView() {
                                   onClick={() =>
                                     actions.handleEliminarVoucher(idx)
                                   }
-                                  className="text-xs text-blue-900 font-bold hover:underline"
+                                  className="text-xs text-primary font-bold hover:underline"
                                 >
                                   Eliminar
                                 </button>
@@ -489,6 +494,7 @@ export default function LandingView() {
                         <Button
                           type="button"
                           variant="outline"
+                          className="rounded-overlay"
                           onClick={() =>
                             actions.handleAgregarVoucher({
                               alt: "",
@@ -501,7 +507,7 @@ export default function LandingView() {
                             })
                           }
                         >
-                          + Agregar Foto
+                          Agregar Foto
                         </Button>
                       </div>
                     </div>
@@ -512,7 +518,7 @@ export default function LandingView() {
                       <div className="bg-slate-50 p-4 rounded-none border border-slate-200 space-y-4 mt-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h3 className="text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                            <h3 className="font-sans text-label font-bold text-foreground">
                               Sincronización con Google Places
                             </h3>
                             <p className="text-xs text-slate-500 mt-0.5">
@@ -522,11 +528,12 @@ export default function LandingView() {
                           </div>
                           <Button
                             type="button"
+                            className="rounded-overlay"
                             disabled={sincronizando}
                             onClick={actions.handleSincronizarGoogle}
                           >
                             {sincronizando
-                              ? "Conectando..."
+                              ? "Conectando…"
                               : "Sincronizar Ahora"}
                           </Button>
                         </div>
@@ -558,25 +565,26 @@ export default function LandingView() {
                               actions.setLimiteResenas(Number(e.target.value))
                             }
                           >
-                            <option value={3}>3 reseñas</option>
-                            <option value={5}>5 reseñas</option>
-                            <option value={8}>8 reseñas</option>
-                            <option value={10}>10 reseñas</option>
+                            <option value={3}>3 Reseñas</option>
+                            <option value={5}>5 Reseñas</option>
+                            <option value={8}>8 Reseñas</option>
+                            <option value={10}>10 Reseñas</option>
                           </SelectField>
                         </div>
                       </div>
 
                       <div className="space-y-4 pt-4 border-t border-slate-200">
                         <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
+                          <h3 className="font-sans text-label font-bold text-foreground">
                             Reseñas ({reviewsList.length})
                           </h3>
                           <Button
                             type="button"
                             variant="outline"
+                            className="rounded-overlay"
                             onClick={actions.handleAgregarReview}
                           >
-                            + Agregar Manual
+                            Agregar Manual
                           </Button>
                         </div>
                         {reviewsList.map((rev, idx) => (
@@ -586,14 +594,14 @@ export default function LandingView() {
                           >
                             <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                               <span className="text-xs font-bold text-slate-800">
-                                Reseña #{idx + 1} • {rev.author}
+                                Reseña #{idx + 1}, {rev.author}
                               </span>
                               <button
                                 type="button"
                                 onClick={() =>
                                   actions.handleEliminarReview(idx)
                                 }
-                                className="text-xs text-blue-900 font-bold hover:underline"
+                                className="text-xs text-primary font-bold hover:underline"
                               >
                                 Eliminar
                               </button>
@@ -664,12 +672,14 @@ export default function LandingView() {
                     <Button
                       type="button"
                       variant="outline"
+                      className="rounded-overlay"
                       onClick={() => actions.setSeccionActiva(null)}
                     >
                       Cerrar sin Guardar
                     </Button>
                     <Button
                       type="submit"
+                      className="rounded-overlay"
                       disabled={
                         guardando ||
                         (seccionActiva === "reservas" &&
@@ -682,7 +692,7 @@ export default function LandingView() {
                           ))
                       }
                     >
-                      {guardando ? "Guardando..." : "Guardar Cambios"}
+                      {guardando ? "Guardando…" : "Guardar Cambios"}
                     </Button>
                   </div>
                 </form>
@@ -698,7 +708,7 @@ export default function LandingView() {
           onCerrar={() => actions.setConfirmacionGuardar(false)}
         >
           <div className="p-6">
-            <h3 className="text-xl font-bold text-slate-900 mb-4">
+            <h3 className="font-sans text-section-title font-bold text-foreground mb-4">
               Confirmar Cambios
             </h3>
             <p className="text-sm text-slate-600 mb-6">
@@ -714,6 +724,7 @@ export default function LandingView() {
               <Button
                 type="button"
                 variant="outline"
+                className="rounded-overlay"
                 onClick={() => actions.setConfirmacionGuardar(false)}
                 disabled={guardando}
               >
@@ -721,10 +732,11 @@ export default function LandingView() {
               </Button>
               <Button
                 type="button"
+                className="rounded-overlay"
                 onClick={actions.ejecutarGuardar}
                 disabled={guardando}
               >
-                {guardando ? "Guardando..." : "Sí, guardar cambios"}
+                {guardando ? "Guardando…" : "Sí, Guardar Cambios"}
               </Button>
             </div>
           </div>

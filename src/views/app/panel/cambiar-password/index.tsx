@@ -11,9 +11,6 @@ export default function CambiarPasswordView() {
   return (
     <div className="mx-auto max-w-md space-y-6 p-6">
       <div>
-        <h1 className="font-sans text-lg font-bold text-slate-900">
-          Cambiar contraseña
-        </h1>
         <p className="font-sans text-xs text-slate-500">
           Tu cuenta tiene una contraseña temporal, elegí una nueva para
           continuar
@@ -49,7 +46,7 @@ export default function CambiarPasswordView() {
             required
           />
           <Button type="submit" className="w-full mt-2" disabled={cargando}>
-            {cargando ? "GUARDANDO..." : "CAMBIAR CONTRASEÑA"}
+            {cargando ? "Guardando..." : "Cambiar Contraseña"}
           </Button>
         </form>
       </Card>

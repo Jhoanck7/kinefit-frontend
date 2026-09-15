@@ -75,7 +75,7 @@ export function ReporteReservasView({
   if (cargando) {
     return (
       <Card className="p-6">
-        <p className="py-8 text-center text-sm text-brand-muted">
+        <p className="py-8 text-center text-sm text-muted-foreground">
           Cargando reporte de reservas...
         </p>
       </Card>
@@ -85,7 +85,7 @@ export function ReporteReservasView({
   if (!indicadores || indicadores.reservasTotales === 0) {
     return (
       <Card className="p-6">
-        <p className="py-8 text-center text-sm text-brand-muted">
+        <p className="py-8 text-center text-sm text-muted-foreground">
           Sin reservas registradas en el período seleccionado.
         </p>
       </Card>
@@ -99,7 +99,7 @@ export function ReporteReservasView({
         {/* KPI 1: Reservas Totales */}
         <Card className="p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+            <span className="text-section-title font-bold text-muted-foreground">
               Reservas Totales
             </span>
             {comparacion?.variacionReservasTotales !== undefined && (
@@ -113,7 +113,7 @@ export function ReporteReservasView({
           <p className="mt-3 text-2xl font-bold text-panel-sidebar">
             {indicadores.reservasTotales}
           </p>
-          <p className="mt-1 text-sm text-brand-muted">
+          <p className="mt-1 text-sm text-muted-foreground">
             Citas agendadas en el rango seleccionado
           </p>
         </Card>
@@ -121,7 +121,7 @@ export function ReporteReservasView({
         {/* KPI 2: Porcentaje de Ocupación */}
         <Card className="p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+            <span className="text-section-title font-bold text-muted-foreground">
               Tasa de Ocupación
             </span>
             {comparacion?.variacionPorcentajeOcupacion !== undefined && (
@@ -135,7 +135,7 @@ export function ReporteReservasView({
           <p className="mt-3 text-2xl font-bold text-panel-sidebar">
             {indicadores.porcentajeOcupacion}%
           </p>
-          <p className="mt-1 text-sm text-brand-muted">
+          <p className="mt-1 text-sm text-muted-foreground">
             Bloques ocupados vs disponibles en agenda
           </p>
         </Card>
@@ -143,7 +143,7 @@ export function ReporteReservasView({
         {/* KPI 3: Tasa de Inasistencias — negativo es BUENO */}
         <Card className="p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+            <span className="text-section-title font-bold text-muted-foreground">
               Tasa de Inasistencias
             </span>
             {comparacion?.variacionTasaInasistencias !== undefined && (
@@ -157,7 +157,7 @@ export function ReporteReservasView({
           <p className="mt-3 text-2xl font-bold text-panel-sidebar">
             {indicadores.tasaInasistencias}%
           </p>
-          <p className="mt-1 text-sm text-brand-muted">
+          <p className="mt-1 text-sm text-muted-foreground">
             Citas no asistidas o canceladas a última hora
           </p>
         </Card>
@@ -171,7 +171,7 @@ export function ReporteReservasView({
               <h3 className="text-sm font-bold text-panel-sidebar">
                 Evolución Temporal de Reservas e Ingresos
               </h3>
-              <p className="text-sm text-brand-muted">
+              <p className="text-sm text-muted-foreground">
                 Comportamiento durante el rango seleccionado
               </p>
             </div>
@@ -188,7 +188,7 @@ export function ReporteReservasView({
           </div>
 
           {/* Doble barra agrupada, escalas independientes */}
-          <div className="h-52 flex items-end justify-between gap-1 border-b border-brand-border pb-2 pt-2 overflow-x-auto">
+          <div className="h-52 flex items-end justify-between gap-1 border-b border-border pb-2 pt-2 overflow-x-auto">
             {evolucionTemporal.map(item => {
               const alturaReservas = Math.round(
                 (item.reservas / maxReservasEvolucion) * 100
@@ -234,7 +234,7 @@ export function ReporteReservasView({
                     </div>
                   </div>
 
-                  <span className="text-[9px] font-semibold text-brand-muted mt-1 text-center leading-tight">
+                  <span className="text-[9px] font-semibold text-muted-foreground mt-1 text-center leading-tight">
                     {item.periodo}
                   </span>
                 </div>
@@ -247,7 +247,7 @@ export function ReporteReservasView({
       {/* 3. Distribuciones */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="p-6">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted mb-4">
+          <h4 className="text-section-title font-bold text-muted-foreground mb-4">
             Horarios de Mayor Demanda (Distribución por Hora)
           </h4>
           <div className="space-y-3">
@@ -277,7 +277,7 @@ export function ReporteReservasView({
         </Card>
 
         <Card className="p-6">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted mb-4">
+          <h4 className="text-section-title font-bold text-muted-foreground mb-4">
             Demanda por Día de la Semana
           </h4>
           <div className="space-y-3">
@@ -310,7 +310,7 @@ export function ReporteReservasView({
       {/* 4. Estado de Citas, Origen y Retención */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <Card className="p-6 space-y-3">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+          <h4 className="text-section-title font-bold text-muted-foreground">
             Distribución por Estado
           </h4>
           <div className="space-y-2 text-sm">
@@ -331,7 +331,7 @@ export function ReporteReservasView({
         </Card>
 
         <Card className="p-6 space-y-3">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+          <h4 className="text-section-title font-bold text-muted-foreground">
             Origen de Reservas
           </h4>
           <div className="space-y-3 pt-1">
@@ -361,23 +361,23 @@ export function ReporteReservasView({
         </Card>
 
         <Card className="p-6 space-y-3">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted">
+          <h4 className="text-section-title font-bold text-muted-foreground">
             Retención de Pacientes
           </h4>
           <div className="pt-2 text-center">
             <span className="text-2xl font-bold text-panel-sidebar">
               {pctRecurrentes}%
             </span>
-            <span className="text-sm font-semibold text-brand-muted block mt-0.5">
+            <span className="text-sm font-semibold text-muted-foreground block mt-0.5">
               Pacientes Recurrentes
             </span>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-center text-sm pt-2 border-t border-brand-border">
+          <div className="grid grid-cols-2 gap-2 text-center text-sm pt-2 border-t border-border">
             <div className="bg-panel-fondo p-2 rounded-lg">
               <span className="font-bold text-panel-sidebar block">
                 {clientesNuevos}
               </span>
-              <span className="text-xs text-brand-muted">
+              <span className="text-xs text-muted-foreground">
                 Nuevos ({pctNuevos}%)
               </span>
             </div>
@@ -385,7 +385,7 @@ export function ReporteReservasView({
               <span className="font-bold text-panel-sidebar block">
                 {clientesRecurrentes}
               </span>
-              <span className="text-xs text-brand-muted">Recurrentes</span>
+              <span className="text-xs text-muted-foreground">Recurrentes</span>
             </div>
           </div>
         </Card>
@@ -394,10 +394,10 @@ export function ReporteReservasView({
       {/* 5. Rankings */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="p-6">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted mb-3">
+          <h4 className="text-section-title font-bold text-muted-foreground mb-3">
             Top Servicios Solicitados
           </h4>
-          <div className="divide-y divide-brand-border text-sm">
+          <div className="divide-y divide-border text-sm">
             {rankingServicios.map((s, idx) => (
               <div
                 key={s.id}
@@ -420,10 +420,10 @@ export function ReporteReservasView({
         </Card>
 
         <Card className="p-6">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted mb-3">
+          <h4 className="text-section-title font-bold text-muted-foreground mb-3">
             Top Especialistas
           </h4>
-          <div className="divide-y divide-brand-border text-xs text-sm">
+          <div className="divide-y divide-border text-xs text-sm">
             {rankingProfesionales.map((p, idx) => (
               <div
                 key={p.id}
@@ -446,10 +446,10 @@ export function ReporteReservasView({
         </Card>
 
         <Card className="p-6">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-brand-muted mb-3">
+          <h4 className="text-section-title font-bold text-muted-foreground mb-3">
             Pacientes Más Frecuentes
           </h4>
-          <div className="divide-y divide-brand-border text-sm">
+          <div className="divide-y divide-border text-sm">
             {rankingClientes.map((c, idx) => (
               <div
                 key={c.id}

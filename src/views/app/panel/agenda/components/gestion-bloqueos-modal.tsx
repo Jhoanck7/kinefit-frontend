@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { EmptyState, Modal } from "@/components/shared";
+import { EmptyState, Modal, ModalCloseButton } from "@/components/shared";
 import {
   useCreateBloqueoMutation,
   useGetBloqueos,
@@ -15,6 +15,7 @@ import {
   formatearFechaExtensa,
   formatearRangoHorario,
 } from "@/lib/formato";
+import { generarRejillaDia } from "@/lib/horario";
 
 interface GestionBloqueosModalProps {
   abierto: boolean;
@@ -60,6 +61,13 @@ export function GestionBloqueosModal({
     setFechaForm(fechaISO(hoy));
   }, [hoy, abierto, fechaForm]);
 
+  const rejillaForm = useMemo(() => {
+    const diaSemana = fechaForm
+      ? new Date(`${fechaForm}T00:00:00`).getDay()
+      : (hoy?.getDay() ?? 1);
+    return generarRejillaDia(diaSemana);
+  }, [fechaForm, hoy]);
+
   async function handleGuardarBloqueo(e: React.FormEvent) {
     e.preventDefault();
     if (!motivoForm.trim() || !especialistaForm) return;
@@ -88,32 +96,25 @@ export function GestionBloqueosModal({
 
   return (
     <Modal abierto={abierto} onCerrar={onClose}>
-      <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
+      <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
         {/* Encabezado */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
           <div>
-            <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+            <h2 className="font-sans text-section-title font-bold text-foreground">
               Gestión de Bloqueos de Agenda
             </h2>
             <p className="font-sans text-xs text-slate-500 mt-0.5">
               Administración de feriados, emergencias y bloqueos por profesional
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar modal"
-            className="p-1 font-sans text-sm text-slate-400 hover:text-slate-900 rounded-none focus:outline-none"
-          >
-            ✕
-          </button>
+          <ModalCloseButton onClick={onClose} />
         </div>
 
         {/* Contenido principal */}
         <div className="p-6 space-y-4 font-sans text-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
+              <span className="font-sans text-label font-medium text-muted-foreground">
                 Filtrar:
               </span>
               <select
@@ -123,7 +124,7 @@ export function GestionBloqueosModal({
               >
                 {especialistas.map(esp => (
                   <option key={esp.id} value={esp.id}>
-                    {esp.nombre} ({esp.cargo})
+                    {esp.nombre}
                   </option>
                 ))}
               </select>
@@ -133,9 +134,9 @@ export function GestionBloqueosModal({
               <button
                 type="button"
                 onClick={() => setMostrarForm(true)}
-                className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+                className="font-sans text-xs font-bold px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
               >
-                REGISTRAR BLOQUEO
+                Registrar Bloqueo
               </button>
             )}
           </div>
@@ -146,13 +147,13 @@ export function GestionBloqueosModal({
               onSubmit={handleGuardarBloqueo}
               className="border border-slate-200 bg-slate-50/50 p-4 space-y-3 rounded-none"
             >
-              <h4 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-200 pb-2">
+              <h4 className="font-sans text-micro-header font-medium text-muted-foreground border-b border-slate-200 pb-2">
                 Registrar Nuevo Bloqueo
               </h4>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                  <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                     Especialista
                   </label>
                   <select
@@ -162,14 +163,14 @@ export function GestionBloqueosModal({
                   >
                     {especialistas.map(esp => (
                       <option key={esp.id} value={esp.id}>
-                        {esp.nombre} ({esp.cargo})
+                        {esp.nombre}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                  <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                     Fecha del Bloqueo
                   </label>
                   <input
@@ -182,7 +183,7 @@ export function GestionBloqueosModal({
                 </div>
 
                 <div>
-                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                  <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                     Hora Inicio
                   </label>
                   <select
@@ -190,22 +191,16 @@ export function GestionBloqueosModal({
                     onChange={e => setHoraInicioForm(e.target.value)}
                     className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                   >
-                    <option value="09:00">09:00 AM</option>
-                    <option value="10:00">10:00 AM</option>
-                    <option value="11:00">11:00 AM</option>
-                    <option value="12:00">12:00 PM</option>
-                    <option value="13:00">13:00 PM</option>
-                    <option value="15:00">15:00 PM</option>
-                    <option value="16:00">16:00 PM</option>
-                    <option value="17:00">17:00 PM</option>
-                    <option value="18:00">18:00 PM</option>
-                    <option value="19:00">19:00 PM</option>
-                    <option value="20:00">20:00 PM</option>
+                    {rejillaForm.map(b => (
+                      <option key={b.inicio} value={b.inicio}>
+                        {b.inicio}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                  <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                     Hora Término
                   </label>
                   <select
@@ -213,23 +208,17 @@ export function GestionBloqueosModal({
                     onChange={e => setHoraTerminoForm(e.target.value)}
                     className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                   >
-                    <option value="10:00">10:00 AM</option>
-                    <option value="11:00">11:00 AM</option>
-                    <option value="12:00">12:00 PM</option>
-                    <option value="13:00">13:00 PM</option>
-                    <option value="14:00">14:00 PM (Colación)</option>
-                    <option value="16:00">16:00 PM</option>
-                    <option value="17:00">17:00 PM</option>
-                    <option value="18:00">18:00 PM</option>
-                    <option value="19:00">19:00 PM</option>
-                    <option value="20:00">20:00 PM</option>
-                    <option value="21:00">21:00 PM (Cierre)</option>
+                    {rejillaForm.map(b => (
+                      <option key={b.termino} value={b.termino}>
+                        {b.termino}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-1">
+                <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                   Motivo del Bloqueo
                 </label>
                 <input
@@ -246,13 +235,13 @@ export function GestionBloqueosModal({
                 <button
                   type="button"
                   onClick={() => setMostrarForm(false)}
-                  className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+                  className="font-sans text-xs font-bold px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="font-sans text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none"
+                  className="font-sans text-xs font-bold px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none"
                 >
                   Guardar Bloqueo
                 </button>
@@ -264,7 +253,7 @@ export function GestionBloqueosModal({
           <div className="divide-y divide-slate-200 border border-slate-200 bg-white rounded-none">
             {bloqueos.length === 0 ? (
               <EmptyState
-                titulo="Sin bloqueos registrados"
+                titulo="Sin Bloqueos Registrados"
                 descripcion="No hay bloqueos registrados para esta especialista."
               />
             ) : (
@@ -278,12 +267,12 @@ export function GestionBloqueosModal({
                     <div>
                       <div className="flex items-center gap-2">
                         <span
-                          className={`font-sans font-medium text-sm ${esActivo ? "text-slate-900" : "text-slate-400 line-through"}`}
+                          className={`font-sans font-medium text-value ${esActivo ? "text-foreground" : "text-slate-400 line-through"}`}
                         >
                           {b.motivo}
                         </span>
                         <span
-                          className={`px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wider rounded-none ${
+                          className={`rounded-overlay px-2 py-0.5 font-sans text-[10px] font-bold ${
                             esActivo
                               ? "bg-emerald-700 text-white"
                               : "bg-slate-400 text-white"
@@ -293,8 +282,8 @@ export function GestionBloqueosModal({
                         </span>
                       </div>
                       <span className="font-sans text-xs text-slate-500 block mt-0.5">
-                        {formatearFechaExtensa(new Date(`${b.fecha}T00:00:00`))}{" "}
-                        · {formatearRangoHorario(b.horaInicio, b.horaFin)}
+                        {formatearFechaExtensa(new Date(`${b.fecha}T00:00:00`))}
+                        , {formatearRangoHorario(b.horaInicio, b.horaFin)}
                       </span>
                     </div>
 
@@ -302,10 +291,10 @@ export function GestionBloqueosModal({
                       <button
                         type="button"
                         onClick={() => handleToggleActivo(b.id)}
-                        className={`font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 transition-colors rounded-none shadow-none ${
+                        className={`font-sans text-xs font-bold px-3 py-1.5 transition-colors rounded-overlay shadow-none ${
                           esActivo
-                            ? "border border-slate-200 bg-white hover:bg-slate-50 text-slate-900"
-                            : "border-0 bg-[#003366] hover:bg-[#002244] text-white"
+                            ? "border border-slate-200 bg-white hover:bg-slate-50 text-foreground"
+                            : "border-0 bg-primary hover:bg-primary-hover text-white"
                         }`}
                       >
                         {esActivo ? "Desactivar" : "Activar"}
@@ -323,9 +312,9 @@ export function GestionBloqueosModal({
           <button
             type="button"
             onClick={onClose}
-            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none"
+            className="font-sans text-xs font-bold px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none"
           >
-            ENTENDIDO
+            Entendido
           </button>
         </div>
       </div>

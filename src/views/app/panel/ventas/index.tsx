@@ -2,7 +2,6 @@
 
 import { Paginacion } from "@/components/shared";
 import {
-  Card,
   Table,
   TableBody,
   TableCell,
@@ -68,10 +67,10 @@ export default function VentasView() {
       />
 
       {/* Tabla Principal de Ventas */}
-      <Card className="p-0 overflow-hidden rounded-none border-slate-200 shadow-none font-sans">
+      <div className="overflow-hidden rounded-none border border-slate-200 shadow-none font-sans">
         <div className="px-6 py-3.5 border-b border-slate-200 bg-white font-sans">
-          <p className="font-sans font-bold text-xs uppercase tracking-wider text-slate-900">
-            {cargando ? "Cargando..." : `${total} ventas registradas`}
+          <p className="font-sans font-bold text-label text-foreground">
+            {cargando ? "Cargando…" : `${total} Ventas Registradas`}
           </p>
         </div>
 
@@ -81,12 +80,11 @@ export default function VentasView() {
               {COLUMNAS.map(titulo => (
                 <TableHead
                   key={titulo}
-                  className="px-4 py-3 text-[11px] font-medium uppercase tracking-wider text-slate-400 whitespace-nowrap"
+                  className="px-4 py-3 text-table-head font-bold text-muted-foreground whitespace-nowrap"
                 >
                   {titulo}
                 </TableHead>
               ))}
-              <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-slate-200 bg-white">
@@ -108,72 +106,56 @@ export default function VentasView() {
                   }}
                   className="cursor-pointer hover:bg-slate-50/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-slate-900"
                 >
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-900">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     #{venta.id}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     {formatearFechaHora(new Date(venta.createdAt))}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     {venta.pacienteNombre ?? "Cliente sin registrar"}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     {primerItem?.servicioNombre ??
                       primerItem?.descripcion ??
                       "Atención"}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     {venta.desglose.descuentoConvenio
                       ? `-$${venta.desglose.descuentoConvenio.toLocaleString("es-CL")}`
                       : "Sin Convenio"}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-900 whitespace-nowrap">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground whitespace-nowrap">
                     ${venta.desglose.montoTotal.toLocaleString("es-CL")}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     {venta.metodoPago}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     {venta.terminalNombre ?? "No Aplica"}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     {!venta.terminalPagoId
                       ? "No Aplica"
                       : venta.desglose.comisionTerminal > 0
                         ? `-$${venta.desglose.comisionTerminal.toLocaleString("es-CL")}`
                         : "$0"}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     ${(venta.desglose.impuesto ?? 0).toLocaleString("es-CL")}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     ${montoNeto.toLocaleString("es-CL")}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     {venta.desglose.montoProfesional
                       ? `$${venta.desglose.montoProfesional.toLocaleString("es-CL")}`
                       : "Sin Reparto Configurado"}
                   </TableCell>
-                  <TableCell className="px-4 py-3 font-medium text-sm text-slate-700">
+                  <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                     {venta.desglose.montoCentro
                       ? `$${venta.desglose.montoCentro.toLocaleString("es-CL")}`
                       : "Sin Reparto Configurado"}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-right">
-                    <svg
-                      className="inline h-4 w-4 text-slate-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      aria-hidden
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                      />
-                    </svg>
                   </TableCell>
                 </TableRow>
               );
@@ -192,7 +174,7 @@ export default function VentasView() {
             puedeSiguiente={inicio + TAMANO_PAGINA < total}
           />
         )}
-      </Card>
+      </div>
 
       {/* Modales */}
       <VentaDetalleModal

@@ -61,6 +61,7 @@ export type {
   PacienteEstadoResponse,
   PacientePerfilResponse,
   PacienteResponse,
+  PacientesPaginadasResponse,
   VerificarRutResponse,
 } from "./paciente";
 export type {

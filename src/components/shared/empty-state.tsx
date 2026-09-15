@@ -16,7 +16,7 @@ export function EmptyState({
     <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
       {icono ?? (
         <svg
-          className="h-10 w-10 text-brand-border"
+          className="h-10 w-10 text-border"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -32,7 +32,7 @@ export function EmptyState({
       )}
       <p className="text-sm font-semibold text-panel-sidebar">{titulo}</p>
       {descripcion && (
-        <p className="text-sm text-brand-muted max-w-sm">{descripcion}</p>
+        <p className="text-sm text-muted-foreground max-w-sm">{descripcion}</p>
       )}
       {accion}
     </div>

@@ -32,24 +32,19 @@ export default function BloqueosView() {
           <button
             type="button"
             onClick={actions.handleVolver}
-            className="flex items-center gap-1 text-sm text-panel-sidebar underline underline-offset-2 mb-2"
+            className="text-sm text-foreground underline underline-offset-2 mb-2"
           >
-            ← Volver a la Agenda
+            Volver a la Agenda
           </button>
-          <h2 className="text-xl font-bold text-panel-sidebar">
-            Gestión de Bloqueos de Agenda
-          </h2>
-          <p className="text-sm text-brand-muted">
-            Administración de feriados, cierres de emergencia y bloqueos de
-            disponibilidad
+          <p className="text-sm text-muted-foreground">
+            Administración de Feriados, Cierres de Emergencia y Bloqueos de
+            Disponibilidad
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           {!mostrarForm && (
-            <Button onClick={actions.handleAbrirForm}>
-              + Registrar Bloqueo
-            </Button>
+            <Button onClick={actions.handleAbrirForm}>Registrar Bloqueo</Button>
           )}
         </div>
       </div>
@@ -58,21 +53,21 @@ export default function BloqueosView() {
       {mostrarForm && (
         <form
           onSubmit={actions.handleGuardarBloqueo}
-          className="rounded-xl border border-brand-border bg-panel-fondo p-6 space-y-4 shadow-sm"
+          className="rounded-xl border border-border bg-panel-fondo p-6 space-y-4 shadow-sm"
         >
-          <h3 className="font-bold text-panel-sidebar text-base border-b border-brand-border pb-2">
+          <h3 className="font-bold text-panel-sidebar text-base border-b border-border pb-2">
             Registrar Nuevo Bloqueo de Agenda
           </h3>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-semibold text-brand-muted mb-1">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">
                 Especialista
               </label>
               <select
                 value={especialistaForm}
                 onChange={e => actions.setEspecialistaForm(e.target.value)}
-                className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
               >
                 {especialistas.map(esp => (
                   <option key={esp.id} value={esp.id}>
@@ -83,7 +78,7 @@ export default function BloqueosView() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-brand-muted mb-1">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">
                 Fecha del Bloqueo
               </label>
               <input
@@ -91,18 +86,18 @@ export default function BloqueosView() {
                 value={fechaForm}
                 onChange={e => actions.setFechaForm(e.target.value)}
                 required
-                className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-brand-muted mb-1">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">
                 Hora Inicio
               </label>
               <select
                 value={horaInicioForm}
                 onChange={e => actions.setHoraInicioForm(e.target.value)}
-                className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
               >
                 <option value="09:00">09:00 AM</option>
                 <option value="10:00">10:00 AM</option>
@@ -119,13 +114,13 @@ export default function BloqueosView() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-brand-muted mb-1">
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">
                 Hora Término
               </label>
               <select
                 value={horaTerminoForm}
                 onChange={e => actions.setHoraTerminoForm(e.target.value)}
-                className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
               >
                 <option value="10:00">10:00 AM</option>
                 <option value="11:00">11:00 AM</option>
@@ -143,7 +138,7 @@ export default function BloqueosView() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-brand-muted mb-1">
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">
               Motivo del Bloqueo
             </label>
             <input
@@ -152,11 +147,11 @@ export default function BloqueosView() {
               value={motivoForm}
               onChange={e => actions.setMotivoForm(e.target.value)}
               required
-              className="w-full rounded-lg border border-brand-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+              className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-brand-border">
+          <div className="flex justify-end gap-2 pt-2 border-t border-border">
             <Button
               variant="outline"
               type="button"
@@ -172,15 +167,15 @@ export default function BloqueosView() {
       )}
 
       {/* Selector de filtro por Especialista */}
-      <div className="flex items-center justify-between border-b border-brand-border pb-3">
+      <div className="flex items-center justify-between border-b border-border pb-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-brand-muted">
+          <span className="text-sm font-semibold text-muted-foreground">
             Filtrar por Especialista:
           </span>
           <select
             value={especialistaFiltro}
             onChange={e => actions.setEspecialistaFiltro(e.target.value)}
-            className="rounded-lg border border-brand-border bg-white px-3 py-1.5 text-sm font-medium text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+            className="rounded-lg border border-border bg-white px-3 py-1.5 text-sm font-medium text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
           >
             {especialistas.map(esp => (
               <option key={esp.id} value={esp.id}>
@@ -190,7 +185,7 @@ export default function BloqueosView() {
           </select>
         </div>
 
-        <span className="text-xs text-brand-muted font-medium">
+        <span className="text-xs text-muted-foreground font-medium">
           {bloqueos.length} bloqueo(s) registrado(s)
         </span>
       </div>
@@ -199,7 +194,7 @@ export default function BloqueosView() {
       <Card className="p-0 overflow-hidden">
         {bloqueos.length === 0 ? (
           <EmptyState
-            titulo="Sin bloqueos registrados"
+            titulo="Sin Bloqueos Registrados"
             descripcion="No hay bloqueos activos para esta especialista."
           />
         ) : (
@@ -220,7 +215,7 @@ export default function BloqueosView() {
                       )?.nombre ?? "—"}
                     </span>
                   </div>
-                  <p className="text-sm text-brand-muted mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     {formatearFechaExtensa(
                       new Date(`${bloqueo.fecha}T00:00:00`)
                     )}{" "}

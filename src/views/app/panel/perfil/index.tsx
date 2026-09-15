@@ -12,9 +12,6 @@ export default function PerfilView() {
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-6">
       <div>
-        <h1 className="font-sans text-lg font-bold text-slate-900">
-          Mi perfil
-        </h1>
         <p className="font-sans text-xs text-slate-500">
           Datos de tu cuenta en el panel
         </p>
@@ -23,26 +20,26 @@ export default function PerfilView() {
       <Card className="border border-border p-6">
         <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <dt className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
+            <dt className="font-sans text-label font-medium text-muted-foreground">
               Nombre
             </dt>
-            <dd className="mt-0.5 font-sans text-sm text-slate-900">
+            <dd className="mt-0.5 font-sans text-value text-foreground">
               {perfil.nombre}
             </dd>
           </div>
           <div>
-            <dt className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
+            <dt className="font-sans text-label font-medium text-muted-foreground">
               Correo
             </dt>
-            <dd className="mt-0.5 font-sans text-sm text-slate-900">
+            <dd className="mt-0.5 font-sans text-value text-foreground">
               {perfil.email}
             </dd>
           </div>
           <div>
-            <dt className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
+            <dt className="font-sans text-label font-medium text-muted-foreground">
               Rol
             </dt>
-            <dd className="mt-0.5 font-sans text-sm text-slate-900">
+            <dd className="mt-0.5 font-sans text-value text-foreground">
               {perfil.rol}
             </dd>
           </div>

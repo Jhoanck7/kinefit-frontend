@@ -47,11 +47,11 @@ export function PlantillaEspecialistaCard({
   };
 
   return (
-    <Card className="rounded-none border-slate-200 shadow-none p-5">
-      <p className="mb-3 font-sans font-medium text-sm text-slate-900 border-b border-slate-200 pb-2">
-        {especialista.nombre}{" "}
-        <span className="font-normal text-slate-500">
-          · {especialista.cargo}
+    <Card className="rounded-none border border-slate-200 shadow-none p-5">
+      <p className="mb-3 border-b border-slate-200 pb-2 font-sans text-value font-bold text-foreground">
+        {especialista.nombre},{" "}
+        <span className="font-normal text-muted-foreground">
+          {especialista.cargo}
         </span>
       </p>
 
@@ -68,7 +68,7 @@ export function PlantillaEspecialistaCard({
 
       {isLoading ? (
         <p className="font-sans text-xs text-slate-400">
-          Cargando plantilla horaria...
+          Cargando plantilla horaria…
         </p>
       ) : (
         <BloquesSemanaEditor

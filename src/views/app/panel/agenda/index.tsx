@@ -7,7 +7,6 @@ import {
   AppointmentDetailModal,
   CancelAppointmentModal,
   GestionBloqueosModal,
-  Legend,
   TimeGrid,
 } from "./components";
 import { useAgenda } from "./hooks";
@@ -16,7 +15,6 @@ function AgendaContent() {
   const {
     hoy,
     dia,
-    horaActual,
     especialistas,
     especialistaSeleccionado,
     especialistasAMostrar,
@@ -42,31 +40,26 @@ function AgendaContent() {
         onNuevaReserva={actions.handleNuevaReserva}
       />
 
-      {/* Parrilla de Tiempo (TimeGrid) Frameless */}
+      {/* Lista de citas del día por especialista */}
       <div className="overflow-x-auto py-2">
-        <div className="flex gap-6 min-w-[600px]">
-          {especialistasAMostrar.map((esp, index) => {
+        <div className="flex gap-4 min-w-[600px]">
+          {especialistasAMostrar.map(esp => {
             const bloques = agendaData[esp.id] ?? [];
             return (
-              <div key={esp.id} className="flex-1 min-w-[180px]">
-                <h3 className="mb-4 text-center font-sans font-semibold text-sm text-slate-800 tracking-wide">
+              <div key={esp.id} className="flex-1 min-w-65">
+                <h3 className="mb-3 border-b-2 border-slate-200 pb-2 font-sans text-[13px] font-bold text-foreground">
                   {esp.nombre}
                 </h3>
                 <TimeGrid
                   rejilla={rejilla}
                   bloques={bloques}
-                  horaActual={horaActual}
-                  ocultarHoras={index > 0}
                   onSeleccionarCita={actions.handleSeleccionarCita}
-                  onSeleccionarBloqueVacio={actions.handleNuevaReserva}
                 />
               </div>
             );
           })}
         </div>
       </div>
-
-      <Legend />
 
       {/* Modales de Gestión */}
       {citaId && !cancelando && (

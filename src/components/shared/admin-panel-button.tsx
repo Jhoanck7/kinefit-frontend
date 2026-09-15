@@ -35,7 +35,7 @@ export function AdminPanelButton({
     return (
       <Link
         href="/panel/agenda"
-        className={`flex items-center justify-between w-full bg-[#003366] hover:bg-[#002244] text-white px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-sm mt-2 ${className}`}
+        className={`flex items-center justify-between w-full bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-sm mt-2 ${className}`}
       >
         <span className="flex items-center gap-2">
           <svg
@@ -64,7 +64,7 @@ export function AdminPanelButton({
     return (
       <Link
         href="/panel/agenda"
-        className={`fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-[#003366] hover:bg-[#002244] text-white px-4 py-3 rounded-full font-bold text-xs shadow-xl tracking-wider transition-all duration-200 hover:scale-105 active:scale-95 uppercase ${className}`}
+        className={`fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-3 rounded-full font-bold text-xs shadow-xl tracking-wider transition-all duration-200 hover:scale-105 active:scale-95 uppercase ${className}`}
       >
         <svg
           className="w-4 h-4"
@@ -87,7 +87,7 @@ export function AdminPanelButton({
   return (
     <Link
       href="/panel/agenda"
-      className={`inline-flex items-center gap-1.5 bg-[#003366] hover:bg-[#002244] text-white px-3.5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 active:scale-95 border border-[#002244] ${className}`}
+      className={`inline-flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white px-3.5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105 active:scale-95 border border-primary-hover ${className}`}
       title="Ir al Panel de Administración"
     >
       <svg

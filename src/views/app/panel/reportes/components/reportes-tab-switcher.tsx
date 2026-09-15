@@ -19,9 +19,9 @@ export function ReportesTabSwitcher({
         <button
           type="button"
           onClick={() => onCambiarTab("reservas")}
-          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-colors ${
+          className={`px-4 py-2 text-xs font-bold rounded-none transition-colors ${
             tabActivo === "reservas"
-              ? "bg-[#003366] text-white"
+              ? "bg-primary text-white"
               : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
           }`}
         >
@@ -31,9 +31,9 @@ export function ReportesTabSwitcher({
         <button
           type="button"
           onClick={() => onCambiarTab("ventas")}
-          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-colors ${
+          className={`px-4 py-2 text-xs font-bold rounded-none transition-colors ${
             tabActivo === "ventas"
-              ? "bg-[#003366] text-white"
+              ? "bg-primary text-white"
               : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
           }`}
         >
@@ -43,9 +43,9 @@ export function ReportesTabSwitcher({
         <button
           type="button"
           onClick={() => onCambiarTab("comisiones")}
-          className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-colors ${
+          className={`px-4 py-2 text-xs font-bold rounded-none transition-colors ${
             tabActivo === "comisiones"
-              ? "bg-[#003366] text-white"
+              ? "bg-primary text-white"
               : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
           }`}
         >
@@ -54,10 +54,8 @@ export function ReportesTabSwitcher({
       </div>
 
       <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-        <span className="text-[11px] uppercase tracking-wider text-slate-400">
-          Acceso:
-        </span>
-        <Badge className="rounded-none border-slate-200 bg-slate-50 text-[11px] font-medium text-slate-700">
+        <span className="text-label text-muted-foreground">Acceso:</span>
+        <Badge className="border-0 bg-slate-700 text-[11px] font-medium text-white">
           Solo Administrador
         </Badge>
       </div>

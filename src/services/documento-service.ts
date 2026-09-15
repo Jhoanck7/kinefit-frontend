@@ -12,6 +12,7 @@ import {
   ConsentimientoCitaResponse,
   DocumentoDetalleResponse,
   DocumentoPublicoResponse,
+  DocumentoResumenResponse,
   DocumentosPaginadosResponse,
   FichaResponse,
   RecomendacionResponse,
@@ -107,7 +108,7 @@ export class DocumentoService extends BaseApiService {
   }
 
   getHistorialPorPaciente(pacienteId: number) {
-    return this.httpClient.get<ApiResponse<FichaResponse[]>>(
+    return this.httpClient.get<ApiResponse<DocumentoResumenResponse[]>>(
       `${this.baseURL}/pacientes/${pacienteId}/historial`
     );
   }

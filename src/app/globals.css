@@ -34,6 +34,16 @@
   --color-panel-seleccion: #e7eff9;
   --color-panel-fondo: #fafcfe;
   --font-heading: var(--font-sans);
+
+  /* Escala tipográfica del Panel Administrativo */
+  --text-page-title: 15px;
+  --text-section-title: 16px;
+  --text-label: 12px;
+  --text-value: 14px;
+  --text-table-head: 11px;
+  --text-table-cell: 13px;
+  --text-micro-header: 12px;
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -67,6 +77,8 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-overlay: 6px;
+  --radius-pill: 999px;
 }
 
 html,
@@ -77,7 +89,7 @@ body {
 
 :root {
   --background: #ffffff;
-  --foreground: #0f172a;
+  --foreground: #0f1b2d;
   --card: #ffffff;
   --card-foreground: #0f172a;
   --popover: #ffffff;
@@ -88,7 +100,7 @@ body {
   --secondary: #f9fafb;
   --secondary-foreground: #0f172a;
   --muted: #f9fafb;
-  --muted-foreground: #334155;
+  --muted-foreground: #64748b;
   --accent: #e7eff9;
   --accent-foreground: #07336c;
   --destructive: oklch(0.577 0.245 27.325);
@@ -101,41 +113,6 @@ body {
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0rem;
-  --sidebar: #07336c;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #052651;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e7eff9;
-  --sidebar-accent-foreground: #07336c;
-  --sidebar-border: #052651;
-  --sidebar-ring: #003366;
-}
-
-.dark {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #003366;
-  --primary-foreground: #ffffff;
-  --primary-hover: #002244;
-  --secondary: #f9fafb;
-  --secondary-foreground: #0f172a;
-  --muted: #f9fafb;
-  --muted-foreground: #334155;
-  --accent: #e7eff9;
-  --accent-foreground: #07336c;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #003366;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
   --sidebar: #07336c;
   --sidebar-foreground: #ffffff;
   --sidebar-primary: #052651;

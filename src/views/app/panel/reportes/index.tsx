@@ -19,13 +19,13 @@ import {
 import { useReportes } from "./hooks";
 
 const OPCIONES_PERIODO = [
-  { value: "hoy", etiqueta: "HOY" },
-  { value: "ayer", etiqueta: "AYER" },
-  { value: "7dias", etiqueta: "ÚLTIMOS 7 DÍAS" },
-  { value: "30dias", etiqueta: "ÚLTIMOS 30 DÍAS" },
-  { value: "mesActual", etiqueta: "ESTE MES" },
-  { value: "mesAnterior", etiqueta: "MES ANTERIOR" },
-  { value: "personalizado", etiqueta: "PERSONALIZADO…" },
+  { value: "hoy", etiqueta: "Hoy" },
+  { value: "ayer", etiqueta: "Ayer" },
+  { value: "7dias", etiqueta: "Últimos 7 Días" },
+  { value: "30dias", etiqueta: "Últimos 30 Días" },
+  { value: "mesActual", etiqueta: "Este Mes" },
+  { value: "mesAnterior", etiqueta: "Mes Anterior" },
+  { value: "personalizado", etiqueta: "Personalizado…" },
 ];
 
 const OPCIONES_VISTA = [
@@ -60,7 +60,7 @@ export default function ReportesView() {
         <div className="flex flex-wrap items-center gap-3">
           {/* Selector de período */}
           <div className="flex items-center gap-2">
-            <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+            <span className="font-medium text-muted-foreground text-label">
               Período:
             </span>
             <Select value={rangoFecha} onValueChange={actions.setRangoFecha}>
@@ -100,7 +100,7 @@ export default function ReportesView() {
           {/* Selector de granularidad (solo en tab Reservas) */}
           {tabActivo === "reservas" && (
             <div className="flex items-center gap-2">
-              <span className="font-medium text-slate-400 uppercase tracking-wider text-[11px]">
+              <span className="font-medium text-muted-foreground text-label">
                 Vista:
               </span>
               <Select
@@ -130,13 +130,13 @@ export default function ReportesView() {
                 checked={compararConAnterior}
                 onCheckedChange={actions.setCompararConAnterior}
               />
-              Comparar con período anterior
+              Comparar con Período Anterior
             </label>
           )}
         </div>
 
         <div className="text-slate-400 text-xs font-medium">
-          Datos consolidados
+          Datos Consolidados
         </div>
       </Card>
 

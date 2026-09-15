@@ -21,17 +21,13 @@ export function EliminarEspecialistaModal({
     <Modal abierto={!!especialista} onCerrar={onCancelar}>
       {especialista && (
         <div className="p-6 space-y-6 text-center">
-          <div className="mx-auto w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-3xl font-bold">
-            ⚠️
-          </div>
-
           <div>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">
+            <h2 className="font-sans text-section-title font-bold text-foreground mb-2">
               ¿Eliminar Especialista?
             </h2>
             <p className="text-sm text-slate-600 leading-relaxed">
               Estás a punto de eliminar a{" "}
-              <span className="font-bold text-slate-900">
+              <span className="font-bold text-foreground">
                 {especialista.nombre}
               </span>{" "}
               ({especialista.cargo}) del sistema.
@@ -49,16 +45,16 @@ export function EliminarEspecialistaModal({
                   unoptimized
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-blue-900 text-white font-bold">
+                <div className="w-full h-full flex items-center justify-center bg-primary text-white font-bold">
                   {especialista.nombre.charAt(0)}
                 </div>
               )}
             </div>
             <div className="overflow-hidden">
-              <p className="font-bold text-slate-900 text-sm truncate">
+              <p className="font-bold text-foreground text-sm truncate">
                 {especialista.nombre}
               </p>
-              <p className="text-xs text-blue-900 font-medium truncate">
+              <p className="text-xs text-primary font-medium truncate">
                 {especialista.cargo}
               </p>
               <p className="text-[11px] text-slate-500 truncate">
@@ -68,7 +64,7 @@ export function EliminarEspecialistaModal({
           </div>
 
           <Alerta tono="advertencia" className="text-left">
-            <span className="font-bold">⚠️ Nota Importante:</span> Esta acción
+            <span className="font-bold">Nota Importante:</span> Esta acción
             eliminará su registro de la base de datos. Si el especialista posee
             citas asociadas, te recomendamos cancelar el borrado y simplemente{" "}
             <span className="font-bold underline">Desactivarlo</span>.
@@ -78,6 +74,7 @@ export function EliminarEspecialistaModal({
             <Button
               type="button"
               variant="outline"
+              className="rounded-overlay"
               onClick={onCancelar}
               disabled={eliminando}
             >
@@ -85,11 +82,12 @@ export function EliminarEspecialistaModal({
             </Button>
             <Button
               type="button"
-
+              variant="destructive"
+              className="rounded-overlay"
               onClick={onConfirmar}
               disabled={eliminando}
             >
-              {eliminando ? "Eliminando..." : "Sí, Eliminar Especialista"}
+              {eliminando ? "Eliminando…" : "Sí, Eliminar Especialista"}
             </Button>
           </div>
         </div>

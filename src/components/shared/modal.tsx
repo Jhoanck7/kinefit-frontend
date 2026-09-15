@@ -17,8 +17,8 @@ interface ModalProps {
  * Wrapper delgado sobre Dialog de Radix/shadcn: conserva la API simple del
  * modal original (abierto/onCerrar/children/ancho) mientras usa el motor
  * real de Radix (portal, overlay, foco, ESC). El botón de cierre por
- * defecto de shadcn se oculta porque cada modal consumidor ya dibuja su
- * propio botón ✕ dentro del header que arma en `children`.
+ * defecto de shadcn se oculta porque cada modal consumidor arma su propio
+ * header y usa ModalCloseButton dentro de `children`.
  */
 export function Modal({
   abierto,
@@ -32,7 +32,7 @@ export function Modal({
       <DialogContent
         showCloseButton={false}
         className={cn(
-          "w-full p-0 rounded-none border-slate-200 shadow-none overflow-y-auto max-h-[92vh]",
+          "w-full p-0 rounded-overlay border-border shadow-[0_20px_45px_-20px_rgba(7,51,108,0.30)] overflow-y-auto max-h-[92vh]",
           ancho,
           className
         )}
@@ -41,5 +41,17 @@ export function Modal({
         {children}
       </DialogContent>
     </Dialog>
+  );
+}
+
+export function ModalCloseButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="font-sans text-xs font-semibold text-muted-foreground hover:text-foreground focus:outline-none"
+    >
+      Cerrar
+    </button>
   );
 }

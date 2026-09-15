@@ -27,6 +27,10 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
   const [firmaVacia, setFirmaVacia] = useState(true);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [visorInline, setVisorInline] = useState<{
+    id: number;
+    url: string;
+  } | null>(null);
   const pdfFirmaRef =
     useRef<React.ComponentRef<typeof PdfSignatureCanvas>>(null);
 
@@ -73,6 +77,20 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
     try {
       const blob = await abrirArchivo.mutateAsync(id);
       window.open(URL.createObjectURL(blob), "_blank");
+    } catch (err: unknown) {
+      setErrorMsg(handleApiError(err).message);
+    }
+  };
+
+  const handleVerDocumentoAqui = async (id: number) => {
+    if (visorInline?.id === id) {
+      setVisorInline(null);
+      return;
+    }
+    setErrorMsg(null);
+    try {
+      const blob = await abrirArchivo.mutateAsync(id);
+      setVisorInline({ id, url: URL.createObjectURL(blob) });
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
     }
@@ -146,36 +164,45 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
 
             <div className="flex flex-wrap gap-3">
               {doc.tieneArchivo && firmandoId !== doc.id && (
-                <button
-                  type="button"
-                  onClick={() => handleVerDocumento(doc.id)}
-                  className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
-                >
-                  Ver documento
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => handleVerDocumento(doc.id)}
+                    className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
+                  >
+                    Abrir en Otra Pestaña
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleVerDocumentoAqui(doc.id)}
+                    className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
+                  >
+                    {visorInline?.id === doc.id ? "Ocultar Visor" : "Ver Aquí"}
+                  </button>
+                </>
               )}
               {doc.estado === "Pendiente" && !doc.firmaPacienteLista && (
                 <>
                   <button
                     type="button"
                     onClick={() => handleReemitir(doc.id)}
-                    className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
+                    className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
                   >
                     {enlaceCopiadoId === doc.id
-                      ? "Enlace copiado"
-                      : "Copiar enlace"}
+                      ? "Enlace Copiado"
+                      : "Copiar Enlace"}
                   </button>
                   <button
                     type="button"
                     onClick={() => handleReenviarPorCorreo(doc.id)}
-                    className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
+                    className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
                   >
                     {correoEnviadoId === doc.id
-                      ? "Correo enviado"
-                      : "Reenviar por correo"}
+                      ? "Correo Enviado"
+                      : "Reenviar por Correo"}
                   </button>
-                  <label className="cursor-pointer font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900">
-                    Cargar escaneo
+                  <label className="cursor-pointer font-sans text-xs font-bold text-muted-foreground hover:text-foreground">
+                    Cargar Escaneo
                     <input
                       type="file"
                       accept="image/*,.pdf"
@@ -193,19 +220,27 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
                     type="button"
                     onClick={() => handleAbrirFirma(doc.id)}
                     disabled={abrirArchivo.isPending}
-                    className="font-sans text-xs font-bold uppercase tracking-wider text-[#003366] hover:underline disabled:opacity-40"
+                    className="font-sans text-xs font-bold text-primary hover:underline disabled:opacity-40"
                   >
                     {abrirArchivo.isPending
                       ? "Abriendo…"
-                      : "Firmar como profesional"}
+                      : "Firmar como Profesional"}
                   </button>
                 )}
             </div>
           </div>
 
+          {visorInline?.id === doc.id && (
+            <iframe
+              src={visorInline.url}
+              title={doc.nombrePlantilla}
+              className="h-[70vh] w-full rounded-overlay border border-slate-200"
+            />
+          )}
+
           {firmandoId === doc.id && pdfUrl && (
             <div className="mt-2 border border-slate-200 bg-slate-50 p-4">
-              <p className="mb-2 font-sans text-[11px] font-bold uppercase tracking-widest text-slate-400">
+              <p className="mb-2 font-sans text-[11px] font-bold text-muted-foreground">
                 Firmá sobre el documento, donde te corresponde
               </p>
               <PdfSignatureCanvas
@@ -217,7 +252,7 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
                 <button
                   type="button"
                   onClick={handleCancelarFirma}
-                  className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border border-slate-200"
+                  className="font-sans text-xs font-bold px-3 py-1.5 border border-slate-200"
                 >
                   Cancelar
                 </button>
@@ -225,11 +260,11 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
                   type="button"
                   onClick={handleGuardarFirmaProfesional}
                   disabled={firmaVacia || firmarProfesional.isPending}
-                  className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 bg-[#003366] hover:bg-[#002244] text-white disabled:opacity-40"
+                  className="font-sans text-xs font-bold px-3 py-1.5 bg-primary hover:bg-primary-hover text-white disabled:opacity-40"
                 >
                   {firmarProfesional.isPending
                     ? "Guardando…"
-                    : "Confirmar firma (no se puede deshacer)"}
+                    : "Confirmar Firma (No se Puede Deshacer)"}
                 </button>
               </div>
             </div>

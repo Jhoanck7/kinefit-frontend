@@ -36,14 +36,14 @@ export function AgendaToolbar({
             aria-label="Día anterior"
             className="px-3 py-1.5 font-sans text-xs font-medium text-slate-700 hover:bg-slate-50 focus:outline-none"
           >
-            ‹
+            Anterior
           </button>
           <button
             type="button"
             onClick={onIrAHoy}
-            className="px-3 py-1.5 font-sans text-xs font-bold uppercase tracking-wider text-slate-900 hover:bg-slate-50 focus:outline-none"
+            className="px-3 py-1.5 font-sans text-xs font-bold text-slate-900 hover:bg-slate-50 focus:outline-none"
           >
-            HOY
+            Hoy
           </button>
           <button
             type="button"
@@ -51,7 +51,7 @@ export function AgendaToolbar({
             aria-label="Día siguiente"
             className="px-3 py-1.5 font-sans text-xs font-medium text-slate-700 hover:bg-slate-50 focus:outline-none"
           >
-            ›
+            Siguiente
           </button>
         </div>
 
@@ -68,21 +68,27 @@ export function AgendaToolbar({
         <select
           value={especialistaSeleccionado}
           onChange={e => onCambiarEspecialista(e.target.value)}
-          className="border border-slate-200 bg-white px-3 py-1.5 font-sans text-xs font-medium text-slate-900 rounded-none focus:border-slate-900 focus:outline-none cursor-pointer uppercase tracking-wider"
+          className="border border-slate-200 bg-white px-3 py-1.5 font-sans text-xs font-medium text-slate-900 rounded-none focus:border-slate-900 focus:outline-none cursor-pointer"
         >
-          <option value="todas">TODAS LAS ESPECIALISTAS</option>
+          <option value="todas">Todas las Especialistas</option>
           {especialistas.map(esp => (
             <option key={esp.id} value={esp.id}>
-              {esp.nombre.toUpperCase()}
+              {esp.nombre}
             </option>
           ))}
         </select>
 
-        <Button variant="outline" onClick={onAbrirBloqueos}>
-          BLOQUEOS
+        <Button
+          variant="outline"
+          className="rounded-overlay"
+          onClick={onAbrirBloqueos}
+        >
+          Bloqueos
         </Button>
 
-        <Button onClick={onNuevaReserva}>NUEVA RESERVA</Button>
+        <Button className="rounded-overlay" onClick={onNuevaReserva}>
+          Nueva Reserva
+        </Button>
       </div>
     </div>
   );

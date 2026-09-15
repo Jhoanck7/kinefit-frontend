@@ -4,6 +4,8 @@ import { toast } from "sonner";
 
 import { isSessionExpired } from "@/lib/auth";
 
+let cerrandoSesionExpirada = false;
+
 // El backend autentica con Authorization: Bearer, no con cookies.
 export const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -24,8 +26,13 @@ axiosInstance.interceptors.request.use(async config => {
     const token = session?.accessToken;
 
     if (session && isSessionExpired(session)) {
-      toast.error("Tu sesión ha expirado. Por favor, inicia sesión de nuevo.");
-      await signOut({ redirect: false });
+      if (!cerrandoSesionExpirada) {
+        cerrandoSesionExpirada = true;
+        toast.error(
+          "Tu sesión ha expirado. Por favor, inicia sesión de nuevo."
+        );
+        await signOut({ redirect: false });
+      }
       return Promise.reject(new Error("Token expired"));
     }
 

@@ -1,9 +1,9 @@
-import { CuerpoFormato } from "./plantilla";
+import { CuerpoFormato, TipoDocumentoClinico } from "./plantilla";
 
 /** Lo mínimo para que el paciente lea y firme, sin ningún id interno */
 export interface DocumentoPublicoResponse {
   nombre: string;
-  tipo: string;
+  tipo: TipoDocumentoClinico;
   origen: string;
   cuerpo?: CuerpoFormato;
   tieneArchivo: boolean;
@@ -18,7 +18,7 @@ export interface DocumentoPublicoResponse {
 export interface ConsentimientoCitaResponse {
   id: number;
   nombrePlantilla: string;
-  tipo: string;
+  tipo: TipoDocumentoClinico;
   origen: string;
   estado: string;
   firmaPacienteLista: boolean;
@@ -45,7 +45,7 @@ export interface AdjuntoResumenResponse {
 
 export interface DocumentoResumenResponse {
   id: number;
-  tipo: string;
+  tipo: TipoDocumentoClinico;
   nombre: string;
   estado: string;
   motivoCierre?: string;
@@ -67,7 +67,7 @@ export interface DocumentosPaginadosResponse {
 
 export interface DocumentoDetalleResponse {
   id: number;
-  tipo: string;
+  tipo: TipoDocumentoClinico;
   nombre: string;
   estado: string;
   motivoCierre?: string;

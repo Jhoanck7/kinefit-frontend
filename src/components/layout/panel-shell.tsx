@@ -14,7 +14,7 @@ export function PanelShell({ children }: { children: ReactNode }) {
   if (status === "loading") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-panel-fondo">
-        <p className="text-sm font-semibold text-brand-muted">
+        <p className="text-sm font-semibold text-muted-foreground">
           Verificando sesión...
         </p>
       </div>

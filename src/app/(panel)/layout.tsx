@@ -1,7 +1,7 @@
 import "../globals.css";
 
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Roboto } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 
 import { Toaster } from "@/components/ui";
@@ -9,6 +9,13 @@ import { ReactQueryProvider, RelojPanelProvider } from "@/providers";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const roboto = Roboto({
+  variable: "--font-roboto",
+  weight: ["400", "500", "700", "900"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -29,20 +36,14 @@ export default function PanelRootLayout({
   return (
     <html
       lang="es"
-      className={`${jetbrainsMono.variable} h-full antialiased`}
+      className={`${jetbrainsMono.variable} ${roboto.variable} h-full antialiased`}
       style={
         {
           "--font-sans":
-            '"Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            'var(--font-roboto), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         } as React.CSSProperties
       }
     >
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400,300&display=swap"
-        />
-      </head>
       <body className="min-h-full font-sans">
         <SessionProvider>
           <ReactQueryProvider>

@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import {
+  useAbrirArchivoPlantillaMutation,
   useCrearPlantillaConsentimientoMutation,
   useCrearPlantillaFichaMutation,
   useCrearPlantillaRecomendacionMutation,
@@ -13,6 +14,7 @@ import {
   useUpdatePlantillaMutation,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
+import { CATALOGO_TIPOS_DOCUMENTO } from "@/lib/estados-documento";
 import { UpdatePlantillaRequest } from "@/models/requests";
 import {
   CompletadoPor,
@@ -55,7 +57,7 @@ function campoNuevo(): CampoBorrador {
 function seccionNueva(): SeccionBorrador {
   return {
     id: idUnico("seccion"),
-    nombre: "Nueva sección",
+    nombre: "Nueva Sección",
     campos: [campoNuevo()],
   };
 }
@@ -73,11 +75,9 @@ export const TIPOS_CAMPO: { valor: TipoCampoFormato; etiqueta: string }[] = [
 export const TIPOS_DOCUMENTO: {
   valor: TipoDocumentoClinico;
   etiqueta: string;
-}[] = [
-  { valor: "FichaClinica", etiqueta: "Ficha clínica" },
-  { valor: "Recomendacion", etiqueta: "Recomendaciones" },
-  { valor: "Consentimiento", etiqueta: "Consentimiento informado" },
-];
+}[] = (
+  Object.entries(CATALOGO_TIPOS_DOCUMENTO) as [TipoDocumentoClinico, string][]
+).map(([valor, etiqueta]) => ({ valor, etiqueta }));
 
 export const COMPLETADO_POR: { valor: CompletadoPor; etiqueta: string }[] = [
   { valor: "Profesional", etiqueta: "La profesional" },
@@ -117,6 +117,7 @@ export const useConstructorPlantilla = () => {
   const [seccionAEliminar, setSeccionAEliminar] = useState<string | null>(null);
   const [documentosDeLaPlantillaEditada, setDocumentosDeLaPlantillaEditada] =
     useState(0);
+  const [urlArchivoActual, setUrlArchivoActual] = useState<string | null>(null);
 
   const [draggedCampo, setDraggedCampo] = useState<{
     seccionId: string;
@@ -141,6 +142,7 @@ export const useConstructorPlantilla = () => {
     useImportarPlantillaConsentimientoMutation();
   const importarRecomendacionMutation =
     useImportarPlantillaRecomendacionMutation();
+  const abrirArchivoMutation = useAbrirArchivoPlantillaMutation();
 
   function cambiarTipoDocumento(tipo: TipoDocumentoClinico) {
     setTipoDocumento(tipo);
@@ -417,6 +419,22 @@ export const useConstructorPlantilla = () => {
   const handleVolver = () => router.push("/panel/documentos/plantillas");
   const handleCancelar = () => router.push("/panel/documentos/plantillas");
 
+  async function handleAbrirArchivoActual() {
+    if (!idEditado) return;
+    const blob = await abrirArchivoMutation.mutateAsync(idEditado);
+    window.open(URL.createObjectURL(blob), "_blank");
+  }
+
+  async function handleVerArchivoActualAqui() {
+    if (urlArchivoActual) {
+      setUrlArchivoActual(null);
+      return;
+    }
+    if (!idEditado) return;
+    const blob = await abrirArchivoMutation.mutateAsync(idEditado);
+    setUrlArchivoActual(URL.createObjectURL(blob));
+  }
+
   const seccionEnBorrado = secciones.find(s => s.id === seccionAEliminar);
 
   return {
@@ -438,6 +456,7 @@ export const useConstructorPlantilla = () => {
     draggedSeccionIndex,
     idEditado,
     seccionEnBorrado,
+    urlArchivoActual,
     guardando:
       crearFichaMutation.isPending ||
       crearConsentimientoMutation.isPending ||
@@ -471,6 +490,8 @@ export const useConstructorPlantilla = () => {
       confirmarGuardado,
       handleVolver,
       handleCancelar,
+      handleAbrirArchivoActual,
+      handleVerArchivoActualAqui,
     },
   };
 };

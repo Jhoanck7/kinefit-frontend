@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Modal } from "@/components/shared";
+import { Modal, ModalCloseButton } from "@/components/shared";
 import { Badge } from "@/components/ui";
 import {
   useAbrirArchivoDocumentoMutation,
@@ -17,6 +17,12 @@ import {
   useSubirAdjuntoMutation,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
+import { COLOR_ROL } from "@/lib/color-rol";
+import {
+  CATALOGO_ESTADOS_DOCUMENTO,
+  CodigoEstadoDocumento,
+  etiquetaTipoDocumento,
+} from "@/lib/estados-documento";
 import { formatearFechaCorta, formatearFechaHora } from "@/lib/formato";
 import { CuerpoFormato } from "@/models/responses";
 
@@ -28,12 +34,6 @@ function etiquetaDeCampo(campoId: string, cuerpo?: CuerpoFormato): string {
   if (campo?.nombre.trim()) return campo.nombre.trim();
   return campoId.replace(/_/g, " ").replace(/^campo-\d+/i, "Campo");
 }
-
-const NOMBRE_TIPO: Record<string, string> = {
-  FichaClinica: "Ficha clínica",
-  Recomendacion: "Recomendación",
-  Consentimiento: "Consentimiento informado",
-};
 
 interface DocumentoDetalleModalProps {
   documentoId: string | null;
@@ -52,6 +52,7 @@ export function DocumentoDetalleModal({
   const [mostrarAuditoria, setMostrarAuditoria] = useState(false);
   const [confirmarCierre, setConfirmarCierre] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [urlVisorInline, setUrlVisorInline] = useState<string | null>(null);
 
   const { data: doc = null } = useGetDocumentoDetalle(
     Number(documentoId),
@@ -89,6 +90,9 @@ export function DocumentoDetalleModal({
   const esFicha = doc.tipo === "FichaClinica";
   const esConsentimiento = doc.tipo === "Consentimiento";
   const puedeEditar = esFicha && doc.estado === "Borrador";
+  const defEstado =
+    CATALOGO_ESTADOS_DOCUMENTO[doc.estado as CodigoEstadoDocumento];
+  const colorEstado = COLOR_ROL[defEstado?.colorRol ?? "gris"];
 
   function handleIniciarEdicion() {
     setContenidoEditado(doc!.contenido ?? {});
@@ -150,6 +154,20 @@ export function DocumentoDetalleModal({
     }
   }
 
+  async function handleVerArchivoAqui() {
+    if (urlVisorInline) {
+      setUrlVisorInline(null);
+      return;
+    }
+    setErrorMsg(null);
+    try {
+      const blob = await abrirArchivoMutation.mutateAsync(doc!.id);
+      setUrlVisorInline(URL.createObjectURL(blob));
+    } catch (err: unknown) {
+      setErrorMsg(handleApiError(err).message);
+    }
+  }
+
   async function handleDescargarArchivo() {
     const blob = await descargarArchivoMutation.mutateAsync(doc!.id);
     const url = URL.createObjectURL(blob);
@@ -180,35 +198,31 @@ export function DocumentoDetalleModal({
 
   return (
     <Modal abierto={Boolean(documentoId)} onCerrar={onCerrar}>
-      <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
+      <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+              <h2 className="font-sans text-section-title font-bold text-foreground">
                 {doc.nombre}
               </h2>
-              <Badge className="rounded-none border-slate-200 bg-slate-50 text-[11px] font-medium text-slate-700">
-                {NOMBRE_TIPO[doc.tipo] ?? doc.tipo}
+              <Badge className="rounded-overlay border-0 bg-slate-700 text-[11px] font-medium text-white">
+                {etiquetaTipoDocumento(doc.tipo)}
               </Badge>
-              <Badge className="rounded-none border-slate-200 bg-slate-50 text-[11px] font-medium text-slate-700">
-                {doc.estado}
+              <Badge
+                className="rounded-overlay border-0 text-[11px] font-medium text-white"
+                style={{ backgroundColor: colorEstado.fondoSolido }}
+              >
+                {defEstado?.etiqueta ?? doc.estado}
               </Badge>
             </div>
             <p className="font-sans text-xs text-slate-500 mt-0.5">
-              {doc.pacienteNombre} · RUT{" "}
+              {doc.pacienteNombre}, RUT{" "}
               <span className="text-slate-700 font-medium">
                 {doc.pacienteRut || "—"}
               </span>
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onCerrar}
-            aria-label="Cerrar modal"
-            className="p-1 font-sans text-sm text-slate-400 hover:text-slate-900 rounded-none focus:outline-none"
-          >
-            ✕
-          </button>
+          <ModalCloseButton onClick={onCerrar} />
         </div>
 
         {doc.motivoCierre && (
@@ -227,28 +241,44 @@ export function DocumentoDetalleModal({
           <div className="md:col-span-2 p-6 space-y-6 max-h-[60vh] overflow-y-auto">
             {doc.tieneArchivo ? (
               <div>
-                <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
-                  ARCHIVO
+                <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
+                  Archivo
                 </h3>
-                <button
-                  type="button"
-                  onClick={handleAbrirArchivo}
-                  className="font-sans text-xs font-bold uppercase tracking-wider text-panel-sidebar underline underline-offset-2"
-                >
-                  Ver PDF
-                </button>
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={handleAbrirArchivo}
+                    className="font-sans text-xs font-bold text-panel-sidebar underline underline-offset-2"
+                  >
+                    Abrir en Otra Pestaña
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleVerArchivoAqui}
+                    className="font-sans text-xs font-bold text-panel-sidebar underline underline-offset-2"
+                  >
+                    {urlVisorInline ? "Ocultar Visor" : "Ver Aquí"}
+                  </button>
+                </div>
+                {urlVisorInline && (
+                  <iframe
+                    src={urlVisorInline}
+                    title={doc.nombre}
+                    className="mt-3 h-[70vh] w-full rounded-overlay border border-slate-200"
+                  />
+                )}
               </div>
             ) : (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400">
-                    CONTENIDO REGISTRADO
+                  <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground">
+                    Contenido Registrado
                   </h3>
                   {puedeEditar && !editando && (
                     <button
                       type="button"
                       onClick={handleIniciarEdicion}
-                      className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950"
+                      className="font-sans text-[11px] font-bold text-muted-foreground hover:text-foreground"
                     >
                       Editar
                     </button>
@@ -264,7 +294,7 @@ export function DocumentoDetalleModal({
                   <div className="space-y-4">
                     {Object.entries(contenidoAMostrar).map(([clave, valor]) => (
                       <div key={clave}>
-                        <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                        <span className="font-sans text-label font-medium text-muted-foreground block">
                           {etiquetaDeCampo(clave, plantilla?.cuerpo)}
                         </span>
                         {editando ? (
@@ -276,10 +306,10 @@ export function DocumentoDetalleModal({
                                 [clave]: e.target.value,
                               }))
                             }
-                            className="mt-1 w-full rounded-none border border-slate-200 px-2 py-1.5 text-sm text-slate-900 focus:border-slate-900 focus:outline-none"
+                            className="mt-1 w-full rounded-none border border-slate-200 px-2 py-1.5 text-sm text-foreground focus:border-slate-900 focus:outline-none"
                           />
                         ) : (
-                          <p className="font-sans font-medium text-sm text-slate-900 mt-0.5 whitespace-pre-wrap">
+                          <p className="font-sans font-medium text-value text-foreground mt-0.5 whitespace-pre-wrap">
                             {String(valor || "—")}
                           </p>
                         )}
@@ -294,16 +324,16 @@ export function DocumentoDetalleModal({
                       type="button"
                       onClick={handleGuardarEdicion}
                       disabled={actualizarFichaMutation.isPending}
-                      className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 bg-[#003366] hover:bg-[#002244] text-white"
+                      className="font-sans text-xs font-bold px-3 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-overlay"
                     >
                       {actualizarFichaMutation.isPending
                         ? "Guardando…"
-                        : "Guardar borrador"}
+                        : "Guardar Borrador"}
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditando(false)}
-                      className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-1.5 border border-slate-200"
+                      className="font-sans text-xs font-bold px-3 py-1.5 border border-slate-200 rounded-overlay"
                     >
                       Cancelar
                     </button>
@@ -314,8 +344,8 @@ export function DocumentoDetalleModal({
 
             {esConsentimiento && (
               <div className="pt-4 border-t border-slate-200">
-                <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
-                  FIRMA
+                <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
+                  Firma
                 </h3>
                 <div className="space-y-1 text-xs text-slate-700">
                   <p>
@@ -344,10 +374,10 @@ export function DocumentoDetalleModal({
 
             <div className="pt-4 border-t border-slate-200">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                <span className="font-sans text-label font-medium text-muted-foreground block">
                   Archivos Adjuntos de Respaldo
                 </span>
-                <label className="cursor-pointer font-sans text-xs font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950">
+                <label className="cursor-pointer font-sans text-xs font-bold text-muted-foreground hover:text-foreground">
                   {subirAdjuntoMutation.isPending ? "Subiendo..." : "Adjuntar"}
                   <input
                     type="file"
@@ -411,11 +441,11 @@ export function DocumentoDetalleModal({
               <button
                 type="button"
                 onClick={() => setMostrarAuditoria(prev => !prev)}
-                className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950"
+                className="font-sans text-[11px] font-bold text-muted-foreground hover:text-foreground"
               >
                 {mostrarAuditoria
-                  ? "Ocultar auditoría"
-                  : "Ver la auditoría del documento"}
+                  ? "Ocultar Auditoría"
+                  : "Ver la Auditoría del Documento"}
               </button>
               {mostrarAuditoria && (
                 <ul className="mt-3 space-y-2">
@@ -428,8 +458,8 @@ export function DocumentoDetalleModal({
                       <li key={evento.id} className="text-xs text-slate-600">
                         <span className="font-semibold text-slate-800">
                           {evento.accion}
-                        </span>{" "}
-                        · {evento.usuarioNombre ?? evento.tipoActor} ·{" "}
+                        </span>
+                        , {evento.usuarioNombre ?? evento.tipoActor},{" "}
                         {formatearFechaHora(new Date(evento.createdAt))}
                         {evento.detalle ? ` — ${evento.detalle}` : ""}
                       </li>
@@ -442,59 +472,65 @@ export function DocumentoDetalleModal({
 
           <div className="md:col-span-1 bg-slate-50/80 p-6 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
-              <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400">
-                DATOS DE LA ATENCIÓN
+              <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground">
+                Datos de la Atención
               </h3>
 
               <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                <span className="font-sans text-label font-medium text-muted-foreground block">
                   Paciente
                 </span>
-                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                <p className="font-sans font-medium text-value text-foreground mt-0.5">
                   {doc.pacienteNombre}
                 </p>
               </div>
 
               <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-                  Servicio y atención
+                <span className="font-sans text-label font-medium text-muted-foreground block">
+                  Servicio
                 </span>
-                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                <p className="font-sans font-medium text-value text-foreground mt-0.5">
                   {doc.servicio}
-                </p>
-                <p className="font-sans text-xs text-slate-500">
-                  {formatearFechaCorta(
-                    new Date(`${doc.fechaAtencion}T00:00:00`)
-                  )}{" "}
-                  · {doc.horaAtencion.slice(0, 5)}
                 </p>
               </div>
 
               <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                <span className="font-sans text-label font-medium text-muted-foreground block">
+                  Fecha y Horario
+                </span>
+                <p className="font-sans font-medium text-value text-foreground mt-0.5">
+                  {formatearFechaCorta(
+                    new Date(`${doc.fechaAtencion}T00:00:00`)
+                  )}
+                  , {doc.horaAtencion.slice(0, 5)}
+                </p>
+              </div>
+
+              <div>
+                <span className="font-sans text-label font-medium text-muted-foreground block">
                   Especialista
                 </span>
-                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                <p className="font-sans font-medium text-value text-foreground mt-0.5">
                   {doc.especialistaNombre}
                 </p>
               </div>
 
               {doc.plantillaNombre && (
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
                     Plantilla
                   </span>
-                  <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
                     {doc.plantillaNombre}
                   </p>
                 </div>
               )}
 
               <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                <span className="font-sans text-label font-medium text-muted-foreground block">
                   Origen
                 </span>
-                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                <p className="font-sans font-medium text-value text-foreground mt-0.5">
                   {doc.creadoPorTipoActor}
                 </p>
               </div>
@@ -506,33 +542,33 @@ export function DocumentoDetalleModal({
           <button
             type="button"
             onClick={handleImprimir}
-            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+            className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
           >
-            IMPRIMIR
+            Imprimir
           </button>
           {doc.tieneArchivo && (
             <button
               type="button"
               onClick={handleDescargarArchivo}
-              className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+              className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
             >
-              DESCARGAR
+              Descargar
             </button>
           )}
           <button
             type="button"
             onClick={onCerrar}
-            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+            className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
           >
-            CERRAR
+            Cerrar
           </button>
           {puedeEditar && !confirmarCierre && (
             <button
               type="button"
               onClick={() => setConfirmarCierre(true)}
-              className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none"
+              className="font-sans text-xs font-bold px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none"
             >
-              CERRAR FICHA
+              Cerrar Ficha
             </button>
           )}
           {confirmarCierre && (
@@ -543,7 +579,7 @@ export function DocumentoDetalleModal({
               <button
                 type="button"
                 onClick={() => setConfirmarCierre(false)}
-                className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-2 border border-slate-200"
+                className="font-sans text-xs font-bold px-3 py-2 border border-slate-200 rounded-overlay"
               >
                 No
               </button>
@@ -551,9 +587,9 @@ export function DocumentoDetalleModal({
                 type="button"
                 onClick={handleCerrarFicha}
                 disabled={cerrarFichaMutation.isPending}
-                className="font-sans text-xs font-bold uppercase tracking-wider px-3 py-2 bg-rose-700 hover:bg-rose-800 text-white"
+                className="font-sans text-xs font-bold px-3 py-2 bg-rose-700 hover:bg-rose-800 text-white rounded-overlay"
               >
-                {cerrarFichaMutation.isPending ? "Cerrando…" : "Sí, cerrar"}
+                {cerrarFichaMutation.isPending ? "Cerrando…" : "Sí, Cerrar"}
               </button>
             </div>
           )}

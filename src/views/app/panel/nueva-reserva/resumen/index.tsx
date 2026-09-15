@@ -33,17 +33,17 @@ export default function ResumenView() {
       {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
 
       <Card className="border border-border p-6 space-y-6">
-        <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
-          Notas de la reserva (opcional)
+        <h2 className="font-sans text-section-title font-bold text-foreground">
+          Notas de la Reserva (Opcional)
         </h2>
 
         <div className="space-y-4">
           <div>
             <div className="mb-1.5 flex items-center gap-2">
-              <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
-                Nota para el paciente
+              <span className="font-sans text-label font-medium text-muted-foreground">
+                Nota para el Paciente
               </span>
-              <Badge className="gap-1.5 rounded-none border-0 bg-blue-800 text-[11px] font-medium text-white">
+              <Badge className="gap-1.5 border-0 bg-blue-800 text-[11px] font-medium text-white">
                 El paciente la verá en su confirmación
               </Badge>
             </div>
@@ -57,10 +57,10 @@ export default function ResumenView() {
 
           <div>
             <div className="mb-1.5 flex items-center gap-2">
-              <span className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
-                Nota interna
+              <span className="font-sans text-label font-medium text-muted-foreground">
+                Nota Interna
               </span>
-              <Badge className="gap-1.5 rounded-none border-transparent bg-slate-900 text-[11px] font-medium text-white">
+              <Badge className="gap-1.5 border-transparent bg-slate-900 text-[11px] font-medium text-white">
                 Visible solo para el personal de KineFit
               </Badge>
             </div>
@@ -73,26 +73,26 @@ export default function ResumenView() {
           </div>
         </div>
 
-        <div className="border border-slate-200 bg-slate-50/70 p-4 rounded-none">
-          <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-200 pb-1 mb-3">
-            Revisión final
+        <div className="border border-border bg-slate-50/70 p-4 rounded-none">
+          <p className="font-sans text-[10px] font-bold text-muted-foreground border-b border-border pb-1 mb-3">
+            Revisión Final
           </p>
-          <dl className="divide-y divide-slate-200">
+          <dl className="divide-y divide-border">
             {filasResumen.map(fila => (
               <div
                 key={fila.etiqueta}
                 className="flex items-center justify-between py-2.5 text-xs"
               >
-                <dt className="font-sans text-[11px] font-medium uppercase tracking-wider text-slate-400">
+                <dt className="font-sans text-label font-medium text-muted-foreground">
                   {fila.etiqueta}
                 </dt>
                 <div className="flex items-center gap-3">
-                  <dd className="font-sans font-medium text-sm text-slate-900">
+                  <dd className="font-sans font-medium text-value text-foreground">
                     {fila.valor ?? "—"}
                   </dd>
                   <Link
                     href={fila.editar}
-                    className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-700 hover:text-slate-950 underline"
+                    className="font-sans text-[11px] font-bold text-slate-700 hover:text-slate-950 underline"
                   >
                     Editar
                   </Link>
@@ -107,9 +107,9 @@ export default function ResumenView() {
             <button
               type="button"
               onClick={actions.handleAbrirConfirmarDescarte}
-              className="font-sans text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900"
+              className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
             >
-              Cancelar reserva
+              Cancelar Reserva
             </button>
           }
           volver={
@@ -122,7 +122,7 @@ export default function ResumenView() {
               onClick={actions.handleConfirmarReserva}
               disabled={guardando}
             >
-              {guardando ? "Registrando..." : "Confirmar reserva"}
+              {guardando ? "Registrando..." : "Confirmar Reserva"}
             </Button>
           }
         />
@@ -132,8 +132,8 @@ export default function ResumenView() {
         abierto={confirmarDescarte}
         onCerrar={actions.handleCerrarConfirmarDescarte}
       >
-        <div className="bg-white p-6 font-sans shadow-none rounded-none space-y-4">
-          <h3 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+        <div className="bg-white p-6 font-sans shadow-none rounded-overlay space-y-4">
+          <h3 className="font-sans text-section-title font-bold text-foreground">
             ¿Descartar esta reserva?
           </h3>
           <p className="font-sans text-xs text-slate-500">
@@ -146,7 +146,7 @@ export default function ResumenView() {
             >
               Volver
             </Button>
-            <Button onClick={actions.handleDescartar}>Sí, descartar</Button>
+            <Button onClick={actions.handleDescartar}>Sí, Descartar</Button>
           </div>
         </div>
       </Modal>

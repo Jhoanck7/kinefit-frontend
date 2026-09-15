@@ -5,54 +5,36 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 
-import {
-  IconoAgenda,
-  IconoCerrarSesion,
-  IconoEspecialistas,
-  IconoFichas,
-  IconoLanding,
-  IconoNuevaReserva,
-  IconoPacientes,
-  IconoReportes,
-  IconoVentas,
-} from "./iconos";
-
 const ITEMS_NAVEGACION = [
   {
     href: "/panel/agenda",
     etiqueta: "Agenda",
     prefijos: ["/panel/agenda"],
-    Icono: IconoAgenda,
   },
   {
     href: "/panel/nueva-reserva/servicio",
-    etiqueta: "Nueva reserva",
+    etiqueta: "Nueva Reserva",
     prefijos: ["/panel/nueva-reserva"],
-    Icono: IconoNuevaReserva,
   },
   {
     href: "/panel/pacientes",
     etiqueta: "Pacientes",
     prefijos: ["/panel/pacientes"],
-    Icono: IconoPacientes,
   },
   {
     href: "/panel/documentos",
     etiqueta: "Documentos",
     prefijos: ["/panel/documentos"],
-    Icono: IconoFichas,
   },
   {
     href: "/panel/ventas",
     etiqueta: "Ventas",
     prefijos: ["/panel/ventas"],
-    Icono: IconoVentas,
   },
   {
     href: "/panel/reportes",
     etiqueta: "Reportes",
     prefijos: ["/panel/reportes"],
-    Icono: IconoReportes,
     soloAdministrador: true,
   },
   {
@@ -64,20 +46,14 @@ const ITEMS_NAVEGACION = [
       "/panel/landing",
       "/panel/horarios",
     ],
-    Icono: IconoLanding,
   },
   {
     href: "/panel/perfil",
-    etiqueta: "Mi perfil",
+    etiqueta: "Mi Perfil",
     prefijos: ["/panel/perfil"],
-    Icono: IconoEspecialistas,
   },
 ];
 
-/**
- * Menú lateral con estilo Flat High-Contrast (Estilo Notion):
- * - Fondo gris oscuro pizarra (bg-slate-900) para un contraste sobrio y elegante
- */
 export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -107,7 +83,7 @@ export function Sidebar() {
       </div>
 
       <ul className="flex-1 px-3 space-y-1">
-        {items.map(({ href, etiqueta, prefijos, Icono }) => {
+        {items.map(({ href, etiqueta, prefijos }) => {
           const activo = prefijos.some(
             p =>
               pathname === p ||
@@ -119,13 +95,12 @@ export function Sidebar() {
               <Link
                 href={href}
                 aria-current={activo ? "page" : undefined}
-                className={`flex items-center gap-3 rounded-md px-3.5 py-2 text-xs font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400 ${
+                className={`flex items-center gap-3 rounded-md px-3.5 py-2 text-page-title font-semibold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400 ${
                   activo
                     ? "bg-slate-800 text-white font-bold"
                     : "text-slate-400 hover:bg-slate-800/60 hover:text-white"
                 }`}
               >
-                <Icono />
                 {etiqueta}
               </Link>
             </li>
@@ -137,9 +112,8 @@ export function Sidebar() {
         <button
           type="button"
           onClick={cerrarSesion}
-          className="flex w-full items-center gap-3 rounded-md px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"
+          className="flex w-full items-center gap-3 rounded-md px-3.5 py-2 text-page-title font-semibold text-slate-400 transition-colors hover:bg-slate-800/60 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-400"
         >
-          <IconoCerrarSesion />
           Cerrar Sesión
         </button>
       </div>

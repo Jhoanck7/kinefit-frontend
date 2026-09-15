@@ -17,7 +17,7 @@ export default function HorariosView() {
   if (isLoading) {
     return (
       <div className="p-4 text-xs font-sans text-slate-500">
-        Cargando plantilla de horarios...
+        Cargando plantilla de horarios…
       </div>
     );
   }
@@ -25,7 +25,7 @@ export default function HorariosView() {
   return (
     <div className="mx-auto max-w-4xl space-y-6 font-sans shadow-none">
       <div>
-        <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900 mb-0.5">
+        <h2 className="font-sans text-section-title font-bold text-foreground mb-0.5">
           Horarios y Generación de Agenda
         </h2>
         <p className="font-sans text-xs text-slate-500">
@@ -37,8 +37,8 @@ export default function HorariosView() {
       {esAdministrador && <HorarioCentroCard />}
 
       <div>
-        <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
-          Plantilla por especialista
+        <h3 className="font-sans text-xs font-bold text-foreground mb-3">
+          Plantilla por Especialista
         </h3>
         <div className="space-y-4">
           {especialistas.length === 0 ? (

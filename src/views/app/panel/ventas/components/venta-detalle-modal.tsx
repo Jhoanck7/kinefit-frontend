@@ -1,6 +1,6 @@
 "use client";
 
-import { Modal } from "@/components/shared";
+import { Modal, ModalCloseButton } from "@/components/shared";
 import { formatearFechaHora } from "@/lib/formato";
 import { TerminalPagoResponse, VentaResponse } from "@/models/responses";
 
@@ -31,13 +31,13 @@ export function VentaDetalleModal({
 
   return (
     <Modal abierto={Boolean(venta)} onCerrar={onClose}>
-      <div className="bg-white text-slate-900 font-sans shadow-none rounded-none">
+      <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
         {/* Encabezado Formal */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-slate-50/80 backdrop-blur-sm px-6 py-4">
           <div>
-            <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-slate-900">
+            <h2 className="font-sans text-section-title font-bold text-foreground">
               Comprobante de Venta{" "}
-              <span className="font-sans font-bold text-slate-900">
+              <span className="font-sans font-bold text-foreground">
                 #{venta.id}
               </span>
             </h2>
@@ -45,14 +45,7 @@ export function VentaDetalleModal({
               {formatearFechaHora(new Date(venta.createdAt))}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar"
-            className="p-1 font-sans text-sm text-slate-400 hover:text-slate-900 rounded-none focus:outline-none"
-          >
-            ✕
-          </button>
+          <ModalCloseButton onClick={onClose} />
         </div>
 
         {/* Cuerpo en 2 Columnas */}
@@ -60,17 +53,17 @@ export function VentaDetalleModal({
           {/* COLUMNA IZQUIERDA (2/3) - DESGLOSE CONTABLE */}
           <div className="md:col-span-2 p-6 space-y-6">
             <div>
-              <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
-                DESGLOSE CONTABLE
+              <h3 className="border-b border-border pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
+                Desglose Contable
               </h3>
               <div className="space-y-3">
                 {Boolean(venta.desglose.descuentoConvenio) && (
                   <>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                      <span className="font-sans text-label font-medium text-muted-foreground">
                         Precio de Lista
                       </span>
-                      <span className="font-sans font-medium text-sm text-slate-900">
+                      <span className="font-sans font-medium text-value text-foreground">
                         $
                         {(
                           venta.desglose.montoTotal +
@@ -80,10 +73,10 @@ export function VentaDetalleModal({
                       </span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                      <span className="font-sans text-label font-medium text-muted-foreground">
                         Descuento Convenio
                       </span>
-                      <span className="font-sans font-medium text-sm text-slate-700">
+                      <span className="font-sans font-medium text-value text-slate-700">
                         -$
                         {venta.desglose.descuentoConvenio!.toLocaleString(
                           "es-CL"
@@ -95,23 +88,23 @@ export function VentaDetalleModal({
                 )}
 
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                  <span className="font-sans text-label font-medium text-muted-foreground">
                     Monto Cobrado (Bruto)
                   </span>
-                  <span className="font-sans font-medium text-sm text-slate-900">
+                  <span className="font-sans font-medium text-value text-foreground">
                     ${venta.desglose.montoTotal.toLocaleString("es-CL")} CLP
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                  <span className="font-sans text-label font-medium text-muted-foreground">
                     IVA (
                     {venta.desglose.impuesto && venta.desglose.impuesto > 0
                       ? "Afecto"
                       : "Exento"}
                     )
                   </span>
-                  <span className="font-sans font-medium text-sm text-slate-700">
+                  <span className="font-sans font-medium text-value text-slate-700">
                     -${(venta.desglose.impuesto ?? 0).toLocaleString("es-CL")}{" "}
                     CLP
                   </span>
@@ -120,20 +113,20 @@ export function VentaDetalleModal({
                 <div className="border-t border-slate-200 my-1" />
 
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                  <span className="font-sans text-label font-medium text-muted-foreground">
                     Monto Neto Real
                   </span>
-                  <span className="font-sans font-medium text-sm text-slate-900">
+                  <span className="font-sans font-medium text-value text-foreground">
                     ${montoNeto.toLocaleString("es-CL")} CLP
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                  <span className="font-sans text-label font-medium text-muted-foreground">
                     Comisión POS{" "}
                     {venta.terminalNombre ? `(${venta.terminalNombre})` : ""}
                   </span>
-                  <span className="font-sans font-medium text-sm text-slate-700">
+                  <span className="font-sans font-medium text-value text-slate-700">
                     -${venta.desglose.comisionTerminal.toLocaleString("es-CL")}{" "}
                     CLP
                   </span>
@@ -152,10 +145,10 @@ export function VentaDetalleModal({
                 <div className="border-t border-slate-200 my-1" />
 
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-[#003366]">
+                  <span className="font-sans text-label font-bold text-primary">
                     Base Líquida a Repartir
                   </span>
-                  <span className="font-sans font-bold text-sm text-[#003366]">
+                  <span className="font-sans font-bold text-value text-primary">
                     ${baseReparticion.toLocaleString("es-CL")} CLP
                   </span>
                 </div>
@@ -163,30 +156,30 @@ export function VentaDetalleModal({
             </div>
 
             <div>
-              <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400 mb-3">
-                DISTRIBUCIÓN DE HONORARIOS
+              <h3 className="border-b border-border pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
+                Distribución de Honorarios
               </h3>
               {repartoConfigurado ? (
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                    <span className="font-sans text-label font-medium text-muted-foreground">
                       Pago Especialista (
                       {venta.desglose.porcentajeProfesionalAplicado ?? 50}%)
                     </span>
-                    <span className="font-sans font-medium text-sm text-slate-900">
+                    <span className="font-sans font-medium text-value text-foreground">
                       $
                       {venta.desglose.montoProfesional!.toLocaleString("es-CL")}{" "}
                       CLP
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                    <span className="font-sans text-label font-medium text-muted-foreground">
                       Margen de la Empresa (
                       {100 -
                         (venta.desglose.porcentajeProfesionalAplicado ?? 50)}
                       %)
                     </span>
-                    <span className="font-sans font-medium text-sm text-slate-900">
+                    <span className="font-sans font-medium text-value text-foreground">
                       ${venta.desglose.montoCentro!.toLocaleString("es-CL")} CLP
                     </span>
                   </div>
@@ -203,24 +196,24 @@ export function VentaDetalleModal({
           {/* COLUMNA DERECHA (1/3) - FICHA DE LA ATENCIÓN */}
           <div className="md:col-span-1 bg-slate-50/80 p-6 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
-              <h3 className="border-b border-slate-200 pb-1 font-sans text-[10px] font-medium uppercase tracking-widest text-slate-400">
-                DATOS DE LA ATENCIÓN
+              <h3 className="border-b border-border pb-1 font-sans text-micro-header font-medium text-muted-foreground">
+                Datos de la Atención
               </h3>
 
               <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                <span className="font-sans text-label font-medium text-muted-foreground block">
                   Paciente
                 </span>
-                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                <p className="font-sans font-medium text-value text-foreground mt-0.5">
                   {venta.pacienteNombre ?? "Cliente sin registrar"}
                 </p>
               </div>
 
               <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                <span className="font-sans text-label font-medium text-muted-foreground block">
                   Servicio
                 </span>
-                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                <p className="font-sans font-medium text-value text-foreground mt-0.5">
                   {primerItem?.servicioNombre ??
                     primerItem?.descripcion ??
                     "Atención general"}
@@ -229,22 +222,22 @@ export function VentaDetalleModal({
 
               {venta.creadoPorNombre && (
                 <div>
-                  <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
                     Registrada por
                   </span>
-                  <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
                     {venta.creadoPorNombre}
                   </p>
                 </div>
               )}
 
               <div>
-                <span className="font-sans text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+                <span className="font-sans text-label font-medium text-muted-foreground block">
                   Medio de Pago
                 </span>
-                <p className="font-sans font-medium text-sm text-slate-900 mt-0.5">
-                  {venta.metodoPago}{" "}
-                  {venta.terminalNombre ? `· ${venta.terminalNombre}` : ""}
+                <p className="font-sans font-medium text-value text-foreground mt-0.5">
+                  {venta.metodoPago}
+                  {venta.terminalNombre ? `, ${venta.terminalNombre}` : ""}
                 </p>
                 {terminalUsado?.notas && (
                   <p className="font-sans text-xs text-slate-500 mt-1">
@@ -257,20 +250,20 @@ export function VentaDetalleModal({
         </div>
 
         {/* Pie de Acciones */}
-        <div className="border-t border-slate-200 bg-slate-50/60 p-4 flex justify-between items-center">
+        <div className="border-t border-border bg-slate-50/60 p-4 flex justify-between items-center">
           <button
             type="button"
             onClick={handleImprimir}
-            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-900 rounded-none shadow-none"
+            className="font-sans text-xs font-bold px-4 py-2 border border-border bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
           >
-            IMPRIMIR COMPROBANTE
+            Imprimir Comprobante
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="font-sans text-xs font-bold uppercase tracking-wider px-4 py-2 bg-[#003366] hover:bg-[#002244] text-white rounded-none shadow-none"
+            className="font-sans text-xs font-bold px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none"
           >
-            CERRAR
+            Cerrar
           </button>
         </div>
       </div>

@@ -7,6 +7,7 @@ import {
   PacienteEstadoResponse,
   PacientePerfilResponse,
   PacienteResponse,
+  PacientesPaginadasResponse,
   VerificarRutResponse,
 } from "@/models/responses";
 
@@ -17,10 +18,11 @@ export class PacienteService extends BaseApiService {
     super("/pacientes");
   }
 
-  getAll(busqueda?: string, soloActivos?: boolean) {
-    return this.httpClient.get<ApiResponse<PacienteResponse[]>>(this.baseURL, {
-      params: { busqueda, soloActivos },
-    });
+  getAll(busqueda?: string, soloActivos?: boolean, page = 1, pageSize = 20) {
+    return this.httpClient.get<ApiResponse<PacientesPaginadasResponse>>(
+      this.baseURL,
+      { params: { busqueda, soloActivos, page, pageSize } }
+    );
   }
 
   getById(id: number, page = 1, pageSize = 20) {
