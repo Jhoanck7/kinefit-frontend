@@ -67,7 +67,10 @@ export const handleApiError = (error: unknown): ApiErrorResult => {
   }
 
   return {
-    message: "Ha ocurrido un error inesperado. Inténtalo nuevamente.",
+    message:
+      error instanceof Error
+        ? error.message
+        : "Ha ocurrido un error inesperado. Inténtalo nuevamente.",
     details: undefined,
     canRetry: true,
   };

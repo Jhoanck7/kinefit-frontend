@@ -1,5 +1,6 @@
 "use client";
 
+import { CreditCard } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -12,6 +13,7 @@ import {
   useGetServices,
   useSubmitBookingMutation,
 } from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
 import {
   bloquesRequeridos,
   sonConsecutivas,
@@ -197,7 +199,12 @@ export default function BookingCard() {
 
   const webpayFormRef = useRef<HTMLFormElement>(null);
 
-  // Cargar e Inicializar Google Sign-In SDK
+  const [googleListo, setGoogleListo] = useState(false);
+
+  // Cargar e inicializar el SDK de Google Sign-In una sola vez: initialize()
+  // llamado más de una vez por el mismo cliente es lo que generaba el
+  // warning "initialize() is called multiple times" y podía dejar el botón
+  // atado a una instancia GSI obsoleta.
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
@@ -238,18 +245,7 @@ export default function BookingCard() {
             }
           },
         });
-
-        const btnContainer = document.getElementById("google-btn-container");
-        if (btnContainer) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (window as any).google.accounts.id.renderButton(btnContainer, {
-            type: "standard",
-            theme: "outline",
-            size: "large",
-            text: "signin_with",
-            shape: "rectangular",
-          });
-        }
+        setGoogleListo(true);
       }
     };
 
@@ -261,7 +257,26 @@ export default function BookingCard() {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentStep]);
+  }, []);
+
+  // Renderiza el botón cada vez que el paso 4 monta su contenedor: initialize()
+  // ya corrió una única vez arriba, esto solo dibuja el widget en el DOM
+  // actual.
+  useEffect(() => {
+    if (!googleListo || currentStep !== 4) return;
+    const btnContainer = document.getElementById("google-btn-container");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (btnContainer && (window as any).google?.accounts?.id) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).google.accounts.id.renderButton(btnContainer, {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        text: "signin_with",
+        shape: "rectangular",
+      });
+    }
+  }, [googleListo, currentStep]);
 
   const webpayData = submitMutation.data?.webpayData;
 
@@ -407,15 +422,15 @@ export default function BookingCard() {
   };
 
   const errorMsg =
-    (submitMutation.error instanceof Error
-      ? submitMutation.error.message
+    (submitMutation.isError
+      ? handleApiError(submitMutation.error).message
       : null) ?? authError;
 
   if (submitMutation.isSuccess && webpayData) {
     return (
       <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 bg-transparent">
-        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-600 text-3xl mb-4 shadow-lg shadow-red-500/10">
-          💳
+        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-600 mb-4 shadow-lg shadow-red-500/10">
+          <CreditCard className="w-8 h-8" strokeWidth={2} />
         </div>
         <h3 className="text-lg font-bold text-slate-900 mb-2">
           Transbank Webpay Plus
@@ -523,9 +538,11 @@ export default function BookingCard() {
                     <h4 className="text-sm font-bold text-slate-900">
                       {service.nombre}
                     </h4>
-                    <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-                      Servicio Operativo
-                    </span>
+                    {service.descripcion && (
+                      <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
+                        {service.descripcion}
+                      </span>
+                    )}
                   </div>
                   <svg
                     className="w-5 h-5 text-brand-primary"
@@ -819,7 +836,7 @@ export default function BookingCard() {
               <input
                 type="text"
                 required
-                placeholder="Ej:Maximiliano Montero"
+                placeholder="Nombre Apellido"
                 value={patientName}
                 onChange={e => handlePatientInfoChange("name", e.target.value)}
                 className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
@@ -833,7 +850,7 @@ export default function BookingCard() {
               <input
                 type="email"
                 required
-                placeholder="jhoanck777@gmail.com"
+                placeholder="correo@ejemplo.com"
                 value={patientEmail}
                 onChange={e => handlePatientInfoChange("email", e.target.value)}
                 className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
@@ -861,7 +878,7 @@ export default function BookingCard() {
               <input
                 type="tel"
                 required
-                placeholder="+56 9 7551 6503"
+                placeholder="+56 9 1234 5678"
                 value={patientPhone}
                 onChange={e => handlePatientInfoChange("phone", e.target.value)}
                 className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"

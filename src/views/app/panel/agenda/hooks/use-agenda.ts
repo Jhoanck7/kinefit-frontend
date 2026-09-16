@@ -35,7 +35,11 @@ export const useAgenda = () => {
 
   const especialistaIds = especialistas.map(esp => esp.id);
   const fechaIsoDia = fechaISO(dia);
-  const { data: bloquesAgenda = [], refetch: refetchAgenda } = useGetAgenda(
+  const {
+    data: bloquesAgenda = [],
+    refetch: refetchAgenda,
+    isError: errorAgenda,
+  } = useGetAgenda(
     especialistaIds,
     fechaIsoDia,
     fechaIsoDia,
@@ -128,6 +132,7 @@ export const useAgenda = () => {
     especialistaSeleccionado,
     especialistasAMostrar,
     agendaData,
+    errorAgenda,
     rejilla,
     modalBloqueos,
     citaId,

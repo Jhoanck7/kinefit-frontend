@@ -31,15 +31,22 @@ export const useAcceso = () => {
       const res = respuesta.data.data;
 
       if (res?.usuario && res?.token) {
-        const sesion = await signIn("credentials", {
-          email: res.usuario.email,
-          token: res.token,
-          redirect: false,
-        });
+        try {
+          const sesion = await signIn("credentials", {
+            email: res.usuario.email,
+            token: res.token,
+            redirect: false,
+          });
 
-        if (sesion?.error) {
+          if (sesion?.error) {
+            setErrorMsg(
+              "No se pudo establecer la sesión del panel. Intenta nuevamente."
+            );
+            return;
+          }
+        } catch {
           setErrorMsg(
-            "No se pudo establecer la sesión del panel. Intenta nuevamente."
+            "No se pudo iniciar la sesión del panel. Recarga la página e intenta de nuevo."
           );
           return;
         }

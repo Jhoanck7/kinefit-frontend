@@ -1,12 +1,8 @@
 import { ApiResponse } from "@/models/generics";
-import {
-  CreateBloqueoAgendaRequest,
-  GenerarAgendaRequest,
-} from "@/models/requests";
+import { CreateBloqueoAgendaRequest } from "@/models/requests";
 import {
   BloqueAgendaResponse,
   BloqueoAgendaResponse,
-  GeneracionAgendaResultadoResponse,
 } from "@/models/responses";
 
 import { BaseApiService } from "./base-api-service";
@@ -20,13 +16,6 @@ export class AgendaService extends BaseApiService {
     return this.httpClient.get<ApiResponse<BloqueAgendaResponse[]>>(
       `${this.baseURL}/agenda`,
       { params: { especialistaIds: especialistaIds.join(","), desde, hasta } }
-    );
-  }
-
-  generar(data: GenerarAgendaRequest) {
-    return this.httpClient.post<ApiResponse<GeneracionAgendaResultadoResponse>>(
-      `${this.baseURL}/agenda/generar`,
-      data
     );
   }
 

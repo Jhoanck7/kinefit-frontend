@@ -24,21 +24,6 @@ export interface BloqueAgendaResponse {
   cita?: CitaEnAgendaResponse;
 }
 
-export interface ConflictoGeneracionResponse {
-  bloqueId: number;
-  especialistaId: number;
-  fecha: string;
-  horaInicio: string;
-  horaFin: string;
-  motivo: string;
-}
-
-export interface GeneracionAgendaResultadoResponse {
-  bloquesCreados: number;
-  bloquesYaExistentes: number;
-  conflictos: ConflictoGeneracionResponse[];
-}
-
 export interface BloqueoAgendaResponse {
   id: number;
   especialistaId: number;

@@ -2,6 +2,8 @@
 
 import { Suspense } from "react";
 
+import { Alerta } from "@/components/shared";
+
 import {
   AgendaToolbar,
   AppointmentDetailModal,
@@ -19,6 +21,7 @@ function AgendaContent() {
     especialistaSeleccionado,
     especialistasAMostrar,
     agendaData,
+    errorAgenda,
     rejilla,
     modalBloqueos,
     citaId,
@@ -39,6 +42,13 @@ function AgendaContent() {
         onAbrirBloqueos={actions.handleAbrirBloqueos}
         onNuevaReserva={actions.handleNuevaReserva}
       />
+
+      {errorAgenda && (
+        <Alerta tono="error">
+          No se pudo cargar la agenda de este día. Intenta recargar la página;
+          si el problema persiste, avisa al equipo técnico.
+        </Alerta>
+      )}
 
       {/* Lista de citas del día por especialista */}
       <div className="overflow-x-auto py-2">

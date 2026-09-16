@@ -1,9 +1,3 @@
-export interface GenerarAgendaRequest {
-  desde: string;
-  hasta: string;
-  especialistaId?: number;
-}
-
 export interface CreateBloqueoAgendaRequest {
   especialistaId: number;
   fecha: string;

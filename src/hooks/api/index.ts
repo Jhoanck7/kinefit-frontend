@@ -1,6 +1,5 @@
 export {
   useCreateBloqueoMutation,
-  useGenerarAgendaMutation,
   useGetAgenda,
   useGetBloqueos,
   useRevertirBloqueoMutation,

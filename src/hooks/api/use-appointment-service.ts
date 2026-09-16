@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   appointmentService,
@@ -40,7 +40,14 @@ interface SubmitBookingParams {
 }
 
 export const useSubmitBookingMutation = () => {
+  const queryClient = useQueryClient();
   return useMutation({
+    onError: () => {
+      // El bloque que se intentó reservar puede haber dejado de estar
+      // disponible entremedio (otro paciente lo tomó primero); se invalida
+      // para que el selector deje de ofrecerlo en vez de quedar desfasado.
+      queryClient.invalidateQueries({ queryKey: ["disponibilidad"] });
+    },
     mutationFn: async ({
       selectedServiceId,
       selectedSpecialistId,

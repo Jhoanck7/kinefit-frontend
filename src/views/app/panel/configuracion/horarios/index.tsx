@@ -2,11 +2,7 @@
 
 import { useSession } from "next-auth/react";
 
-import {
-  GenerarAgendaForm,
-  HorarioCentroCard,
-  PlantillaEspecialistaCard,
-} from "./components";
+import { HorarioCentroCard, PlantillaEspecialistaCard } from "./components";
 import { useHorarios } from "./hooks";
 
 export default function HorariosView() {
@@ -29,8 +25,9 @@ export default function HorariosView() {
           Horarios y Generación de Agenda
         </h2>
         <p className="font-sans text-xs text-slate-500">
-          Administra el horario del centro, la plantilla semanal de cada
-          profesional, y genera los bloques de agenda a partir de ambos.
+          Administra el horario del centro y la plantilla semanal de cada
+          profesional. Los bloques de agenda se regeneran automáticamente al
+          guardar cualquier cambio.
         </p>
       </div>
 
@@ -55,8 +52,6 @@ export default function HorariosView() {
           )}
         </div>
       </div>
-
-      <GenerarAgendaForm />
     </div>
   );
 }

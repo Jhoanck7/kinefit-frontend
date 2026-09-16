@@ -2,8 +2,6 @@ export type {
   BloqueAgendaResponse,
   BloqueoAgendaResponse,
   CitaEnAgendaResponse,
-  ConflictoGeneracionResponse,
-  GeneracionAgendaResultadoResponse,
   PacienteEnAgendaResponse,
 } from "./agenda";
 export type { AuditoriaCitaResponse } from "./auditoria";

@@ -1,9 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import {
-  CreateBloqueoAgendaRequest,
-  GenerarAgendaRequest,
-} from "@/models/requests";
+import { CreateBloqueoAgendaRequest } from "@/models/requests";
 import { agendaService } from "@/services";
 
 const agendaKey = (especialistaIds: number[], desde: string, hasta: string) =>
@@ -61,17 +58,6 @@ export const useRevertirBloqueoMutation = () => {
       agendaService.revertirBloqueo(id).then(res => res.data.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bloqueos-agenda"] });
-      queryClient.invalidateQueries({ queryKey: ["agenda"] });
-    },
-  });
-};
-
-export const useGenerarAgendaMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (data: GenerarAgendaRequest) =>
-      agendaService.generar(data).then(res => res.data.data),
-    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agenda"] });
     },
   });
