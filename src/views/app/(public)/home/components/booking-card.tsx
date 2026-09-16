@@ -13,6 +13,7 @@ import {
   useSubmitBookingMutation,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
+import { fechaISO } from "@/lib/formato";
 import {
   bloquesRequeridos,
   sonConsecutivas,
@@ -155,7 +156,7 @@ export default function BookingCard() {
 
   const duracionMinutos = selectedHoras.length * DURACION_BLOQUE_MIN;
   const horaInicio = [...selectedHoras].sort()[0] ?? "";
-  const todayIso = new Date().toISOString().slice(0, 10);
+  const todayIso = fechaISO(new Date());
 
   const { isLoading: loadingFechas } = useGetFechasDisponibles(
     selectedServiceId ?? 0,
@@ -170,8 +171,17 @@ export default function BookingCard() {
       Boolean(selectedServiceId) && Boolean(selectedDate)
     );
 
-  const horasManana = horasDisponibles.filter(h => h < LIMITE_MANANA);
-  const horasTarde = horasDisponibles.filter(h => h >= LIMITE_MANANA);
+  const esFechaHoy = selectedDate === todayIso;
+  const horaActualHHMM = new Date().toLocaleTimeString("en-GB", {
+    timeZone: "America/Santiago",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const horasVigentes = esFechaHoy
+    ? horasDisponibles.filter(h => h > horaActualHHMM)
+    : horasDisponibles;
+  const horasManana = horasVigentes.filter(h => h < LIMITE_MANANA);
+  const horasTarde = horasVigentes.filter(h => h >= LIMITE_MANANA);
 
   const {
     data: especialistasDisponibles = [],
@@ -637,7 +647,7 @@ export default function BookingCard() {
               <p className="text-xs text-slate-400">
                 Cargando horarios disponibles...
               </p>
-            ) : horasDisponibles.length === 0 ? (
+            ) : horasVigentes.length === 0 ? (
               <p className="text-xs text-slate-400">
                 Sin bloques disponibles para esta fecha. Prueba con otra.
               </p>
