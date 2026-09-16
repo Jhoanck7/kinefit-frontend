@@ -19,6 +19,12 @@ import {
   sonConsecutivas,
   sumarMinutos,
 } from "@/lib/horario";
+import {
+  esRutValido,
+  esTelefonoValido,
+  limpiarRut,
+  limpiarTelefono,
+} from "@/lib/validadores";
 import { bloqueHorarioService } from "@/services";
 import { useBookingStore } from "@/stores";
 
@@ -396,6 +402,14 @@ export default function BookingCard() {
     });
   };
 
+  const rutLimpio = limpiarRut(patientRut);
+  const rutEsValido = esRutValido(patientRut);
+  const mostrarErrorRut = rutLimpio.length >= 7 && !rutEsValido;
+
+  const telefonoLimpio = limpiarTelefono(patientPhone);
+  const telefonoEsValido = esTelefonoValido(patientPhone);
+  const mostrarErrorTelefono = telefonoLimpio.length >= 9 && !telefonoEsValido;
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (
@@ -404,6 +418,8 @@ export default function BookingCard() {
       !patientEmail ||
       !patientPhone ||
       !patientRut ||
+      !rutEsValido ||
+      !telefonoEsValido ||
       !selectedServiceId ||
       !selectedSpecialistId ||
       !selectedBloqueHorarioId ||
@@ -846,7 +862,6 @@ export default function BookingCard() {
               <input
                 type="text"
                 required
-                placeholder="Nombre Apellido"
                 value={patientName}
                 onChange={e => handlePatientInfoChange("name", e.target.value)}
                 className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
@@ -860,7 +875,6 @@ export default function BookingCard() {
               <input
                 type="email"
                 required
-                placeholder="correo@ejemplo.com"
                 value={patientEmail}
                 onChange={e => handlePatientInfoChange("email", e.target.value)}
                 className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
@@ -869,16 +883,27 @@ export default function BookingCard() {
 
             <div>
               <label className="block text-xs text-brand-muted mb-1.5 font-medium">
-                RUT del Paciente (ej: 11111111-1 o 12345678-5)
+                RUT del Paciente
               </label>
               <input
                 type="text"
                 required
-                placeholder="11111111-1"
+                placeholder="ej: 12345678-5"
                 value={patientRut}
                 onChange={e => handlePatientInfoChange("rut", e.target.value)}
-                className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
+                className={`w-full bg-white border rounded-global p-3 text-sm text-slate-900 focus:outline-none transition-colors placeholder:text-slate-400 font-medium ${
+                  mostrarErrorRut
+                    ? "border-rose-400 focus:border-rose-500"
+                    : rutEsValido && rutLimpio.length > 0
+                      ? "border-emerald-400 focus:border-emerald-500"
+                      : "border-brand-border focus:border-brand-primary"
+                }`}
               />
+              {mostrarErrorRut && (
+                <p className="text-[11px] text-rose-500 font-semibold mt-1">
+                  RUT inválido
+                </p>
+              )}
             </div>
 
             <div>
@@ -888,11 +913,23 @@ export default function BookingCard() {
               <input
                 type="tel"
                 required
-                placeholder="+56 9 1234 5678"
+                placeholder="ej: 56912345678"
                 value={patientPhone}
                 onChange={e => handlePatientInfoChange("phone", e.target.value)}
-                className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
+                className={`w-full bg-white border rounded-global p-3 text-sm text-slate-900 focus:outline-none transition-colors placeholder:text-slate-400 font-medium ${
+                  mostrarErrorTelefono
+                    ? "border-rose-400 focus:border-rose-500"
+                    : telefonoEsValido && telefonoLimpio.length > 0
+                      ? "border-emerald-400 focus:border-emerald-500"
+                      : "border-brand-border focus:border-brand-primary"
+                }`}
               />
+              {mostrarErrorTelefono && (
+                <p className="text-[11px] text-rose-500 font-semibold mt-1">
+                  Teléfono inválido, debe ser un celular chileno (ej:
+                  56912345678)
+                </p>
+              )}
             </div>
           </div>
 
@@ -916,13 +953,19 @@ export default function BookingCard() {
                 submitMutation.isPending ||
                 !patientName ||
                 !patientEmail ||
-                !patientPhone
+                !patientPhone ||
+                !patientRut ||
+                !rutEsValido ||
+                !telefonoEsValido
               }
               className={`rounded-global px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
                 !submitMutation.isPending &&
                 patientName &&
                 patientEmail &&
-                patientPhone
+                patientPhone &&
+                patientRut &&
+                rutEsValido &&
+                telefonoEsValido
                   ? "bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer shadow-md"
                   : "bg-slate-100 text-slate-400 cursor-not-allowed"
               }`}
