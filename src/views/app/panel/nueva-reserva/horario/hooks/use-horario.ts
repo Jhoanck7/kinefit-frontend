@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import {
-  useGetConfiguracionSistema,
   useGetFechasDisponibles,
   useGetHorasDisponibles,
   useGetPacientePerfil,
@@ -42,15 +41,12 @@ export const useHorario = () => {
     setPaciente,
   } = useNuevaReservaStore();
 
-  const { data: configuracionSistema } = useGetConfiguracionSistema();
-  const duracionActiva = configuracionSistema?.duracionServiciosActiva ?? false;
-  const bloquesExigidos = duracionActiva
+  const duracionFijaDelServicio = Boolean(servicioDuracionMinutos);
+  const bloquesExigidos = duracionFijaDelServicio
     ? bloquesRequeridos(servicioDuracionMinutos)
     : 0;
   const duracionServicioEfectiva =
-    duracionActiva && servicioDuracionMinutos
-      ? servicioDuracionMinutos
-      : DURACION_BLOQUE_MIN;
+    servicioDuracionMinutos ?? DURACION_BLOQUE_MIN;
 
   const [errorSeleccion, setErrorSeleccion] = useState<string | null>(null);
 
@@ -127,14 +123,14 @@ export const useHorario = () => {
     const yaSeleccionada = horasSeleccionadas.includes(hora);
     let nuevas: string[];
 
-    const maxBloques = duracionActiva ? bloquesExigidos : MAX_BLOQUES;
+    const maxBloques = duracionFijaDelServicio ? bloquesExigidos : MAX_BLOQUES;
 
     if (yaSeleccionada) {
       nuevas = horasSeleccionadas.filter(h => h !== hora);
     } else {
       if (horasSeleccionadas.length >= maxBloques) {
         setErrorSeleccion(
-          duracionActiva
+          duracionFijaDelServicio
             ? `Este servicio dura ${servicioDuracionMinutos} min (${bloquesExigidos} bloque(s)).`
             : "Puedes reservar como máximo 3 bloques (90 minutos)."
         );
@@ -167,7 +163,10 @@ export const useHorario = () => {
       setErrorSeleccion("Selecciona al menos un bloque de horario.");
       return;
     }
-    if (duracionActiva && horasSeleccionadas.length !== bloquesExigidos) {
+    if (
+      duracionFijaDelServicio &&
+      horasSeleccionadas.length !== bloquesExigidos
+    ) {
       setErrorSeleccion(
         `Este servicio dura ${servicioDuracionMinutos} min (${bloquesExigidos} bloque(s)).`
       );
@@ -188,7 +187,7 @@ export const useHorario = () => {
     manana,
     tarde,
     fechasDisponibles,
-    duracionActiva,
+    duracionFijaDelServicio,
     bloquesExigidos,
     servicioDuracionMinutos,
     nombreServicio: servicioNombre,

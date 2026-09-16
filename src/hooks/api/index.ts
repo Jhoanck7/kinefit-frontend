@@ -24,10 +24,6 @@ export {
   useUpdateCitaEstadoMutation,
 } from "./use-cita-service";
 export {
-  useGetConfiguracionSistema,
-  useUpdateConfiguracionSistemaMutation,
-} from "./use-configuracion-sistema-service";
-export {
   useGetEspecialistasDisponibles,
   useGetFechasDisponibles,
   useGetHorasDisponibles,

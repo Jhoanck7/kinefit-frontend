@@ -9,7 +9,6 @@ export type {
   CreateCitaPublicaRequest,
   UpdateCitaEstadoRequest,
 } from "./cita";
-export type { UpdateConfiguracionSistemaRequest } from "./configuracion-sistema";
 export type {
   CreateFichaRequest,
   EnviarRecomendacionRequest,

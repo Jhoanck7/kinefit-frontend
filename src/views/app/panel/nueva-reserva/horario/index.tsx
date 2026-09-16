@@ -24,7 +24,7 @@ function HorarioContent() {
     horaTerminoCalculada,
     manana,
     tarde,
-    duracionActiva,
+    duracionFijaDelServicio,
     bloquesExigidos,
     servicioDuracionMinutos,
     nombreServicio,
@@ -86,7 +86,7 @@ function HorarioContent() {
                   ({duracionMin} minutos)
                 </p>
               )}
-              {duracionActiva && servicioDuracionMinutos && (
+              {servicioDuracionMinutos && (
                 <p className="font-sans text-xs text-slate-500 pt-1">
                   Este servicio requiere {servicioDuracionMinutos} min (
                   {bloquesExigidos} bloque(s) de 30 min).
@@ -150,7 +150,7 @@ function HorarioContent() {
                 disabled={
                   !fecha ||
                   horasSeleccionadas.length === 0 ||
-                  (duracionActiva &&
+                  (duracionFijaDelServicio &&
                     horasSeleccionadas.length !== bloquesExigidos)
                 }
                 onClick={actions.handleContinuar}

@@ -14,17 +14,23 @@ import {
 import { ServicioModal } from "./components";
 import { useServicios } from "./hooks";
 
-const COLUMNAS = ["Orden", "Nombre", "Duración", "Descripción", "Estado"];
+const COLUMNAS = [
+  "Orden",
+  "Nombre",
+  "Duración Predeterminada",
+  "Descripción",
+  "Estado",
+];
 
 export default function ServiciosView() {
   const {
     servicios,
     cargando,
-    duracionActiva,
     mostrarModal,
     servicioEditando,
     nombre,
     orden,
+    exigeDuracion,
     duracionMinutos,
     descripcion,
     imagenUrl,
@@ -52,24 +58,6 @@ export default function ServiciosView() {
         <Button className="rounded-overlay" onClick={actions.handleAbrirCrear}>
           Nuevo Servicio
         </Button>
-      </div>
-
-      <div className="border border-slate-200 bg-slate-50/50 p-4 flex items-center justify-between gap-4">
-        <div>
-          <p className="font-sans text-label font-bold text-foreground">
-            Duración Configurable de Servicios
-          </p>
-          <p className="font-sans text-xs text-slate-500 mt-0.5">
-            Con esto activo, cada servicio exige una duración (30/60/90 min) y
-            la reserva exige exactamente esos bloques. Apagado, se mantiene el
-            comportamiento actual: el operador arma los bloques a mano.
-          </p>
-        </div>
-        <SwitchField
-          etiqueta={duracionActiva ? "Activo" : "Inactivo"}
-          checked={duracionActiva}
-          onChange={actions.handleToggleDuracionActiva}
-        />
       </div>
 
       {errorEstado && <Alerta tono="error">{errorEstado}</Alerta>}
@@ -161,8 +149,8 @@ export default function ServiciosView() {
         servicioEditando={servicioEditando}
         nombre={nombre}
         orden={orden}
+        exigeDuracion={exigeDuracion}
         duracionMinutos={duracionMinutos}
-        duracionActiva={duracionActiva}
         descripcion={descripcion}
         imagenUrl={imagenUrl}
         plantillas={plantillas}
@@ -171,6 +159,7 @@ export default function ServiciosView() {
         guardando={guardando}
         onNombreChange={actions.setNombre}
         onOrdenChange={actions.setOrden}
+        onToggleExigeDuracion={actions.handleToggleExigeDuracion}
         onDuracionMinutosChange={actions.setDuracionMinutos}
         onDescripcionChange={actions.setDescripcion}
         onFotoChange={actions.handleFotoChange}

@@ -5,10 +5,8 @@ import { useState } from "react";
 import {
   useActualizarDocumentosServicioMutation,
   useCreateServicioMutation,
-  useGetConfiguracionSistema,
   useGetPlantillas,
   useGetServicios,
-  useUpdateConfiguracionSistemaMutation,
   useUpdateServicioEstadoMutation,
   useUpdateServicioMutation,
 } from "@/hooks/api";
@@ -18,14 +16,11 @@ import { ServicioResponse } from "@/models/responses";
 
 export const useServicios = () => {
   const { data: servicios = [], isLoading: cargando } = useGetServicios(false);
-  const { data: configuracionSistema } = useGetConfiguracionSistema();
   const { data: plantillas = [] } = useGetPlantillas(true);
-  const duracionActiva = configuracionSistema?.duracionServiciosActiva ?? false;
 
   const crearMutation = useCreateServicioMutation();
   const actualizarMutation = useUpdateServicioMutation();
   const estadoMutation = useUpdateServicioEstadoMutation();
-  const duracionMutation = useUpdateConfiguracionSistemaMutation();
   const documentosMutation = useActualizarDocumentosServicioMutation();
 
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -33,6 +28,7 @@ export const useServicios = () => {
     useState<ServicioResponse | null>(null);
   const [nombre, setNombre] = useState("");
   const [orden, setOrden] = useState(0);
+  const [exigeDuracion, setExigeDuracion] = useState(false);
   const [duracionMinutos, setDuracionMinutos] = useState<number | undefined>(
     undefined
   );
@@ -48,6 +44,7 @@ export const useServicios = () => {
     setServicioEditando(null);
     setNombre("");
     setOrden(servicios.length);
+    setExigeDuracion(false);
     setDuracionMinutos(undefined);
     setDescripcion("");
     setImagenUrl("");
@@ -62,6 +59,7 @@ export const useServicios = () => {
     setServicioEditando(servicio);
     setNombre(servicio.nombre);
     setOrden(servicio.orden);
+    setExigeDuracion(Boolean(servicio.duracionMinutos));
     setDuracionMinutos(servicio.duracionMinutos);
     setDescripcion(servicio.descripcion || "");
     setImagenUrl(servicio.imagenUrl || "");
@@ -86,9 +84,21 @@ export const useServicios = () => {
     setImagenPublicId(publicId || "");
   };
 
+  const handleToggleExigeDuracion = (checked: boolean) => {
+    setExigeDuracion(checked);
+    if (!checked) {
+      setDuracionMinutos(undefined);
+    }
+  };
+
   const handleGuardar = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (exigeDuracion && !duracionMinutos) {
+      setError("Selecciona la duración predeterminada de este servicio.");
+      return;
+    }
+    const duracionAEnviar = exigeDuracion ? duracionMinutos : undefined;
     try {
       let id: number;
       if (servicioEditando) {
@@ -98,7 +108,7 @@ export const useServicios = () => {
           data: {
             nombre,
             orden,
-            duracionMinutos,
+            duracionMinutos: duracionAEnviar,
             imagenPublicId: imagenPublicId || undefined,
             imagenAlt: imagenAlt || undefined,
             descripcion: descripcion || undefined,
@@ -108,7 +118,7 @@ export const useServicios = () => {
         const creado = await crearMutation.mutateAsync({
           nombre,
           orden,
-          duracionMinutos,
+          duracionMinutos: duracionAEnviar,
           imagenPublicId: imagenPublicId || undefined,
           imagenAlt: imagenAlt || undefined,
           descripcion: descripcion || undefined,
@@ -134,20 +144,14 @@ export const useServicios = () => {
     }
   };
 
-  const handleToggleDuracionActiva = async () => {
-    await duracionMutation.mutateAsync({
-      duracionServiciosActiva: !duracionActiva,
-    });
-  };
-
   return {
     servicios,
     cargando,
-    duracionActiva,
     mostrarModal,
     servicioEditando,
     nombre,
     orden,
+    exigeDuracion,
     duracionMinutos,
     descripcion,
     imagenUrl,
@@ -166,6 +170,7 @@ export const useServicios = () => {
     actions: {
       setNombre,
       setOrden,
+      handleToggleExigeDuracion,
       setDuracionMinutos,
       setDescripcion,
       setDocumentos,
@@ -175,7 +180,6 @@ export const useServicios = () => {
       handleFotoChange,
       handleGuardar,
       handleToggleEstado,
-      handleToggleDuracionActiva,
     },
   };
 };

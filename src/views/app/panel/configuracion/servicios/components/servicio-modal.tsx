@@ -4,6 +4,7 @@ import {
   Modal,
   ModalCloseButton,
   NumberField,
+  SwitchField,
   TextAreaField,
   TextField,
 } from "@/components/shared";
@@ -19,8 +20,8 @@ interface ServicioModalProps {
   servicioEditando: ServicioResponse | null;
   nombre: string;
   orden: number;
+  exigeDuracion: boolean;
   duracionMinutos: number | undefined;
-  duracionActiva: boolean;
   descripcion: string;
   imagenUrl: string;
   plantillas: PlantillaResponse[];
@@ -29,6 +30,7 @@ interface ServicioModalProps {
   guardando: boolean;
   onNombreChange: (v: string) => void;
   onOrdenChange: (v: number) => void;
+  onToggleExigeDuracion: (v: boolean) => void;
   onDuracionMinutosChange: (v: number | undefined) => void;
   onDescripcionChange: (v: string) => void;
   onFotoChange: (secureUrl: string, publicId?: string) => void;
@@ -44,8 +46,8 @@ export function ServicioModal({
   servicioEditando,
   nombre,
   orden,
+  exigeDuracion,
   duracionMinutos,
-  duracionActiva,
   descripcion,
   imagenUrl,
   plantillas,
@@ -54,6 +56,7 @@ export function ServicioModal({
   guardando,
   onNombreChange,
   onOrdenChange,
+  onToggleExigeDuracion,
   onDuracionMinutosChange,
   onDescripcionChange,
   onFotoChange,
@@ -102,8 +105,25 @@ export function ServicioModal({
               obligatorio
               required
             />
-            {duracionActiva && (
+            <div className="md:col-span-2 flex items-center justify-between rounded-none border border-slate-200 bg-slate-50 p-4">
               <div>
+                <p className="font-sans text-label font-bold text-foreground">
+                  Duración Predeterminada
+                </p>
+                <p className="font-sans text-xs text-slate-500 mt-0.5">
+                  Con esto activo, este servicio exige una duración fija
+                  (30/60/90 min) y la reserva exige exactamente esos bloques.
+                  Sin esto, el operador arma los bloques a mano.
+                </p>
+              </div>
+              <SwitchField
+                etiqueta={exigeDuracion ? "Activo" : "Inactivo"}
+                checked={exigeDuracion}
+                onChange={onToggleExigeDuracion}
+              />
+            </div>
+            {exigeDuracion && (
+              <div className="md:col-span-2">
                 <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                   Duración (Minutos) *
                 </label>

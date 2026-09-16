@@ -6,7 +6,6 @@ import React, { useEffect, useRef, useState } from "react";
 
 import {
   useAuthenticateWithGoogleMutation,
-  useGetConfiguracionSistema,
   useGetEspecialistasDisponibles,
   useGetFechasDisponibles,
   useGetHorasDisponibles,
@@ -143,17 +142,16 @@ export default function BookingCard() {
   const [errorResolucion, setErrorResolucion] = useState<string | null>(null);
 
   const { data: services = [], isLoading: loadingServices } = useGetServices();
-  const { data: configuracionSistema } = useGetConfiguracionSistema();
-  const duracionActiva = configuracionSistema?.duracionServiciosActiva ?? false;
 
   const servicioSeleccionado = services.find(s => s.id === selectedServiceId);
-  const bloquesExigidos = duracionActiva
+  const duracionFijaDelServicio = Boolean(
+    servicioSeleccionado?.duracionMinutos
+  );
+  const bloquesExigidos = duracionFijaDelServicio
     ? bloquesRequeridos(servicioSeleccionado?.duracionMinutos)
     : 0;
   const duracionServicioEfectiva =
-    duracionActiva && servicioSeleccionado?.duracionMinutos
-      ? servicioSeleccionado.duracionMinutos
-      : DURACION_BLOQUE_MIN;
+    servicioSeleccionado?.duracionMinutos ?? DURACION_BLOQUE_MIN;
 
   const duracionMinutos = selectedHoras.length * DURACION_BLOQUE_MIN;
   const horaInicio = [...selectedHoras].sort()[0] ?? "";
@@ -302,14 +300,14 @@ export default function BookingCard() {
     const yaSeleccionada = selectedHoras.includes(hora);
     let nuevas: string[];
 
-    const maxBloques = duracionActiva ? bloquesExigidos : MAX_BLOQUES;
+    const maxBloques = duracionFijaDelServicio ? bloquesExigidos : MAX_BLOQUES;
 
     if (yaSeleccionada) {
       nuevas = selectedHoras.filter(h => h !== hora);
     } else {
       if (selectedHoras.length >= maxBloques) {
         setErrorSeleccion(
-          duracionActiva
+          duracionFijaDelServicio
             ? `Este servicio dura ${servicioSeleccionado?.duracionMinutos} min (${bloquesExigidos} bloque(s)).`
             : "Puedes reservar como máximo 3 bloques (90 minutos)."
         );
@@ -339,7 +337,7 @@ export default function BookingCard() {
       setErrorSeleccion("Selecciona al menos un bloque de horario.");
       return;
     }
-    if (duracionActiva && selectedHoras.length !== bloquesExigidos) {
+    if (duracionFijaDelServicio && selectedHoras.length !== bloquesExigidos) {
       setErrorSeleccion(
         `Este servicio dura ${servicioSeleccionado?.duracionMinutos} min (${bloquesExigidos} bloque(s)).`
       );
@@ -622,7 +620,7 @@ export default function BookingCard() {
                   ({duracionMinutos} minutos)
                 </p>
               )}
-              {duracionActiva && servicioSeleccionado?.duracionMinutos && (
+              {servicioSeleccionado?.duracionMinutos && (
                 <p className="text-xs text-slate-500 pt-1">
                   Este servicio requiere {servicioSeleccionado.duracionMinutos}{" "}
                   min ({bloquesExigidos} bloque(s) de 30 min).
@@ -681,11 +679,13 @@ export default function BookingCard() {
               onClick={handleContinuarHorario}
               disabled={
                 selectedHoras.length === 0 ||
-                (duracionActiva && selectedHoras.length !== bloquesExigidos)
+                (duracionFijaDelServicio &&
+                  selectedHoras.length !== bloquesExigidos)
               }
               className={`rounded-global px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
                 selectedHoras.length > 0 &&
-                (!duracionActiva || selectedHoras.length === bloquesExigidos)
+                (!duracionFijaDelServicio ||
+                  selectedHoras.length === bloquesExigidos)
                   ? "bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer shadow-md"
                   : "bg-slate-100 text-slate-400 cursor-not-allowed"
               }`}
