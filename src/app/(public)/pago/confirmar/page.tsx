@@ -182,54 +182,22 @@ function ConfirmarPagoContent() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
       <div className="bg-white border border-slate-200 rounded-3xl p-8 max-w-md w-full text-center shadow-xl animate-fade-in">
-        <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-500 text-3xl mx-auto mb-4 font-bold">
-          ✓
-        </div>
         <h2 className="text-2xl font-extrabold text-slate-900 mb-1">
           ¡Reserva y Pago Confirmados!
         </h2>
-        <p className="text-xs text-slate-500 mb-6">
-          Tu cita ha sido agendada exitosamente en KineFit Chile.
+        <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+          Tu cita fue agendada exitosamente en KineFit Chile. Te enviamos el
+          comprobante y los detalles de tu hora a tu correo.
         </p>
 
         {result && (
-          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 text-left mb-6 flex flex-col gap-3 text-xs">
-            <div className="flex justify-between border-b border-slate-200/60 pb-2">
-              <span className="text-slate-400 font-medium">
-                N° de Reserva / Cita:
-              </span>
-              <span className="font-bold text-slate-900">#{result.citaId}</span>
-            </div>
-            <div className="flex justify-between border-b border-slate-200/60 pb-2">
-              <span className="text-slate-400 font-medium">
-                Orden de Compra:
-              </span>
-              <span className="font-bold text-slate-800">
-                {result.buyOrder}
-              </span>
-            </div>
-            <div className="flex justify-between border-b border-slate-200/60 pb-2">
-              <span className="text-slate-400 font-medium">
-                Estado del Pago:
-              </span>
-              <span className="font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
-                Aprobado
-              </span>
-            </div>
-            <div className="flex justify-between border-b border-slate-200/60 pb-2">
-              <span className="text-slate-400 font-medium">
-                Estado de la reserva:
-              </span>
-              <span className="font-semibold text-slate-900">
-                {result.estadoCita}
-              </span>
-            </div>
-            <div className="flex justify-between pt-1">
-              <span className="text-slate-400 font-medium">Monto Pagado:</span>
-              <span className="font-bold text-emerald-600">
-                ${result.monto.toLocaleString("es-CL")} CLP
-              </span>
-            </div>
+          <div className="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-4 mb-6 text-center">
+            <span className="text-xs text-emerald-700 font-medium">
+              Pagaste
+            </span>{" "}
+            <span className="text-sm font-bold text-emerald-700">
+              ${result.monto.toLocaleString("es-CL")} CLP
+            </span>
           </div>
         )}
 
