@@ -17,6 +17,8 @@ function RegistrarPacienteContent() {
     convenioId,
     pacienteExistente,
     convenios,
+    mostrarErrorRut,
+    mostrarErrorTelefono,
     guardando,
     errorMsg,
     actions,
@@ -56,9 +58,11 @@ function RegistrarPacienteContent() {
             etiqueta="RUT"
             obligatorio
             required
-            placeholder="12.345.678-9"
+            placeholder="ej: 12345678-5"
             value={rut}
             onChange={e => actions.handleCambiarRut(e.target.value)}
+            aria-invalid={mostrarErrorRut}
+            error={mostrarErrorRut ? "RUT Inválido" : undefined}
           />
           {pacienteExistente && (
             <Alerta tono="advertencia">
@@ -84,11 +88,17 @@ function RegistrarPacienteContent() {
           />
           <TextField
             etiqueta="Teléfono"
-            placeholder="+56 9 1234 5678"
+            placeholder="ej: 56912345678"
             obligatorio
             required
             value={telefono}
             onChange={e => actions.setTelefono(e.target.value)}
+            aria-invalid={mostrarErrorTelefono}
+            error={
+              mostrarErrorTelefono
+                ? "Teléfono inválido, debe ser un celular chileno (ej: 56912345678)"
+                : undefined
+            }
           />
           <SelectField
             etiqueta="Convenio institucional"

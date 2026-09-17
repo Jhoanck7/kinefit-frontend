@@ -5,6 +5,12 @@ import { useState } from "react";
 
 import { useCreatePacienteMutation, useGetEmpresas } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
+import {
+  esRutValido,
+  esTelefonoValido,
+  limpiarRut,
+  limpiarTelefono,
+} from "@/lib/validadores";
 import { pacienteService } from "@/services";
 import { useNuevaReservaStore } from "@/stores";
 
@@ -29,6 +35,13 @@ export const useRegistrarPaciente = () => {
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const createPacienteMutation = useCreatePacienteMutation();
+
+  const rutEsValido = esRutValido(rut);
+  const mostrarErrorRut = limpiarRut(rut).length >= 7 && !rutEsValido;
+
+  const telefonoEsValido = esTelefonoValido(telefono);
+  const mostrarErrorTelefono =
+    limpiarTelefono(telefono).length >= 9 && !telefonoEsValido;
 
   // Actions
   const handleCambiarRut = async (valor: string) => {
@@ -65,6 +78,16 @@ export const useRegistrarPaciente = () => {
     evento.preventDefault();
     if (!nombre.trim() || !apellido.trim() || !rut.trim() || !email.trim()) {
       setErrorMsg("Completa todos los campos obligatorios.");
+      return;
+    }
+
+    if (!rutEsValido) {
+      setErrorMsg("El RUT ingresado no es válido.");
+      return;
+    }
+
+    if (telefono.trim() && !telefonoEsValido) {
+      setErrorMsg("El teléfono debe ser un celular chileno (ej: 56912345678).");
       return;
     }
 
@@ -105,6 +128,8 @@ export const useRegistrarPaciente = () => {
     convenioId,
     pacienteExistente,
     convenios,
+    mostrarErrorRut,
+    mostrarErrorTelefono,
     guardando: createPacienteMutation.isPending,
     errorMsg,
 
