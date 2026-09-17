@@ -16,7 +16,7 @@ export function AppointmentCard({
 }) {
   const definicion = definicionEstado(cita.estado as CodigoEstadoCita);
   const color = COLOR_ROL[definicion.colorRol] ?? COLOR_ROL["azul-seleccion"];
-  const origen = cita.origen === "web" ? "Web" : "Manual";
+  const origen = cita.origen;
 
   return (
     <button

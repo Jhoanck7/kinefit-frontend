@@ -149,7 +149,7 @@ function DetalleCita({
               </span>
             </h2>
             <span className="border border-slate-200 bg-white px-2 py-0.5 font-sans text-micro-header font-medium text-muted-foreground rounded-none">
-              {cita.origen === "web" ? "Web" : "Manual"}
+              {cita.origen}
             </span>
           </div>
           <p className="font-sans text-xs text-slate-500 mt-0.5">
