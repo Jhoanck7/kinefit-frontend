@@ -1,6 +1,7 @@
 import { ApiResponse } from "@/models/generics";
 import { UpdateLandingConfigRequest } from "@/models/requests";
 import { LandingConfigResponse } from "@/models/responses";
+import { axiosInstanceSinSesion } from "@/providers";
 
 import { BaseApiService } from "./base-api-service";
 
@@ -10,7 +11,7 @@ export class LandingConfigService extends BaseApiService {
   }
 
   getConfig() {
-    return this.httpClient.get<ApiResponse<LandingConfigResponse>>(
+    return axiosInstanceSinSesion.get<ApiResponse<LandingConfigResponse>>(
       `${this.baseURL}/landing`
     );
   }

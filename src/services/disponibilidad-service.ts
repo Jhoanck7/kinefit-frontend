@@ -1,11 +1,12 @@
 import { ApiResponse } from "@/models/generics";
 import { EspecialistaResponse } from "@/models/responses";
+import { axiosInstanceSinSesion } from "@/providers";
 
 import { BaseApiService } from "./base-api-service";
 
 export class DisponibilidadService extends BaseApiService {
   constructor() {
-    super("/disponibilidad");
+    super("/disponibilidad", axiosInstanceSinSesion);
   }
 
   getFechas(servicioId: number, duracionMinutos: number) {

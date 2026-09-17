@@ -1,11 +1,12 @@
 import { CreateCitaPublicaRequest } from "@/models/requests";
 import { FranjaDisponibleResponse, ServicioResponse } from "@/models/responses";
+import { axiosInstanceSinSesion } from "@/providers";
 
 import { BaseApiService } from "./base-api-service";
 
 export class AppointmentService extends BaseApiService {
   constructor() {
-    super("");
+    super("", axiosInstanceSinSesion);
   }
 
   getServices(soloActivos = true) {

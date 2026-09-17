@@ -5,6 +5,7 @@ import {
   UpdatePerfilRequest,
 } from "@/models/requests";
 import { MiPerfilResponse, PersonalLoginResponse } from "@/models/responses";
+import { axiosInstanceSinSesion } from "@/providers";
 import { AuthGoogleResponse } from "@/types";
 
 import { BaseApiService } from "./base-api-service";
@@ -15,7 +16,7 @@ export class AuthService extends BaseApiService {
   }
 
   loginPersonal(data: LoginPersonalRequest) {
-    return this.httpClient.post<ApiResponse<PersonalLoginResponse>>(
+    return axiosInstanceSinSesion.post<ApiResponse<PersonalLoginResponse>>(
       `${this.baseURL}/personal`,
       data
     );
@@ -29,10 +30,10 @@ export class AuthService extends BaseApiService {
   }
 
   loginWithGoogleToken(idToken: string, consentimientoAceptado: boolean) {
-    return this.httpClient.post<AuthGoogleResponse>(`${this.baseURL}/google`, {
-      idToken,
-      consentimientoAceptado,
-    });
+    return axiosInstanceSinSesion.post<AuthGoogleResponse>(
+      `${this.baseURL}/google`,
+      { idToken, consentimientoAceptado }
+    );
   }
 
   updatePerfil(data: UpdatePerfilRequest, token: string) {
