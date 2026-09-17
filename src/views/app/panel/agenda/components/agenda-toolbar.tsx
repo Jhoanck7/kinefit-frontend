@@ -1,11 +1,16 @@
 import { Button } from "@/components/ui";
+import { CATALOGO_ESTADOS } from "@/lib/estados";
 import { fechaISO } from "@/lib/formato";
 import { EspecialistaResponse } from "@/models/responses";
+
+import { FILTRO_VIGENTES } from "./time-grid";
 
 interface AgendaToolbarProps {
   dia: Date;
   especialistas: EspecialistaResponse[];
   especialistaSeleccionado: string;
+  estadoSeleccionado: string;
+  onCambiarEstado: (estado: string) => void;
   onCambiarEspecialista: (id: string) => void;
   onIrADia: (delta: number) => void;
   onIrAHoy: () => void;
@@ -18,6 +23,8 @@ export function AgendaToolbar({
   dia,
   especialistas,
   especialistaSeleccionado,
+  estadoSeleccionado,
+  onCambiarEstado,
   onCambiarEspecialista,
   onIrADia,
   onIrAHoy,
@@ -65,6 +72,19 @@ export function AgendaToolbar({
 
       {/* Filtro por Especialista + Botones */}
       <div className="flex flex-wrap items-center gap-2">
+        <select
+          value={estadoSeleccionado}
+          onChange={e => onCambiarEstado(e.target.value)}
+          className="border border-slate-200 bg-white px-3 py-1.5 font-sans text-xs font-medium text-slate-900 rounded-none focus:border-slate-900 focus:outline-none cursor-pointer"
+        >
+          <option value={FILTRO_VIGENTES}>Reservas Vigentes</option>
+          {Object.values(CATALOGO_ESTADOS).map(estado => (
+            <option key={estado.codigo} value={estado.codigo}>
+              {estado.etiqueta}
+            </option>
+          ))}
+        </select>
+
         <select
           value={especialistaSeleccionado}
           onChange={e => onCambiarEspecialista(e.target.value)}

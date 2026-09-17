@@ -19,6 +19,7 @@ function AgendaContent() {
     dia,
     especialistas,
     especialistaSeleccionado,
+    estadoSeleccionado,
     especialistasAMostrar,
     agendaData,
     errorAgenda,
@@ -35,6 +36,8 @@ function AgendaContent() {
         dia={dia}
         especialistas={especialistas}
         especialistaSeleccionado={especialistaSeleccionado}
+        estadoSeleccionado={estadoSeleccionado}
+        onCambiarEstado={actions.setEstadoSeleccionado}
         onCambiarEspecialista={actions.setEspecialistaSeleccionado}
         onIrADia={actions.handleIrADia}
         onIrAHoy={actions.handleIrAHoy}
@@ -63,6 +66,7 @@ function AgendaContent() {
                 <TimeGrid
                   rejilla={rejilla}
                   bloques={bloques}
+                  estadoFiltro={estadoSeleccionado}
                   onSeleccionarCita={actions.handleSeleccionarCita}
                 />
               </div>

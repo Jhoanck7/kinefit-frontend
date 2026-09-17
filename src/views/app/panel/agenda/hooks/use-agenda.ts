@@ -9,6 +9,8 @@ import { fechaISO } from "@/lib/formato";
 import { generarRejillaDia } from "@/lib/horario";
 import { BloqueAgendaResponse } from "@/models/responses";
 
+import { FILTRO_VIGENTES } from "../components/time-grid";
+
 export const useAgenda = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -31,6 +33,8 @@ export const useAgenda = () => {
   const { data: especialistas = [] } = useGetEspecialistas(undefined, true);
   const [especialistaSeleccionado, setEspecialistaSeleccionado] =
     useState<string>("todas");
+  const [estadoSeleccionado, setEstadoSeleccionado] =
+    useState<string>(FILTRO_VIGENTES);
   const [modalBloqueos, setModalBloqueos] = useState(false);
 
   const especialistaIds = especialistas.map(esp => esp.id);
@@ -130,6 +134,7 @@ export const useAgenda = () => {
     horaActual,
     especialistas,
     especialistaSeleccionado,
+    estadoSeleccionado,
     especialistasAMostrar,
     agendaData,
     errorAgenda,
@@ -141,6 +146,7 @@ export const useAgenda = () => {
     // Actions
     actions: {
       setEspecialistaSeleccionado,
+      setEstadoSeleccionado,
       handleIrADia,
       handleIrAHoy,
       handleCambiarFecha,
