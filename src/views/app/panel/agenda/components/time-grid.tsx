@@ -11,6 +11,17 @@ type ItemFila =
     }
   | { tipo: "bloqueado"; inicio: string; termino: string };
 
+const ESTADOS_LIBERADOS = new Set(["Expirada", "Cancelada"]);
+
+function citaVigente(
+  bloque: BloqueAgendaResponse | undefined
+): CitaEnAgendaResponse | undefined {
+  if (!bloque?.cita || ESTADOS_LIBERADOS.has(bloque.cita.estado)) {
+    return undefined;
+  }
+  return bloque.cita;
+}
+
 function construirFilas(
   rejilla: { inicio: string; termino: string }[],
   bloques: BloqueAgendaResponse[]
@@ -25,13 +36,13 @@ function construirFilas(
     const slot = rejilla[i];
     const bloque = porHora.get(slot.inicio);
 
-    if (bloque?.cita) {
-      const grupoId = bloque.cita.grupoCitaId ?? bloque.cita.id;
+    const cita = citaVigente(bloque);
+    if (cita) {
+      const grupoId = cita.grupoCitaId ?? cita.id;
       let k = 0;
       while (i + k < rejilla.length) {
-        const siguiente = porHora.get(rejilla[i + k].inicio);
-        const siguienteGrupoId =
-          siguiente?.cita?.grupoCitaId ?? siguiente?.cita?.id;
+        const siguiente = citaVigente(porHora.get(rejilla[i + k].inicio));
+        const siguienteGrupoId = siguiente?.grupoCitaId ?? siguiente?.id;
         if (!siguiente || siguienteGrupoId !== grupoId) break;
         k += 1;
       }
@@ -40,7 +51,7 @@ function construirFilas(
         tipo: "cita",
         inicio: slot.inicio,
         termino: rejilla[i + numBloques - 1].termino,
-        cita: bloque.cita,
+        cita,
       });
       i += numBloques;
       continue;
