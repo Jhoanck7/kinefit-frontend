@@ -1,6 +1,6 @@
 import { ApiResponse } from "@/models/generics";
 import { CreateEmpresaRequest, UpdateEmpresaRequest } from "@/models/requests";
-import { EmpresaResponse } from "@/models/responses";
+import { EmpresaPublicaResponse, EmpresaResponse } from "@/models/responses";
 
 import { BaseApiService } from "./base-api-service";
 
@@ -13,6 +13,13 @@ export class EmpresaService extends BaseApiService {
     return this.httpClient.get<ApiResponse<EmpresaResponse[]>>(this.baseURL, {
       params: { soloActivos },
     });
+  }
+
+  getPublico(token: string) {
+    return this.httpClient.get<ApiResponse<EmpresaPublicaResponse[]>>(
+      `${this.baseURL}/publico`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
   }
 
   create(data: CreateEmpresaRequest) {

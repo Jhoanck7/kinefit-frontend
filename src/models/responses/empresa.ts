@@ -13,3 +13,8 @@ export interface EmpresaResponse {
   vigenteHasta?: string;
   convenios: ConvenioDescuentoResponse[];
 }
+
+export interface EmpresaPublicaResponse {
+  id: number;
+  nombre: string;
+}

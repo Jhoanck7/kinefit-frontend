@@ -13,6 +13,7 @@ interface BookingState {
   patientEmail: string;
   patientPhone: string;
   patientRut: string;
+  patientConvenioId: string;
   authToken: string | null;
   currentStep: number;
 
@@ -30,6 +31,7 @@ interface BookingState {
     phone: string;
     rut?: string;
   }) => void;
+  setPatientConvenioId: (convenioId: string) => void;
   setAuthToken: (token: string | null) => void;
   setStep: (step: number) => void;
   nextStep: () => void;
@@ -49,6 +51,7 @@ const ESTADO_INICIAL = {
   patientEmail: "",
   patientPhone: "",
   patientRut: "",
+  patientConvenioId: "",
   authToken: null,
   currentStep: 1,
 };
@@ -90,6 +93,8 @@ export const useBookingStore = create<BookingState>(set => ({
       patientPhone: info.phone,
       patientRut: info.rut !== undefined ? info.rut : state.patientRut,
     })),
+
+  setPatientConvenioId: convenioId => set({ patientConvenioId: convenioId }),
 
   setAuthToken: token => set({ authToken: token }),
 

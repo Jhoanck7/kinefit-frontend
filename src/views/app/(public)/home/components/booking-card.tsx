@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import {
   useAuthenticateWithGoogleMutation,
+  useGetEmpresasPublico,
   useGetEspecialistasDisponibles,
   useGetFechasDisponibles,
   useGetHorasDisponibles,
@@ -123,12 +124,14 @@ export default function BookingCard() {
     patientEmail,
     patientPhone,
     patientRut,
+    patientConvenioId,
     authToken,
     currentStep,
     setSelectedService,
     setSelectedHorario,
     setSelectedSpecialist,
     setPatientInfo,
+    setPatientConvenioId,
     setAuthToken,
     nextStep,
     prevStep,
@@ -148,6 +151,7 @@ export default function BookingCard() {
   const [errorResolucion, setErrorResolucion] = useState<string | null>(null);
 
   const { data: services = [], isLoading: loadingServices } = useGetServices();
+  const { data: convenios = [] } = useGetEmpresasPublico(authToken);
 
   const servicioSeleccionado = services.find(s => s.id === selectedServiceId);
   const duracionFijaDelServicio = Boolean(
@@ -435,6 +439,7 @@ export default function BookingCard() {
       patientName,
       patientPhone,
       patientRut,
+      patientConvenioId,
       authToken,
     });
   };
@@ -926,6 +931,24 @@ export default function BookingCard() {
                   56912345678)
                 </p>
               )}
+            </div>
+
+            <div>
+              <label className="block text-xs text-brand-muted mb-1.5 font-medium">
+                Convenio
+              </label>
+              <select
+                value={patientConvenioId}
+                onChange={e => setPatientConvenioId(e.target.value)}
+                className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors font-medium"
+              >
+                <option value="">Sin Convenio</option>
+                {convenios.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.nombre}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

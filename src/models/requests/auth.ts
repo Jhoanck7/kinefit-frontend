@@ -11,4 +11,5 @@ export interface CambiarPasswordRequest {
 export interface UpdatePerfilRequest {
   rut: string;
   telefono: string;
+  empresaId?: number;
 }

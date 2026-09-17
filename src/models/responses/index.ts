@@ -40,7 +40,7 @@ export type {
   RecomendacionResponse,
   ReenviarCorreoResponse,
 } from "./documento";
-export type { EmpresaResponse } from "./empresa";
+export type { EmpresaPublicaResponse, EmpresaResponse } from "./empresa";
 export type {
   EspecialistaAdminResponse,
   EspecialistaResponse,

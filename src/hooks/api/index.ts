@@ -55,6 +55,7 @@ export {
 export {
   useCreateEmpresaMutation,
   useGetEmpresas,
+  useGetEmpresasPublico,
   useUpdateEmpresaEstadoMutation,
   useUpdateEmpresaMutation,
 } from "./use-empresa-service";

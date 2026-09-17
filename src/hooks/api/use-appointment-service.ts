@@ -36,6 +36,7 @@ interface SubmitBookingParams {
   patientName: string;
   patientPhone: string;
   patientRut: string;
+  patientConvenioId: string;
   authToken: string;
 }
 
@@ -56,11 +57,20 @@ export const useSubmitBookingMutation = () => {
       patientName,
       patientPhone,
       patientRut,
+      patientConvenioId,
       authToken,
     }: SubmitBookingParams) => {
+      const empresaId = patientConvenioId
+        ? parseInt(patientConvenioId, 10)
+        : undefined;
+
       try {
         await authService.updatePerfil(
-          { rut: patientRut.trim(), telefono: patientPhone.trim() },
+          {
+            rut: patientRut.trim(),
+            telefono: patientPhone.trim(),
+            empresaId,
+          },
           authToken
         );
       } catch (perfilErr: unknown) {
@@ -79,7 +89,7 @@ export const useSubmitBookingMutation = () => {
           servicioId: selectedServiceId,
           bloqueHorarioId: selectedBloqueHorarioId,
           duracionMinutos: selectedDuracionMinutos,
-          empresaId: null,
+          empresaId: empresaId ?? null,
           notaPaciente: `Reserva para ${patientName}`,
         },
         authToken

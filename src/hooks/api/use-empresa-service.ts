@@ -11,6 +11,15 @@ export const useGetEmpresas = (soloActivos = true) => {
   });
 };
 
+export const useGetEmpresasPublico = (token: string | null) => {
+  return useQuery({
+    queryKey: ["empresas-publico", token],
+    queryFn: () =>
+      empresaService.getPublico(token as string).then(res => res.data.data),
+    enabled: Boolean(token),
+  });
+};
+
 export const useCreateEmpresaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
