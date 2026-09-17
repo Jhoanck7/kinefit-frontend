@@ -103,7 +103,6 @@ function HorariosGrid({
             }`}
           >
             <span>{hora}</span>
-            {seleccionado && <span className="text-[10px] font-bold">✓</span>}
           </button>
         );
       })}
@@ -473,7 +472,7 @@ export default function BookingCard() {
             <input type="hidden" name="token_ws" value={webpayData.token} />
             <button
               type="submit"
-              className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-global px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
+              className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-global px-6 py-3.5 transition-colors tracking-wider cursor-pointer shadow-md"
             >
               Ir a Webpay Plus ($10.000 CLP)
             </button>
@@ -481,7 +480,7 @@ export default function BookingCard() {
         ) : (
           <button
             onClick={() => router.push(webpayData.urlRedireccion)}
-            className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-global px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer shadow-md"
+            className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-global px-6 py-3.5 transition-colors tracking-wider cursor-pointer shadow-md"
           >
             Abrir Pasarela Webpay Plus ($10.000 CLP)
           </button>
@@ -493,9 +492,6 @@ export default function BookingCard() {
   if (submitMutation.isSuccess && !webpayData) {
     return (
       <div className="flex-1 flex flex-col justify-center items-center text-center p-4 py-8 bg-transparent">
-        <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 text-3xl mb-6 shadow-lg shadow-emerald-500/10">
-          ✓
-        </div>
         <h3 className="text-lg font-bold text-slate-900 mb-2">
           ¡Cita Registrada Exitosamente!
         </h3>
@@ -510,9 +506,9 @@ export default function BookingCard() {
         </p>
         <button
           onClick={handleResetBooking}
-          className="bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-global px-6 py-3.5 transition-colors uppercase tracking-wider cursor-pointer"
+          className="bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-global px-6 py-3.5 transition-colors tracking-wider cursor-pointer"
         >
-          Reservar otra cita
+          Reservar Otra Cita
         </button>
       </div>
     );
@@ -524,7 +520,7 @@ export default function BookingCard() {
         <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex items-center justify-center z-50 rounded-3xl">
           <div className="flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
-            <span className="text-xs font-semibold text-brand-primary uppercase tracking-wider">
+            <span className="text-xs font-semibold text-brand-primary tracking-wider">
               Cargando...
             </span>
           </div>
@@ -535,11 +531,11 @@ export default function BookingCard() {
       {currentStep === 1 && (
         <div className="flex flex-col h-full">
           <div className="text-left shrink-0 mb-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">
+            <h3 className="text-sm font-semibold tracking-wider text-brand-primary mb-1">
               Paso 1 de 4
             </h3>
             <p className="text-slate-800 text-base font-bold">
-              Selecciona un servicio
+              Selecciona un Servicio
             </p>
           </div>
 
@@ -597,7 +593,7 @@ export default function BookingCard() {
       {currentStep === 2 && (
         <div className="flex flex-col h-full">
           <div className="text-left shrink-0 mb-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">
+            <h3 className="text-sm font-semibold tracking-wider text-brand-primary mb-1">
               Paso 2 de 4
             </h3>
             <p className="text-slate-800 text-base font-bold">
@@ -607,14 +603,14 @@ export default function BookingCard() {
 
           <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-4">
             {errorSeleccion && (
-              <p className="text-[11px] text-rose-600 font-semibold bg-rose-50 border border-rose-200 rounded-global px-3 py-2">
+              <p className="text-[11px] text-white font-semibold bg-rose-600 rounded-overlay px-3 py-2">
                 {errorSeleccion}
               </p>
             )}
 
             {/* Selector de fecha (calcado de nueva-reserva/horario) */}
             <div className="space-y-2">
-              <label className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
+              <label className="text-[11px] font-medium text-slate-400 tracking-wider block">
                 Seleccionar Fecha de Atención
               </label>
               <input
@@ -626,7 +622,7 @@ export default function BookingCard() {
               />
               {selectedDate && (
                 <p className="text-xs text-slate-700 pt-1">
-                  Fecha seleccionada:{" "}
+                  Fecha Seleccionada:{" "}
                   <span className="font-medium text-slate-900">
                     {parseDateInfo(selectedDate).formattedFull}
                   </span>
@@ -634,7 +630,7 @@ export default function BookingCard() {
               )}
               {horaInicio && selectedHoras.length > 0 && (
                 <p className="text-xs text-slate-700 pt-1">
-                  Horario seleccionado:{" "}
+                  Horario Seleccionado:{" "}
                   <span className="font-medium text-slate-900">
                     {horaInicio} a{" "}
                     {sumarMinutos(
@@ -670,7 +666,7 @@ export default function BookingCard() {
             ) : (
               <>
                 <div>
-                  <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-2">
+                  <p className="text-[11px] font-medium text-slate-400 tracking-wider mb-2">
                     Mañana
                   </p>
                   <HorariosGrid
@@ -681,7 +677,7 @@ export default function BookingCard() {
                 </div>
                 <div className="border-t border-slate-200" />
                 <div>
-                  <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wider mb-2">
+                  <p className="text-[11px] font-medium text-slate-400 tracking-wider mb-2">
                     Tarde
                   </p>
                   <HorariosGrid
@@ -697,7 +693,7 @@ export default function BookingCard() {
           <div className="flex justify-between items-center shrink-0 mt-4 border-t border-brand-border/30 pt-4">
             <button
               onClick={prevStep}
-              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
+              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors tracking-wider cursor-pointer"
             >
               Atrás
             </button>
@@ -708,7 +704,7 @@ export default function BookingCard() {
                 (duracionFijaDelServicio &&
                   selectedHoras.length !== bloquesExigidos)
               }
-              className={`rounded-global px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
+              className={`rounded-global px-6 py-3.5 text-xs font-bold tracking-wider transition-colors ${
                 selectedHoras.length > 0 &&
                 (!duracionFijaDelServicio ||
                   selectedHoras.length === bloquesExigidos)
@@ -726,7 +722,7 @@ export default function BookingCard() {
       {currentStep === 3 && (
         <div className="flex flex-col h-full">
           <div className="text-left shrink-0 mb-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">
+            <h3 className="text-sm font-semibold tracking-wider text-brand-primary mb-1">
               Paso 3 de 4
             </h3>
             <p className="text-slate-800 text-base font-bold">
@@ -782,7 +778,7 @@ export default function BookingCard() {
             )}
 
             {errorResolucion && (
-              <p className="text-[11px] text-rose-500 font-semibold text-center">
+              <p className="text-[11px] text-white font-semibold text-center bg-rose-600 rounded-overlay px-3 py-2">
                 {errorResolucion}
               </p>
             )}
@@ -791,7 +787,7 @@ export default function BookingCard() {
           <div className="flex justify-between items-center shrink-0 mt-4 border-t border-brand-border/30 pt-4">
             <button
               onClick={prevStep}
-              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
+              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors tracking-wider cursor-pointer"
             >
               Atrás
             </button>
@@ -803,7 +799,7 @@ export default function BookingCard() {
       {currentStep === 4 && (
         <form onSubmit={handleFormSubmit} className="flex flex-col h-full">
           <div className="text-left shrink-0 mb-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-1">
+            <h3 className="text-sm font-semibold tracking-wider text-brand-primary mb-1">
               Paso 4 de 4
             </h3>
             <p className="text-slate-800 text-base font-bold">
@@ -815,7 +811,7 @@ export default function BookingCard() {
             {/* Google Sign-In Widget Container */}
             <div className="bg-slate-50 border border-slate-200 rounded-global p-4 text-center space-y-3">
               <span className="text-xs text-slate-600 font-semibold block">
-                Inicia sesión con tu cuenta de Google
+                Inicia Sesión con tu Cuenta de Google
               </span>
 
               <label className="flex items-start gap-2 text-left text-xs text-slate-600 cursor-pointer">
@@ -849,8 +845,8 @@ export default function BookingCard() {
               )}
 
               {authToken && (
-                <div className="text-xs text-emerald-600 font-bold bg-emerald-50 rounded-lg p-2 border border-emerald-200">
-                  ✓ Sesión iniciada correctamente
+                <div className="text-xs text-white font-bold bg-emerald-600 rounded-overlay p-2">
+                  Sesión Iniciada Correctamente
                 </div>
               )}
             </div>
@@ -901,7 +897,7 @@ export default function BookingCard() {
               />
               {mostrarErrorRut && (
                 <p className="text-[11px] text-rose-500 font-semibold mt-1">
-                  RUT inválido
+                  RUT Inválido
                 </p>
               )}
             </div>
@@ -934,7 +930,7 @@ export default function BookingCard() {
           </div>
 
           {errorMsg && (
-            <div className="p-3 rounded-global bg-rose-50 border border-rose-200 text-xs text-rose-600 font-semibold text-center">
+            <div className="p-3 rounded-overlay bg-rose-600 text-xs text-white font-semibold text-center">
               {errorMsg}
             </div>
           )}
@@ -943,7 +939,7 @@ export default function BookingCard() {
             <button
               type="button"
               onClick={prevStep}
-              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors uppercase tracking-wider cursor-pointer"
+              className="text-xs font-semibold text-brand-muted hover:text-slate-900 transition-colors tracking-wider cursor-pointer"
             >
               Atrás
             </button>
@@ -958,7 +954,7 @@ export default function BookingCard() {
                 !rutEsValido ||
                 !telefonoEsValido
               }
-              className={`rounded-global px-6 py-3.5 text-xs font-bold uppercase tracking-wider transition-colors ${
+              className={`rounded-global px-6 py-3.5 text-xs font-bold tracking-wider transition-colors ${
                 !submitMutation.isPending &&
                 patientName &&
                 patientEmail &&
