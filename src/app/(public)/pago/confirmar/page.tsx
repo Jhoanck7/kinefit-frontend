@@ -26,6 +26,14 @@ function ConfirmarPagoContent() {
         setError(
           "El pago fue cancelado por el usuario en Webpay o la sesión fue anulada."
         );
+        if (tbkToken) {
+          try {
+            await transaccionService.anularTransaccion(
+              tbkToken,
+              tbkOrdenCompra
+            );
+          } catch {}
+        }
         setLoading(false);
         return;
       }
@@ -135,42 +143,19 @@ function ConfirmarPagoContent() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
         <div className="bg-white border border-slate-200 rounded-3xl p-8 max-w-md w-full text-center shadow-xl animate-fade-in">
-          <div className="w-16 h-16 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-500 text-3xl mx-auto mb-4 font-bold">
-            ✕
-          </div>
-          <h2 className="text-xl font-extrabold text-slate-900 mb-2">
+          <h2 className="text-2xl font-extrabold text-slate-900 mb-1">
             Pago Rechazado o Cancelado
           </h2>
-          <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-            {mensajeError}
-          </p>
 
-          {result && (
-            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 text-left mb-6 flex flex-col gap-2 text-xs">
-              <div className="flex justify-between border-b border-slate-200/60 pb-1.5">
-                <span className="text-slate-400">Orden de Compra:</span>
-                <span className="font-semibold text-slate-700">
-                  {result.buyOrder || "—"}
-                </span>
-              </div>
-              <div className="flex justify-between border-b border-slate-200/60 pb-1.5">
-                <span className="text-slate-400">Estado Transacción:</span>
-                <span className="font-bold text-rose-600">
-                  {result.estado || "Rechazado"}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Estado de Cita:</span>
-                <span className="font-bold text-slate-700">
-                  {result.estadoCita || "Cancelada"}
-                </span>
-              </div>
-            </div>
-          )}
+          <div className="bg-rose-600 rounded-overlay p-4 my-6 text-center">
+            <span className="text-xs text-white font-medium leading-relaxed">
+              {mensajeError}
+            </span>
+          </div>
 
           <Link
             href="/"
-            className="block w-full bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider text-center"
+            className="block w-full bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-overlay py-3.5 transition-colors uppercase tracking-wider text-center shadow-md"
           >
             Volver a Intentar
           </Link>
@@ -191,11 +176,9 @@ function ConfirmarPagoContent() {
         </p>
 
         {result && (
-          <div className="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-4 mb-6 text-center">
-            <span className="text-xs text-emerald-700 font-medium">
-              Pagaste
-            </span>{" "}
-            <span className="text-sm font-bold text-emerald-700">
+          <div className="bg-emerald-600 rounded-overlay p-4 mb-6 text-center">
+            <span className="text-xs text-white font-medium">Pagaste</span>{" "}
+            <span className="text-sm font-bold text-white">
               ${result.monto.toLocaleString("es-CL")} CLP
             </span>
           </div>
@@ -217,8 +200,8 @@ function ConfirmarPagoContent() {
           href="/"
           className={
             (result?.documentosParaFirmarTokens ?? []).length > 0
-              ? "block w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider text-center"
-              : "block w-full bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-xl py-3.5 transition-colors uppercase tracking-wider text-center shadow-md"
+              ? "block w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-overlay py-3.5 transition-colors uppercase tracking-wider text-center"
+              : "block w-full bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold rounded-overlay py-3.5 transition-colors uppercase tracking-wider text-center shadow-md"
           }
         >
           Volver al Inicio
