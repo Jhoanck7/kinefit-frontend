@@ -555,13 +555,6 @@ export function DocumentoDetalleModal({
               Descargar
             </button>
           )}
-          <button
-            type="button"
-            onClick={onCerrar}
-            className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
-          >
-            Cerrar
-          </button>
           {puedeEditar && !confirmarCierre && (
             <button
               type="button"

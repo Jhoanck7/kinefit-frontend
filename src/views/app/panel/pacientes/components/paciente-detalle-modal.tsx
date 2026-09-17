@@ -309,17 +309,6 @@ export function PacienteDetalleModal({
               </div>
             </div>
           </div>
-
-          {/* Pie de Acciones */}
-          <div className="border-t border-slate-200 bg-slate-50/60 p-4 flex justify-end">
-            <button
-              type="button"
-              onClick={onCerrar}
-              className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
-            >
-              Cerrar
-            </button>
-          </div>
         </div>
       )}
     </Modal>
