@@ -50,7 +50,11 @@ export default function AccesoView() {
             placeholder="••••••••"
             required
           />
-          <Button type="submit" className="w-full mt-2" disabled={cargando}>
+          <Button
+            type="submit"
+            className="w-full mt-2 rounded-overlay"
+            disabled={cargando}
+          >
             {cargando ? "Iniciando Sesión..." : "Ingresar al Panel"}
           </Button>
         </form>
