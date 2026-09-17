@@ -12,7 +12,7 @@ export default function AccesoView() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 font-sans">
-      <div className="w-full max-w-sm border border-slate-200 bg-white p-8 rounded-none shadow-none font-sans">
+      <div className="w-full max-w-sm border border-slate-200 bg-white p-8 rounded-overlay shadow-none font-sans">
         <div className="flex flex-col items-center gap-3 mb-6">
           <Image
             src="/Kinefit Negro ver.png"
@@ -33,12 +33,14 @@ export default function AccesoView() {
           </Alerta>
         )}
 
-        <form onSubmit={actions.alEnviar} className="space-y-4 font-sans">
+        <form
+          onSubmit={actions.alEnviar}
+          className="space-y-4 font-sans [&_input]:rounded-overlay"
+        >
           <TextField
             etiqueta="Correo electrónico"
             type="email"
             name="correo"
-            placeholder="tu@correo.cl"
             required
           />
           <TextField
