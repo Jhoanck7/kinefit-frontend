@@ -181,11 +181,13 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
   return (
     <div className="mx-auto flex min-h-dvh max-w-3xl flex-col px-4 pb-28 pt-6">
       <header className="mb-4">
-        <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
-          {data.servicio} ·{" "}
+        <p className="text-label font-semibold text-slate-400">
+          {data.servicio},{" "}
           {formatearFechaExtensa(new Date(`${data.fecha}T00:00:00`))}
         </p>
-        <h1 className="mt-1 text-lg font-bold text-slate-900">{data.nombre}</h1>
+        <h1 className="mt-1 text-section-title font-bold text-slate-900">
+          {data.nombre}
+        </h1>
       </header>
 
       {errorDocumentoModificado && (
