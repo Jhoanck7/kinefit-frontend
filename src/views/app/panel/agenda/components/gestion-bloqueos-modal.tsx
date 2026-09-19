@@ -87,37 +87,26 @@ export function GestionBloqueosModal({
     setErrorGuardar(null);
 
     try {
-      await crearBloqueoMutation.mutateAsync({
-        especialistaId: Number(especialistaForm),
-        fecha: fechaForm,
-        horaInicio: horaInicioForm,
-        horaFin: horaTerminoForm,
-        motivo: motivoForm.trim(),
-      });
+      if (especialistaForm === "todos") {
+        await crearParaTodosMutation.mutateAsync({
+          fecha: fechaForm,
+          horaInicio: horaInicioForm,
+          horaFin: horaTerminoForm,
+          motivo: motivoForm.trim(),
+        });
+      } else {
+        await crearBloqueoMutation.mutateAsync({
+          especialistaId: Number(especialistaForm),
+          fecha: fechaForm,
+          horaInicio: horaInicioForm,
+          horaFin: horaTerminoForm,
+          motivo: motivoForm.trim(),
+        });
 
-      if (especialistaFiltro !== especialistaForm) {
-        setEspecialistaFiltro(especialistaForm);
+        if (especialistaFiltro !== especialistaForm) {
+          setEspecialistaFiltro(especialistaForm);
+        }
       }
-
-      setMotivoForm("");
-      setMostrarForm(false);
-      if (onBloqueoCreado) onBloqueoCreado();
-    } catch (err: unknown) {
-      setErrorGuardar(handleApiError(err).message);
-    }
-  }
-
-  async function handleAplicarATodos() {
-    if (!motivoForm.trim()) return;
-    setErrorGuardar(null);
-
-    try {
-      await crearParaTodosMutation.mutateAsync({
-        fecha: fechaForm,
-        horaInicio: horaInicioForm,
-        horaFin: horaTerminoForm,
-        motivo: motivoForm.trim(),
-      });
 
       setMotivoForm("");
       setMostrarForm(false);
@@ -201,6 +190,11 @@ export function GestionBloqueosModal({
                     onChange={e => setEspecialistaForm(e.target.value)}
                     className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
                   >
+                    {esAdministrador && (
+                      <option value="todos">
+                        Todos los Especialistas Activos
+                      </option>
+                    )}
                     {especialistas.map(esp => (
                       <option key={esp.id} value={esp.id}>
                         {esp.nombre}
@@ -279,23 +273,18 @@ export function GestionBloqueosModal({
                 >
                   Cancelar
                 </button>
-                {esAdministrador && (
-                  <button
-                    type="button"
-                    onClick={handleAplicarATodos}
-                    disabled={crearParaTodosMutation.isPending}
-                    className="font-sans text-xs font-bold px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none disabled:opacity-50"
-                  >
-                    {crearParaTodosMutation.isPending
-                      ? "Aplicando…"
-                      : "Aplicar a Todos"}
-                  </button>
-                )}
                 <button
                   type="submit"
-                  className="font-sans text-xs font-bold px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none"
+                  disabled={
+                    crearBloqueoMutation.isPending ||
+                    crearParaTodosMutation.isPending
+                  }
+                  className="font-sans text-xs font-bold px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none disabled:opacity-50"
                 >
-                  Guardar Bloqueo
+                  {crearBloqueoMutation.isPending ||
+                  crearParaTodosMutation.isPending
+                    ? "Guardando…"
+                    : "Guardar Bloqueo"}
                 </button>
               </div>
             </form>
