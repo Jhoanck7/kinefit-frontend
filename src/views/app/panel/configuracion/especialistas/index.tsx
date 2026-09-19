@@ -1,7 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { Modal } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
+import { useGetUsuariosPersonal } from "@/hooks/api";
 
 import {
   CrearEspecialistaModal,
@@ -12,6 +15,14 @@ import {
 import { useEspecialistas } from "./hooks";
 
 export default function EspecialistasView() {
+  const router = useRouter();
+  const { data: usuariosPersonal = [] } = useGetUsuariosPersonal(false);
+  const especialistasConCuenta = new Set(
+    usuariosPersonal
+      .filter(u => u.especialistaId)
+      .map(u => u.especialistaId as number)
+  );
+
   const {
     especialistas,
     cargando,
@@ -76,7 +87,13 @@ export default function EspecialistasView() {
             <EspecialistaCard
               key={esp.id}
               especialista={esp}
+              tieneCuenta={especialistasConCuenta.has(esp.id)}
               onClick={() => actions.handleAbrirEdicion(esp)}
+              onCrearCuenta={() =>
+                router.push(
+                  `/panel/configuracion?tab=personal&crearParaEspecialista=${esp.id}&nombre=${encodeURIComponent(esp.nombre)}`
+                )
+              }
             />
           ))}
         </div>

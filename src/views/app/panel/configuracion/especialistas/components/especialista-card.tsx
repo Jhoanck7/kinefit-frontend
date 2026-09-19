@@ -5,12 +5,16 @@ import { EspecialistaResponse } from "@/models/responses";
 
 interface EspecialistaCardProps {
   especialista: EspecialistaResponse;
+  tieneCuenta: boolean;
   onClick: () => void;
+  onCrearCuenta: () => void;
 }
 
 export function EspecialistaCard({
   especialista: esp,
+  tieneCuenta,
   onClick,
+  onCrearCuenta,
 }: EspecialistaCardProps) {
   return (
     <div
@@ -51,6 +55,18 @@ export function EspecialistaCard({
         >
           {esp.activo ? "Activo" : "Inactivo"}
         </Badge>
+        {esp.activo && !tieneCuenta && (
+          <button
+            type="button"
+            onClick={e => {
+              e.stopPropagation();
+              onCrearCuenta();
+            }}
+            className="font-bold text-amber-700 hover:underline"
+          >
+            Sin cuenta de acceso, crear
+          </button>
+        )}
       </div>
     </div>
   );
