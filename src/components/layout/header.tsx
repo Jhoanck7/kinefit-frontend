@@ -35,10 +35,8 @@ const TITULOS_POR_RUTA: { prefijo: string; titulo: string }[] = [
     titulo: "Configuración de la Página Web Principal",
   },
   { prefijo: "/panel/configuracion", titulo: "Configuración" },
-  { prefijo: "/panel/agenda/bloqueos", titulo: "Bloqueos de Agenda" },
   { prefijo: "/panel/agenda", titulo: "Agenda" },
   { prefijo: "/panel/perfil", titulo: "Mi Perfil" },
-  { prefijo: "/panel/cambiar-password", titulo: "Cambiar Contraseña" },
 ];
 
 function tituloDeLaRuta(pathname: string): string {

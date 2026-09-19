@@ -1,15 +1,23 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 
-import { EmptyState, Modal, ModalCloseButton } from "@/components/shared";
+import {
+  Alerta,
+  EmptyState,
+  Modal,
+  ModalCloseButton,
+} from "@/components/shared";
 import {
   useCreateBloqueoMutation,
+  useCreateBloqueoParaTodosMutation,
   useGetBloqueos,
   useGetEspecialistas,
   useRevertirBloqueoMutation,
 } from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
+import { handleApiError } from "@/lib/api";
 import {
   fechaISO,
   formatearFechaExtensa,
@@ -47,7 +55,12 @@ export function GestionBloqueosModal({
   const [horaTerminoForm, setHoraTerminoForm] = useState("14:00");
   const [motivoForm, setMotivoForm] = useState("");
 
+  const { data: session } = useSession();
+  const esAdministrador = session?.user.rol === "Administrador";
+  const [errorGuardar, setErrorGuardar] = useState<string | null>(null);
+
   const crearBloqueoMutation = useCreateBloqueoMutation();
+  const crearParaTodosMutation = useCreateBloqueoParaTodosMutation();
   const revertirBloqueoMutation = useRevertirBloqueoMutation();
 
   useEffect(() => {
@@ -71,22 +84,47 @@ export function GestionBloqueosModal({
   async function handleGuardarBloqueo(e: React.FormEvent) {
     e.preventDefault();
     if (!motivoForm.trim() || !especialistaForm) return;
+    setErrorGuardar(null);
 
-    await crearBloqueoMutation.mutateAsync({
-      especialistaId: Number(especialistaForm),
-      fecha: fechaForm,
-      horaInicio: horaInicioForm,
-      horaFin: horaTerminoForm,
-      motivo: motivoForm.trim(),
-    });
+    try {
+      await crearBloqueoMutation.mutateAsync({
+        especialistaId: Number(especialistaForm),
+        fecha: fechaForm,
+        horaInicio: horaInicioForm,
+        horaFin: horaTerminoForm,
+        motivo: motivoForm.trim(),
+      });
 
-    if (especialistaFiltro !== especialistaForm) {
-      setEspecialistaFiltro(especialistaForm);
+      if (especialistaFiltro !== especialistaForm) {
+        setEspecialistaFiltro(especialistaForm);
+      }
+
+      setMotivoForm("");
+      setMostrarForm(false);
+      if (onBloqueoCreado) onBloqueoCreado();
+    } catch (err: unknown) {
+      setErrorGuardar(handleApiError(err).message);
     }
+  }
 
-    setMotivoForm("");
-    setMostrarForm(false);
-    if (onBloqueoCreado) onBloqueoCreado();
+  async function handleAplicarATodos() {
+    if (!motivoForm.trim()) return;
+    setErrorGuardar(null);
+
+    try {
+      await crearParaTodosMutation.mutateAsync({
+        fecha: fechaForm,
+        horaInicio: horaInicioForm,
+        horaFin: horaTerminoForm,
+        motivo: motivoForm.trim(),
+      });
+
+      setMotivoForm("");
+      setMostrarForm(false);
+      if (onBloqueoCreado) onBloqueoCreado();
+    } catch (err: unknown) {
+      setErrorGuardar(handleApiError(err).message);
+    }
   }
 
   async function handleToggleActivo(id: number) {
@@ -112,6 +150,8 @@ export function GestionBloqueosModal({
 
         {/* Contenido principal */}
         <div className="p-6 space-y-4 font-sans text-xs">
+          {errorGuardar && <Alerta tono="error">{errorGuardar}</Alerta>}
+
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="font-sans text-label font-medium text-muted-foreground">
@@ -239,6 +279,18 @@ export function GestionBloqueosModal({
                 >
                   Cancelar
                 </button>
+                {esAdministrador && (
+                  <button
+                    type="button"
+                    onClick={handleAplicarATodos}
+                    disabled={crearParaTodosMutation.isPending}
+                    className="font-sans text-xs font-bold px-3.5 py-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none disabled:opacity-50"
+                  >
+                    {crearParaTodosMutation.isPending
+                      ? "Aplicando…"
+                      : "Aplicar a Todos"}
+                  </button>
+                )}
                 <button
                   type="submit"
                   className="font-sans text-xs font-bold px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none"
