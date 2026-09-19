@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { handleApiError } from "@/lib/api";
 import {
   appointmentService,
   authService,
@@ -74,13 +75,7 @@ export const useSubmitBookingMutation = () => {
           authToken
         );
       } catch (perfilErr: unknown) {
-        const perfilMsg =
-          perfilErr instanceof Error
-            ? perfilErr.message
-            : "Error al actualizar el perfil en el backend.";
-        throw new Error(
-          `Error en perfil: ${perfilMsg}. Comprueba que tu RUT sea válido (ej: 11111111-1 o 12345678-5).`
-        );
+        throw new Error(handleApiError(perfilErr).message);
       }
 
       const citaRes = await appointmentService.crearCita(
