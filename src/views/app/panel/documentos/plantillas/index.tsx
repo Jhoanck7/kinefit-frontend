@@ -1,13 +1,14 @@
 "use client";
 
-import { EmptyState } from "@/components/shared";
+import { Alerta, EmptyState, SwitchField } from "@/components/shared";
 import { Badge, Button, Card } from "@/components/ui";
 import { formatearFechaExtensa } from "@/lib/formato";
 
 import { usePlantillas } from "./hooks";
 
 export default function PlantillasView() {
-  const { plantillas, actions } = usePlantillas();
+  const { plantillas, errorEstado, actualizandoEstadoId, actions } =
+    usePlantillas();
 
   if (!plantillas) return <div aria-hidden />;
 
@@ -42,6 +43,8 @@ export default function PlantillasView() {
           </Button>
         </div>
       </div>
+
+      {errorEstado && <Alerta tono="error">{errorEstado}</Alerta>}
 
       {plantillas.length === 0 ? (
         <Card className="rounded-none border-slate-200 shadow-none p-8">
@@ -98,24 +101,33 @@ export default function PlantillasView() {
                           Sin Servicios Asignados
                         </Badge>
                       )}
-                    {!plantilla.activo && (
-                      <Badge className="rounded-overlay border-0 bg-slate-400 text-[10px] font-medium text-white">
-                        Inactivo
-                      </Badge>
-                    )}
                   </div>
                   <p className="mt-1 font-sans text-xs text-slate-500">
                     {estructura}, Modificado{" "}
                     {formatearFechaExtensa(new Date(plantilla.updatedAt))}
                   </p>
                 </div>
-                <Button
-                  variant="outline"
-                  className="rounded-overlay"
-                  onClick={() => actions.handleEditarPlantilla(plantilla.id)}
-                >
-                  Editar
-                </Button>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <SwitchField
+                      etiqueta={plantilla.activo ? "Activo" : "Inactivo"}
+                      checked={plantilla.activo}
+                      onChange={() => actions.handleToggleEstado(plantilla)}
+                    />
+                    {actualizandoEstadoId === plantilla.id && (
+                      <span className="text-table-head text-slate-400">
+                        Guardando…
+                      </span>
+                    )}
+                  </div>
+                  <Button
+                    variant="outline"
+                    className="rounded-overlay"
+                    onClick={() => actions.handleEditarPlantilla(plantilla.id)}
+                  >
+                    Editar
+                  </Button>
+                </div>
               </div>
             );
           })}

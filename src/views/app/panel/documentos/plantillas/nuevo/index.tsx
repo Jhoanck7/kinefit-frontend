@@ -211,9 +211,6 @@ function ConstructorPlantillaContenido() {
                   className="mt-3 h-[70vh] w-full rounded-overlay border border-slate-200"
                 />
               )}
-              <p className="mt-3 font-sans text-xs text-slate-500">
-                Reemplazar este archivo aún no está disponible.
-              </p>
             </Card>
           )}
 
