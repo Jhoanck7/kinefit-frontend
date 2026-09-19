@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 
+import { Alerta } from "@/components/shared";
 import {
   useAbrirArchivoDocumentoMutation,
   useFirmarProfesionalMutation,
@@ -141,9 +142,9 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
   return (
     <div className="divide-y divide-slate-200 p-6">
       {errorMsg && (
-        <p className="mb-3 border border-rose-200 bg-rose-50 p-2 font-sans text-xs text-rose-700">
+        <Alerta tono="error" className="mb-3">
           {errorMsg}
-        </p>
+        </Alerta>
       )}
       {documentos.map(doc => (
         <div
@@ -202,7 +203,7 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
                       : "Reenviar por Correo"}
                   </button>
                   <label className="cursor-pointer font-sans text-xs font-bold text-muted-foreground hover:text-foreground">
-                    Cargar Escaneo
+                    Cargar Archivo
                     <input
                       type="file"
                       accept="image/*,.pdf"
