@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 
 import { Alerta, Modal, ModalCloseButton } from "@/components/shared";
@@ -17,6 +18,7 @@ import {
   useUpdateCitaEstadoMutation,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
+import { puedeGestionarRecursoDeEspecialista } from "@/lib/auth";
 import { COLOR_ROL } from "@/lib/color-rol";
 import { definicionEstado, IdAccionCita } from "@/lib/estados";
 import {
@@ -138,6 +140,11 @@ function DetalleCita({
   const [mostrarCobro, setMostrarCobro] = useState(false);
   const { data: terminales = [] } = useGetTerminales();
   const { data: historial = [] } = useGetAuditoriaCita(cita.id);
+  const { data: session } = useSession();
+  const puedeGestionarEstado = puedeGestionarRecursoDeEspecialista(
+    session,
+    cita.especialista.id
+  );
 
   return (
     <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
@@ -360,7 +367,12 @@ function DetalleCita({
 
       {/* Pie de Acciones */}
       <div className="border-t border-slate-200 bg-slate-50/60 p-4">
-        {definicion.acciones.length === 0 ? (
+        {!puedeGestionarEstado ? (
+          <p className="font-sans text-xs text-slate-500 text-center">
+            Solo {cita.especialista.nombre} puede cambiar el estado de esta
+            reserva.
+          </p>
+        ) : definicion.acciones.length === 0 ? (
           <p className="font-sans text-xs text-slate-500 text-center">
             {definicion.explicacionSinAcciones}
           </p>

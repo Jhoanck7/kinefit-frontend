@@ -26,6 +26,7 @@ interface BloquesSemanaEditorProps {
   onAgregar: (diaSemana: number, horaInicio: string, horaFin: string) => void;
   onEliminar: (id: number) => void;
   eliminandoId?: number | null;
+  soloLectura?: boolean;
 }
 
 export function BloquesSemanaEditor({
@@ -33,6 +34,7 @@ export function BloquesSemanaEditor({
   onAgregar,
   onEliminar,
   eliminandoId,
+  soloLectura = false,
 }: BloquesSemanaEditorProps) {
   const [horaInicio, setHoraInicio] = useState<Record<number, string>>({});
   const [horaFin, setHoraFin] = useState<Record<number, string>>({});
@@ -78,47 +80,51 @@ export function BloquesSemanaEditor({
                       bloque.horaFin.substring(0, 5)
                     )}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => onEliminar(bloque.id)}
-                    disabled={eliminandoId === bloque.id}
-                    className="text-slate-400 hover:text-red-700 font-bold leading-none"
-                    title="Eliminar bloque"
-                  >
-                    {eliminandoId === bloque.id ? "…" : "×"}
-                  </button>
+                  {!soloLectura && (
+                    <button
+                      type="button"
+                      onClick={() => onEliminar(bloque.id)}
+                      disabled={eliminandoId === bloque.id}
+                      className="text-slate-400 hover:text-red-700 font-bold leading-none"
+                      title="Eliminar bloque"
+                    >
+                      {eliminandoId === bloque.id ? "…" : "×"}
+                    </button>
+                  )}
                 </div>
               ))
             )}
 
-            <div className="mt-1 flex flex-col gap-1 border-t border-slate-200 pt-1.5">
-              <input
-                type="time"
-                value={horaInicio[dia.id] || ""}
-                onChange={e =>
-                  setHoraInicio(prev => ({
-                    ...prev,
-                    [dia.id]: e.target.value,
-                  }))
-                }
-                className="w-full rounded-none border border-slate-200 bg-white px-1 py-0.5 text-[11px] text-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-900"
-              />
-              <input
-                type="time"
-                value={horaFin[dia.id] || ""}
-                onChange={e =>
-                  setHoraFin(prev => ({ ...prev, [dia.id]: e.target.value }))
-                }
-                className="w-full rounded-none border border-slate-200 bg-white px-1 py-0.5 text-[11px] text-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-900"
-              />
-              <button
-                type="button"
-                onClick={() => handleAgregar(dia.id)}
-                className="text-[11px] font-bold text-primary hover:underline"
-              >
-                Agregar
-              </button>
-            </div>
+            {!soloLectura && (
+              <div className="mt-1 flex flex-col gap-1 border-t border-slate-200 pt-1.5">
+                <input
+                  type="time"
+                  value={horaInicio[dia.id] || ""}
+                  onChange={e =>
+                    setHoraInicio(prev => ({
+                      ...prev,
+                      [dia.id]: e.target.value,
+                    }))
+                  }
+                  className="w-full rounded-none border border-slate-200 bg-white px-1 py-0.5 text-[11px] text-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-900"
+                />
+                <input
+                  type="time"
+                  value={horaFin[dia.id] || ""}
+                  onChange={e =>
+                    setHoraFin(prev => ({ ...prev, [dia.id]: e.target.value }))
+                  }
+                  className="w-full rounded-none border border-slate-200 bg-white px-1 py-0.5 text-[11px] text-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-900"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAgregar(dia.id)}
+                  className="text-[11px] font-bold text-primary hover:underline"
+                >
+                  Agregar
+                </button>
+              </div>
+            )}
           </div>
         );
       })}

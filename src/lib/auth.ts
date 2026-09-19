@@ -43,3 +43,14 @@ export function isTokenExpired(
   if (!token?.customExp) return true;
   return Math.floor(Date.now() / 1000) >= token.customExp;
 }
+
+export function puedeGestionarRecursoDeEspecialista(
+  session:
+    { user: { rol: string; especialistaId?: string } } | null | undefined,
+  especialistaId: number
+): boolean {
+  return (
+    session?.user.rol === "Administrador" ||
+    session?.user.especialistaId === String(especialistaId)
+  );
+}

@@ -1,3 +1,4 @@
+import { formatearRangoHorario } from "@/lib/formato";
 import { BloqueAgendaResponse, CitaEnAgendaResponse } from "@/models/responses";
 
 import { AppointmentCard } from "./appointment-card";
@@ -121,7 +122,7 @@ export function TimeGrid({
           )}
           {item.tipo === "bloqueado" && (
             <div className="flex w-full items-center justify-center rounded-overlay border border-slate-200 bg-slate-100/70 px-3 py-3 text-center font-sans text-xs font-semibold text-muted-foreground">
-              Bloqueado
+              Bloqueado, {formatearRangoHorario(item.inicio, item.termino)}
             </div>
           )}
         </li>

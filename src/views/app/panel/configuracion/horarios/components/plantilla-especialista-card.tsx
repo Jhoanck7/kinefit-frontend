@@ -1,5 +1,7 @@
 "use client";
 
+import { useSession } from "next-auth/react";
+
 import { Alerta } from "@/components/shared";
 import { Card } from "@/components/ui";
 import {
@@ -8,6 +10,7 @@ import {
   useGetPlantillaHorario,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
+import { puedeGestionarRecursoDeEspecialista } from "@/lib/auth";
 import { EspecialistaResponse } from "@/models/responses";
 
 import { BloquesSemanaEditor } from "./bloques-semana-editor";
@@ -19,6 +22,11 @@ interface PlantillaEspecialistaCardProps {
 export function PlantillaEspecialistaCard({
   especialista,
 }: PlantillaEspecialistaCardProps) {
+  const { data: session } = useSession();
+  const soloLectura = !puedeGestionarRecursoDeEspecialista(
+    session,
+    especialista.id
+  );
   const { data: plantilla = [], isLoading } = useGetPlantillaHorario(
     especialista.id
   );
@@ -78,6 +86,7 @@ export function PlantillaEspecialistaCard({
           eliminandoId={
             eliminarMutation.isPending ? eliminarMutation.variables : null
           }
+          soloLectura={soloLectura}
         />
       )}
     </Card>
