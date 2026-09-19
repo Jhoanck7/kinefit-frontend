@@ -52,6 +52,9 @@ export const useUpdateCitaEstadoMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["agenda"] });
       queryClient.invalidateQueries({ queryKey: ["citas", variables.id] });
       queryClient.invalidateQueries({ queryKey: ["pacientes"] });
+      queryClient.invalidateQueries({
+        queryKey: ["auditoria-cita", variables.id],
+      });
     },
   });
 };

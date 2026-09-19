@@ -11,6 +11,7 @@ import {
   TabsTrigger,
 } from "@/components/ui";
 import {
+  useGetAuditoriaCita,
   useGetCita,
   useGetTerminales,
   useUpdateCitaEstadoMutation,
@@ -26,6 +27,7 @@ import {
 import { CitaDetalleResponse, CodigoEstadoCita } from "@/models/responses";
 import { NuevaVentaModal } from "@/views/app/panel/ventas/components";
 
+import { AuditTrail } from "./audit-trail";
 import { DocumentosTab } from "./documentos-tab";
 import { EnviarRecomendacionModal } from "./enviar-recomendacion-modal";
 import { HitosBoard } from "./hitos-board";
@@ -135,9 +137,10 @@ function DetalleCita({
   const [tab, setTab] = useState("detalle");
   const [mostrarCobro, setMostrarCobro] = useState(false);
   const { data: terminales = [] } = useGetTerminales();
+  const { data: historial = [] } = useGetAuditoriaCita(cita.id);
 
   return (
-    <div className="bg-white text-foreground font-sans shadow-none rounded-none">
+    <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
       {/* Encabezado del Modal */}
       <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
         <div>
@@ -342,6 +345,12 @@ function DetalleCita({
               </div>
             </div>
           </div>
+
+          {historial.length > 0 && (
+            <div className="border-t border-slate-200 px-6 py-4">
+              <AuditTrail historial={historial} />
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="documentos">
