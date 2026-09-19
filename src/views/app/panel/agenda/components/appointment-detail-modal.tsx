@@ -52,7 +52,7 @@ export function AppointmentDetailModal({
   onSolicitarCancelacion: () => void;
   onEstadoCambiar?: () => void;
 }) {
-  const { data: cita } = useGetCita(
+  const { data: cita, error: errorCita } = useGetCita(
     citaId ? Number(citaId) : 0,
     Boolean(citaId)
   );
@@ -104,7 +104,11 @@ export function AppointmentDetailModal({
         citaId={citaAtendidaId}
         onCerrar={() => setCitaAtendidaId(null)}
       />
-      {!cita ? (
+      {errorCita ? (
+        <div className="p-8">
+          <Alerta tono="error">{handleApiError(errorCita).message}</Alerta>
+        </div>
+      ) : !cita ? (
         <div className="p-8 text-center font-sans text-xs text-slate-500">
           Cargando reserva…
         </div>
