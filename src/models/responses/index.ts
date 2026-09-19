@@ -91,7 +91,6 @@ export type {
 export type { ServicioDocumentoResponse, ServicioResponse } from "./servicio";
 export type {
   UsuarioPersonalAdminResponse,
-  UsuarioPersonalCreadoResponse,
   UsuariosPersonalPaginadosResponse,
 } from "./usuario-personal";
 export type {

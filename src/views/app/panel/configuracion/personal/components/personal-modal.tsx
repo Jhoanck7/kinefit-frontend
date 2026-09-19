@@ -17,12 +17,14 @@ interface PersonalModalProps {
   email: string;
   rol: string;
   especialistaId: string;
+  password: string;
   error: string | null;
   guardando: boolean;
   onNombreChange: (v: string) => void;
   onEmailChange: (v: string) => void;
   onRolChange: (v: string) => void;
   onEspecialistaIdChange: (v: string) => void;
+  onPasswordChange: (v: string) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
 
@@ -34,12 +36,14 @@ export function PersonalModal({
   email,
   rol,
   especialistaId,
+  password,
   error,
   guardando,
   onNombreChange,
   onEmailChange,
   onRolChange,
   onEspecialistaIdChange,
+  onPasswordChange,
   onSubmit,
 }: PersonalModalProps) {
   const { data: especialistas = [] } = useGetEspecialistas(undefined, true);
@@ -81,6 +85,21 @@ export function PersonalModal({
               usuarioEditando
                 ? "El correo no se puede editar: es el identificador de inicio de sesión."
                 : undefined
+            }
+          />
+
+          <TextField
+            etiqueta={usuarioEditando ? "Nueva Contraseña" : "Contraseña"}
+            type="password"
+            value={password}
+            onChange={e => onPasswordChange(e.target.value)}
+            obligatorio={!usuarioEditando}
+            required={!usuarioEditando}
+            minLength={10}
+            ayuda={
+              usuarioEditando
+                ? "Déjalo vacío para no cambiarla. Si escribes algo, reemplaza la contraseña actual de inmediato."
+                : "Mínimo 10 caracteres. Entrégasela a la persona por un canal seguro."
             }
           />
 

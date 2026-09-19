@@ -3,10 +3,12 @@ export interface CreateUsuarioPersonalRequest {
   email: string;
   rol: string;
   especialistaId?: number;
+  password: string;
 }
 
 export interface UpdateUsuarioPersonalRequest {
   nombre: string;
   rol: string;
   especialistaId?: number;
+  password?: string;
 }

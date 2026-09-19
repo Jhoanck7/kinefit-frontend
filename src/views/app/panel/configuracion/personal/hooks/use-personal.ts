@@ -9,10 +9,7 @@ import {
   useUpdateUsuarioPersonalMutation,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
-import {
-  UsuarioPersonalAdminResponse,
-  UsuarioPersonalCreadoResponse,
-} from "@/models/responses";
+import { UsuarioPersonalAdminResponse } from "@/models/responses";
 
 export const usePersonal = () => {
   const { data: usuarios = [], isLoading: cargando } =
@@ -29,10 +26,9 @@ export const usePersonal = () => {
   const [email, setEmail] = useState("");
   const [rol, setRol] = useState("Especialista");
   const [especialistaId, setEspecialistaId] = useState<string>("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [errorEstado, setErrorEstado] = useState<string | null>(null);
-  const [credencialesCreadas, setCredencialesCreadas] =
-    useState<UsuarioPersonalCreadoResponse | null>(null);
 
   const handleAbrirCrear = (prefill?: {
     nombre?: string;
@@ -45,6 +41,7 @@ export const usePersonal = () => {
     setEspecialistaId(
       prefill?.especialistaId ? String(prefill.especialistaId) : ""
     );
+    setPassword("");
     setError(null);
     setMostrarModal(true);
   };
@@ -57,12 +54,12 @@ export const usePersonal = () => {
     setEspecialistaId(
       usuario.especialistaId ? String(usuario.especialistaId) : ""
     );
+    setPassword("");
     setError(null);
     setMostrarModal(true);
   };
 
   const handleCerrarModal = () => setMostrarModal(false);
-  const handleCerrarCredenciales = () => setCredencialesCreadas(null);
 
   const handleGuardar = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,16 +72,21 @@ export const usePersonal = () => {
       if (usuarioEditando) {
         await actualizarMutation.mutateAsync({
           id: usuarioEditando.id,
-          data: { nombre, rol, especialistaId: especialistaIdNum },
+          data: {
+            nombre,
+            rol,
+            especialistaId: especialistaIdNum,
+            password: password || undefined,
+          },
         });
       } else {
-        const creado = await crearMutation.mutateAsync({
+        await crearMutation.mutateAsync({
           nombre,
           email,
           rol,
           especialistaId: especialistaIdNum,
+          password,
         });
-        setCredencialesCreadas(creado);
       }
       setMostrarModal(false);
     } catch (err: unknown) {
@@ -113,9 +115,9 @@ export const usePersonal = () => {
     email,
     rol,
     especialistaId,
+    password,
     error,
     errorEstado,
-    credencialesCreadas,
     guardando: crearMutation.isPending || actualizarMutation.isPending,
     actualizandoEstadoId: estadoMutation.isPending
       ? estadoMutation.variables?.id
@@ -126,10 +128,10 @@ export const usePersonal = () => {
       setEmail,
       setRol,
       setEspecialistaId,
+      setPassword,
       handleAbrirCrear,
       handleAbrirEditar,
       handleCerrarModal,
-      handleCerrarCredenciales,
       handleGuardar,
       handleToggleEstado,
     },

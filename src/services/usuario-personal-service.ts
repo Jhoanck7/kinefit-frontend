@@ -5,7 +5,6 @@ import {
 } from "@/models/requests";
 import {
   UsuarioPersonalAdminResponse,
-  UsuarioPersonalCreadoResponse,
   UsuariosPersonalPaginadosResponse,
 } from "@/models/responses";
 
@@ -24,7 +23,7 @@ export class UsuarioPersonalService extends BaseApiService {
   }
 
   create(data: CreateUsuarioPersonalRequest) {
-    return this.httpClient.post<ApiResponse<UsuarioPersonalCreadoResponse>>(
+    return this.httpClient.post<ApiResponse<UsuarioPersonalAdminResponse>>(
       this.baseURL,
       data
     );

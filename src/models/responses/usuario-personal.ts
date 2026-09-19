@@ -16,9 +16,3 @@ export interface UsuariosPersonalPaginadosResponse {
   pageSize: number;
   items: UsuarioPersonalAdminResponse[];
 }
-
-export interface UsuarioPersonalCreadoResponse {
-  usuario: UsuarioPersonalAdminResponse;
-  passwordTemporal: string;
-  advertencia: string;
-}

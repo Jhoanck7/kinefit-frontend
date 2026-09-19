@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui";
 
-import { CredencialesModal, PersonalModal } from "./components";
+import { PersonalModal } from "./components";
 import { usePersonal } from "./hooks";
 
 export default function PersonalView() {
@@ -31,9 +31,9 @@ export default function PersonalView() {
     email,
     rol,
     especialistaId,
+    password,
     error,
     errorEstado,
-    credencialesCreadas,
     guardando,
     actualizandoEstadoId,
     actions,
@@ -164,18 +164,15 @@ export default function PersonalView() {
         email={email}
         rol={rol}
         especialistaId={especialistaId}
+        password={password}
         error={error}
         guardando={guardando}
         onNombreChange={actions.setNombre}
         onEmailChange={actions.setEmail}
         onRolChange={actions.setRol}
         onEspecialistaIdChange={actions.setEspecialistaId}
+        onPasswordChange={actions.setPassword}
         onSubmit={actions.handleGuardar}
-      />
-
-      <CredencialesModal
-        credenciales={credencialesCreadas}
-        onCerrar={actions.handleCerrarCredenciales}
       />
     </div>
   );
