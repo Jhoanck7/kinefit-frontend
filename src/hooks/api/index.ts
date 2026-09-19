@@ -13,7 +13,6 @@ export {
 export { useGetAuditoriaCita } from "./use-auditoria-service";
 export {
   useAuthenticateWithGoogleMutation,
-  useCambiarPasswordMutation,
   useGetMiPerfil,
 } from "./use-auth-service";
 export { useGetBloquesDisponibles } from "./use-bloque-horario-service";

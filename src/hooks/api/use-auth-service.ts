@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { CambiarPasswordRequest } from "@/models/requests";
 import { authService } from "@/services";
 
 export const useAuthenticateWithGoogleMutation = () => {
@@ -22,12 +21,5 @@ export const useGetMiPerfil = () => {
   return useQuery({
     queryKey: ["mi-perfil"],
     queryFn: () => authService.getMiPerfil().then(res => res.data.data),
-  });
-};
-
-export const useCambiarPasswordMutation = () => {
-  return useMutation({
-    mutationFn: (data: CambiarPasswordRequest) =>
-      authService.cambiarPasswordPersonal(data).then(res => res.data),
   });
 };

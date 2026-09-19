@@ -4,7 +4,6 @@ import { getToken } from "next-auth/jwt";
 import { isTokenExpired } from "@/lib/auth";
 
 const RUTA_ACCESO = "/panel/acceso";
-const RUTA_CAMBIAR_PASSWORD = "/panel/cambiar-password";
 
 // Mismas rutas que exige el backend con Policy SoloAdministrador
 const RUTAS_SOLO_ADMINISTRADOR = [
@@ -32,17 +31,6 @@ export async function proxy(request: NextRequest) {
 
   if (!autenticado) {
     return NextResponse.redirect(new URL(RUTA_ACCESO, request.url));
-  }
-
-  if (token?.debeCambiarPassword) {
-    if (pathname !== RUTA_CAMBIAR_PASSWORD) {
-      return NextResponse.redirect(new URL(RUTA_CAMBIAR_PASSWORD, request.url));
-    }
-    return NextResponse.next();
-  }
-
-  if (pathname === RUTA_CAMBIAR_PASSWORD) {
-    return NextResponse.redirect(new URL("/panel/agenda", request.url));
   }
 
   const requiereAdministrador = RUTAS_SOLO_ADMINISTRADOR.some(ruta =>

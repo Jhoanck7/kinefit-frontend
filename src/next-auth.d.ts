@@ -8,7 +8,6 @@ declare module "next-auth" {
     nombre: string;
     rol: string;
     especialistaId?: string;
-    debeCambiarPassword: boolean;
     exp: number;
     accessToken: string;
   }
@@ -20,7 +19,6 @@ declare module "next-auth" {
       nombre: string;
       rol: string;
       especialistaId?: string;
-      debeCambiarPassword: boolean;
     };
     accessToken: string;
     customExp: number;
@@ -34,7 +32,6 @@ declare module "next-auth/jwt" {
     nombre: string;
     rol: string;
     especialistaId?: string;
-    debeCambiarPassword: boolean;
     customExp: number;
   }
 }

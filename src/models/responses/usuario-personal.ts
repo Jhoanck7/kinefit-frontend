@@ -6,7 +6,6 @@ export interface UsuarioPersonalAdminResponse {
   especialistaId?: number;
   especialistaNombre?: string;
   activo: boolean;
-  debeCambiarPassword: boolean;
   createdAt: string;
 }
 

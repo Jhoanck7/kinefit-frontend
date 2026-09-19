@@ -2,11 +2,7 @@ export type {
   CreateBloqueoAgendaRequest,
   CreateBloqueoAgendaTodosRequest,
 } from "./agenda";
-export type {
-  CambiarPasswordRequest,
-  LoginPersonalRequest,
-  UpdatePerfilRequest,
-} from "./auth";
+export type { LoginPersonalRequest, UpdatePerfilRequest } from "./auth";
 export type {
   CreateCitaManualRequest,
   CreateCitaPublicaRequest,

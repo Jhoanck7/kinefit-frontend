@@ -4,7 +4,6 @@ export interface KineFitJwtClaims {
   usuario_id: string;
   rol: string;
   especialista_id?: string;
-  debe_cambiar_password: string;
   emitido_en: string;
   exp: number;
   "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress": string;

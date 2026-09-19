@@ -1,9 +1,5 @@
 import { ApiResponse } from "@/models/generics";
-import {
-  CambiarPasswordRequest,
-  LoginPersonalRequest,
-  UpdatePerfilRequest,
-} from "@/models/requests";
+import { LoginPersonalRequest, UpdatePerfilRequest } from "@/models/requests";
 import { MiPerfilResponse, PersonalLoginResponse } from "@/models/responses";
 import { axiosInstanceSinSesion } from "@/providers";
 import { AuthGoogleResponse } from "@/types";
@@ -18,13 +14,6 @@ export class AuthService extends BaseApiService {
   loginPersonal(data: LoginPersonalRequest) {
     return axiosInstanceSinSesion.post<ApiResponse<PersonalLoginResponse>>(
       `${this.baseURL}/personal`,
-      data
-    );
-  }
-
-  cambiarPasswordPersonal(data: CambiarPasswordRequest) {
-    return this.httpClient.patch<ApiResponse<void>>(
-      `${this.baseURL}/personal/password`,
       data
     );
   }
