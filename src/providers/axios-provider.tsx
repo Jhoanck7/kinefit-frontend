@@ -22,7 +22,20 @@ axiosInstance.interceptors.request.use(async config => {
 
   // El token explícito del paciente (flujo público) siempre gana sobre la sesión del panel.
   if (typeof window !== "undefined" && !yaTieneAuthorization) {
-    const session = await getSession();
+    let session;
+    try {
+      session = await getSession();
+    } catch {
+      if (!cerrandoSesionExpirada) {
+        cerrandoSesionExpirada = true;
+        toast.error(
+          "Tu sesión ha expirado. Por favor, inicia sesión de nuevo."
+        );
+        await signOut({ redirect: false });
+      }
+      return Promise.reject(new Error("No se pudo leer la sesión del panel"));
+    }
+
     const token = session?.accessToken;
 
     if (session && isSessionExpired(session)) {
