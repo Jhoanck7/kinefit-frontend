@@ -1,4 +1,7 @@
-export type { CreateBloqueoAgendaRequest } from "./agenda";
+export type {
+  CreateBloqueoAgendaRequest,
+  CreateBloqueoAgendaTodosRequest,
+} from "./agenda";
 export type {
   CambiarPasswordRequest,
   LoginPersonalRequest,

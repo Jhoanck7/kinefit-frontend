@@ -1,8 +1,12 @@
 import { ApiResponse } from "@/models/generics";
-import { CreateBloqueoAgendaRequest } from "@/models/requests";
+import {
+  CreateBloqueoAgendaRequest,
+  CreateBloqueoAgendaTodosRequest,
+} from "@/models/requests";
 import {
   BloqueAgendaResponse,
   BloqueoAgendaResponse,
+  BloqueoAgendaTodosResponse,
 } from "@/models/responses";
 
 import { BaseApiService } from "./base-api-service";
@@ -29,6 +33,13 @@ export class AgendaService extends BaseApiService {
   createBloqueo(data: CreateBloqueoAgendaRequest) {
     return this.httpClient.post<ApiResponse<BloqueoAgendaResponse>>(
       `${this.baseURL}/bloqueos-agenda`,
+      data
+    );
+  }
+
+  createBloqueoParaTodos(data: CreateBloqueoAgendaTodosRequest) {
+    return this.httpClient.post<ApiResponse<BloqueoAgendaTodosResponse>>(
+      `${this.baseURL}/bloqueos-agenda/todos`,
       data
     );
   }

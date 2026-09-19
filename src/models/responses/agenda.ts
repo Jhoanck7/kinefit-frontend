@@ -35,3 +35,14 @@ export interface BloqueoAgendaResponse {
   mostrarEnSitio: boolean;
   motivoPublico?: string;
 }
+
+export interface BloqueoOmitidoResponse {
+  especialistaId: number;
+  especialistaNombre: string;
+  motivo: string;
+}
+
+export interface BloqueoAgendaTodosResponse {
+  creados: BloqueoAgendaResponse[];
+  omitidos: BloqueoOmitidoResponse[];
+}

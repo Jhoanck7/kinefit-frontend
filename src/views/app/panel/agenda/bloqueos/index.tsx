@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyState } from "@/components/shared";
+import { Alerta, EmptyState } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
 import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/formato";
 
@@ -18,6 +18,10 @@ export default function BloqueosView() {
     horaInicioForm,
     horaTerminoForm,
     motivoForm,
+    esAdministrador,
+    paraTodos,
+    resultadoParaTodos,
+    errorGuardar,
     guardando,
     actions,
   } = useBloqueos();
@@ -59,23 +63,42 @@ export default function BloqueosView() {
             Registrar Nuevo Bloqueo de Agenda
           </h3>
 
+          {errorGuardar && <Alerta tono="error">{errorGuardar}</Alerta>}
+          {resultadoParaTodos && (
+            <Alerta tono="info">{resultadoParaTodos}</Alerta>
+          )}
+
+          {esAdministrador && (
+            <label className="flex items-center gap-2 font-sans text-xs font-semibold text-muted-foreground">
+              <input
+                type="checkbox"
+                checked={paraTodos}
+                onChange={e => actions.setParaTodos(e.target.checked)}
+                className="rounded-overlay"
+              />
+              Aplicar a todos los especialistas activos
+            </label>
+          )}
+
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-xs font-semibold text-muted-foreground mb-1">
-                Especialista
-              </label>
-              <select
-                value={especialistaForm}
-                onChange={e => actions.setEspecialistaForm(e.target.value)}
-                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
-              >
-                {especialistas.map(esp => (
-                  <option key={esp.id} value={esp.id}>
-                    {esp.nombre} ({esp.cargo})
-                  </option>
-                ))}
-              </select>
-            </div>
+            {!paraTodos && (
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-1">
+                  Especialista
+                </label>
+                <select
+                  value={especialistaForm}
+                  onChange={e => actions.setEspecialistaForm(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-panel-sidebar focus:border-panel-sidebar focus:outline-none"
+                >
+                  {especialistas.map(esp => (
+                    <option key={esp.id} value={esp.id}>
+                      {esp.nombre} ({esp.cargo})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div>
               <label className="block text-xs font-semibold text-muted-foreground mb-1">
