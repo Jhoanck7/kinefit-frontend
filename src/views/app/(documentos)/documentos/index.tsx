@@ -189,7 +189,7 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
       </header>
 
       {errorDocumentoModificado && (
-        <div className="mb-4 border border-amber-300 bg-amber-50 p-3 text-xs text-amber-800">
+        <div className="mb-4 rounded-overlay bg-amber-600 p-3 text-xs font-semibold text-white">
           Este documento cambió mientras lo tenías abierto, recargá la página
           para leer la versión actual antes de firmar
         </div>

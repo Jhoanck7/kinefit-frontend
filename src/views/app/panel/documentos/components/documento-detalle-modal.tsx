@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Modal, ModalCloseButton } from "@/components/shared";
+import { Alerta, Modal, ModalCloseButton } from "@/components/shared";
 import { Badge } from "@/components/ui";
 import {
   useAbrirArchivoDocumentoMutation,
@@ -226,15 +226,15 @@ export function DocumentoDetalleModal({
         </div>
 
         {doc.motivoCierre && (
-          <div className="border-b border-amber-200 bg-amber-50 px-6 py-2 text-xs text-amber-800">
+          <Alerta tono="advertencia" className="mx-6 mt-4">
             Cerrado: {doc.motivoCierre}
-          </div>
+          </Alerta>
         )}
 
         {errorMsg && (
-          <div className="border-b border-rose-200 bg-rose-50 px-6 py-2 text-xs text-rose-800">
+          <Alerta tono="error" className="mx-6 mt-4">
             {errorMsg}
-          </div>
+          </Alerta>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">

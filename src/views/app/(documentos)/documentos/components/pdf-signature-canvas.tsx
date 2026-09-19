@@ -237,7 +237,7 @@ const PdfSignatureCanvas = forwardRef<
 
   if (error) {
     return (
-      <div className="border border-rose-300 bg-rose-50 p-4 text-xs text-rose-700">
+      <div className="rounded-overlay bg-rose-600 p-4 text-xs font-semibold text-white">
         {error}
       </div>
     );
