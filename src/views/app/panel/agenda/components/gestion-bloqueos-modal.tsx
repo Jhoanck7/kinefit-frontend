@@ -117,8 +117,13 @@ export function GestionBloqueosModal({
   }
 
   async function handleToggleActivo(id: number) {
-    await revertirBloqueoMutation.mutateAsync(id);
-    if (onBloqueoCreado) onBloqueoCreado();
+    setErrorGuardar(null);
+    try {
+      await revertirBloqueoMutation.mutateAsync(id);
+      if (onBloqueoCreado) onBloqueoCreado();
+    } catch (err: unknown) {
+      setErrorGuardar(handleApiError(err).message);
+    }
   }
 
   return (
