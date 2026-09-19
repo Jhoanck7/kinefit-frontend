@@ -10,6 +10,7 @@ import EmpresasView from "./empresas";
 import EspecialistasView from "./especialistas";
 import HorariosView from "./horarios";
 import LandingView from "./landing";
+import PersonalView from "./personal";
 import ServiciosView from "./servicios";
 
 const TABS = [
@@ -17,6 +18,7 @@ const TABS = [
   { valor: "especialistas", etiqueta: "Especialistas" },
   { valor: "servicios", etiqueta: "Servicios" },
   { valor: "empresas", etiqueta: "Empresas" },
+  { valor: "personal", etiqueta: "Personal" },
   { valor: "horarios", etiqueta: "Horarios" },
 ] as const;
 
@@ -76,6 +78,9 @@ function ConfiguracionContent() {
           </TabsContent>
           <TabsContent value="empresas" className="pt-6">
             <EmpresasView />
+          </TabsContent>
+          <TabsContent value="personal" className="pt-6">
+            <PersonalView />
           </TabsContent>
         </>
       )}

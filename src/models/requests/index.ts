@@ -42,6 +42,10 @@ export type {
   UpdateServicioRequest,
 } from "./servicio";
 export type {
+  CreateUsuarioPersonalRequest,
+  UpdateUsuarioPersonalRequest,
+} from "./usuario-personal";
+export type {
   CreateComisionTerminalRequest,
   CreateRepartoProfesionalRequest,
   CreateTasaImpuestoRequest,

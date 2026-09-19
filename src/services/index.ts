@@ -46,5 +46,9 @@ export type {
 export { ReporteService, reporteService } from "./reporte-service";
 export { ServicioService, servicioService } from "./servicio-service";
 export { TransaccionService, transaccionService } from "./transaccion-service";
+export {
+  UsuarioPersonalService,
+  usuarioPersonalService,
+} from "./usuario-personal-service";
 export type { FiltrosVentas } from "./venta-service";
 export { VentaService, ventaService } from "./venta-service";

@@ -90,6 +90,11 @@ export type {
 } from "./reporte";
 export type { ServicioDocumentoResponse, ServicioResponse } from "./servicio";
 export type {
+  UsuarioPersonalAdminResponse,
+  UsuarioPersonalCreadoResponse,
+  UsuariosPersonalPaginadosResponse,
+} from "./usuario-personal";
+export type {
   ComisionTerminalResponse,
   DesgloseCobroResponse,
   RepartoProfesionalResponse,

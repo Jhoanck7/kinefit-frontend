@@ -116,6 +116,12 @@ export {
   useUpdateServicioMutation,
 } from "./use-servicio-service";
 export {
+  useCreateUsuarioPersonalMutation,
+  useGetUsuariosPersonal,
+  useUpdateUsuarioPersonalEstadoMutation,
+  useUpdateUsuarioPersonalMutation,
+} from "./use-usuario-personal-service";
+export {
   useCreateRepartoMutation,
   useCreateTasaImpuestoMutation,
   useCreateTerminalMutation,
