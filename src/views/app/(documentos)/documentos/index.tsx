@@ -96,8 +96,11 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
             Documento firmado
           </p>
           <p className="text-xs text-slate-500">
-            Ya podés cerrar esta ventana.
+            Ya puedes cerrar esta ventana.
           </p>
+          <Button className="mt-4" onClick={() => (window.location.href = "/")}>
+            Ir al Sitio de KineFit
+          </Button>
         </Card>
       </Centro>
     );
@@ -124,7 +127,7 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
 
   const handleGenerarDocumento = async () => {
     if (camposObligatoriosPendientes.length > 0) {
-      setAvisoFirma("Completá los campos obligatorios antes de continuar.");
+      setAvisoFirma("Completa los campos obligatorios antes de continuar.");
       return;
     }
     setAvisoFirma(null);
@@ -149,7 +152,7 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
   const handleGuardarPdf = async () => {
     const base64 = await pdfFirmaRef.current?.generarDocumentoFirmadoBase64();
     if (!base64) {
-      setAvisoFirma("Firmá en el documento antes de continuar.");
+      setAvisoFirma("Firma en el documento antes de continuar.");
       return;
     }
     setAvisoFirma(null);
@@ -192,7 +195,7 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
 
       {errorDocumentoModificado && (
         <div className="mb-4 rounded-overlay bg-amber-600 p-3 text-xs font-semibold text-white">
-          Este documento cambió mientras lo tenías abierto, recargá la página
+          Este documento cambió mientras lo tenías abierto, recarga la página
           para leer la versión actual antes de firmar
         </div>
       )}
@@ -200,7 +203,7 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
       {debeCompletarCampos ? (
         <>
           <p className="mb-3 text-xs text-slate-600">
-            Completá los datos que te corresponden. Después vas a poder leer el
+            Completa los datos que te corresponden. Después vas a poder leer el
             documento completo y firmarlo.
           </p>
 
@@ -273,7 +276,7 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
       ) : paso !== "revisar" ? (
         <>
           <p className="mb-3 text-xs text-slate-600">
-            Leé el siguiente documento completo y firmá donde corresponda antes
+            Lee el siguiente documento completo y firma donde corresponda antes
             de guardar
           </p>
 
@@ -318,8 +321,8 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
       ) : (
         <>
           <p className="mb-3 text-xs text-slate-600">
-            Revisá tu firma antes de entregar el documento — una vez entregado
-            no se puede modificar
+            Revisa tu firma antes de entregar el documento, una vez entregado no
+            se puede modificar
           </p>
 
           <div className="mb-4 border border-border" style={{ height: "70vh" }}>
