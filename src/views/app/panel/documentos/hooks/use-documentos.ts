@@ -4,7 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { useGetDocumentos, useGetEspecialistas } from "@/hooks/api";
-import { useHoyPanel } from "@/hooks/common";
+import { useDebounce, useHoyPanel } from "@/hooks/common";
 
 export const TAMANO_PAGINA = 10;
 
@@ -32,8 +32,10 @@ export const useDocumentos = () => {
 
   const { data: especialistas = [] } = useGetEspecialistas();
 
+  const busquedaDebounced = useDebounce(busqueda.trim(), 300);
+
   const { data } = useGetDocumentos({
-    busqueda: busqueda || undefined,
+    busqueda: busquedaDebounced || undefined,
     tipo: tipo || undefined,
     estado: estado || undefined,
     especialistaId: especialistaId ? Number(especialistaId) : undefined,

@@ -38,7 +38,7 @@ export const useNuevaFichaReserva = () => {
     20,
     busquedaValida
   );
-  const resultados = resultadosPagina?.items ?? [];
+  const resultados = busquedaValida ? (resultadosPagina?.items ?? []) : [];
 
   const pacienteIdNum = pacienteId ? Number(pacienteId) : undefined;
   const { data: perfil } = useGetPacientePerfil(
