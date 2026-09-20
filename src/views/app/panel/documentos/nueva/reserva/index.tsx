@@ -22,6 +22,8 @@ export default function NuevaFichaReservaView() {
     busqueda,
     resultados,
     buscando,
+    hayMasPacientes,
+    totalPacientes,
     mostrarHintMinimo,
     reservas,
     cambiandoEstadoId,
@@ -67,6 +69,14 @@ export default function NuevaFichaReservaView() {
           }
         />
 
+        {resultados.length === 0 && !buscando && (
+          <p className="mt-3 font-sans text-xs text-slate-500">
+            {busqueda.trim()
+              ? "Ningún paciente coincide con la búsqueda."
+              : "No hay pacientes registrados."}
+          </p>
+        )}
+
         {resultados.length > 0 && (
           <ul className="mt-2 divide-y divide-slate-200 border border-slate-200 rounded-none bg-white">
             {resultados.map(paciente => (
@@ -84,6 +94,13 @@ export default function NuevaFichaReservaView() {
               </li>
             ))}
           </ul>
+        )}
+
+        {hayMasPacientes && (
+          <p className="mt-2 font-sans text-xs text-slate-500">
+            Mostrando {resultados.length} de {totalPacientes} pacientes, busca
+            por nombre o RUT para acotar la lista.
+          </p>
         )}
 
         {pacienteId && (

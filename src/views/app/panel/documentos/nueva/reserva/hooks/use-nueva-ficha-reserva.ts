@@ -15,6 +15,7 @@ import { HistorialCitaResponse, PacienteResponse } from "@/models/responses";
 import { useNuevaFichaStore } from "@/stores";
 
 const MIN_CARACTERES_BUSQUEDA = 2;
+const TAMANO_LISTA = 20;
 
 export const useNuevaFichaReserva = () => {
   const router = useRouter();
@@ -35,10 +36,10 @@ export const useNuevaFichaReserva = () => {
     busquedaValida ? busquedaDebounced : undefined,
     undefined,
     1,
-    20,
-    busquedaValida
+    TAMANO_LISTA
   );
-  const resultados = busquedaValida ? (resultadosPagina?.items ?? []) : [];
+  const resultados = resultadosPagina?.items ?? [];
+  const totalPacientes = resultadosPagina?.total ?? 0;
 
   const pacienteIdNum = pacienteId ? Number(pacienteId) : undefined;
   const { data: perfil } = useGetPacientePerfil(
@@ -113,6 +114,8 @@ export const useNuevaFichaReserva = () => {
     busqueda,
     resultados,
     buscando,
+    hayMasPacientes: totalPacientes > resultados.length,
+    totalPacientes,
     mostrarHintMinimo:
       busqueda.trim().length > 0 &&
       busqueda.trim().length < MIN_CARACTERES_BUSQUEDA,
