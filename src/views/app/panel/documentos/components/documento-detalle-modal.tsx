@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Alerta, Modal, ModalCloseButton } from "@/components/shared";
 import { Badge } from "@/components/ui";
@@ -9,7 +9,6 @@ import {
   useActualizarFichaMutation,
   useCerrarFichaMutation,
   useDescargarAdjuntoMutation,
-  useDescargarArchivoDocumentoMutation,
   useEliminarAdjuntoMutation,
   useGetAuditoriaDocumento,
   useGetDocumentoDetalle,
@@ -52,7 +51,20 @@ export function DocumentoDetalleModal({
   const [mostrarAuditoria, setMostrarAuditoria] = useState(false);
   const [confirmarCierre, setConfirmarCierre] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [urlVisorInline, setUrlVisorInline] = useState<string | null>(null);
+  const [visorInline, setVisorInline] = useState<{
+    id: number;
+    url: string;
+  } | null>(null);
+  const archivoDescargado = useRef<{ id: number; url: string } | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (archivoDescargado.current) {
+        URL.revokeObjectURL(archivoDescargado.current.url);
+        archivoDescargado.current = null;
+      }
+    };
+  }, []);
 
   const { data: doc = null } = useGetDocumentoDetalle(
     Number(documentoId),
@@ -72,7 +84,6 @@ export function DocumentoDetalleModal({
   const subirAdjuntoMutation = useSubirAdjuntoMutation();
   const eliminarAdjuntoMutation = useEliminarAdjuntoMutation();
   const descargarAdjuntoMutation = useDescargarAdjuntoMutation();
-  const descargarArchivoMutation = useDescargarArchivoDocumentoMutation();
   const abrirArchivoMutation = useAbrirArchivoDocumentoMutation();
   const actualizarFichaMutation = useActualizarFichaMutation();
   const cerrarFichaMutation = useCerrarFichaMutation();
@@ -87,6 +98,7 @@ export function DocumentoDetalleModal({
     );
   }
 
+  const urlVisorInline = visorInline?.id === doc.id ? visorInline.url : null;
   const esFicha = doc.tipo === "FichaClinica";
   const esConsentimiento = doc.tipo === "Consentimiento";
   const puedeEditar = esFicha && doc.estado === "Borrador";
@@ -144,11 +156,20 @@ export function DocumentoDetalleModal({
     URL.revokeObjectURL(url);
   }
 
+  async function obtenerUrlArchivo(id: number) {
+    const descargado = archivoDescargado.current;
+    if (descargado?.id === id) return descargado.url;
+    if (descargado) URL.revokeObjectURL(descargado.url);
+    const blob = await abrirArchivoMutation.mutateAsync(id);
+    const url = URL.createObjectURL(blob);
+    archivoDescargado.current = { id, url };
+    return url;
+  }
+
   async function handleAbrirArchivo() {
     setErrorMsg(null);
     try {
-      const blob = await abrirArchivoMutation.mutateAsync(doc!.id);
-      window.open(URL.createObjectURL(blob), "_blank");
+      window.open(await obtenerUrlArchivo(doc!.id), "_blank");
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
     }
@@ -156,26 +177,27 @@ export function DocumentoDetalleModal({
 
   async function handleVerArchivoAqui() {
     if (urlVisorInline) {
-      setUrlVisorInline(null);
+      setVisorInline(null);
       return;
     }
     setErrorMsg(null);
     try {
-      const blob = await abrirArchivoMutation.mutateAsync(doc!.id);
-      setUrlVisorInline(URL.createObjectURL(blob));
+      setVisorInline({ id: doc!.id, url: await obtenerUrlArchivo(doc!.id) });
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
     }
   }
 
   async function handleDescargarArchivo() {
-    const blob = await descargarArchivoMutation.mutateAsync(doc!.id);
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${doc!.nombre}.pdf`;
-    link.click();
-    URL.revokeObjectURL(url);
+    setErrorMsg(null);
+    try {
+      const link = document.createElement("a");
+      link.href = await obtenerUrlArchivo(doc!.id);
+      link.download = `${doc!.nombre}.pdf`;
+      link.click();
+    } catch (err: unknown) {
+      setErrorMsg(handleApiError(err).message);
+    }
   }
 
   async function handleImprimir() {
@@ -185,9 +207,7 @@ export function DocumentoDetalleModal({
       return;
     }
     try {
-      const blob = await descargarArchivoMutation.mutateAsync(doc!.id);
-      const url = URL.createObjectURL(blob);
-      const ventana = window.open(url, "_blank");
+      const ventana = window.open(await obtenerUrlArchivo(doc!.id), "_blank");
       ventana?.addEventListener("load", () => ventana.print());
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
@@ -248,16 +268,24 @@ export function DocumentoDetalleModal({
                   <button
                     type="button"
                     onClick={handleAbrirArchivo}
-                    className="font-sans text-xs font-bold text-panel-sidebar underline underline-offset-2"
+                    disabled={abrirArchivoMutation.isPending}
+                    className="font-sans text-xs font-bold text-panel-sidebar underline underline-offset-2 disabled:opacity-50"
                   >
-                    Abrir en Otra Pestaña
+                    {abrirArchivoMutation.isPending
+                      ? "Abriendo…"
+                      : "Abrir en Otra Pestaña"}
                   </button>
                   <button
                     type="button"
                     onClick={handleVerArchivoAqui}
-                    className="font-sans text-xs font-bold text-panel-sidebar underline underline-offset-2"
+                    disabled={abrirArchivoMutation.isPending}
+                    className="font-sans text-xs font-bold text-panel-sidebar underline underline-offset-2 disabled:opacity-50"
                   >
-                    {urlVisorInline ? "Ocultar Visor" : "Ver Aquí"}
+                    {abrirArchivoMutation.isPending
+                      ? "Abriendo…"
+                      : urlVisorInline
+                        ? "Ocultar Visor"
+                        : "Ver Aquí"}
                   </button>
                 </div>
                 {urlVisorInline && (
@@ -542,17 +570,19 @@ export function DocumentoDetalleModal({
           <button
             type="button"
             onClick={handleImprimir}
-            className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
+            disabled={abrirArchivoMutation.isPending}
+            className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none disabled:opacity-50"
           >
-            Imprimir
+            {abrirArchivoMutation.isPending ? "Preparando…" : "Imprimir"}
           </button>
           {doc.tieneArchivo && (
             <button
               type="button"
               onClick={handleDescargarArchivo}
-              className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
+              disabled={abrirArchivoMutation.isPending}
+              className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none disabled:opacity-50"
             >
-              Descargar
+              {abrirArchivoMutation.isPending ? "Preparando…" : "Descargar"}
             </button>
           )}
           {puedeEditar && !confirmarCierre && (

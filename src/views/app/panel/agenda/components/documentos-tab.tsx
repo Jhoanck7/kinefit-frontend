@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Alerta } from "@/components/shared";
 import {
@@ -34,6 +34,15 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
   } | null>(null);
   const pdfFirmaRef =
     useRef<React.ComponentRef<typeof PdfSignatureCanvas>>(null);
+  const archivosDescargados = useRef<Map<number, string>>(new Map());
+
+  useEffect(() => {
+    const descargados = archivosDescargados.current;
+    return () => {
+      descargados.forEach(url => URL.revokeObjectURL(url));
+      descargados.clear();
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -69,15 +78,34 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const archivo = e.target.files?.[0];
-    if (archivo) subirEscaneo.mutate({ id, archivo });
+    if (archivo) {
+      olvidarArchivo(id);
+      subirEscaneo.mutate({ id, archivo });
+    }
     e.target.value = "";
+  };
+
+  const olvidarArchivo = (id: number) => {
+    const descargado = archivosDescargados.current.get(id);
+    if (!descargado) return;
+    URL.revokeObjectURL(descargado);
+    archivosDescargados.current.delete(id);
+    setVisorInline(actual => (actual?.id === id ? null : actual));
+  };
+
+  const obtenerUrlArchivo = async (id: number) => {
+    const descargado = archivosDescargados.current.get(id);
+    if (descargado) return descargado;
+    const blob = await abrirArchivo.mutateAsync(id);
+    const url = URL.createObjectURL(blob);
+    archivosDescargados.current.set(id, url);
+    return url;
   };
 
   const handleVerDocumento = async (id: number) => {
     setErrorMsg(null);
     try {
-      const blob = await abrirArchivo.mutateAsync(id);
-      window.open(URL.createObjectURL(blob), "_blank");
+      window.open(await obtenerUrlArchivo(id), "_blank");
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
     }
@@ -90,8 +118,7 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
     }
     setErrorMsg(null);
     try {
-      const blob = await abrirArchivo.mutateAsync(id);
-      setVisorInline({ id, url: URL.createObjectURL(blob) });
+      setVisorInline({ id, url: await obtenerUrlArchivo(id) });
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
     }
@@ -101,8 +128,7 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
     setErrorMsg(null);
     setFirmaVacia(true);
     try {
-      const blob = await abrirArchivo.mutateAsync(id);
-      setPdfUrl(URL.createObjectURL(blob));
+      setPdfUrl(await obtenerUrlArchivo(id));
       setFirmandoId(id);
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
@@ -110,7 +136,6 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
   };
 
   const handleCancelarFirma = () => {
-    if (pdfUrl) URL.revokeObjectURL(pdfUrl);
     setPdfUrl(null);
     setFirmandoId(null);
     setFirmaVacia(true);
@@ -133,6 +158,7 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
 
     try {
       await firmarProfesional.mutateAsync({ id: firmandoId, data });
+      olvidarArchivo(firmandoId);
       handleCancelarFirma();
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
@@ -169,16 +195,24 @@ export function DocumentosTab({ citaId }: { citaId: number }) {
                   <button
                     type="button"
                     onClick={() => handleVerDocumento(doc.id)}
-                    className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
+                    disabled={abrirArchivo.isPending}
+                    className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground disabled:opacity-50"
                   >
-                    Abrir en Otra Pestaña
+                    {abrirArchivo.isPending
+                      ? "Abriendo…"
+                      : "Abrir en Otra Pestaña"}
                   </button>
                   <button
                     type="button"
                     onClick={() => handleVerDocumentoAqui(doc.id)}
-                    className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
+                    disabled={abrirArchivo.isPending}
+                    className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground disabled:opacity-50"
                   >
-                    {visorInline?.id === doc.id ? "Ocultar Visor" : "Ver Aquí"}
+                    {abrirArchivo.isPending
+                      ? "Abriendo…"
+                      : visorInline?.id === doc.id
+                        ? "Ocultar Visor"
+                        : "Ver Aquí"}
                   </button>
                 </>
               )}
