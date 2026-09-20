@@ -38,6 +38,7 @@ export type {
   DocumentoPublicoResponse,
   DocumentoResumenResponse,
   DocumentosPaginadosResponse,
+  FichaDePacienteResponse,
   FichaResponse,
   RecomendacionResponse,
   ReenviarCorreoResponse,

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import {
-  useGetHistorialPorPaciente,
+  useGetFichasPorPaciente,
   useGetPacientePerfil,
   useGetPacientes,
   useUpdateCitaEstadoMutation,
@@ -45,10 +45,9 @@ export const useNuevaFichaReserva = () => {
     pacienteIdNum ?? 0,
     Boolean(pacienteIdNum)
   );
-  const { data: fichasPaciente = [] } = useGetHistorialPorPaciente(
+  const { data: fichasPaciente = [] } = useGetFichasPorPaciente(
     pacienteIdNum ?? 0,
-    Boolean(pacienteIdNum),
-    "FichaClinica"
+    Boolean(pacienteIdNum)
   );
 
   const reservas = (perfil?.historial ?? []).map(cita => {

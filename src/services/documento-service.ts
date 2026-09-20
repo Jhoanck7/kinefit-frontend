@@ -14,6 +14,7 @@ import {
   DocumentoPublicoResponse,
   DocumentoResumenResponse,
   DocumentosPaginadosResponse,
+  FichaDePacienteResponse,
   FichaResponse,
   RecomendacionResponse,
   ReenviarCorreoResponse,
@@ -107,10 +108,15 @@ export class DocumentoService extends BaseApiService {
     );
   }
 
-  getHistorialPorPaciente(pacienteId: number, tipo?: string) {
+  getHistorialPorPaciente(pacienteId: number) {
     return this.httpClient.get<ApiResponse<DocumentoResumenResponse[]>>(
-      `${this.baseURL}/pacientes/${pacienteId}/historial`,
-      { params: { tipo } }
+      `${this.baseURL}/pacientes/${pacienteId}/historial`
+    );
+  }
+
+  getFichasPorPaciente(pacienteId: number) {
+    return this.httpClient.get<ApiResponse<FichaDePacienteResponse[]>>(
+      `${this.baseURL}/pacientes/${pacienteId}/fichas`
     );
   }
 

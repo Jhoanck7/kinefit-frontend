@@ -43,6 +43,12 @@ export interface AdjuntoResumenResponse {
   createdAt: string;
 }
 
+export interface FichaDePacienteResponse {
+  id: number;
+  citaId: number;
+  estado: string;
+}
+
 export interface DocumentoResumenResponse {
   id: number;
   tipo: TipoDocumentoClinico;

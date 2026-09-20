@@ -46,6 +46,7 @@ export {
   useGetDocumentoPublico,
   useGetDocumentos,
   useGetDocumentosPorCita,
+  useGetFichasPorPaciente,
   useGetHistorialPorPaciente,
   useReenviarPorCorreoMutation,
   useReenviarTokenMutation,
