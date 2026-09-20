@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useGetAgenda, useGetEspecialistas } from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
@@ -21,13 +21,13 @@ export const useAgenda = () => {
   const citaId = searchParams.get("cita");
   const cancelando = searchParams.get("cancelar") === "1";
 
-  const [dia, setDia] = useState<Date>(() => {
+  const dia = useMemo(() => {
     if (fechaParam) {
       const [y, m, d] = fechaParam.split("-").map(Number);
       return new Date(y, m - 1, d);
     }
     return hoy ?? new Date();
-  });
+  }, [fechaParam, hoy]);
 
   const [horaActual, setHoraActual] = useState<string | null>(null);
   const { data: especialistas = [] } = useGetEspecialistas(undefined, true);
@@ -97,20 +97,16 @@ export const useAgenda = () => {
   const handleIrADia = (delta: number) => {
     const nueva = new Date(dia);
     nueva.setDate(nueva.getDate() + delta);
-    setDia(nueva);
     abrirParametros({ fecha: fechaISO(nueva) });
   };
 
   const handleIrAHoy = () => {
     if (!hoy) return;
-    setDia(hoy);
     abrirParametros({ fecha: fechaISO(hoy) });
   };
 
   const handleCambiarFecha = (valor: string) => {
     if (!valor) return;
-    const [y, m, d] = valor.split("-").map(Number);
-    setDia(new Date(y, m - 1, d));
     abrirParametros({ fecha: valor });
   };
 
