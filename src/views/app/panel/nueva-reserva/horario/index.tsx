@@ -87,10 +87,19 @@ function HorarioContent() {
                 </p>
               )}
               {servicioDuracionMinutos && (
-                <p className="font-sans text-xs text-slate-500 pt-1">
-                  Este servicio requiere {servicioDuracionMinutos} min (
-                  {bloquesExigidos} bloque(s) de 30 min).
-                </p>
+                <Alerta
+                  tono={
+                    horasSeleccionadas.length === bloquesExigidos
+                      ? "exito"
+                      : "info"
+                  }
+                  className="mt-1"
+                >
+                  Este servicio dura {servicioDuracionMinutos} min, así que
+                  necesita {bloquesExigidos}{" "}
+                  {bloquesExigidos === 1 ? "bloque" : "bloques"} de 30 min.
+                  Llevas {horasSeleccionadas.length} de {bloquesExigidos}.
+                </Alerta>
               )}
             </div>
             <div className="sm:pl-6">
