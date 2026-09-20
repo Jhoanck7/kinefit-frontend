@@ -1,19 +1,40 @@
 "use client";
 
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
+
+import { fechaISO } from "@/lib/formato";
 
 export const RelojPanelContext = createContext<Date | null>(null);
 
-/**
- * Resuelve el "hoy" del prototipo una sola vez, del lado del cliente
- * (§5.4.2 del plan de implementación): el servidor nunca calcula la fecha
- * actual al renderizar, así que no hay desajuste de hidratación posible
- * entre el huso horario del VPS y el del navegador de la especialista.
- */
+const INTERVALO_REVISION_MS = 60_000;
+
 export function RelojPanelProvider({ children }: { children: ReactNode }) {
-  const [hoy] = useState<Date | null>(() =>
+  const [hoy, setHoy] = useState<Date | null>(() =>
     typeof window !== "undefined" ? new Date() : null
   );
+
+  useEffect(() => {
+    const revisarCambioDeDia = () => {
+      setHoy(anterior => {
+        const ahora = new Date();
+        if (anterior && fechaISO(anterior) === fechaISO(ahora)) return anterior;
+        return ahora;
+      });
+    };
+
+    const intervalo = window.setInterval(
+      revisarCambioDeDia,
+      INTERVALO_REVISION_MS
+    );
+    document.addEventListener("visibilitychange", revisarCambioDeDia);
+    window.addEventListener("focus", revisarCambioDeDia);
+
+    return () => {
+      window.clearInterval(intervalo);
+      document.removeEventListener("visibilitychange", revisarCambioDeDia);
+      window.removeEventListener("focus", revisarCambioDeDia);
+    };
+  }, []);
 
   return (
     <RelojPanelContext.Provider value={hoy}>
