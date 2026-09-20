@@ -24,6 +24,7 @@ export interface HistorialCitaResponse {
   id: number;
   fecha: string;
   horaInicio: string;
+  horaFin: string;
   estado: string;
   origen: string;
   especialista: string;

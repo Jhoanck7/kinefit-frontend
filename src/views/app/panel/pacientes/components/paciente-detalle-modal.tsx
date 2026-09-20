@@ -9,7 +9,7 @@ import { useGetHistorialPorPaciente, useGetPacientePerfil } from "@/hooks/api";
 import { COLOR_ROL } from "@/lib/color-rol";
 import { definicionEstado } from "@/lib/estados";
 import { etiquetaTipoDocumento } from "@/lib/estados-documento";
-import { formatearFechaCorta } from "@/lib/formato";
+import { formatearFechaCorta, formatearRangoHorario } from "@/lib/formato";
 import { CodigoEstadoCita } from "@/models/responses";
 
 interface PacienteDetalleModalProps {
@@ -187,7 +187,10 @@ export function PacienteDetalleModal({
                             <div>
                               <p className="font-sans font-medium text-sm text-slate-700">
                                 {formatearFechaCorta(new Date(cita.fecha))},{" "}
-                                {cita.horaInicio}
+                                {formatearRangoHorario(
+                                  cita.horaInicio,
+                                  cita.horaFin
+                                )}
                               </p>
                               <p className="font-sans text-xs text-slate-500 capitalize mt-0.5">
                                 {cita.servicio}, {cita.especialista}
