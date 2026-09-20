@@ -111,6 +111,7 @@ export const useAgenda = () => {
     if (!valor) return;
     const [y, m, d] = valor.split("-").map(Number);
     setDia(new Date(y, m - 1, d));
+    abrirParametros({ fecha: valor });
   };
 
   const handleAbrirBloqueos = () => setModalBloqueos(true);
