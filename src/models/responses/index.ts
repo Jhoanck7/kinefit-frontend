@@ -49,8 +49,10 @@ export type {
   EspecialistaServicioResponse,
 } from "./especialista";
 export type {
+  ConflictoGeneracionResponse,
   HorarioCentroResponse,
   PlantillaHorarioResponse,
+  PlantillaHorarioResultadoResponse,
 } from "./horario";
 export type {
   EmbarazadaItem,

@@ -45,14 +45,15 @@ export function PlantillaEspecialistaCard({
         horaInicio,
         horaFin,
       });
-    } catch {
-      // El error se refleja abajo vía crearMutation.error
-    }
+    } catch {}
   };
 
   const handleEliminar = (id: number) => {
     eliminarMutation.mutate(id);
   };
+
+  const conflictos =
+    crearMutation.data?.conflictos ?? eliminarMutation.data?.conflictos ?? [];
 
   return (
     <Card className="rounded-none border border-slate-200 shadow-none p-5">
@@ -71,6 +72,19 @@ export function PlantillaEspecialistaCard({
       {eliminarMutation.isError && (
         <Alerta tono="error" className="mb-3">
           {handleApiError(eliminarMutation.error).message}
+        </Alerta>
+      )}
+
+      {conflictos.length > 0 && (
+        <Alerta tono="advertencia" className="mb-3">
+          {conflictos.length}{" "}
+          {conflictos.length === 1
+            ? "cita confirmada queda"
+            : "citas confirmadas quedan"}{" "}
+          fuera del horario vigente y no se modificaron:{" "}
+          {conflictos
+            .map(c => `${c.fecha} ${c.horaInicio}-${c.horaFin}`)
+            .join(", ")}
         </Alerta>
       )}
 

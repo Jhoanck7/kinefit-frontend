@@ -6,6 +6,7 @@ import {
 import {
   HorarioCentroResponse,
   PlantillaHorarioResponse,
+  PlantillaHorarioResultadoResponse,
 } from "@/models/responses";
 
 import { BaseApiService } from "./base-api-service";
@@ -22,16 +23,16 @@ export class PlantillaHorarioService extends BaseApiService {
   }
 
   create(data: CreatePlantillaHorarioRequest) {
-    return this.httpClient.post<ApiResponse<PlantillaHorarioResponse>>(
+    return this.httpClient.post<ApiResponse<PlantillaHorarioResultadoResponse>>(
       this.baseURL,
       data
     );
   }
 
   delete(id: number) {
-    return this.httpClient.delete<ApiResponse<boolean>>(
-      `${this.baseURL}/${id}`
-    );
+    return this.httpClient.delete<
+      ApiResponse<PlantillaHorarioResultadoResponse>
+    >(`${this.baseURL}/${id}`);
   }
 }
 
