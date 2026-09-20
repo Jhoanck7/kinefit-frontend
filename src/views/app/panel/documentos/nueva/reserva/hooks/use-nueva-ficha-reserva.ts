@@ -7,10 +7,8 @@ import {
   useGetFichasPorPaciente,
   useGetPacientePerfil,
   useGetPacientes,
-  useUpdateCitaEstadoMutation,
 } from "@/hooks/api";
 import { useDebounce } from "@/hooks/common";
-import { handleApiError } from "@/lib/api";
 import { HistorialCitaResponse, PacienteResponse } from "@/models/responses";
 import { useNuevaFichaStore } from "@/stores";
 
@@ -23,12 +21,6 @@ export const useNuevaFichaReserva = () => {
     useNuevaFichaStore();
 
   const [busqueda, setBusqueda] = useState("");
-  const [cambiandoEstadoId, setCambiandoEstadoId] = useState<number | null>(
-    null
-  );
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [citaAtendidaId, setCitaAtendidaId] = useState<number | null>(null);
-  const actualizarEstadoMutation = useUpdateCitaEstadoMutation();
 
   const busquedaDebounced = useDebounce(busqueda.trim(), 300);
   const busquedaValida = busquedaDebounced.length >= MIN_CARACTERES_BUSQUEDA;
@@ -89,23 +81,6 @@ export const useNuevaFichaReserva = () => {
     router.push("/panel/documentos/nueva/contenido");
   };
 
-  const handleMarcarComoAtendida = async (citaIdNum: number) => {
-    setCambiandoEstadoId(citaIdNum);
-    setErrorMsg(null);
-    try {
-      await actualizarEstadoMutation.mutateAsync({
-        id: citaIdNum,
-        data: { estadoNuevo: "Atendida" },
-      });
-      setReserva(pacienteId!, pacienteNombre!, String(citaIdNum));
-      setCitaAtendidaId(citaIdNum);
-    } catch (err: unknown) {
-      setErrorMsg(handleApiError(err).message);
-    } finally {
-      setCambiandoEstadoId(null);
-    }
-  };
-
   return {
     // Data
     pacienteId,
@@ -120,10 +95,7 @@ export const useNuevaFichaReserva = () => {
       busqueda.trim().length > 0 &&
       busqueda.trim().length < MIN_CARACTERES_BUSQUEDA,
     reservas,
-    cambiandoEstadoId,
     citaSeleccionada,
-    errorMsg,
-    citaAtendidaId,
 
     // Actions
     actions: {
@@ -133,8 +105,6 @@ export const useNuevaFichaReserva = () => {
       handleAbrirFichaExistente,
       handleCancelar,
       handleContinuar,
-      handleMarcarComoAtendida,
-      cerrarRecomendacion: () => setCitaAtendidaId(null),
     },
   };
 };

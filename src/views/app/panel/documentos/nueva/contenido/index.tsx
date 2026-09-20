@@ -65,9 +65,9 @@ export default function NuevaFichaContenidoView() {
       )}
 
       <Card className="border border-border p-6">
-        <div className="mb-4 flex items-center gap-2 border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-700 rounded-none">
+        <Alerta tono="info" className="mb-4">
           Contenido privado. No visible para el paciente.
-        </div>
+        </Alerta>
 
         <h2 className="mb-4 font-sans text-section-title font-bold text-foreground">
           Completa la Ficha Clínica
@@ -77,7 +77,7 @@ export default function NuevaFichaContenidoView() {
           <button
             type="button"
             onClick={() => actions.handleCambiarModo("plantilla")}
-            className={`font-sans text-xs font-bold px-3 py-1.5 border ${
+            className={`rounded-overlay font-sans text-xs font-bold px-3 py-1.5 border ${
               modo === "plantilla"
                 ? "border-slate-900 bg-slate-900 text-white"
                 : "border-slate-200 text-slate-600"
@@ -88,7 +88,7 @@ export default function NuevaFichaContenidoView() {
           <button
             type="button"
             onClick={() => actions.handleCambiarModo("archivo")}
-            className={`font-sans text-xs font-bold px-3 py-1.5 border ${
+            className={`rounded-overlay font-sans text-xs font-bold px-3 py-1.5 border ${
               modo === "archivo"
                 ? "border-slate-900 bg-slate-900 text-white"
                 : "border-slate-200 text-slate-600"
@@ -272,7 +272,7 @@ export default function NuevaFichaContenidoView() {
           {
             etiqueta: "Tipo de Ficha",
             valor: nombrePlantilla ? (
-              <Badge className="border-0 bg-slate-700 text-[11px] font-medium text-white">
+              <Badge className="rounded-overlay border-0 bg-slate-700 text-table-head font-medium text-white">
                 {nombrePlantilla}
               </Badge>
             ) : undefined,

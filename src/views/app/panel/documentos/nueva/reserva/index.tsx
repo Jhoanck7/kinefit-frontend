@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Alerta,
   BottomActionBar,
   EmptyState,
   SearchInput,
@@ -10,7 +9,6 @@ import {
 } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
 import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/formato";
-import { EnviarRecomendacionModal } from "@/views/app/panel/agenda/components/enviar-recomendacion-modal";
 
 import { useNuevaFichaReserva } from "./hooks";
 
@@ -26,10 +24,7 @@ export default function NuevaFichaReservaView() {
     totalPacientes,
     mostrarHintMinimo,
     reservas,
-    cambiandoEstadoId,
     citaSeleccionada,
-    errorMsg,
-    citaAtendidaId,
     actions,
   } = useNuevaFichaReserva();
 
@@ -49,12 +44,6 @@ export default function NuevaFichaReservaView() {
         <p className="font-sans text-xs text-slate-500 mb-4">
           Busque al paciente y seleccione la reserva asociada.
         </p>
-
-        {errorMsg && (
-          <p className="mb-4 font-sans text-xs font-medium text-red-700">
-            {errorMsg}
-          </p>
-        )}
 
         <SearchInput
           placeholder="Buscar por nombre o RUT..."
@@ -117,8 +106,9 @@ export default function NuevaFichaReservaView() {
               <ul className="space-y-2">
                 {reservas.map(cita => {
                   const seleccionada = String(cita.id) === citaId;
-                  const esAtendida = cita.estado === "Atendida";
-                  const deshabilitada = cita.conFicha || !esAtendida;
+                  const habilitaFicha =
+                    cita.estado === "Confirmada" || cita.estado === "Atendida";
+                  const deshabilitada = cita.conFicha || !habilitaFicha;
 
                   return (
                     <li key={cita.id} className="space-y-1">
@@ -129,8 +119,8 @@ export default function NuevaFichaReservaView() {
                         title={
                           cita.conFicha
                             ? "Esta reserva ya tiene una ficha asociada"
-                            : !esAtendida
-                              ? "La cita debe estar en estado 'Atendida' para asociar una ficha clínica"
+                            : !habilitaFicha
+                              ? "La cita debe estar Confirmada o Atendida para asociarle una ficha clínica"
                               : undefined
                         }
                         className={`flex w-full items-center justify-between gap-3 border p-3 text-left transition-colors rounded-none ${
@@ -155,19 +145,19 @@ export default function NuevaFichaReservaView() {
                           </p>
                         </div>
                         <span
-                          className={`shrink-0 px-2 py-0.5 font-sans text-[10px] font-bold rounded-none text-white ${
+                          className={`shrink-0 rounded-overlay px-2 py-0.5 font-sans text-table-head font-bold text-white ${
                             cita.conFicha
                               ? "bg-emerald-700"
-                              : esAtendida
+                              : habilitaFicha
                                 ? "bg-blue-800"
                                 : "bg-amber-600"
                           }`}
                         >
                           {cita.conFicha
                             ? "Con Ficha"
-                            : esAtendida
-                              ? "Atendida (Lista para Ficha)"
-                              : `Estado: ${cita.estado}`}
+                            : habilitaFicha
+                              ? `${cita.estado}, lista para ficha`
+                              : cita.estado}
                         </span>
                       </button>
 
@@ -181,29 +171,6 @@ export default function NuevaFichaReservaView() {
                         >
                           Abrir la ficha existente
                         </button>
-                      )}
-
-                      {!esAtendida && !cita.conFicha && (
-                        <>
-                          <Alerta tono="advertencia">
-                            Esta cita está en estado{" "}
-                            <strong>&ldquo;{cita.estado}&rdquo;</strong>. Debe
-                            estar marcada como <strong>Atendida</strong> para
-                            poder asociarle una ficha.
-                          </Alerta>
-                          <button
-                            type="button"
-                            disabled={cambiandoEstadoId === cita.id}
-                            onClick={() =>
-                              actions.handleMarcarComoAtendida(cita.id)
-                            }
-                            className="mt-1 font-sans text-xs text-slate-700 hover:text-slate-950 underline underline-offset-2 block disabled:opacity-50"
-                          >
-                            {cambiandoEstadoId === cita.id
-                              ? "Actualizando..."
-                              : "Marcar como Atendida"}
-                          </button>
-                        </>
                       )}
                     </li>
                   );
@@ -247,11 +214,6 @@ export default function NuevaFichaReservaView() {
           },
           { etiqueta: "Tipo de Ficha", valor: undefined },
         ]}
-      />
-
-      <EnviarRecomendacionModal
-        citaId={citaAtendidaId}
-        onCerrar={actions.cerrarRecomendacion}
       />
     </div>
   );
