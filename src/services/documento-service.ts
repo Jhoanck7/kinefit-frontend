@@ -107,9 +107,10 @@ export class DocumentoService extends BaseApiService {
     );
   }
 
-  getHistorialPorPaciente(pacienteId: number) {
+  getHistorialPorPaciente(pacienteId: number, tipo?: string) {
     return this.httpClient.get<ApiResponse<DocumentoResumenResponse[]>>(
-      `${this.baseURL}/pacientes/${pacienteId}/historial`
+      `${this.baseURL}/pacientes/${pacienteId}/historial`,
+      { params: { tipo } }
     );
   }
 

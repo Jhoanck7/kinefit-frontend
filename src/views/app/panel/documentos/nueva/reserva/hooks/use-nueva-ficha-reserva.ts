@@ -47,7 +47,8 @@ export const useNuevaFichaReserva = () => {
   );
   const { data: fichasPaciente = [] } = useGetHistorialPorPaciente(
     pacienteIdNum ?? 0,
-    Boolean(pacienteIdNum)
+    Boolean(pacienteIdNum),
+    "FichaClinica"
   );
 
   const reservas = (perfil?.historial ?? []).map(cita => {

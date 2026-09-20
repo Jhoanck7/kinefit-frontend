@@ -121,13 +121,14 @@ export const useCerrarFichaMutation = () => {
 
 export const useGetHistorialPorPaciente = (
   pacienteId: number,
-  enabled = true
+  enabled = true,
+  tipo?: string
 ) => {
   return useQuery({
-    queryKey: ["documentos", "historial-paciente", pacienteId],
+    queryKey: ["documentos", "historial-paciente", pacienteId, tipo],
     queryFn: () =>
       documentoService
-        .getHistorialPorPaciente(pacienteId)
+        .getHistorialPorPaciente(pacienteId, tipo)
         .then(res => res.data.data),
     enabled: enabled && Boolean(pacienteId),
   });
