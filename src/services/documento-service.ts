@@ -28,6 +28,7 @@ export interface FiltrosDocumentos {
   tipo?: string;
   estado?: string;
   especialistaId?: number;
+  citaId?: number;
   fechaDesde?: string;
   fechaHasta?: string;
   page?: number;

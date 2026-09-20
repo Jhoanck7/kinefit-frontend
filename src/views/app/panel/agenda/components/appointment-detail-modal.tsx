@@ -365,7 +365,7 @@ function DetalleCita({
         </TabsContent>
 
         <TabsContent value="documentos">
-          <DocumentosTab citaId={cita.id} />
+          <DocumentosTab cita={cita} />
         </TabsContent>
       </Tabs>
 
