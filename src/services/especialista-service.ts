@@ -5,6 +5,7 @@ import {
 } from "@/models/requests";
 import {
   EspecialistaAdminResponse,
+  EspecialistaEstadoResponse,
   EspecialistaResponse,
 } from "@/models/responses";
 
@@ -37,7 +38,7 @@ export class EspecialistaService extends BaseApiService {
   }
 
   updateEstado(id: number, activo: boolean) {
-    return this.httpClient.patch<ApiResponse<{ id: number; activo: boolean }>>(
+    return this.httpClient.patch<ApiResponse<EspecialistaEstadoResponse>>(
       `${this.baseURL}/${id}/estado`,
       { activo }
     );

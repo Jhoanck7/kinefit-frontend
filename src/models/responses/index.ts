@@ -46,6 +46,7 @@ export type {
 export type { EmpresaPublicaResponse, EmpresaResponse } from "./empresa";
 export type {
   EspecialistaAdminResponse,
+  EspecialistaEstadoResponse,
   EspecialistaResponse,
   EspecialistaServicioResponse,
 } from "./especialista";

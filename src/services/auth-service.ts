@@ -18,10 +18,14 @@ export class AuthService extends BaseApiService {
     );
   }
 
-  loginWithGoogleToken(idToken: string, consentimientoAceptado: boolean) {
+  loginWithGoogleToken(
+    idToken: string,
+    consentimientoAceptado: boolean,
+    rut?: string
+  ) {
     return axiosInstanceSinSesion.post<AuthGoogleResponse>(
       `${this.baseURL}/google`,
-      { idToken, consentimientoAceptado }
+      { idToken, consentimientoAceptado, rut }
     );
   }
 

@@ -50,6 +50,18 @@ export function definicionEstadoDocumento(
   return CATALOGO_ESTADOS_DOCUMENTO[codigo as CodigoEstadoDocumento];
 }
 
+const ESTADOS_CERRADOS: CodigoEstadoDocumento[] = [
+  "Completado",
+  "Bloqueado",
+  "CerradoPorBaja",
+  "Anulado",
+];
+
+/** Mismo criterio que el backend usa para rechazar adjuntos nuevos. */
+export function documentoCerrado(estado: string): boolean {
+  return ESTADOS_CERRADOS.includes(estado as CodigoEstadoDocumento);
+}
+
 export const CATALOGO_TIPOS_DOCUMENTO: Record<TipoDocumentoClinico, string> = {
   FichaClinica: "Ficha Clínica",
   Recomendacion: "Recomendación",

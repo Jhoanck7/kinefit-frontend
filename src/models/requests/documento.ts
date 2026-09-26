@@ -1,3 +1,5 @@
+import type { RespuestaConNombre } from "@/lib/documento-contenido";
+
 export interface FirmarDocumentoRequest {
   huellaMostrada: string;
   contenido?: Record<string, string>;
@@ -11,11 +13,11 @@ export interface FirmarProfesionalRequest {
 export interface CreateFichaRequest {
   citaId: number;
   plantillaId: number;
-  contenido: Record<string, string>;
+  contenido: Record<string, RespuestaConNombre>;
 }
 
 export interface UpdateFichaRequest {
-  contenido: Record<string, string>;
+  contenido: Record<string, RespuestaConNombre>;
 }
 
 export interface EnviarRecomendacionRequest {

@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 
 import { useGetTerminales, useGetVentas } from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
 import { fechaISO } from "@/lib/formato";
+import { ventaService } from "@/services";
 
 export const TAMANO_PAGINA = 8;
 
@@ -47,6 +49,7 @@ export const useVentas = () => {
   const [rangoFecha, setRangoFecha] = useState("30dias");
   const [metodoPago, setMetodoPago] = useState("todos");
   const [busquedaPaciente, setBusquedaPaciente] = useState("");
+  const [errorExportar, setErrorExportar] = useState<string | null>(null);
 
   useEffect(() => {
     setPagina(1);
@@ -79,8 +82,23 @@ export const useVentas = () => {
   const inicio = (pagina - 1) * TAMANO_PAGINA;
 
   // Actions
-  function handleExportar() {
-    alert("Exportando Planilla de Ventas a formato Excel / CSV...");
+  async function handleExportar() {
+    setErrorExportar(null);
+    try {
+      const { data: archivo } = await ventaService.exportarCsv({
+        fechaDesde,
+        fechaHasta,
+        metodoPago: metodoPago !== "todos" ? metodoPago : undefined,
+      });
+      const url = URL.createObjectURL(archivo);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "ventas.csv";
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err: unknown) {
+      setErrorExportar(handleApiError(err).message);
+    }
   }
 
   function handleCambiarRango(v: string) {
@@ -118,6 +136,7 @@ export const useVentas = () => {
     rangoFecha,
     metodoPago,
     busquedaPaciente,
+    errorExportar,
 
     // Actions
     actions: {

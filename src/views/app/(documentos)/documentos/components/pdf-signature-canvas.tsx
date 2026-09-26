@@ -20,6 +20,7 @@ interface PdfSignatureCanvasHandle {
 
 interface PdfSignatureCanvasProps {
   url: string;
+  soloLectura?: boolean;
   onCambiar?: (vacia: boolean) => void;
 }
 
@@ -32,7 +33,7 @@ interface PaginaInfo {
 const PdfSignatureCanvas = forwardRef<
   PdfSignatureCanvasHandle,
   PdfSignatureCanvasProps
->(function PdfSignatureCanvas({ url, onCambiar }, ref) {
+>(function PdfSignatureCanvas({ url, soloLectura = false, onCambiar }, ref) {
   const [paginas, setPaginas] = useState<PaginaInfo[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -290,18 +291,20 @@ const PdfSignatureCanvas = forwardRef<
                 height={pagina.alto}
                 className="block h-full w-full"
               />
-              <canvas
-                ref={el => {
-                  firmaCanvasRefs.current[pagina.indice] = el;
-                }}
-                width={pagina.ancho}
-                height={pagina.alto}
-                className="absolute left-0 top-0 h-full w-full cursor-crosshair touch-none"
-                onPointerDown={e => handlePointerDown(pagina.indice, e)}
-                onPointerMove={e => handlePointerMove(pagina.indice, e)}
-                onPointerUp={e => handlePointerUp(pagina.indice, e)}
-                onPointerLeave={e => handlePointerUp(pagina.indice, e)}
-              />
+              {!soloLectura && (
+                <canvas
+                  ref={el => {
+                    firmaCanvasRefs.current[pagina.indice] = el;
+                  }}
+                  width={pagina.ancho}
+                  height={pagina.alto}
+                  className="absolute left-0 top-0 h-full w-full cursor-crosshair touch-none"
+                  onPointerDown={e => handlePointerDown(pagina.indice, e)}
+                  onPointerMove={e => handlePointerMove(pagina.indice, e)}
+                  onPointerUp={e => handlePointerUp(pagina.indice, e)}
+                  onPointerLeave={e => handlePointerUp(pagina.indice, e)}
+                />
+              )}
             </div>
           ))}
         </div>

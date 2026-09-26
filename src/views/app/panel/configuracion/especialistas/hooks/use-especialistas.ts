@@ -7,6 +7,7 @@ import {
   useDeleteEspecialistaMutation,
   useGetEspecialistas,
   useGetServicios,
+  useUpdateEspecialistaEstadoMutation,
   useUpdateEspecialistaMutation,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
@@ -22,6 +23,7 @@ export const useEspecialistas = () => {
   const crearMutation = useCreateEspecialistaMutation();
   const actualizarMutation = useUpdateEspecialistaMutation();
   const eliminarMutation = useDeleteEspecialistaMutation();
+  const estadoMutation = useUpdateEspecialistaEstadoMutation();
 
   const [mostrarFormNuevo, setMostrarFormNuevo] = useState(false);
   const [nuevoNombre, setNuevoNombre] = useState("");
@@ -156,6 +158,23 @@ export const useEspecialistas = () => {
     }
   };
 
+  const handleToggleEstado = async (esp: EspecialistaResponse) => {
+    try {
+      const resultado = await estadoMutation.mutateAsync({
+        id: esp.id,
+        activo: !esp.activo,
+      });
+      setNotificacion(
+        resultado.advertencia ??
+          (resultado.activo
+            ? `${esp.nombre} volvió a estar disponible para agendamiento.`
+            : `${esp.nombre} ya no aparecerá como opción de agendamiento.`)
+      );
+    } catch (err: unknown) {
+      setNotificacion(handleApiError(err).message);
+    }
+  };
+
   const handleCerrarNotificacion = () => setNotificacion(null);
 
   const handleEditarFotoChange = (secureUrl: string, publicId?: string) => {
@@ -194,6 +213,9 @@ export const useEspecialistas = () => {
     creando: crearMutation.isPending,
     guardando: actualizarMutation.isPending,
     eliminando: eliminarMutation.isPending,
+    cambiandoEstadoId: estadoMutation.isPending
+      ? estadoMutation.variables?.id
+      : null,
 
     // Actions
     actions: {
@@ -214,6 +236,7 @@ export const useEspecialistas = () => {
       handleSolicitarEliminacion,
       handleCancelarEliminacion,
       handleConfirmarEliminacion,
+      handleToggleEstado,
       handleCerrarNotificacion,
       handleEditarFotoChange,
       handleEditarCampo,

@@ -5,10 +5,18 @@ import { useEffect, useState } from "react";
 
 import { Modal, ModalCloseButton } from "@/components/shared";
 import { Badge } from "@/components/ui";
-import { useGetHistorialPorPaciente, useGetPacientePerfil } from "@/hooks/api";
+import {
+  useGetFichasPorPaciente,
+  useGetHistorialPorPaciente,
+  useGetPacientePerfil,
+} from "@/hooks/api";
 import { COLOR_ROL } from "@/lib/color-rol";
 import { definicionEstado } from "@/lib/estados";
-import { etiquetaTipoDocumento } from "@/lib/estados-documento";
+import {
+  CATALOGO_ESTADOS_DOCUMENTO,
+  CodigoEstadoDocumento,
+  etiquetaTipoDocumento,
+} from "@/lib/estados-documento";
 import { formatearFechaCorta, formatearRangoHorario } from "@/lib/formato";
 import { CodigoEstadoCita } from "@/models/responses";
 
@@ -37,6 +45,11 @@ export function PacienteDetalleModal({
     Number(pacienteId),
     Boolean(pacienteId)
   );
+  const { data: fichasPorCita = [] } = useGetFichasPorPaciente(
+    Number(pacienteId),
+    Boolean(pacienteId)
+  );
+  const citasConFicha = new Set(fichasPorCita.map(f => f.citaId));
 
   useEffect(() => {
     if (!pacienteId) {
@@ -196,12 +209,25 @@ export function PacienteDetalleModal({
                                 {cita.servicio}, {cita.especialista}
                               </p>
                             </div>
-                            <Badge
-                              className="rounded-overlay border-0 text-[10px] font-medium text-white"
-                              style={{ backgroundColor: color.fondoSolido }}
-                            >
-                              {definicion.etiqueta}
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                className={`rounded-overlay border-0 text-[10px] font-medium ${
+                                  citasConFicha.has(cita.id)
+                                    ? "bg-emerald-700 text-white"
+                                    : "bg-slate-100 text-slate-500"
+                                }`}
+                              >
+                                {citasConFicha.has(cita.id)
+                                  ? "Con ficha"
+                                  : "Sin ficha"}
+                              </Badge>
+                              <Badge
+                                className="rounded-overlay border-0 text-[10px] font-medium text-white"
+                                style={{ backgroundColor: color.fondoSolido }}
+                              >
+                                {definicion.etiqueta}
+                              </Badge>
+                            </div>
                           </li>
                         );
                       })}
@@ -233,6 +259,10 @@ export function PacienteDetalleModal({
                             </span>
                             <span className="font-sans text-xs text-slate-500">
                               {etiquetaTipoDocumento(doc.tipo)},{" "}
+                              {CATALOGO_ESTADOS_DOCUMENTO[
+                                doc.estado as CodigoEstadoDocumento
+                              ]?.etiqueta ?? doc.estado}
+                              ,{" "}
                               {formatearFechaCorta(new Date(doc.fechaAtencion))}
                             </span>
                           </div>

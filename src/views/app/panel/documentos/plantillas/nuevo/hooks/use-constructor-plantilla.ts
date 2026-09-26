@@ -69,7 +69,6 @@ export const TIPOS_CAMPO: { valor: TipoCampoFormato; etiqueta: string }[] = [
   { valor: "Fecha", etiqueta: "Fecha" },
   { valor: "Seleccion", etiqueta: "Selección" },
   { valor: "TextoInformativo", etiqueta: "Texto informativo" },
-  { valor: "Firma", etiqueta: "Firma" },
 ];
 
 export const TIPOS_DOCUMENTO: {
@@ -327,7 +326,7 @@ export const useConstructorPlantilla = () => {
         await importarConsentimientoMutation.mutateAsync({
           archivo,
           nombre,
-          requiereFirmaPaciente: true,
+          requiereFirmaPaciente,
           requiereFirmaProfesional,
         });
       } else {

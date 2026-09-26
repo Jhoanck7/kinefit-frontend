@@ -18,21 +18,20 @@ import {
 import { handleApiError } from "@/lib/api";
 import { COLOR_ROL } from "@/lib/color-rol";
 import {
+  conValoresActualizados,
+  cuerpoConNombresCongelados,
+  etiquetaDeCampo,
+  soloValores,
+  valorDeRespuesta,
+} from "@/lib/documento-contenido";
+import { generarPdfDesdeConstructor } from "@/lib/documento-pdf";
+import {
   CATALOGO_ESTADOS_DOCUMENTO,
   CodigoEstadoDocumento,
+  documentoCerrado,
   etiquetaTipoDocumento,
 } from "@/lib/estados-documento";
 import { formatearFechaCorta, formatearFechaHora } from "@/lib/formato";
-import { CuerpoFormato } from "@/models/responses";
-
-/** El nombre del campo lo da la plantilla; si ya no existe ahí, se muestra la clave legible. */
-function etiquetaDeCampo(campoId: string, cuerpo?: CuerpoFormato): string {
-  const campo = cuerpo?.secciones
-    .flatMap(seccion => seccion.campos)
-    .find(c => c.id === campoId);
-  if (campo?.nombre.trim()) return campo.nombre.trim();
-  return campoId.replace(/_/g, " ").replace(/^campo-\d+/i, "Campo");
-}
 
 interface DocumentoDetalleModalProps {
   documentoId: string | null;
@@ -102,12 +101,13 @@ export function DocumentoDetalleModal({
   const esFicha = doc.tipo === "FichaClinica";
   const esConsentimiento = doc.tipo === "Consentimiento";
   const puedeEditar = esFicha && doc.estado === "Borrador";
+  const estaCerrado = documentoCerrado(doc.estado);
   const defEstado =
     CATALOGO_ESTADOS_DOCUMENTO[doc.estado as CodigoEstadoDocumento];
   const colorEstado = COLOR_ROL[defEstado?.colorRol ?? "gris"];
 
   function handleIniciarEdicion() {
-    setContenidoEditado(doc!.contenido ?? {});
+    setContenidoEditado(soloValores(doc!.contenido ?? {}));
     setEditando(true);
   }
 
@@ -116,7 +116,13 @@ export function DocumentoDetalleModal({
     try {
       await actualizarFichaMutation.mutateAsync({
         id: doc!.id,
-        data: { contenido: contenidoEditado },
+        data: {
+          contenido: conValoresActualizados(
+            doc!.contenido ?? {},
+            contenidoEditado,
+            plantilla?.cuerpo
+          ),
+        },
       });
       setEditando(false);
     } catch (err: unknown) {
@@ -134,11 +140,16 @@ export function DocumentoDetalleModal({
     }
   }
 
-  function handleSubirAdjunto(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleSubirAdjunto(e: React.ChangeEvent<HTMLInputElement>) {
     if (!doc || !e.target.files || e.target.files.length === 0) return;
     const archivo = e.target.files[0];
     e.target.value = "";
-    subirAdjuntoMutation.mutate({ documentoId: doc.id, archivo });
+    setErrorMsg(null);
+    try {
+      await subirAdjuntoMutation.mutateAsync({ documentoId: doc.id, archivo });
+    } catch (err: unknown) {
+      setErrorMsg(handleApiError(err).message);
+    }
   }
 
   async function handleVerAdjunto(adjuntoId: number) {
@@ -188,11 +199,27 @@ export function DocumentoDetalleModal({
     }
   }
 
+  async function urlDelDocumento() {
+    if (doc!.tieneArchivo) return obtenerUrlArchivo(doc!.id);
+    const bytes = await generarPdfDesdeConstructor({
+      nombre: doc!.nombre,
+      servicio: doc!.servicio,
+      fecha: formatearFechaCorta(new Date(`${doc!.fechaAtencion}T00:00:00`)),
+      cuerpo: cuerpoConNombresCongelados(
+        plantilla?.cuerpo,
+        doc!.contenido ?? {}
+      ),
+      contenido: soloValores(doc!.contenido ?? {}),
+    });
+    const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
+    return URL.createObjectURL(blob);
+  }
+
   async function handleDescargarArchivo() {
     setErrorMsg(null);
     try {
       const link = document.createElement("a");
-      link.href = await obtenerUrlArchivo(doc!.id);
+      link.href = await urlDelDocumento();
       link.download = `${doc!.nombre}.pdf`;
       link.click();
     } catch (err: unknown) {
@@ -202,12 +229,8 @@ export function DocumentoDetalleModal({
 
   async function handleImprimir() {
     setErrorMsg(null);
-    if (!doc!.tieneArchivo) {
-      window.print();
-      return;
-    }
     try {
-      const ventana = window.open(await obtenerUrlArchivo(doc!.id), "_blank");
+      const ventana = window.open(await urlDelDocumento(), "_blank");
       ventana?.addEventListener("load", () => ventana.print());
     } catch (err: unknown) {
       setErrorMsg(handleApiError(err).message);
@@ -244,6 +267,12 @@ export function DocumentoDetalleModal({
           </div>
           <ModalCloseButton onClick={onCerrar} />
         </div>
+
+        {(esFicha || esConsentimiento) && (
+          <Alerta tono="advertencia" className="mx-6 mt-4">
+            Contenido privado. No visible para el paciente.
+          </Alerta>
+        )}
 
         {doc.motivoCierre && (
           <Alerta tono="advertencia" className="mx-6 mt-4">
@@ -323,7 +352,11 @@ export function DocumentoDetalleModal({
                     {Object.entries(contenidoAMostrar).map(([clave, valor]) => (
                       <div key={clave}>
                         <span className="font-sans text-label font-medium text-muted-foreground block">
-                          {etiquetaDeCampo(clave, plantilla?.cuerpo)}
+                          {etiquetaDeCampo(
+                            clave,
+                            doc.contenido?.[clave],
+                            plantilla?.cuerpo
+                          )}
                         </span>
                         {editando ? (
                           <textarea
@@ -338,7 +371,7 @@ export function DocumentoDetalleModal({
                           />
                         ) : (
                           <p className="font-sans font-medium text-value text-foreground mt-0.5 whitespace-pre-wrap">
-                            {String(valor || "—")}
+                            {valorDeRespuesta(valor) || "—"}
                           </p>
                         )}
                       </div>
@@ -405,16 +438,24 @@ export function DocumentoDetalleModal({
                 <span className="font-sans text-label font-medium text-muted-foreground block">
                   Archivos Adjuntos de Respaldo
                 </span>
-                <label className="cursor-pointer font-sans text-xs font-bold text-muted-foreground hover:text-foreground">
-                  {subirAdjuntoMutation.isPending ? "Subiendo..." : "Adjuntar"}
-                  <input
-                    type="file"
-                    accept=".pdf,.png,.jpg,.jpeg"
-                    onChange={handleSubirAdjunto}
-                    disabled={subirAdjuntoMutation.isPending}
-                    className="hidden"
-                  />
-                </label>
+                {estaCerrado ? (
+                  <span className="font-sans text-xs text-slate-400">
+                    Documento cerrado: no admite nuevos respaldos
+                  </span>
+                ) : (
+                  <label className="cursor-pointer font-sans text-xs font-bold text-muted-foreground hover:text-foreground">
+                    {subirAdjuntoMutation.isPending
+                      ? "Subiendo..."
+                      : "Adjuntar"}
+                    <input
+                      type="file"
+                      accept=".pdf,.png,.jpg,.jpeg"
+                      onChange={handleSubirAdjunto}
+                      disabled={subirAdjuntoMutation.isPending}
+                      className="hidden"
+                    />
+                  </label>
+                )}
               </div>
 
               {doc.adjuntos.length === 0 ? (
@@ -449,15 +490,17 @@ export function DocumentoDetalleModal({
                         >
                           Descargar
                         </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            eliminarAdjuntoMutation.mutate(adjunto.id)
-                          }
-                          className="text-rose-600 underline underline-offset-2"
-                        >
-                          Eliminar
-                        </button>
+                        {!estaCerrado && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              eliminarAdjuntoMutation.mutate(adjunto.id)
+                            }
+                            className="text-rose-600 underline underline-offset-2"
+                          >
+                            Eliminar
+                          </button>
+                        )}
                       </div>
                     </li>
                   ))}
@@ -556,10 +599,21 @@ export function DocumentoDetalleModal({
 
               <div>
                 <span className="font-sans text-label font-medium text-muted-foreground block">
-                  Origen
+                  Creada por
                 </span>
                 <p className="font-sans font-medium text-value text-foreground mt-0.5">
-                  {doc.creadoPorTipoActor}
+                  {doc.creadoPorNombre
+                    ? `${doc.creadoPorNombre} (${doc.creadoPorTipoActor})`
+                    : doc.creadoPorTipoActor}
+                </p>
+              </div>
+
+              <div>
+                <span className="font-sans text-label font-medium text-muted-foreground block">
+                  Fecha de Creación
+                </span>
+                <p className="font-sans font-medium text-value text-foreground mt-0.5">
+                  {formatearFechaHora(new Date(doc.createdAt))}
                 </p>
               </div>
             </div>
@@ -575,16 +629,14 @@ export function DocumentoDetalleModal({
           >
             {abrirArchivoMutation.isPending ? "Preparando…" : "Imprimir"}
           </button>
-          {doc.tieneArchivo && (
-            <button
-              type="button"
-              onClick={handleDescargarArchivo}
-              disabled={abrirArchivoMutation.isPending}
-              className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none disabled:opacity-50"
-            >
-              {abrirArchivoMutation.isPending ? "Preparando…" : "Descargar"}
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={handleDescargarArchivo}
+            disabled={abrirArchivoMutation.isPending}
+            className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none disabled:opacity-50"
+          >
+            {abrirArchivoMutation.isPending ? "Preparando…" : "Descargar"}
+          </button>
           {puedeEditar && !confirmarCierre && (
             <button
               type="button"

@@ -117,6 +117,16 @@ export const useUpdatePlantillaMutation = () => {
   });
 };
 
+export const useEliminarPlantillaMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => plantillaService.eliminar(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["plantillas"] });
+    },
+  });
+};
+
 export const useUpdatePlantillaEstadoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

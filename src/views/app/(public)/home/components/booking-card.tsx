@@ -238,19 +238,32 @@ export default function BookingCard() {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           callback: async (response: any) => {
             if (response && response.credential) {
-              if (!consentimientoRef.current) return;
+              if (!consentimientoRef.current) {
+                setAuthError(
+                  "Aceptá la política de privacidad antes de iniciar sesión."
+                );
+                return;
+              }
+              const escrito = useBookingStore.getState();
+              if (!esRutValido(escrito.patientRut)) {
+                setAuthError(
+                  "Completá tu RUT antes de iniciar sesión, así tus datos quedan en una sola ficha."
+                );
+                return;
+              }
               setAuthError(null);
               try {
                 const result = await authMutation.mutateAsync({
                   idToken: response.credential,
                   consentimientoAceptado: true,
+                  rut: limpiarRut(escrito.patientRut),
                 });
                 setAuthToken(result.data.token);
                 setPatientInfo({
                   name: `${result.data.paciente.nombre} ${result.data.paciente.apellido}`.trim(),
                   email: result.data.paciente.email,
-                  phone: result.data.paciente.telefono || "",
-                  rut: result.data.paciente.rut || "",
+                  phone: result.data.paciente.telefono || escrito.patientPhone,
+                  rut: result.data.paciente.rut || escrito.patientRut,
                 });
               } catch (err: unknown) {
                 setAuthError(
@@ -408,28 +421,55 @@ export default function BookingCard() {
   const rutLimpio = limpiarRut(patientRut);
   const rutEsValido = esRutValido(patientRut);
   const mostrarErrorRut = rutLimpio.length >= 7 && !rutEsValido;
+  const puedeIniciarSesion = consentimientoAceptado && rutEsValido;
 
   const telefonoLimpio = limpiarTelefono(patientPhone);
   const telefonoEsValido = esTelefonoValido(patientPhone);
   const mostrarErrorTelefono = telefonoLimpio.length >= 9 && !telefonoEsValido;
 
+  const perfilCompleto = rutEsValido && telefonoEsValido;
+
+  const datosCompletos = Boolean(
+    patientName &&
+    patientEmail &&
+    patientRut &&
+    rutEsValido &&
+    patientPhone &&
+    telefonoEsValido
+  );
+  const seleccionCompleta = Boolean(
+    selectedServiceId &&
+    selectedSpecialistId &&
+    selectedBloqueHorarioId &&
+    duracionMinutos
+  );
+  const puedeReservar =
+    Boolean(authToken) && datosCompletos && seleccionCompleta;
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!datosCompletos) {
+      setAuthError("Completá tus datos antes de continuar.");
+      return;
+    }
+    if (!authToken) {
+      setAuthError(
+        "Iniciá sesión con tu cuenta de Google para confirmar la reserva."
+      );
+      return;
+    }
     if (
-      !authToken ||
-      !patientName ||
-      !patientEmail ||
-      !patientPhone ||
-      !patientRut ||
-      !rutEsValido ||
-      !telefonoEsValido ||
       !selectedServiceId ||
       !selectedSpecialistId ||
       !selectedBloqueHorarioId ||
       !duracionMinutos
     ) {
+      setAuthError(
+        "Falta elegir el servicio, el horario o la profesional. Volvé atrás para completarlo."
+      );
       return;
     }
+    setAuthError(null);
 
     submitMutation.mutate({
       selectedServiceId,
@@ -849,19 +889,30 @@ export default function BookingCard() {
 
               <div
                 id="google-btn-container"
-                className={`flex justify-center min-h-[40px] ${consentimientoAceptado ? "" : "opacity-40 pointer-events-none"}`}
+                className={`flex justify-center min-h-[40px] ${puedeIniciarSesion ? "" : "opacity-40 pointer-events-none"}`}
               />
-              {!consentimientoAceptado && (
-                <p className="text-[11px] text-slate-400">
+              {!consentimientoAceptado ? (
+                <p className="text-table-head text-slate-400">
                   Aceptá la política de privacidad para continuar
                 </p>
+              ) : (
+                !rutEsValido && (
+                  <p className="text-table-head text-slate-400">
+                    Completá tu RUT más abajo para poder iniciar sesión
+                  </p>
+                )
               )}
 
-              {authToken && (
-                <div className="text-xs text-white font-bold bg-emerald-600 rounded-overlay p-2">
-                  Sesión Iniciada Correctamente
-                </div>
-              )}
+              {authToken &&
+                (perfilCompleto ? (
+                  <div className="text-xs text-white font-bold bg-emerald-600 rounded-overlay p-2">
+                    Sesión Iniciada Correctamente
+                  </div>
+                ) : (
+                  <div className="text-xs text-white font-bold bg-amber-600 rounded-overlay p-2">
+                    Sesión iniciada. Completá tu teléfono para poder reservar
+                  </div>
+                ))}
             </div>
 
             <div>
@@ -966,6 +1017,12 @@ export default function BookingCard() {
             </div>
           )}
 
+          {!authToken && datosCompletos && (
+            <p className="text-table-head text-slate-500 text-center mt-3">
+              Iniciá sesión con Google, arriba, para habilitar la reserva
+            </p>
+          )}
+
           <div className="flex justify-between items-center shrink-0 mt-4 border-t border-brand-border/30 pt-4">
             <button
               type="button"
@@ -976,23 +1033,9 @@ export default function BookingCard() {
             </button>
             <button
               type="submit"
-              disabled={
-                submitMutation.isPending ||
-                !patientName ||
-                !patientEmail ||
-                !patientPhone ||
-                !patientRut ||
-                !rutEsValido ||
-                !telefonoEsValido
-              }
+              disabled={submitMutation.isPending || !puedeReservar}
               className={`rounded-global px-6 py-3.5 text-xs font-bold tracking-wider transition-colors ${
-                !submitMutation.isPending &&
-                patientName &&
-                patientEmail &&
-                patientPhone &&
-                patientRut &&
-                rutEsValido &&
-                telefonoEsValido
+                !submitMutation.isPending && puedeReservar
                   ? "bg-brand-primary hover:bg-brand-primary-hover text-white cursor-pointer shadow-md"
                   : "bg-slate-100 text-slate-400 cursor-not-allowed"
               }`}

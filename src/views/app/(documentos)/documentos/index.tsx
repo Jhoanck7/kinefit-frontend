@@ -325,12 +325,10 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
             se puede modificar
           </p>
 
-          <div className="mb-4 border border-border" style={{ height: "70vh" }}>
-            <embed
-              src={pdfFirmadoBase64 ?? undefined}
-              type="application/pdf"
-              className="h-full w-full"
-            />
+          <div className="mb-4">
+            {pdfFirmadoBase64 && (
+              <PdfSignatureCanvas soloLectura url={pdfFirmadoBase64} />
+            )}
           </div>
 
           {errorFirma && !errorDocumentoModificado && (

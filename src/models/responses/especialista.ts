@@ -17,6 +17,7 @@ export interface EspecialistaResponse {
   fotoAlt?: string;
   biografia?: string;
   fechasDisponibles?: string[];
+  tieneHorario: boolean;
 }
 
 export interface EspecialistaAdminResponse {
@@ -29,4 +30,11 @@ export interface EspecialistaAdminResponse {
   fotoUrl?: string;
   activo: boolean;
   mostrarContacto: boolean;
+}
+
+export interface EspecialistaEstadoResponse {
+  id: number;
+  activo: boolean;
+  advertencia?: string;
+  citasVigentes?: number;
 }

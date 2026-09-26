@@ -1,3 +1,4 @@
+import { MAX_ADJUNTO_BYTES, validarTamano } from "@/lib/limites-archivo";
 import { ApiResponse } from "@/models/generics";
 import {
   CreateFichaRequest,
@@ -86,6 +87,7 @@ export class DocumentoService extends BaseApiService {
   }
 
   adjuntarFicha(citaId: number, archivo: File, nombre?: string) {
+    validarTamano(archivo, MAX_ADJUNTO_BYTES);
     const formData = new FormData();
     formData.append("archivo", archivo);
     if (nombre) formData.append("nombre", nombre);
@@ -123,6 +125,7 @@ export class DocumentoService extends BaseApiService {
 
   // Adjuntos, comunes a los 3 tipos
   subirAdjunto(documentoId: number, archivo: File) {
+    validarTamano(archivo, MAX_ADJUNTO_BYTES);
     const formData = new FormData();
     formData.append("archivo", archivo);
     return this.httpClient.post<ApiResponse<AdjuntoResumenResponse>>(
@@ -153,6 +156,7 @@ export class DocumentoService extends BaseApiService {
   }
 
   adjuntarRecomendacion(citaId: number, archivo: File, nombre?: string) {
+    validarTamano(archivo, MAX_ADJUNTO_BYTES);
     const formData = new FormData();
     formData.append("archivo", archivo);
     if (nombre) formData.append("nombre", nombre);
@@ -178,6 +182,7 @@ export class DocumentoService extends BaseApiService {
   }
 
   subirEscaneo(id: number, archivo: File) {
+    validarTamano(archivo, MAX_ADJUNTO_BYTES);
     const formData = new FormData();
     formData.append("archivo", archivo);
     return this.httpClient.post<ApiResponse<ConsentimientoCitaResponse>>(

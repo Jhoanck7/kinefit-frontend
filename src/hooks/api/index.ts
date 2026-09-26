@@ -97,6 +97,7 @@ export {
   useCrearPlantillaConsentimientoMutation,
   useCrearPlantillaFichaMutation,
   useCrearPlantillaRecomendacionMutation,
+  useEliminarPlantillaMutation,
   useGetPlantillaById,
   useGetPlantillas,
   useImportarPlantillaConsentimientoMutation,

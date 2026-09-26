@@ -1,14 +1,21 @@
 "use client";
 
-import { Alerta, EmptyState, SwitchField } from "@/components/shared";
+import { Alerta, EmptyState, Modal, SwitchField } from "@/components/shared";
 import { Badge, Button, Card } from "@/components/ui";
 import { formatearFechaExtensa } from "@/lib/formato";
 
 import { usePlantillas } from "./hooks";
 
 export default function PlantillasView() {
-  const { plantillas, errorEstado, actualizandoEstadoId, actions } =
-    usePlantillas();
+  const {
+    plantillas,
+    errorEstado,
+    actualizandoEstadoId,
+    plantillaAEliminar,
+    errorEliminar,
+    eliminando,
+    actions,
+  } = usePlantillas();
 
   if (!plantillas) return <div aria-hidden />;
 
@@ -127,12 +134,66 @@ export default function PlantillasView() {
                   >
                     Editar
                   </Button>
+                  {plantilla.documentosAsociados === 0 ? (
+                    <Button
+                      variant="outline"
+                      className="rounded-overlay text-rose-700"
+                      onClick={() =>
+                        actions.handleSolicitarEliminacion(plantilla)
+                      }
+                    >
+                      Eliminar
+                    </Button>
+                  ) : (
+                    <span className="font-sans text-table-head text-slate-400">
+                      En uso: desactivar en lugar de eliminar
+                    </span>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
       )}
+
+      <Modal
+        abierto={Boolean(plantillaAEliminar)}
+        onCerrar={actions.handleCancelarEliminacion}
+      >
+        <div className="p-6">
+          <h3 className="font-sans text-section-title font-bold text-foreground">
+            ¿Eliminar esta plantilla?
+          </h3>
+          <p className="mt-2 font-sans text-xs text-slate-500">
+            Se eliminará &ldquo;{plantillaAEliminar?.nombre}&rdquo;. Todavía no
+            se generó ningún documento con ella, así que no queda nada sin su
+            formato de origen.
+          </p>
+          {errorEliminar && (
+            <Alerta tono="error" className="mt-4">
+              {errorEliminar}
+            </Alerta>
+          )}
+          <div className="mt-6 flex justify-end gap-3">
+            <Button
+              variant="outline"
+              className="rounded-overlay"
+              onClick={actions.handleCancelarEliminacion}
+              disabled={eliminando}
+            >
+              Volver
+            </Button>
+            <Button
+              variant="destructive"
+              className="rounded-overlay"
+              onClick={actions.handleConfirmarEliminacion}
+              disabled={eliminando}
+            >
+              {eliminando ? "Eliminando…" : "Sí, Eliminar"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

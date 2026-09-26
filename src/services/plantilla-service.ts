@@ -88,6 +88,12 @@ export class PlantillaService extends BaseApiService {
     );
   }
 
+  eliminar(id: number) {
+    return this.httpClient.delete<ApiResponse<null>>(
+      `${this.baseURL}/plantillas/${id}`
+    );
+  }
+
   updateEstado(id: number, activo: boolean) {
     return this.httpClient.patch<ApiResponse<PlantillaResponse>>(
       `${this.baseURL}/${id}/estado`,

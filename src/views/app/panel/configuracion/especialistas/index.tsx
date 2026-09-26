@@ -44,6 +44,7 @@ export default function EspecialistasView() {
     creando,
     guardando,
     eliminando,
+    cambiandoEstadoId,
     actions,
   } = useEspecialistas();
 
@@ -88,7 +89,12 @@ export default function EspecialistasView() {
               key={esp.id}
               especialista={esp}
               tieneCuenta={especialistasConCuenta.has(esp.id)}
+              cambiandoEstado={cambiandoEstadoId === esp.id}
               onClick={() => actions.handleAbrirEdicion(esp)}
+              onToggleEstado={() => actions.handleToggleEstado(esp)}
+              onConfigurarHorario={() =>
+                router.push("/panel/configuracion?tab=horarios")
+              }
               onCrearCuenta={() =>
                 router.push(
                   `/panel/configuracion?tab=personal&crearParaEspecialista=${esp.id}&nombre=${encodeURIComponent(esp.nombre)}`

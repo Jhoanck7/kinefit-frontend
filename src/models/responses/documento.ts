@@ -1,3 +1,5 @@
+import type { ContenidoDocumento } from "@/lib/documento-contenido";
+
 import { CuerpoFormato, TipoDocumentoClinico } from "./plantilla";
 
 /** Lo mínimo para que el paciente lea y firme, sin ningún id interno */
@@ -92,8 +94,10 @@ export interface DocumentoDetalleResponse {
   plantillaNombre?: string;
   creadoPorTipoActor: string;
   creadoPorActorId?: number;
+  creadoPorNombre?: string;
+  createdAt: string;
   tieneArchivo: boolean;
-  contenido?: Record<string, string>;
+  contenido?: ContenidoDocumento;
   requiereFirmaProfesional: boolean;
   firmaPacienteLista: boolean;
   firmadoPacienteEn?: string;

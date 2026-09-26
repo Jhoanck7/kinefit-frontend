@@ -7,12 +7,14 @@ export const useAuthenticateWithGoogleMutation = () => {
     mutationFn: ({
       idToken,
       consentimientoAceptado,
+      rut,
     }: {
       idToken: string;
       consentimientoAceptado: boolean;
+      rut?: string;
     }) =>
       authService
-        .loginWithGoogleToken(idToken, consentimientoAceptado)
+        .loginWithGoogleToken(idToken, consentimientoAceptado, rut)
         .then(res => res.data),
   });
 };

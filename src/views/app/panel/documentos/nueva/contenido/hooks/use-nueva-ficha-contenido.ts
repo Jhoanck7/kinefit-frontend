@@ -11,6 +11,7 @@ import {
   useSubirAdjuntoMutation,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
+import { conNombresDePlantilla } from "@/lib/documento-contenido";
 import { useNuevaFichaStore } from "@/stores";
 
 export type ModoRegistroFicha = "plantilla" | "archivo";
@@ -95,7 +96,10 @@ export const useNuevaFichaContenido = () => {
     const creada = await crearFichaMutation.mutateAsync({
       citaId: Number(citaId),
       plantillaId: plantillaId,
-      contenido: (contenido as Record<string, string>) || {},
+      contenido: conNombresDePlantilla(
+        (contenido as Record<string, string>) || {},
+        plantilla?.cuerpo
+      ),
     });
 
     const nombresFallidos: string[] = [];

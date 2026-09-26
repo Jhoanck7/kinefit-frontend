@@ -36,6 +36,13 @@ export class VentaService extends BaseApiService {
     );
   }
 
+  exportarCsv(filtros?: Omit<FiltrosVentas, "page" | "pageSize">) {
+    return this.httpClient.get<Blob>(`${this.baseURL}/ventas`, {
+      params: { ...filtros, formato: "csv" },
+      responseType: "blob",
+    });
+  }
+
   getById(id: number) {
     return this.httpClient.get<ApiResponse<VentaResponse>>(
       `${this.baseURL}/ventas/${id}`
@@ -59,6 +66,23 @@ export class VentaService extends BaseApiService {
     return this.httpClient.post<ApiResponse<TerminalPagoResponse>>(
       `${this.baseURL}/terminales`,
       data
+    );
+  }
+
+  updateTerminal(
+    id: number,
+    data: { nombre: string; plazoAbonoDias: number; notas?: string }
+  ) {
+    return this.httpClient.put<ApiResponse<TerminalPagoResponse>>(
+      `${this.baseURL}/terminales/${id}`,
+      data
+    );
+  }
+
+  updateTerminalEstado(id: number, activo: boolean) {
+    return this.httpClient.patch<ApiResponse<TerminalPagoResponse>>(
+      `${this.baseURL}/terminales/${id}/estado`,
+      { activo }
     );
   }
 

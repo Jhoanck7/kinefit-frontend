@@ -14,6 +14,7 @@ import {
   TextField,
 } from "@/components/shared";
 import { Badge, Button, Card } from "@/components/ui";
+import { contadorDeSeccion } from "@/lib/documento-contenido";
 import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/formato";
 
 import { useNuevaFichaContenido } from "./hooks";
@@ -158,14 +159,20 @@ export default function NuevaFichaContenidoView() {
               <CollapsibleSection
                 key={seccion.id}
                 titulo={seccion.nombre}
-                contador={`${seccion.campos.filter(c => (contenido[c.id] ?? "").trim()).length}/${seccion.campos.length} completados`}
+                contador={contadorDeSeccion(seccion, contenido)}
               >
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   {seccion.campos.map(campo => {
+                    const quienCompleta =
+                      campo.completadoPor === "Paciente"
+                        ? "Lo completa el paciente"
+                        : "Lo completa la profesional";
                     const comun = {
                       etiqueta: campo.nombre,
                       obligatorio: campo.obligatorio,
-                      ayuda: campo.ayuda,
+                      ayuda: [campo.ayuda, quienCompleta]
+                        .filter(Boolean)
+                        .join(" · "),
                       value: contenido[campo.id] ?? "",
                       onChange: (
                         e: React.ChangeEvent<
@@ -184,6 +191,18 @@ export default function NuevaFichaContenidoView() {
                         >
                           {campo.nombre}
                         </p>
+                      );
+                    }
+                    if (campo.tipo === "Firma") {
+                      return (
+                        <div key={campo.id} className="sm:col-span-3">
+                          <span className="font-sans text-label font-medium text-muted-foreground block mb-1">
+                            {campo.nombre}
+                          </span>
+                          <div className="rounded-none border border-dashed border-slate-300 bg-slate-50 px-3 py-4 text-center font-sans text-xs text-slate-500">
+                            Se firma aparte, no se completa desde acá
+                          </div>
+                        </div>
                       );
                     }
                     if (campo.tipo === "Numerico") {

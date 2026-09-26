@@ -9,6 +9,17 @@ const ETIQUETA_ACTOR: Record<string, string> = {
   Personal: "Personal",
 };
 
+const ETIQUETA_ORIGEN_CONFIRMACION: Record<string, string> = {
+  Profesional: "confirmada por la profesional",
+  Correo: "confirmada por correo",
+  WhatsApp: "confirmada por WhatsApp",
+};
+
+function describirAutor(cambio: AuditoriaCitaResponse) {
+  const actor = ETIQUETA_ACTOR[cambio.tipoActor] ?? cambio.tipoActor;
+  return cambio.usuarioNombre ? `${cambio.usuarioNombre} (${actor})` : actor;
+}
+
 /** Traza de auditoría plegable al pie del detalle de cita */
 export function AuditTrail({
   historial,
@@ -31,7 +42,9 @@ export function AuditTrail({
                 }
               </p>
               <p className="text-xs text-muted-foreground">
-                {ETIQUETA_ACTOR[cambio.tipoActor] ?? cambio.tipoActor}
+                {describirAutor(cambio)}
+                {cambio.confirmadoPor &&
+                  `, ${ETIQUETA_ORIGEN_CONFIRMACION[cambio.confirmadoPor] ?? cambio.confirmadoPor}`}
               </p>
               {cambio.motivo && (
                 <p className="text-xs text-muted-foreground italic">

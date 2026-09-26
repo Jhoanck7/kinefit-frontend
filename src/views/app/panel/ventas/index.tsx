@@ -1,6 +1,6 @@
 "use client";
 
-import { Paginacion } from "@/components/shared";
+import { Alerta, Paginacion } from "@/components/shared";
 import {
   Table,
   TableBody,
@@ -48,6 +48,7 @@ export default function VentasView() {
     rangoFecha,
     metodoPago,
     busquedaPaciente,
+    errorExportar,
     actions,
   } = useVentas();
 
@@ -65,6 +66,8 @@ export default function VentasView() {
         onAbrirConfiguracion={() => actions.setModalConfig(true)}
         onExportar={actions.handleExportar}
       />
+
+      {errorExportar && <Alerta tono="error">{errorExportar}</Alerta>}
 
       {/* Tabla Principal de Ventas */}
       <div className="overflow-hidden rounded-none border border-slate-200 shadow-none font-sans">

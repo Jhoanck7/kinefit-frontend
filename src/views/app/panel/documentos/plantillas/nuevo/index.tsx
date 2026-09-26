@@ -78,7 +78,7 @@ function ConstructorPlantillaContenido() {
       <div
         className={
           modo === "campos"
-            ? "grid grid-cols-1 gap-6 lg:grid-cols-[65fr_35fr]"
+            ? "grid grid-cols-1 gap-6 md:grid-cols-[62fr_38fr]"
             : "mx-auto max-w-2xl"
         }
       >
@@ -133,13 +133,11 @@ function ConstructorPlantillaContenido() {
                 <p className="font-sans text-label font-semibold text-muted-foreground">
                   Firmas Requeridas
                 </p>
-                {modo !== "archivo" && (
-                  <SwitchField
-                    etiqueta="Requiere firma del paciente"
-                    checked={requiereFirmaPaciente}
-                    onChange={actions.setRequiereFirmaPaciente}
-                  />
-                )}
+                <SwitchField
+                  etiqueta="Requiere firma del paciente"
+                  checked={requiereFirmaPaciente}
+                  onChange={actions.setRequiereFirmaPaciente}
+                />
                 <SwitchField
                   etiqueta="Requiere firma de la profesional"
                   checked={requiereFirmaProfesional}
@@ -386,6 +384,11 @@ function ConstructorPlantillaContenido() {
                               {t.etiqueta}
                             </option>
                           ))}
+                          {!TIPOS_CAMPO.some(t => t.valor === campo.tipo) && (
+                            <option value={campo.tipo}>
+                              {campo.tipo} (en desuso)
+                            </option>
+                          )}
                         </select>
 
                         <select
@@ -580,7 +583,7 @@ function ConstructorPlantillaContenido() {
         </div>
 
         {modo === "campos" && (
-          <div className="border border-slate-200 rounded-none h-fit sticky top-6">
+          <div className="border border-slate-200 rounded-none h-fit md:sticky md:top-6">
             <div className="flex items-center justify-between bg-slate-900 px-4 py-3 text-white">
               <span className="font-sans text-xs font-bold">Vista Previa</span>
             </div>
@@ -601,8 +604,23 @@ function ConstructorPlantillaContenido() {
                           {campo.obligatorio && (
                             <span className="ml-0.5 text-red-700">*</span>
                           )}
+                          {campo.tipo !== "TextoInformativo" && (
+                            <span className="ml-1 font-normal text-slate-400">
+                              {campo.completadoPor === "Paciente"
+                                ? "· paciente"
+                                : "· profesional"}
+                            </span>
+                          )}
                         </label>
-                        {campo.tipo === "TextoLargo" ? (
+                        {campo.tipo === "TextoInformativo" ? (
+                          <p className="whitespace-pre-line font-sans text-xs leading-relaxed text-slate-600">
+                            {campo.nombre || "Texto informativo"}
+                          </p>
+                        ) : campo.tipo === "Firma" ? (
+                          <div className="rounded-none border border-dashed border-slate-300 bg-slate-50 px-2 py-4 text-center font-sans text-xs text-slate-500">
+                            Recuadro de firma
+                          </div>
+                        ) : campo.tipo === "TextoLargo" ? (
                           <div className="h-16 rounded-none border border-slate-200 bg-slate-50" />
                         ) : campo.tipo === "Seleccion" ? (
                           <select

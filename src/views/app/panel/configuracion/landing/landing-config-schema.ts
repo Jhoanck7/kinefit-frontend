@@ -28,6 +28,13 @@ export const landingConfigSchema: SectionSchema[] = [
     description: "Textos principales y carrusel de fotos de fondo.",
     fields: [
       {
+        key: "heroTagline",
+        label: "Titular Principal",
+        type: "text",
+        required: true,
+        gridCols: 1,
+      },
+      {
         key: "heroBrandName",
         label: "Nombre de Marca / Destacado",
         type: "text",

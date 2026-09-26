@@ -1,3 +1,4 @@
+import { MAX_IMAGEN_BYTES, validarTamano } from "@/lib/limites-archivo";
 import { ApiResponse } from "@/models/generics";
 import { ImageUploadResponse } from "@/models/responses";
 
@@ -18,6 +19,7 @@ export class MediaService extends BaseApiService {
   }
 
   uploadImage(file: File, folder = "contenido") {
+    validarTamano(file, MAX_IMAGEN_BYTES);
     const formData = new FormData();
     formData.append("archivo", file);
     formData.append("carpeta", folder);
@@ -29,6 +31,7 @@ export class MediaService extends BaseApiService {
   }
 
   replaceImage(publicId: string, file: File, folder = "contenido") {
+    validarTamano(file, MAX_IMAGEN_BYTES);
     const formData = new FormData();
     formData.append("archivo", file);
     formData.append("carpeta", folder);

@@ -5,6 +5,8 @@ export interface AuditoriaCitaResponse {
   estadoNuevo: string;
   tipoActor: string;
   usuarioId?: number;
+  usuarioNombre?: string;
+  confirmadoPor?: string;
   motivo?: string;
   createdAt: string;
 }
