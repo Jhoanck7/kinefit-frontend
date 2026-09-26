@@ -133,4 +133,6 @@ export {
   useGetTerminales,
   useGetVentaById,
   useGetVentas,
+  useUpdateTerminalEstadoMutation,
+  useUpdateTerminalMutation,
 } from "./use-venta-service";

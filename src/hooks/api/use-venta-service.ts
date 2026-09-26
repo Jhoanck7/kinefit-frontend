@@ -53,6 +53,33 @@ export const useCreateTerminalMutation = () => {
   });
 };
 
+export const useUpdateTerminalMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: { nombre: string; plazoAbonoDias: number; notas?: string };
+    }) => ventaService.updateTerminal(id, data).then(res => res.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["terminales-pago"] });
+    },
+  });
+};
+
+export const useUpdateTerminalEstadoMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, activo }: { id: number; activo: boolean }) =>
+      ventaService.updateTerminalEstado(id, activo).then(res => res.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["terminales-pago"] });
+    },
+  });
+};
+
 export const useGetRepartos = () => {
   return useQuery({
     queryKey: ["repartos-profesionales"],

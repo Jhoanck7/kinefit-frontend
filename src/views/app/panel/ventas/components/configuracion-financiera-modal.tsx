@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Alerta, Modal, ModalCloseButton } from "@/components/shared";
+import { Badge } from "@/components/ui";
 import {
   useCreateRepartoMutation,
   useCreateTasaImpuestoMutation,
@@ -11,7 +12,9 @@ import {
   useGetRepartos,
   useGetTasasImpuesto,
   useGetTerminales,
+  useUpdateTerminalEstadoMutation,
 } from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
 import { fechaISO } from "@/lib/formato";
 import { RepartoProfesionalResponse } from "@/models/responses";
 
@@ -27,6 +30,18 @@ export function ConfiguracionFinancieraModal({
   const [tab, setTab] = useState<"terminales" | "repartos" | "iva">(
     "terminales"
   );
+
+  const estadoTerminalMutation = useUpdateTerminalEstadoMutation();
+  const [errorTerminal, setErrorTerminal] = useState<string | null>(null);
+
+  async function handleToggleTerminal(id: number, activo: boolean) {
+    setErrorTerminal(null);
+    try {
+      await estadoTerminalMutation.mutateAsync({ id, activo: !activo });
+    } catch (err: unknown) {
+      setErrorTerminal(handleApiError(err).message);
+    }
+  }
 
   const { data: terminales = [], isLoading: cargandoTerminales } =
     useGetTerminales();
@@ -234,6 +249,9 @@ export function ConfiguracionFinancieraModal({
               {/* TAB 1: Terminales POS */}
               {tab === "terminales" && (
                 <div className="space-y-4">
+                  {errorTerminal && (
+                    <Alerta tono="error">{errorTerminal}</Alerta>
+                  )}
                   <div className="flex items-center justify-between">
                     <p className="font-sans text-xs text-slate-500">
                       Terminales y comisiones aplicadas al cobrar con tarjetas:
@@ -464,18 +482,40 @@ export function ConfiguracionFinancieraModal({
                             )}
                           </div>
 
-                          <div className="text-right text-xs">
-                            <div className="font-sans text-slate-800">
-                              Débito:{" "}
-                              <span className="font-medium text-slate-900">
-                                {debito?.porcentaje ?? "—"}%
-                              </span>
+                          <div className="flex items-center gap-3">
+                            <div className="text-right text-xs">
+                              <div className="font-sans text-slate-800">
+                                Débito:{" "}
+                                <span className="font-medium text-slate-900">
+                                  {debito?.porcentaje ?? "—"}%
+                                </span>
+                              </div>
+                              <div className="font-sans text-slate-800">
+                                Crédito:{" "}
+                                <span className="font-medium text-slate-900">
+                                  {credito?.porcentaje ?? "—"}%
+                                </span>
+                              </div>
                             </div>
-                            <div className="font-sans text-slate-800">
-                              Crédito:{" "}
-                              <span className="font-medium text-slate-900">
-                                {credito?.porcentaje ?? "—"}%
-                              </span>
+
+                            <div className="flex flex-col items-end gap-1">
+                              <Badge
+                                className={`rounded-overlay border-0 text-[10px] font-medium text-white ${
+                                  t.activo ? "bg-emerald-700" : "bg-slate-400"
+                                }`}
+                              >
+                                {t.activo ? "Activo" : "Inactivo"}
+                              </Badge>
+                              <button
+                                type="button"
+                                disabled={estadoTerminalMutation.isPending}
+                                onClick={() =>
+                                  handleToggleTerminal(t.id, t.activo)
+                                }
+                                className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground disabled:opacity-50"
+                              >
+                                {t.activo ? "Desactivar" : "Activar"}
+                              </button>
                             </div>
                           </div>
                         </div>

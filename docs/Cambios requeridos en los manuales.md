@@ -22,10 +22,12 @@ Los **YA APLICA** son los urgentes: hoy el manual dice algo que el sistema no ha
 
 | Manual | YA APLICA | PENDIENTE | A DECIDIR | Total |
 |---|---|---|---|---|
-| Manual de Usuario | 4 | 11 | 1 | 16 |
-| Manual del Sistema | 1 | 2 | 0 | 3 |
+| Manual de Usuario | 19 | 3 | 1 | 23 |
+| Manual del Sistema | 2 | 1 | 0 | 3 |
 
-**Los cinco YA APLICA:** M-01 y M-02 (razones por las que falta un horario), M-06 (datos de creación del documento), M-19 (historial de la cita) y S-01 (vinculación por RUT en el login del paciente).
+**Solo 4 quedan PENDIENTE:** M-10 y M-16 (correcciones de texto que no dependen de código: el formato PDF del documento externo y quitar SVG), M-17 (los dos ítems que faltan en el menú lateral) y S-02 (Resend, que depende de S-13).
+
+**Todo lo demás ya aplica: el sistema cambió y el manual quedó atrás.** Son 21 secciones a actualizar, con el texto propuesto listo para pegar en cada entrada.
 
 ---
 
@@ -59,7 +61,7 @@ Ahora hay una cuarta razón por la que un horario no aparece: **ya pasó**. Ante
 
 **Y en la columna Qué hacer**, agregar al final: *"Si la cita es para hoy, verifique que la hora no haya pasado ya."*
 
-### M-03 · §4.5.3 Tipos de campo — quitar la fila "Firma" · **PENDIENTE**
+### M-03 · §4.5.3 Tipos de campo — quitar la fila "Firma" · **YA APLICA**
 
 **Origen:** decisión 1 = A (manda la plantilla). S-19, PF-114.
 
@@ -75,7 +77,7 @@ La tabla queda con **seis** tipos. Hay que ajustar también la frase introductor
 
 > Nota: las firmas no se declaran como campos. Se activan con los interruptores de **Firmas Requeridas** al crear la plantilla, y el recuadro se presenta al pie del documento.
 
-### M-04 · §4.4.2 Paso 2: Completar la ficha · **PENDIENTE**
+### M-04 · §4.4.2 Paso 2: Completar la ficha · **YA APLICA**
 
 **Origen:** decisión 2 = c (campos editables con distintivo). S-18, PF-113.
 
@@ -85,7 +87,7 @@ Hoy el manual dice solo *"Complete los campos. Los obligatorios impiden guardar 
 
 > Cada campo muestra quién debe completarlo: **La profesional** o **El paciente**. Los marcados como del paciente se pueden completar igualmente desde el panel —por ejemplo, si la profesional los pregunta durante la atención—, pero la marca indica a quién corresponden en el formato original.
 
-### M-05 · §4.3 Detalle de un Documento — aviso de privacidad · **PENDIENTE**
+### M-05 · §4.3 Detalle de un Documento — aviso de privacidad · **YA APLICA**
 
 **Origen:** S-20, PF-107.
 
@@ -130,7 +132,7 @@ Dos cambios en lo que muestra cada línea del historial:
 
 > Nota: cuando la acción la ejecutó el sistema, por ejemplo al confirmarse un pago en línea o al expirar una reserva, la línea indica "Sistema" en lugar de un nombre.
 
-### M-07 · §4.3.1 Archivo y adjuntos · **PENDIENTE**
+### M-07 · §4.3.1 Archivo y adjuntos · **YA APLICA**
 
 **Origen:** S-09, H-023.
 
@@ -138,7 +140,7 @@ Dos cambios en lo que muestra cada línea del historial:
 
 > Nota: un documento cerrado, bloqueado o anulado no admite nuevos adjuntos. En ese caso el sistema no ofrece la acción **Adjuntar**.
 
-### M-08 · §4.5.1 Catálogo de plantillas · **PENDIENTE**
+### M-08 · §4.5.1 Catálogo de plantillas · **YA APLICA**
 
 **Origen:** S-22, H-027.
 
@@ -150,7 +152,7 @@ Dos cambios en lo que muestra cada línea del historial:
 
 > Nota: una plantilla se puede eliminar **solo mientras no tenga documentos generados con ella**. En cuanto se emite el primer documento, la eliminación deja de ofrecerse, para no dejar ese documento sin su formato de origen. Si no quiere seguir usándola, desactívela.
 
-### M-09 · §4.5.2 Crear o editar una plantilla — Advertencia · **PENDIENTE**
+### M-09 · §4.5.2 Crear o editar una plantilla — Advertencia · **YA APLICA**
 
 **Origen:** S-08, PF-117 sobre fichas.
 
@@ -174,7 +176,7 @@ El manual no dice en qué formato se sube un documento externo. El sistema acept
 
 > El documento debe estar en formato **PDF**. Si lo tiene en Word, expórtelo a PDF antes de subirlo.
 
-### M-11 · §5.5.1 Máquinas POS · **PENDIENTE**
+### M-11 · §5.5.1 Máquinas POS · **YA APLICA**
 
 **Origen:** decisión 3 = c. S-21, H-026.
 
@@ -188,7 +190,7 @@ Hoy el manual solo describe agregar un terminal.
 >
 > Advertencia: las comisiones no se editan. Al igual que los acuerdos de reparto y la tasa de impuesto, funcionan por versiones con fecha de vigencia, de modo que cada venta conserva la comisión que estaba vigente el día en que se registró.
 
-### M-12 · §3.3.2 Historial de Citas · **PENDIENTE**
+### M-12 · §3.3.2 Historial de Citas · **YA APLICA**
 
 **Origen:** decisión 9 = a. S-03, PF-092.
 
@@ -200,7 +202,7 @@ Hoy el manual solo describe agregar un terminal.
 
 > Cada línea indica la fecha y el rango horario, el servicio, la profesional que atendió, el estado en que quedó la cita y **si ya tiene ficha clínica registrada**.
 
-### M-13 · §3.3.3 Documentos del Paciente · **PENDIENTE**
+### M-13 · §3.3.3 Documentos del Paciente · **YA APLICA**
 
 **Origen:** S-23, PF-178.
 
@@ -212,7 +214,7 @@ Hoy el manual solo describe agregar un terminal.
 
 > Cada línea muestra el nombre del documento, su tipo, **su estado** y su fecha, con el botón Ver Documento para abrirlo.
 
-### M-14 · §6.2 Especialistas — Precaución · **PENDIENTE** · ⚠ HOY ESTÁ EQUIVOCADA
+### M-14 · §6.2 Especialistas — Precaución · **YA APLICA** · ⚠ EL TEXTO ACTUAL ESTÁ EQUIVOCADO
 
 **Origen:** S-11, PF-147. **Este no es un cambio por una mejora: el texto actual manda al lugar equivocado.**
 
@@ -230,7 +232,7 @@ La causa más frecuente de que una profesional no aparezca en el paso 3 **no** s
 
 > Si una integrante aún no tiene horario cargado, su tarjeta lo advierte con el enlace **Sin horario cargado, configurar**.
 
-### M-15 · Solución de Problemas — fila "No aparece ninguna profesional en el paso 3 de la reserva" · **PENDIENTE**
+### M-15 · Solución de Problemas — fila "No aparece ninguna profesional en el paso 3 de la reserva" · **YA APLICA**
 
 **Origen:** el mismo que M-14.
 
@@ -274,6 +276,51 @@ Y agregar la fila correspondiente a la tabla de **Roles y permisos**:
 
 > | Reportes | Sí | No |
 
+### M-20 · §5.6 Exportar el Listado · **YA APLICA**
+
+**Origen:** S-24, PF-198. Implementado el 2026-09-26.
+
+**El manual ya describía esta función correctamente; lo que no existía era la función.** Era un `alert()`. Ahora la exportación es real, devuelve el período completo sin paginar y respeta los filtros, exactamente como el manual dice.
+
+**No hay que cambiar el texto.** Queda registrado solo para que conste que §5.6 pasó de ser una promesa incumplida a una descripción verdadera. Conviene agregar una sola precisión, porque el archivo es CSV y no XLSX:
+
+> Nota: el archivo se descarga en formato CSV, listo para abrirse en Excel o en una planilla de cálculo.
+
+### M-21 · §4.3.3 Imprimir, descargar y cerrar la ficha · **YA APLICA**
+
+**Origen:** S-07, PF-101. Implementado el 2026-09-26.
+
+Mismo caso que M-20: el manual describía las tres acciones y **Descargar solo funcionaba en documentos con archivo adjunto**, mientras que **Imprimir**, en una ficha del constructor, imprimía la página entera del panel. Ahora las dos generan el PDF del documento.
+
+**No hay que cambiar el texto**, pero conviene agregar:
+
+> Nota: en las fichas completadas con una plantilla del sistema, el PDF se genera en el momento a partir del contenido registrado.
+
+### M-22 · §1.4 Gestión de Bloqueos y "El menú lateral" · **YA APLICA**
+
+**Origen:** S-26, PF-253. Implementado el 2026-09-26.
+
+Las rutas antiguas del panel ahora redirigen en lugar de dar 404:
+
+| Ruta antigua | Destino |
+|---|---|
+| `/panel/fichas` | `/panel/documentos` |
+| `/panel/fichas/formatos` | `/panel/documentos/plantillas` |
+| `/panel/fichas/formatos/nuevo` | `/panel/documentos/plantillas/nuevo` |
+| `/panel/agenda/bloqueos` | `/panel/agenda` |
+
+**Sin cambios de texto en el manual**, que ya describe las rutas nuevas. Queda anotado porque un marcador viejo del navegador ahora funciona, y eso cambia lo que hay que responder en Solución de Problemas si alguien reporta que "el enlace que tenía guardado no anda".
+
+### M-23 · §6.3.1 y §4.3.1 — mensajes de límite de tamaño · **YA APLICA**
+
+**Origen:** S-02. Implementado el 2026-09-26.
+
+Antes, un archivo por encima del límite producía el mensaje genérico *"Error de red"*, porque un 413 de nginx no llega legible al navegador. Ahora se valida antes de subir y el mensaje nombra el archivo y los dos tamaños.
+
+**El texto de §6.3.1 sigue siendo correcto** (25 MB para imágenes). Lo que conviene agregar es el límite de los adjuntos clínicos, que el manual no menciona en ninguna parte, en §4.3.1:
+
+> Nota: cada archivo adjunto admite hasta 15 MB. Si lo supera, el sistema lo informa antes de subirlo.
+
 ### M-18 · "La barra superior" y tabla de Roles y permisos · **A DECIDIR**
 
 **Origen:** H-021, decisión 6 = a (no ocultar).
@@ -313,7 +360,7 @@ La sección no menciona el requisito que hizo fallar los siete casos.
 >
 > El dominio de envío oficial es **kinefitchile.com**. La clave `EmailConfiguration:From` debe usar una dirección de ese dominio en todos los entornos.
 
-### S-03 · §3.3.3 Documentos Clínicos · **PENDIENTE**
+### S-03 · §3.3.3 Documentos Clínicos · **YA APLICA**
 
 **Origen:** S-08, PF-117 sobre fichas.
 

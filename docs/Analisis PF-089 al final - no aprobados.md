@@ -1233,3 +1233,124 @@ dotnet test      -> 215/215 (sin cambios de backend)
 ```
 
 El único error de eslint en los archivos del bloque es **preexistente**: `use-constructor-plantilla.ts:162` *"Calling setState synchronously within an effect"*, en el `useEffect` que carga la plantilla a editar. Ese archivo ya figuraba entre los 11 con errores previos; mi diff fueron 3 líneas, ninguna cerca de la 162.
+
+---
+
+## 20. Trabajo ejecutado — resto del lote (2026-09-26)
+
+### 20.1 S-20, S-07 y S-09 — el modal de documentos
+
+| Solución | Caso | Cambio |
+|---|---|---|
+| **S-20** | PF-107 | Aviso *"Contenido privado. No visible para el paciente."* en el detalle, con el `Alerta` que el archivo ya usaba. Condicionado a Ficha y Consentimiento: en una Recomendación sería falso, porque va dirigida al paciente |
+| **S-07** | PF-101 | `urlDelDocumento()` devuelve el archivo si existe, y si no genera el PDF con `generarPdfDesdeConstructor`. **Descargar** ya no depende de `tieneArchivo`, e **Imprimir** dejó de caer en `window.print()` |
+| **S-09** | H-023 | **Adjuntar** y **Eliminar** se ocultan en documentos cerrados; el error de subida dejó de ser invisible |
+
+**En S-07, el PDF usa los nombres congelados.** `cuerpoConNombresCongelados` toma la estructura de la plantilla viva —secciones y orden— pero reemplaza cada nombre por el que quedó guardado en la respuesta. Si no reemplazara, el PDF mostraría etiquetas distintas de las que muestra la pantalla, que es justo la inconsistencia que S-08 vino a cerrar. Y si la plantilla ya no estuviera disponible, arma una sección única con los nombres guardados en vez de fallar.
+
+**En S-09 el criterio de "cerrado" no quedó como un array suelto en la vista.** Agregué `documentoCerrado(estado)` a `lib/estados-documento.ts`, con los cuatro estados que el backend rechaza (`Completado`, `Bloqueado`, `CerradoPorBaja`, `Anulado`). Copiarlos en el componente habría sido la receta para que se desincronicen del backend en el próximo estado nuevo.
+
+Y cambié `subirAdjuntoMutation.mutate` por `mutateAsync` en `try/catch`. Esto vale aunque el botón esté oculto: cualquier otro fallo —tipo de archivo rechazado, red, tamaño— antes no se mostraba en ninguna parte.
+
+### 20.2 S-03 y S-23 — el modal del paciente
+
+| Solución | Caso | Cambio |
+|---|---|---|
+| **S-03** | PF-092 | Badge **Con ficha / Sin ficha** en cada línea del Historial de Citas |
+| **S-23** | PF-178 | El estado del documento en cada línea de la pestaña Documentos |
+
+S-03 reutiliza el cruce que ya hacía el asistente de ficha: `useGetFichasPorPaciente` devuelve `{id, citaId, estado}` y se arma un `Set` de `citaId`. La Agenda quedó fuera, según la decisión 9.
+
+### 20.3 S-10 — Desactivar integrante (PF-146, PF-244)
+
+Lo que faltaba era el cableado, pero encontré un detalle: **el servicio del frontend tipaba la respuesta como `{id, activo}` y descartaba la advertencia.** El backend devuelve además `Advertencia` y `CitasVigentes` —exactamente lo que PF-146 pide mostrar— y se estaban perdiendo en el tipo.
+
+Agregué `EspecialistaEstadoResponse` con los cuatro campos, y `handleToggleEstado` muestra `resultado.advertencia` cuando viene, o un mensaje propio cuando no.
+
+**PF-244 se resuelve solo con esto:** sin botón de baja nunca se disparaba `CerrarPorBajaEspecialistaAsync`, así que no era un caso propio.
+
+### 20.4 S-11 — Aviso de horario faltante (PF-147)
+
+Decisión 5 = b2: no se copia nada automáticamente, solo se avisa.
+
+**Backend:** `EspecialistaResponseDTO` gana `TieneHorario`, poblado con **una sola consulta** — agregué `GetEspecialistasConHorarioAsync(ids)` al repositorio en vez de llamar `GetByEspecialistaAsync` por cada especialista, que habrían sido N consultas para pintar una lista.
+
+**Frontend:** aviso **"Sin horario cargado, configurar"** en la tarjeta, junto al de "Sin cuenta de acceso", que enlaza a Configuración → Horarios.
+
+### 20.5 S-12 — Título del banner (PF-143)
+
+Una línea. `heroTagline` ya existía en el modelo, en el backend y en el estado del formulario: **solo faltaba declararlo en `landingConfigSchema`**. El renderizador de la Landing es genérico y se maneja por esquema, así que con eso alcanza.
+
+### 20.6 S-22 — Eliminar plantillas (H-027)
+
+**Backend:** `DELETE /api/documentos/plantillas/{id}`, que primero cuenta los documentos asociados y, si hay, lanza `UnprocessableException` con código **`PLANTILLA_EN_USO`** — el mismo que ya usa `ActualizarPlantillaAsync`, así el frontend sabe interpretarlo sin código nuevo.
+
+**Frontend:** botón **Eliminar** visible solo cuando `documentosAsociados === 0`; si hay documentos, el texto *"En uso: desactivar en lugar de eliminar"*. Con modal de confirmación. La validación está en las dos capas: ocultar el botón es la UX correcta, pero el endpoint tiene que ser seguro por su cuenta.
+
+### 20.7 S-06 — Fuga de descarga del paciente (PF-127)
+
+Decisión 8 = a, el mínimo.
+
+- `PdfSignatureCanvas` acepta `soloLectura`: no monta los canvas de firma ni los handlers de puntero.
+- El paso de revisión dejó de usar `<embed>` —que abría el visor nativo del navegador **con botón de descarga**— y usa ese canvas.
+- El archivo público se sirve con `Content-Disposition: inline`.
+
+Como quedó anotado al decidirlo: esto es **no ofrecer** la descarga, no impedirla. Una captura de pantalla siempre va a ser posible.
+
+### 20.8 S-24 — Exportación de ventas (PF-198)
+
+Era un `alert()`. Decisión 4 = b, en el backend.
+
+**Lo importante fue no duplicar la protección.** `ReporteController` tenía `EscaparCsv` y la convención de BOM y delimitador `;` como privados. Los extraje a **`CsvChileno`** (`Escapar`, `ConBom`, `Delimitador`) y ahora los usan los dos controladores. Si hubiera copiado el método, la neutralización de inyección de fórmulas —que ya tiene un test propio, `ExportarVentasACsv_UsaFormatoChilenoYNeutralizaInyeccionDeFormulas`— habría quedado en dos lugares que se irían separando.
+
+`GET /api/ventas?formato=csv` devuelve el período completo sin paginar, respetando los filtros, que es lo que §5.6 del manual promete. En el frontend, `handleExportar` descarga el blob y muestra el error si falla.
+
+**Un tropiezo que vale anotar:** inventé nombres de campos del desglose (`MontoNeto`, `PagoProfesional`, `MargenEmpresa`) y el compilador los rechazó. Los reales son `MontoProfesional`, `MontoCentro` y `MotivoNoCalculable`. Lo corregí contra el DTO en vez de suponer.
+
+### 20.9 S-21 — POS editable y desactivable (H-026)
+
+Decisión 3 = c.
+
+**Backend:** `PUT /api/terminales/{id}` (nombre, plazo de abono, notas) y `PATCH /api/terminales/{id}/estado`. Los dos heredan `SoloAdministrador` de la clase, como exige el test `LaConfiguracionDeTerminalesYRepartos_EsExclusivaDelAdministrador`.
+
+**Las comisiones no se editan**, deliberadamente: ya están versionadas con `VigenteDesde`/`VigenteHasta` y cada venta usa la vigente a su fecha. Sobrescribir una fila desalinearía el histórico.
+
+**Frontend:** badge Activo/Inactivo y botón Desactivar/Activar por terminal en la Configuración Financiera.
+
+### 20.10 S-02 — Validar el tamaño antes de salir a la red
+
+`lib/limites-archivo.ts` con `MAX_IMAGEN_BYTES` (25 MiB), `MAX_ADJUNTO_BYTES` (15 MB) y `validarTamano`, aplicado en el **servicio** y no en los hooks: así cubre a cualquier llamador, presente o futuro. Quedó en los 2 puntos de imagen y los 4 de subida clínica.
+
+El mensaje nombra el archivo y los dos tamaños. Es la única forma de decir algo útil, porque un 413 de nginx nunca va a ser legible por el navegador.
+
+### 20.11 Verificación
+
+```
+dotnet build     -> 0 errores
+npx tsc --noEmit -> 0
+npx eslint src   -> 26 errores, los mismos 26 que en HEAD (cero nuevos)
+```
+
+Docker se apagó a mitad del lote, lo que dio 121 fallos en 1 segundo con los 94 unitarios puros pasando — la firma inconfundible de Testcontainers sin daemon. Levantado de nuevo, la suite completa con **todo** el lote dentro (S-22, S-24, S-21, S-06, S-11 y S-26 incluidos) da:
+
+```
+dotnet test -> 215/215
+```
+
+### 20.12 S-26 — Redirección desde las rutas viejas (PF-253)
+
+Estaba bloqueada por falta del dato, pero la historia de git lo tenía. `git log --diff-filter=D` sobre las páginas del panel devolvió las rutas que existieron y ya no:
+
+| Ruta antigua | Destino | Estado |
+|---|---|---|
+| `/panel/fichas` | `/panel/documentos` | ✓ redirige |
+| `/panel/fichas/formatos` | `/panel/documentos/plantillas` | ✓ redirige |
+| `/panel/fichas/formatos/nuevo` | `/panel/documentos/plantillas/nuevo` | ✓ redirige |
+| `/panel/agenda/bloqueos` | `/panel/agenda` | ✓ redirige |
+| `/panel/cambiar-password` | **no tiene destino** | sin redirección |
+
+Resueltas con `redirects()` en `next.config.ts`, de la más específica a la más general para que `/panel/fichas/formatos/nuevo` no la capture la regla de `/panel/fichas`.
+
+**Hallazgo lateral que salió de esto:** `/panel/cambiar-password` no tiene a dónde redirigir porque **el cambio de contraseña no existe en el frontend**. El backend expone `PATCH /api/auth/personal/password` y un `grep` en todo `src/` no encuentra ningún consumidor: ni servicio, ni hook, ni vista. La pantalla se eliminó y el endpoint quedó huérfano.
+
+Eso significa que **hoy nadie del personal puede cambiar su propia contraseña desde el panel**, y el Manual de Usuario lo menciona en "El menú lateral" solo de refilón. No lo arreglé porque es alcance nuevo, no un caso del plan. Propongo abrirlo como **H-032**.
