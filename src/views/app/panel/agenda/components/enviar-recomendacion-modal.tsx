@@ -16,7 +16,9 @@ import { Button } from "@/components/ui";
 import {
   useAdjuntarRecomendacionMutation,
   useEnviarRecomendacionMutation,
+  useGetCita,
   useGetPlantillas,
+  useGetServicios,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
 
@@ -44,6 +46,14 @@ export function EnviarRecomendacionModal({
   const { data: plantillasDisponibles = [] } = useGetPlantillas();
   const plantillasRecomendacion = plantillasDisponibles.filter(
     p => p.tipo === "Recomendacion"
+  );
+  const { data: cita } = useGetCita(citaId ?? 0, Boolean(citaId));
+  const { data: servicios = [] } = useGetServicios(false);
+  const servicioDeLaCita = servicios.find(s => s.id === cita?.servicio.id);
+  const tieneRecomendacionEstandar = (servicioDeLaCita?.documentos ?? []).some(
+    d =>
+      d.momento === "AlFinalizarAtencion" &&
+      plantillasRecomendacion.some(p => p.id === d.plantillaId)
   );
   const plantillaElegida =
     plantillasRecomendacion.find(p => p.id === plantillaId) ?? null;
@@ -167,15 +177,24 @@ export function EnviarRecomendacionModal({
               ¿Cuál recomendación?
             </h3>
             {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
+            {!tieneRecomendacionEstandar && (
+              <Alerta tono="info">
+                {servicioDeLaCita?.nombre ?? "Este servicio"} no tiene una
+                recomendación estándar configurada, así que la única opción es
+                armar una personalizada.
+              </Alerta>
+            )}
             <div className="flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={handleEstandar}
-                disabled={enviando}
-                className="font-sans text-xs font-bold px-4 py-3 border border-slate-200 hover:bg-slate-50 text-left"
-              >
-                La Estándar del Servicio
-              </button>
+              {tieneRecomendacionEstandar && (
+                <button
+                  type="button"
+                  onClick={handleEstandar}
+                  disabled={enviando}
+                  className="font-sans text-xs font-bold px-4 py-3 border border-slate-200 hover:bg-slate-50 text-left"
+                >
+                  La Estándar del Servicio
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setPaso("personalizada")}

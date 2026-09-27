@@ -1456,3 +1456,58 @@ npx eslint src    -> 26 errores, los mismos 26 de HEAD (cero nuevos)
 Se corrió `next build` además del typecheck porque el paso 4 se reestructuró bastante y el build es la prueba real del JSX.
 
 **Sin verificar en navegador:** el modo Leer/Firmar es puro comportamiento táctil y **hay que probarlo en un teléfono real** antes de darlo por bueno.
+
+---
+
+## 22. Segunda ronda en el entorno desplegado (2026-09-27)
+
+### 22.1 PF-236: el esperado de la prueba está mal escrito
+
+La prueba espera *"No aparece la pregunta de recomendación"* cuando el servicio no tiene una asignada. **Eso no corresponde a cómo está construido el sistema, ni ahora ni nunca:**
+
+```
+git log --all -S "tieneRecomendacion"      (vacío)
+git log --all -S "recomendacionAsignada"   (vacío)
+```
+
+El disparo depende solo del estado nuevo, no del servicio, y `marcar_asistida` es el **único** camino que pone `Atendida` en todo el frontend. La pregunta aparece siempre, que es lo que Maxi confirmó que debe pasar. **El "Aprobado" de PF-236 no vale**, porque valida un esperado equivocado.
+
+**Pero la prueba apuntaba a un defecto real, mal descrito:** si se respondía que sí, se ofrecía *"La Estándar del Servicio"* aunque no existiera, y recién al apretar el botón el backend contestaba `SIN_RECOMENDACION_CONFIGURADA`. Se ofrecía una opción que se sabía de antemano que iba a fallar.
+
+**Corrección:** esa opción solo aparece cuando el servicio tiene una Recomendación en `AlFinalizarAtencion`, con un `Alerta` explicando por qué queda solo la personalizada. **Sin tocar el backend:** el modal ya carga las plantillas (que traen `tipo`) y los servicios (que traen `momento`), así que cruzando `plantillaId` se evalúa exactamente la misma condición que el backend.
+
+**Hay que corregir el esperado de PF-236** en el plan de pruebas.
+
+### 22.2 Dos PDFs abiertos a la vez
+
+Reportado con captura: el visor de "Ver Aquí" y el de firma abiertos al mismo tiempo, uno encima del otro.
+
+`handleAbrirFirma` nunca cerraba el visor inline, y son estados independientes. Peor: mientras se firma, el botón "Ocultar Visor" se esconde, así que **no había forma de cerrar el de arriba**.
+
+**Esto ya venía de `5ada7be`**, no de los cambios de ayer; la barra Leer/Firmar solo lo volvió evidente, porque antes los dos PDFs se veían iguales. Ahora entrar a firmar cierra el visor.
+
+### 22.3 El modo Leer/Firmar le caía también a la profesional
+
+La traba de "deslizá hasta el final para poder firmar" la diseñé para el paciente, por el *"leerlo y firmarlo"* de PF-124. Pero el canvas se usaba sin distinguir quién firma, así que la profesional abría "Firmar como Profesional" y **no podía dibujar** hasta descubrir la pestaña y deslizar el documento entero.
+
+Obligarla a leerlo no protege nada: es la autora del documento. Y el síntoma se parece mucho a que firmar esté roto.
+
+**Corrección:** la exigencia de lectura pasó a ser un `exigirLectura` explícito que **solo activa la vista pública del paciente**. Los tres usos del componente quedan con lo suyo: paciente con traba, profesional sin traba, previsualización en `soloLectura`.
+
+### 22.4 El flujo de firma ahora también está en el detalle del documento
+
+Pedido de Maxi. Antes, el detalle en `/panel/documentos` mostraba *"Profesional: pendiente"* pero no daba cómo firmar: había que ir a Agenda, ubicar la cita y abrir su pestaña Documentos.
+
+Se extrajo el bloque de acciones a un componente compartido, **en vez de copiarlo**. Si se copiaba, quedaban dos implementaciones de lo mismo y el próximo arreglo —como el de los dos visores— habría que acordarse de hacerlo dos veces. Ya pasó con esto.
+
+De paso se borró el visor propio que tenía el modal, que era una tercera copia parcial del mismo comportamiento.
+
+**Sobre quién puede firmar:** había propuesto restringirlo en el frontend a la especialista dueña del documento. **Lo descarté al revisar el backend:** `FirmarProfesionalAsync` ya llama a `_especialistaAccessGuard.VerificarAcceso(documento.Cita.EspecialistaId)`, así que una especialista ajena recibe `ESPECIALISTA_AJENO` y no puede firmar. Además `MiPerfilResponse` solo trae `nombre`, `email` y `rol`, sin id, así que cualquier filtro en el frontend sería comparar nombres. Y para la administradora sería quitarle una capacidad que ya tiene hoy en el detalle de la cita. **Manda el backend.**
+
+### 22.5 El RUT escrito se pisaba con el de la cuenta, sin avisar
+
+Reportado: se escribe un RUT, se inicia sesión con una cuenta que ya tiene otro vinculado, y el campo cambia solo.
+
+**El comportamiento del backend es correcto y no se tocó.** Cuando la cuenta se encuentra por `GoogleSub`, el RUT escrito se ignora: el de la cuenta es la identidad real y el formulario de reserva no tiene por qué cambiarla.
+
+Lo que estaba mal era **hacerlo en silencio**, justo después de exigir que lo escribiera. Ahora, cuando el RUT vinculado difiere del escrito, aparece un `Alerta` nombrando el que quedó y el campo pasa a solo lectura, porque a esa altura ya no es un dato editable desde acá.

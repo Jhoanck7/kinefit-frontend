@@ -23,6 +23,7 @@ interface PdfSignatureCanvasHandle {
 interface PdfSignatureCanvasProps {
   url: string;
   soloLectura?: boolean;
+  exigirLectura?: boolean;
   onCambiar?: (vacia: boolean) => void;
 }
 
@@ -35,12 +36,17 @@ interface PaginaInfo {
 const PdfSignatureCanvas = forwardRef<
   PdfSignatureCanvasHandle,
   PdfSignatureCanvasProps
->(function PdfSignatureCanvas({ url, soloLectura = false, onCambiar }, ref) {
+>(function PdfSignatureCanvas(
+  { url, soloLectura = false, exigirLectura = false, onCambiar },
+  ref
+) {
   const [paginas, setPaginas] = useState<PaginaInfo[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandido, setExpandido] = useState(false);
-  const [modo, setModo] = useState<"leer" | "firmar">("leer");
+  const [modo, setModo] = useState<"leer" | "firmar">(
+    exigirLectura ? "leer" : "firmar"
+  );
   const [llegoAlFinal, setLlegoAlFinal] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const bytesOriginalesRef = useRef<ArrayBuffer | null>(null);
@@ -272,7 +278,7 @@ const PdfSignatureCanvas = forwardRef<
           expandido ? "bg-slate-900" : "border-b border-border bg-slate-50"
         }`}
       >
-        {!soloLectura && (
+        {!soloLectura && exigirLectura && (
           <div className="flex flex-1">
             <button
               type="button"
@@ -308,13 +314,13 @@ const PdfSignatureCanvas = forwardRef<
           onClick={() => setExpandido(v => !v)}
           className={`px-4 py-2.5 font-sans text-table-head font-bold uppercase tracking-widest ${
             expandido ? "text-white" : "text-slate-500 hover:text-foreground"
-          } ${soloLectura ? "w-full" : ""}`}
+          } ${soloLectura || !exigirLectura ? "w-full" : ""}`}
         >
           {expandido ? "Cerrar" : "Pantalla completa"}
         </button>
       </div>
 
-      {!soloLectura && !llegoAlFinal && (
+      {!soloLectura && exigirLectura && !llegoAlFinal && (
         <Alerta tono="info" className="shrink-0">
           Deslizá hasta el final del documento para poder firmarlo.
         </Alerta>

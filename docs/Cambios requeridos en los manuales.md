@@ -396,3 +396,29 @@ Cambios ejecutados o aprobados que **no** tocan ningún manual, anotados para qu
 | S-24 (PF-198) | §5.6 ya describe la exportación; el arreglo la vuelve real |
 | S-02 (validar tamaño en cliente) | §6.3.1 ya declara el límite de 25 MB |
 | S-26 (PF-253) | Redirección técnica, no documentada |
+
+### M-24 · §4.3 Detalle del Documento — acciones de firma · **PENDIENTE**
+
+**Origen:** pedido de Maxi en la prueba del 2026-09-27.
+
+El manual describe las acciones de firma **solo** dentro del detalle de la reserva. Ahora las mismas acciones están también en el detalle del documento, que es donde uno las busca cuando llega por el listado de Documentos.
+
+Hay que agregar en §4.3, después de Imprimir y Descargar:
+
+> Desde el detalle de un documento también podés copiar el enlace de firma, reenviarlo por correo, cargar el documento firmado en papel y, cuando el paciente ya firmó, firmarlo como profesional. Son las mismas acciones que ofrece la pestaña Documentos de la reserva.
+
+### M-25 · §4.4 Firmar un consentimiento — leer antes de firmar · **PENDIENTE**
+
+**Origen:** S-xx del 2026-09-26, ajustado el 2026-09-27.
+
+El documento que firma **el paciente** se abre en modo Leer y la pestaña Firmar se habilita al llegar al final. **La profesional no pasa por eso**: entra directo a firmar. El manual tiene que decir cuál es cuál, porque si no parece que la función está fallando.
+
+> Al paciente, el documento se le abre en modo Leer y el botón Firmar se habilita cuando llega al final. La profesional, en cambio, entra directamente en modo firma.
+
+### M-26 · §5.x Recomendaciones — cuando el servicio no tiene una estándar · **PENDIENTE**
+
+**Origen:** PF-236.
+
+Al marcar una cita como Atendida **siempre** se pregunta si se envía una recomendación. Lo que cambia es que, si el servicio no tiene una estándar configurada, esa opción no se ofrece y queda solo la personalizada.
+
+> La pregunta aparece en toda cita que se marca como Atendida. Si el servicio no tiene una recomendación estándar configurada, la única opción disponible es armar una personalizada.

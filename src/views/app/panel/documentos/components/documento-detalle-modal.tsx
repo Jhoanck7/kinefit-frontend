@@ -33,6 +33,8 @@ import {
 } from "@/lib/estados-documento";
 import { formatearFechaCorta, formatearFechaHora } from "@/lib/formato";
 
+import { DocumentoAcciones } from "./documento-acciones";
+
 interface DocumentoDetalleModalProps {
   documentoId: string | null;
   hoy: Date;
@@ -50,10 +52,6 @@ export function DocumentoDetalleModal({
   const [mostrarAuditoria, setMostrarAuditoria] = useState(false);
   const [confirmarCierre, setConfirmarCierre] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [visorInline, setVisorInline] = useState<{
-    id: number;
-    url: string;
-  } | null>(null);
   const archivoDescargado = useRef<{ id: number; url: string } | null>(null);
 
   useEffect(() => {
@@ -65,7 +63,7 @@ export function DocumentoDetalleModal({
     };
   }, []);
 
-  const { data: doc = null } = useGetDocumentoDetalle(
+  const { data: doc = null, refetch: refetchDoc } = useGetDocumentoDetalle(
     Number(documentoId),
     Boolean(documentoId)
   );
@@ -97,7 +95,6 @@ export function DocumentoDetalleModal({
     );
   }
 
-  const urlVisorInline = visorInline?.id === doc.id ? visorInline.url : null;
   const esFicha = doc.tipo === "FichaClinica";
   const esConsentimiento = doc.tipo === "Consentimiento";
   const puedeEditar = esFicha && doc.estado === "Borrador";
@@ -175,28 +172,6 @@ export function DocumentoDetalleModal({
     const url = URL.createObjectURL(blob);
     archivoDescargado.current = { id, url };
     return url;
-  }
-
-  async function handleAbrirArchivo() {
-    setErrorMsg(null);
-    try {
-      window.open(await obtenerUrlArchivo(doc!.id), "_blank");
-    } catch (err: unknown) {
-      setErrorMsg(handleApiError(err).message);
-    }
-  }
-
-  async function handleVerArchivoAqui() {
-    if (urlVisorInline) {
-      setVisorInline(null);
-      return;
-    }
-    setErrorMsg(null);
-    try {
-      setVisorInline({ id: doc!.id, url: await obtenerUrlArchivo(doc!.id) });
-    } catch (err: unknown) {
-      setErrorMsg(handleApiError(err).message);
-    }
   }
 
   async function urlDelDocumento() {
@@ -288,44 +263,17 @@ export function DocumentoDetalleModal({
 
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
           <div className="md:col-span-2 p-6 space-y-6 max-h-[60vh] overflow-y-auto">
-            {doc.tieneArchivo ? (
-              <div>
-                <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
-                  Archivo
-                </h3>
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    onClick={handleAbrirArchivo}
-                    disabled={abrirArchivoMutation.isPending}
-                    className="font-sans text-xs font-bold text-panel-sidebar underline underline-offset-2 disabled:opacity-50"
-                  >
-                    {abrirArchivoMutation.isPending
-                      ? "Abriendo…"
-                      : "Abrir en Otra Pestaña"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleVerArchivoAqui}
-                    disabled={abrirArchivoMutation.isPending}
-                    className="font-sans text-xs font-bold text-panel-sidebar underline underline-offset-2 disabled:opacity-50"
-                  >
-                    {abrirArchivoMutation.isPending
-                      ? "Abriendo…"
-                      : urlVisorInline
-                        ? "Ocultar Visor"
-                        : "Ver Aquí"}
-                  </button>
-                </div>
-                {urlVisorInline && (
-                  <iframe
-                    src={urlVisorInline}
-                    title={doc.nombre}
-                    className="mt-3 h-[70vh] w-full rounded-overlay border border-slate-200"
-                  />
-                )}
-              </div>
-            ) : (
+            <div>
+              <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
+                Acciones
+              </h3>
+              <DocumentoAcciones
+                documento={doc}
+                onCambio={() => refetchDoc()}
+              />
+            </div>
+
+            {doc.tieneArchivo ? null : (
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground">

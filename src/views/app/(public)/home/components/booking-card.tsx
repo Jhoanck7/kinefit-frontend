@@ -141,6 +141,7 @@ export default function BookingCard() {
 
   const [authError, setAuthError] = useState<string | null>(null);
   const [consentimientoAceptado, setConsentimientoAceptado] = useState(false);
+  const [rutDeLaCuenta, setRutDeLaCuenta] = useState<string | null>(null);
   const consentimientoRef = useRef(consentimientoAceptado);
   useEffect(() => {
     consentimientoRef.current = consentimientoAceptado;
@@ -260,11 +261,18 @@ export default function BookingCard() {
                   rut: limpiarRut(escrito.patientRut),
                 });
                 setAuthToken(result.data.token);
+                const rutVinculado = result.data.paciente.rut;
+                setRutDeLaCuenta(
+                  rutVinculado &&
+                    limpiarRut(rutVinculado) !== limpiarRut(escrito.patientRut)
+                    ? rutVinculado
+                    : null
+                );
                 setPatientInfo({
                   name: `${result.data.paciente.nombre} ${result.data.paciente.apellido}`.trim(),
                   email: result.data.paciente.email,
                   phone: result.data.paciente.telefono || escrito.patientPhone,
-                  rut: result.data.paciente.rut || escrito.patientRut,
+                  rut: rutVinculado || escrito.patientRut,
                 });
               } catch (err: unknown) {
                 setAuthError(
@@ -871,6 +879,7 @@ export default function BookingCard() {
                 required
                 placeholder="ej: 12345678-5"
                 value={patientRut}
+                readOnly={Boolean(rutDeLaCuenta)}
                 onChange={e => handlePatientInfoChange("rut", e.target.value)}
                 className={`w-full bg-white border rounded-global p-3 text-sm text-slate-900 focus:outline-none transition-colors placeholder:text-slate-400 font-medium ${
                   mostrarErrorRut
@@ -884,6 +893,13 @@ export default function BookingCard() {
                 <p className="text-[11px] text-rose-500 font-semibold mt-1">
                   RUT Inválido
                 </p>
+              )}
+              {rutDeLaCuenta && (
+                <Alerta tono="info" className="mt-2">
+                  Tu cuenta ya tiene el RUT {rutDeLaCuenta} registrado, así que
+                  usamos ese y tu reserva queda en la misma ficha de siempre. Si
+                  no es tuyo, escribinos antes de reservar.
+                </Alerta>
               )}
             </div>
 
