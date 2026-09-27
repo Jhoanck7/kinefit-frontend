@@ -132,6 +132,16 @@ Dos cambios en lo que muestra cada línea del historial:
 
 > Nota: cuando la acción la ejecutó el sistema, por ejemplo al confirmarse un pago en línea o al expirar una reserva, la línea indica "Sistema" en lugar de un nombre.
 
+**Ampliación del 26/09 — la creación ahora aparece en el historial.**
+
+El manual ya decía que el historial arranca *"partiendo por su creación"*. **Era falso:** crear una cita no generaba ninguna fila de auditoría, porque el interceptor solo miraba modificaciones y `Cita` no estaba entre las entidades vigiladas. La única huella era la columna `creado_por_usuario_id`, que no se mostraba en ninguna parte.
+
+Ahora el alta genera su propia fila y el historial abre con, por ejemplo, **"Creada en Por Confirmar — Franchesca Soto (Personal)"**.
+
+**Tampoco hay que reescribir este texto:** el manual describía el comportamiento correcto y el sistema no lo cumplía. El arreglo lo alinea.
+
+**Salvedad para quien pruebe:** solo aplica a citas creadas de ahora en adelante. Las anteriores no tienen fila de creación y no se rellenó de forma retroactiva, porque no hay registro de cuándo se creó cada una más allá de su `CreatedAt`. Para verificar PF-172 hay que **crear una reserva nueva**.
+
 ### M-07 · §4.3.1 Archivo y adjuntos · **YA APLICA**
 
 **Origen:** S-09, H-023.

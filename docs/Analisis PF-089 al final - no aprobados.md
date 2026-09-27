@@ -1354,3 +1354,105 @@ Resueltas con `redirects()` en `next.config.ts`, de la más específica a la má
 **Hallazgo lateral que salió de esto:** `/panel/cambiar-password` no tiene a dónde redirigir porque **el cambio de contraseña no existe en el frontend**. El backend expone `PATCH /api/auth/personal/password` y un `grep` en todo `src/` no encuentra ningún consumidor: ni servicio, ni hook, ni vista. La pantalla se eliminó y el endpoint quedó huérfano.
 
 Eso significa que **hoy nadie del personal puede cambiar su propia contraseña desde el panel**, y el Manual de Usuario lo menciona en "El menú lateral" solo de refilón. No lo arreglé porque es alcance nuevo, no un caso del plan. Propongo abrirlo como **H-032**.
+
+---
+
+## 21. Correcciones tras la prueba en el entorno desplegado (2026-09-26)
+
+Cuatro cosas salieron de probar el sistema de verdad. Tres eran bugs propios y una fue un error mío de diseño.
+
+### 21.1 PF-172 seguía fallando: crear una cita no dejaba rastro
+
+**Di este caso por resuelto y no lo estaba.** S-04 hizo que la auditoría muestre el nombre en vez de "Personal", pero eso era solo la mitad: **la creación de una cita no generaba ninguna fila de auditoría**, por dos motivos que se suman:
+
+```csharp
+// AuditarTransicionesDeCita: solo modificaciones
+context.ChangeTracker.Entries<Cita>().Where(e => e.State == EntityState.Modified)
+```
+
+Y `Cita` **tampoco figura** en `EntidadesVigiladas`, así que tampoco caía en el mecanismo genérico de altas. La única huella de quién reservó era la columna `CreadoPorUsuarioId`, que ninguna vista mostraba. Por eso se veía la especialista a atender —ese dato viene de la relación con `Especialista`— pero nunca quién la creó.
+
+**Corrección:** reusé el patrón que ya existía para auditar inserciones (`AuditarAltasPendientesAsync`): recolectar en `SavingChanges` y escribir en `SavedChanges`, porque recién ahí la fila tiene `Id`.
+
+**Descarté agregar `Cita` a `EntidadesVigiladas`**, que era lo obvio: habría duplicado la auditoría de cada cambio de estado, una fila en `auditorias_citas` y otra en `auditorias_eventos`.
+
+El alta se marca con `EstadoAnterior == EstadoNuevo`. No es arbitrario: `AuditarTransicionesDeCita` descarta explícitamente las transiciones donde ambos coinciden, así que esa combinación **solo puede venir de una creación**.
+
+**Verificado que no rompe `ConfirmarPagoAprobado_DejaExactamenteUnaAuditoriaConActorSistema`:** ese test filtra con `Assert.Single(auditorias, a => a.EstadoNuevo == "Confirmada")`, así que una fila de creación con otro estado no lo afecta.
+
+**Solo aplica a citas nuevas.** Las anteriores no tienen fila de creación y no se rellenó retroactivamente: no hay registro de quién las creó más allá de `CreadoPorUsuarioId`. Para verificar PF-172 hay que crear una reserva nueva.
+
+### 21.2 Los tres botones de firma con enlaces inválidos
+
+Lo reportado: un servicio con 3 consentimientos mostraba "FIRMAR DOCUMENTO 1 DE 3, 2 DE 3, 3 DE 3" y **los tres** daban *"El enlace no es válido"*.
+
+**La causa raíz es un índice único que ya imponía un consentimiento por cita:**
+
+```csharp
+modelBuilder.Entity<Consentimiento>()
+    .HasIndex(c => c.CitaId).IsUnique().HasFilter("tipo = 2");
+```
+
+La secuencia completa:
+
+1. Se generan los 3 consentimientos en memoria, cada uno con su token.
+2. `SaveChangesAsync` revienta en el segundo por el índice único.
+3. **La transacción entera se cae: no se guarda ninguno, ni el primero.**
+4. `catch (DbUpdateException) { }` se lo traga sin log.
+5. La función **devuelve los 3 tokens igual**, como si todo hubiera salido bien.
+6. Cada enlace busca su token y no encuentra nada.
+
+**Esto también explica parte de PF-125 y PF-217:** `EncolarNotificacionesDeFirma` se llama **antes** del save, así que la notificación del correo tampoco se guardaba. No era solo Resend.
+
+Tres correcciones:
+
+| Dónde | Qué |
+|---|---|
+| `DocumentoService` | El `catch` loguea y **devuelve lista vacía**. Si no se guardó nada, no se ofrece nada |
+| `ServicioService.ActualizarDocumentosAsync` | Rechaza más de un consentimiento por servicio, nombrando los que sobran |
+| `documentos-servicio-selector.tsx` | Los consentimientos son `radio`, no checkbox: marcar uno reemplaza al anterior, con un `Alerta` explicando el porqué |
+
+Se dejó el `catch` en vez de propagar porque protege un caso real de concurrencia; lo que se corrigió es que ocultara el error y devolviera tokens fantasma.
+
+**Queda un dato a limpiar a mano:** el servicio que se usó en la prueba tiene 3 consentimientos marcados y hay que dejar uno.
+
+### 21.3 En el teléfono no se podía leer el PDF antes de firmarlo
+
+El canvas de firma cubre la página completa con `touch-action: none`, así que se comía el gesto de scroll: el paciente veía la primera página de un documento de cinco y no podía avanzar.
+
+**Solución elegida: modo explícito.** Una barra con dos pestañas, **Leer** y **Firmar**. En Leer el canvas queda en `pointer-events: none` y el contenedor usa `touch-action: pan-y`; en Firmar se invierte.
+
+**Firmar arranca deshabilitado hasta llegar al final del documento**, con un `Alerta` que lo explica. Eso hace verdadero el *"leerlo y firmarlo"* de PF-124, que antes quedaba a la buena voluntad del paciente.
+
+**Caso que se escapaba:** un PDF corto que entra entero en pantalla nunca dispara `onScroll`, así que Firmar habría quedado inalcanzable para siempre. Un efecto detecta que no hay nada que deslizar y lo habilita.
+
+Se descartaron dos alternativas: acotar la firma a un recuadro al pie (hay que decidir dónde va en cada página) y "un dedo scrollea, dos dibujan" (nadie lo adivina).
+
+### 21.4 El botón de Google quedaba muerto: error de diseño propio
+
+Al introducir el gating del RUT en S-05 dejé una dependencia dura —RUT antes de login— **sin arreglar la disposición que la hacía descubrible**. El bloque de Google estaba arriba del campo RUT, así que el usuario aceptaba los términos, veía un botón inerte y no tenía forma de saber por qué.
+
+Lo había identificado y decidí no tocarlo *"porque es la disposición del sitio público"*. Fue un error de juicio: mi cambio ya había roto esa disposición.
+
+Peor: el aviso que agregué estaba en `text-table-head text-slate-400`, **11 píxeles en gris claro sobre blanco**. Estaba ahí —se puede encontrar en el bundle desplegado— pero era invisible en la práctica.
+
+**Corrección**, según la decisión de Maxi:
+
+- El paso 4 arranca con **solo el RUT y el login**, en ese orden.
+- Nombre, correo, teléfono y convenio aparecen **recién con sesión iniciada**, que además es cuando Google ya los completó.
+- El aviso pasó a ser un `Alerta` en tono advertencia: *"Escribí tu RUT más arriba para poder iniciar sesión. Lo necesitamos para reconocerte si ya te atendiste antes."*
+- Se quitó un aviso que el reordenamiento dejó inalcanzable, porque pedía datos que ahora están ocultos hasta el login.
+
+### 21.5 Verificación
+
+```
+dotnet build      -> 0 errores
+dotnet test       -> 215/215
+npx tsc --noEmit  -> 0
+npx next build    -> limpio
+npx eslint src    -> 26 errores, los mismos 26 de HEAD (cero nuevos)
+```
+
+Se corrió `next build` además del typecheck porque el paso 4 se reestructuró bastante y el build es la prueba real del JSX.
+
+**Sin verificar en navegador:** el modo Leer/Firmar es puro comportamiento táctil y **hay que probarlo en un teléfono real** antes de darlo por bueno.

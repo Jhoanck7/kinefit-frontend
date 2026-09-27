@@ -10,6 +10,8 @@ import {
   useState,
 } from "react";
 
+import { Alerta } from "@/components/shared";
+
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 interface PdfSignatureCanvasHandle {
@@ -38,6 +40,9 @@ const PdfSignatureCanvas = forwardRef<
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandido, setExpandido] = useState(false);
+  const [modo, setModo] = useState<"leer" | "firmar">("leer");
+  const [llegoAlFinal, setLlegoAlFinal] = useState(false);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const bytesOriginalesRef = useRef<ArrayBuffer | null>(null);
   const pdfDocRef = useRef<pdfjsLib.PDFDocumentProxy | null>(null);
   const pdfCanvasRefs = useRef<(HTMLCanvasElement | null)[]>([]);
@@ -127,6 +132,16 @@ const PdfSignatureCanvas = forwardRef<
       cancelado = true;
     };
   }, [paginas]);
+
+  // Un documento que entra entero en la pantalla no se puede deslizar, así que
+  // nunca dispararía onScroll y el botón de firmar quedaría inalcanzable.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || paginas.length === 0) return;
+    if (el.scrollHeight - el.clientHeight < 24) {
+      setLlegoAlFinal(true);
+    }
+  }, [paginas, expandido]);
 
   function posicionDesdeEvento(
     canvas: HTMLCanvasElement,
@@ -252,17 +267,58 @@ const PdfSignatureCanvas = forwardRef<
           : "border border-border"
       }
     >
-      <button
-        type="button"
-        onClick={() => setExpandido(v => !v)}
-        className={
-          expandido
-            ? "shrink-0 bg-slate-900 py-3 text-xs font-bold uppercase tracking-widest text-white"
-            : "w-full border-b border-border bg-slate-50 py-2 text-[11px] font-bold uppercase tracking-widest text-slate-500"
-        }
+      <div
+        className={`flex shrink-0 items-stretch ${
+          expandido ? "bg-slate-900" : "border-b border-border bg-slate-50"
+        }`}
       >
-        {expandido ? "Cerrar pantalla completa" : "Ver en pantalla completa"}
-      </button>
+        {!soloLectura && (
+          <div className="flex flex-1">
+            <button
+              type="button"
+              onClick={() => setModo("leer")}
+              className={`flex-1 py-2.5 font-sans text-table-head font-bold uppercase tracking-widest transition-colors ${
+                modo === "leer"
+                  ? "bg-slate-900 text-white"
+                  : expandido
+                    ? "text-slate-400"
+                    : "text-slate-500 hover:text-foreground"
+              }`}
+            >
+              Leer
+            </button>
+            <button
+              type="button"
+              disabled={!llegoAlFinal}
+              onClick={() => setModo("firmar")}
+              className={`flex-1 py-2.5 font-sans text-table-head font-bold uppercase tracking-widest transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                modo === "firmar"
+                  ? "bg-slate-900 text-white"
+                  : expandido
+                    ? "text-slate-400"
+                    : "text-slate-500 hover:text-foreground"
+              }`}
+            >
+              Firmar
+            </button>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => setExpandido(v => !v)}
+          className={`px-4 py-2.5 font-sans text-table-head font-bold uppercase tracking-widest ${
+            expandido ? "text-white" : "text-slate-500 hover:text-foreground"
+          } ${soloLectura ? "w-full" : ""}`}
+        >
+          {expandido ? "Cerrar" : "Pantalla completa"}
+        </button>
+      </div>
+
+      {!soloLectura && !llegoAlFinal && (
+        <Alerta tono="info" className="shrink-0">
+          Deslizá hasta el final del documento para poder firmarlo.
+        </Alerta>
+      )}
 
       {cargando && (
         <div className="flex h-[70vh] items-center justify-center">
@@ -272,9 +328,16 @@ const PdfSignatureCanvas = forwardRef<
       {!cargando && (
         <div
           className="flex-1 space-y-3 overflow-y-auto bg-slate-100 p-2 sm:p-3"
+          ref={scrollRef}
+          onScroll={e => {
+            const el = e.currentTarget;
+            if (el.scrollHeight - el.scrollTop - el.clientHeight < 24) {
+              setLlegoAlFinal(true);
+            }
+          }}
           style={{
             height: expandido ? undefined : "70vh",
-            touchAction: "none",
+            touchAction: modo === "firmar" ? "none" : "pan-y",
           }}
         >
           {paginas.map(pagina => (
@@ -298,7 +361,11 @@ const PdfSignatureCanvas = forwardRef<
                   }}
                   width={pagina.ancho}
                   height={pagina.alto}
-                  className="absolute left-0 top-0 h-full w-full cursor-crosshair touch-none"
+                  className={`absolute left-0 top-0 h-full w-full ${
+                    modo === "firmar"
+                      ? "cursor-crosshair touch-none"
+                      : "pointer-events-none"
+                  }`}
                   onPointerDown={e => handlePointerDown(pagina.indice, e)}
                   onPointerMove={e => handlePointerMove(pagina.indice, e)}
                   onPointerUp={e => handlePointerUp(pagina.indice, e)}

@@ -36,10 +36,10 @@ export function AuditTrail({
           >
             <div>
               <p className="font-medium text-panel-sidebar">
-                {
-                  definicionEstado(cambio.estadoNuevo as CodigoEstadoCita)
-                    .etiqueta
-                }
+                {cambio.estadoAnterior === cambio.estadoNuevo
+                  ? `Creada en ${definicionEstado(cambio.estadoNuevo as CodigoEstadoCita).etiqueta}`
+                  : definicionEstado(cambio.estadoNuevo as CodigoEstadoCita)
+                      .etiqueta}
               </p>
               <p className="text-xs text-muted-foreground">
                 {describirAutor(cambio)}

@@ -4,6 +4,7 @@ import { CreditCard } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
+import { Alerta } from "@/components/shared";
 import {
   useAuthenticateWithGoogleMutation,
   useGetEmpresasPublico,
@@ -861,6 +862,31 @@ export default function BookingCard() {
           </div>
 
           <div className="flex-1 min-h-0 overflow-y-auto pr-1 flex flex-col gap-4">
+            <div>
+              <label className="block text-xs text-brand-muted mb-1.5 font-medium">
+                RUT del Paciente
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="ej: 12345678-5"
+                value={patientRut}
+                onChange={e => handlePatientInfoChange("rut", e.target.value)}
+                className={`w-full bg-white border rounded-global p-3 text-sm text-slate-900 focus:outline-none transition-colors placeholder:text-slate-400 font-medium ${
+                  mostrarErrorRut
+                    ? "border-rose-400 focus:border-rose-500"
+                    : rutEsValido && rutLimpio.length > 0
+                      ? "border-emerald-400 focus:border-emerald-500"
+                      : "border-brand-border focus:border-brand-primary"
+                }`}
+              />
+              {mostrarErrorRut && (
+                <p className="text-[11px] text-rose-500 font-semibold mt-1">
+                  RUT Inválido
+                </p>
+              )}
+            </div>
+
             {/* Google Sign-In Widget Container */}
             <div className="bg-slate-50 border border-slate-200 rounded-global p-4 text-center space-y-3">
               <span className="text-xs text-slate-600 font-semibold block">
@@ -897,9 +923,10 @@ export default function BookingCard() {
                 </p>
               ) : (
                 !rutEsValido && (
-                  <p className="text-table-head text-slate-400">
-                    Completá tu RUT más abajo para poder iniciar sesión
-                  </p>
+                  <Alerta tono="advertencia" className="text-left">
+                    Escribí tu RUT más arriba para poder iniciar sesión. Lo
+                    necesitamos para reconocerte si ya te atendiste antes.
+                  </Alerta>
                 )
               )}
 
@@ -915,100 +942,85 @@ export default function BookingCard() {
                 ))}
             </div>
 
-            <div>
-              <label className="block text-xs text-brand-muted mb-1.5 font-medium">
-                Nombre Completo
-              </label>
-              <input
-                type="text"
-                required
-                value={patientName}
-                onChange={e => handlePatientInfoChange("name", e.target.value)}
-                className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
-              />
-            </div>
+            {authToken && (
+              <>
+                <div>
+                  <label className="block text-xs text-brand-muted mb-1.5 font-medium">
+                    Nombre Completo
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={patientName}
+                    onChange={e =>
+                      handlePatientInfoChange("name", e.target.value)
+                    }
+                    className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
+                  />
+                </div>
 
-            <div>
-              <label className="block text-xs text-brand-muted mb-1.5 font-medium">
-                Correo Electrónico
-              </label>
-              <input
-                type="email"
-                required
-                value={patientEmail}
-                onChange={e => handlePatientInfoChange("email", e.target.value)}
-                className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
-              />
-            </div>
+                <div>
+                  <label className="block text-xs text-brand-muted mb-1.5 font-medium">
+                    Correo Electrónico
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={patientEmail}
+                    onChange={e =>
+                      handlePatientInfoChange("email", e.target.value)
+                    }
+                    className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors placeholder:text-slate-400 font-medium"
+                  />
+                </div>
 
-            <div>
-              <label className="block text-xs text-brand-muted mb-1.5 font-medium">
-                RUT del Paciente
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="ej: 12345678-5"
-                value={patientRut}
-                onChange={e => handlePatientInfoChange("rut", e.target.value)}
-                className={`w-full bg-white border rounded-global p-3 text-sm text-slate-900 focus:outline-none transition-colors placeholder:text-slate-400 font-medium ${
-                  mostrarErrorRut
-                    ? "border-rose-400 focus:border-rose-500"
-                    : rutEsValido && rutLimpio.length > 0
-                      ? "border-emerald-400 focus:border-emerald-500"
-                      : "border-brand-border focus:border-brand-primary"
-                }`}
-              />
-              {mostrarErrorRut && (
-                <p className="text-[11px] text-rose-500 font-semibold mt-1">
-                  RUT Inválido
-                </p>
-              )}
-            </div>
+                <div>
+                  <label className="block text-xs text-brand-muted mb-1.5 font-medium">
+                    Teléfono Móvil
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="ej: 56912345678"
+                    value={patientPhone}
+                    onChange={e =>
+                      handlePatientInfoChange("phone", e.target.value)
+                    }
+                    className={`w-full bg-white border rounded-global p-3 text-sm text-slate-900 focus:outline-none transition-colors placeholder:text-slate-400 font-medium ${
+                      mostrarErrorTelefono
+                        ? "border-rose-400 focus:border-rose-500"
+                        : telefonoEsValido && telefonoLimpio.length > 0
+                          ? "border-emerald-400 focus:border-emerald-500"
+                          : "border-brand-border focus:border-brand-primary"
+                    }`}
+                  />
+                  {mostrarErrorTelefono && (
+                    <p className="text-[11px] text-rose-500 font-semibold mt-1">
+                      Teléfono inválido, debe ser un celular chileno (ej:
+                      56912345678)
+                    </p>
+                  )}
+                </div>
 
-            <div>
-              <label className="block text-xs text-brand-muted mb-1.5 font-medium">
-                Teléfono Móvil
-              </label>
-              <input
-                type="tel"
-                required
-                placeholder="ej: 56912345678"
-                value={patientPhone}
-                onChange={e => handlePatientInfoChange("phone", e.target.value)}
-                className={`w-full bg-white border rounded-global p-3 text-sm text-slate-900 focus:outline-none transition-colors placeholder:text-slate-400 font-medium ${
-                  mostrarErrorTelefono
-                    ? "border-rose-400 focus:border-rose-500"
-                    : telefonoEsValido && telefonoLimpio.length > 0
-                      ? "border-emerald-400 focus:border-emerald-500"
-                      : "border-brand-border focus:border-brand-primary"
-                }`}
-              />
-              {mostrarErrorTelefono && (
-                <p className="text-[11px] text-rose-500 font-semibold mt-1">
-                  Teléfono inválido, debe ser un celular chileno (ej:
-                  56912345678)
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-xs text-brand-muted mb-1.5 font-medium">
-                Convenio
-              </label>
-              <select
-                value={patientConvenioId}
-                onChange={e => setPatientConvenioId(e.target.value)}
-                className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors font-medium"
-              >
-                <option value="">Sin Convenio</option>
-                {convenios.map(c => (
-                  <option key={c.id} value={c.id}>
-                    {c.nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
+                <div>
+                  <label className="block text-xs text-brand-muted mb-1.5 font-medium">
+                    Convenio
+                  </label>
+                  <select
+                    value={patientConvenioId}
+                    onChange={e => setPatientConvenioId(e.target.value)}
+                    className="w-full bg-white border border-brand-border rounded-global p-3 text-sm text-slate-900 focus:outline-none focus:border-brand-primary transition-colors font-medium"
+                  >
+                    <option value="">Sin Convenio</option>
+                    {convenios.map(c => (
+                      <option key={c.id} value={c.id}>
+                        {c.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
           </div>
 
           {errorMsg && (
@@ -1017,9 +1029,9 @@ export default function BookingCard() {
             </div>
           )}
 
-          {!authToken && datosCompletos && (
+          {!authToken && (
             <p className="text-table-head text-slate-500 text-center mt-3">
-              Iniciá sesión con Google, arriba, para habilitar la reserva
+              Iniciá sesión con Google para continuar con tus datos y la reserva
             </p>
           )}
 
