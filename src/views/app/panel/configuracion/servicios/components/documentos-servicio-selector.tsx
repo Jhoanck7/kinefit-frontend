@@ -15,7 +15,24 @@ export function DocumentosServicioSelector({
   documentos,
   onCambiar,
 }: DocumentosServicioSelectorProps) {
+  // Solo se listan los tipos que el servicio realmente gobierna. Una ficha
+  // clínica asignada acá no la lee nadie: el backend genera por servicio los
+  // consentimientos y busca la recomendación estándar, y la ficha la elige la
+  // profesional al registrarla. Ofrecerlas sugería un efecto inexistente.
+  const asignables = plantillas.filter(
+    p => p.tipo === "Consentimiento" || p.tipo === "Recomendacion"
+  );
+
   const porPlantillaId = new Map(documentos.map(d => [d.plantillaId, d]));
+
+  // Los radios comparten name, así que el navegador muestra uno solo marcado
+  // aunque haya varios guardados: sin este aviso, los datos rotos se veían
+  // sanos en pantalla.
+  const consentimientosMarcados = documentos
+    .filter(d => esConsentimiento(d.plantillaId))
+    .map(
+      d => plantillas.find(p => p.id === d.plantillaId)?.nombre ?? "sin nombre"
+    );
 
   const tipoDe = (plantillaId: number) =>
     plantillas.find(p => p.id === plantillaId)?.tipo;
@@ -60,10 +77,10 @@ export function DocumentosServicioSelector({
     );
   };
 
-  if (plantillas.length === 0) {
+  if (asignables.length === 0) {
     return (
       <p className="font-sans text-xs text-slate-500">
-        No hay plantillas creadas todavía.{" "}
+        No hay consentimientos ni recomendaciones creados todavía.{" "}
         <Link
           href="/panel/documentos/plantillas/nuevo"
           className="font-bold text-foreground underline"
@@ -76,15 +93,23 @@ export function DocumentosServicioSelector({
 
   return (
     <div className="space-y-2">
-      {plantillas.some(p => p.tipo === "Consentimiento") && (
-        <Alerta tono="info">
-          Un servicio puede exigir un solo consentimiento: al marcar uno se
-          reemplaza el anterior. Las fichas y recomendaciones no tienen ese
-          límite.
+      {consentimientosMarcados.length > 1 && (
+        <Alerta tono="advertencia">
+          Este servicio tiene {consentimientosMarcados.length} consentimientos
+          guardados ({consentimientosMarcados.join(", ")}) y solo admite uno.
+          Mientras siga así, sus citas no generan ningún documento para firmar.
+          Elige cuál queda y guarda el servicio.
         </Alerta>
       )}
+
+      <Alerta tono="info">
+        Un servicio exige consentimientos y define su recomendación estándar.
+        Las fichas clínicas no se configuran acá: la profesional elige la
+        plantilla al registrar la ficha. Solo se puede exigir un consentimiento,
+        así que al marcar uno se reemplaza el anterior.
+      </Alerta>
       <div className="divide-y divide-slate-200 border border-slate-200">
-        {plantillas.map(plantilla => {
+        {asignables.map(plantilla => {
           const asignado = porPlantillaId.get(plantilla.id);
           return (
             <div key={plantilla.id} className="p-3">

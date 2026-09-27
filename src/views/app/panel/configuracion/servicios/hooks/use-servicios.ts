@@ -65,13 +65,23 @@ export const useServicios = () => {
     setImagenUrl(servicio.imagenUrl || "");
     setImagenPublicId(servicio.imagenPublicId || "");
     setImagenAlt(servicio.imagenAlt || "");
+    // Las fichas clínicas asignadas a un servicio nunca se leyeron: la
+    // profesional elige su plantilla al registrar la ficha. Se descartan al
+    // abrir el formulario para que no viajen de vuelta invisibles al guardar.
+    const asignables = new Set(
+      plantillas
+        .filter(p => p.tipo === "Consentimiento" || p.tipo === "Recomendacion")
+        .map(p => p.id)
+    );
     setDocumentos(
-      servicio.documentos.map(d => ({
-        plantillaId: d.plantillaId,
-        obligatorio: d.obligatorio,
-        momento: d.momento,
-        vigenciaDias: d.vigenciaDias,
-      }))
+      servicio.documentos
+        .filter(d => asignables.has(d.plantillaId))
+        .map(d => ({
+          plantillaId: d.plantillaId,
+          obligatorio: d.obligatorio,
+          momento: d.momento,
+          vigenciaDias: d.vigenciaDias,
+        }))
     );
     setError(null);
     setMostrarModal(true);
