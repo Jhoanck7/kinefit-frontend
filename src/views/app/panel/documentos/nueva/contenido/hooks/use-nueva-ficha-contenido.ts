@@ -139,7 +139,7 @@ export const useNuevaFichaContenido = () => {
   const handleGuardar = async () => {
     if (!citaId) return;
     if (modo === "archivo" && !archivoFicha) {
-      setErrorMsg("Adjuntá el archivo de la ficha antes de guardar.");
+      setErrorMsg("Adjunta el archivo de la ficha antes de guardar.");
       return;
     }
 

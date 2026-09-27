@@ -463,7 +463,7 @@ export default function BookingCard() {
     }
     if (!authToken) {
       setAuthError(
-        "Iniciá sesión con tu cuenta de Google para confirmar la reserva."
+        "Inicia sesión con tu cuenta de Google para confirmar la reserva."
       );
       return;
     }
@@ -474,7 +474,7 @@ export default function BookingCard() {
       !duracionMinutos
     ) {
       setAuthError(
-        "Falta elegir el servicio, el horario o la profesional. Volvé atrás para completarlo."
+        "Falta elegir el servicio, el horario o la profesional. Vuelve atrás para completarlo."
       );
       return;
     }
@@ -879,7 +879,6 @@ export default function BookingCard() {
                 required
                 placeholder="ej: 12345678-5"
                 value={patientRut}
-                readOnly={Boolean(rutDeLaCuenta)}
                 onChange={e => handlePatientInfoChange("rut", e.target.value)}
                 className={`w-full bg-white border rounded-global p-3 text-sm text-slate-900 focus:outline-none transition-colors placeholder:text-slate-400 font-medium ${
                   mostrarErrorRut
@@ -896,9 +895,9 @@ export default function BookingCard() {
               )}
               {rutDeLaCuenta && (
                 <Alerta tono="info" className="mt-2">
-                  Tu cuenta ya tiene el RUT {rutDeLaCuenta} registrado, así que
-                  usamos ese y tu reserva queda en la misma ficha de siempre. Si
-                  no es tuyo, escríbenos antes de reservar.
+                  Tu cuenta ya tenía registrado el RUT {rutDeLaCuenta}. Dejamos
+                  ese para que la reserva quede en tu ficha de siempre. Si el
+                  correcto es otro, corrígelo y lo actualizamos.
                 </Alerta>
               )}
             </div>
