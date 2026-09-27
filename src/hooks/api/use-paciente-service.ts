@@ -59,6 +59,17 @@ export const useUpdatePacienteMutation = () => {
   });
 };
 
+export const useDesvincularCuentaPacienteMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) =>
+      pacienteService.desvincularCuenta(id).then(res => res.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pacientes"] });
+    },
+  });
+};
+
 export const useUpdatePacienteEstadoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

@@ -422,3 +422,17 @@ El documento que firma **el paciente** se abre en modo Leer y la pestaña Firmar
 Al marcar una cita como Atendida **siempre** se pregunta si se envía una recomendación. Lo que cambia es que, si el servicio no tiene una estándar configurada, esa opción no se ofrece y queda solo la personalizada.
 
 > La pregunta aparece en toda cita que se marca como Atendida. Si el servicio no tiene una recomendación estándar configurada, la única opción disponible es armar una personalizada.
+
+### M-27 · §2.x Ficha del Paciente — Desvincular Cuenta · **PENDIENTE**
+
+**Origen:** H-033, decisión del 2026-09-27.
+
+Función nueva y con consecuencias, así que necesita texto propio en el manual.
+
+Antes, una persona que cambiaba de correo entraba con su cuenta nueva indicando su RUT y el sistema se la vinculaba sola. Eso se quitó, porque el RUT no es secreto y cualquiera que lo conociera podía quedarse con la ficha ajena. Ahora ese traspaso lo autoriza el personal.
+
+> **Desvincular Cuenta.** Si un paciente cambió de correo y ya no puede entrar con su cuenta anterior, en Datos Personales aparece la opción Desvincular Cuenta. Hazlo solo con la persona presente y su identidad verificada: la cuenta actual pierde el acceso de inmediato y la próxima que inicie sesión indicando ese RUT queda asociada a la ficha.
+>
+> Si el paciente intenta entrar por su cuenta con un RUT que ya está asociado a otra cuenta, el sistema le responde que se acerque al centro.
+
+También conviene agregarlo a Solución de Problemas, porque es el síntoma que va a llegar por teléfono: *"no puedo entrar, me dice que mi RUT ya está en otra cuenta"*.

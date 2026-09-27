@@ -53,6 +53,13 @@ export class PacienteService extends BaseApiService {
     );
   }
 
+  desvincularCuenta(id: number) {
+    return this.httpClient.patch<ApiResponse<PacienteEstadoResponse>>(
+      `${this.baseURL}/${id}/desvincular-cuenta`,
+      {}
+    );
+  }
+
   updateEstado(id: number, activo: boolean) {
     return this.httpClient.patch<ApiResponse<PacienteEstadoResponse>>(
       `${this.baseURL}/${id}/estado`,
