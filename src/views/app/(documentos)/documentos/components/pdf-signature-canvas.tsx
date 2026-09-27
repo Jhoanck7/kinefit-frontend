@@ -322,7 +322,7 @@ const PdfSignatureCanvas = forwardRef<
 
       {!soloLectura && exigirLectura && !llegoAlFinal && (
         <Alerta tono="info" className="shrink-0">
-          Deslizá hasta el final del documento para poder firmarlo.
+          Desliza hasta el final del documento para poder firmarlo.
         </Alerta>
       )}
 

@@ -160,7 +160,7 @@ export function DocumentoAcciones({
       await pdfFirmaRef.current?.generarDocumentoFirmadoBase64();
 
     if (!documentoFirmadoBase64) {
-      setErrorMsg("Firmá el documento antes de confirmar.");
+      setErrorMsg("Firma el documento antes de confirmar.");
       return;
     }
 
@@ -272,7 +272,7 @@ export function DocumentoAcciones({
       {firmaUrl && (
         <div className="border border-border bg-slate-50 p-4">
           <p className="mb-2 font-sans text-table-head font-bold uppercase tracking-widest text-muted-foreground">
-            Firmá sobre el documento, donde te corresponde
+            Firma sobre el documento, donde te corresponde
           </p>
           <PdfSignatureCanvas
             ref={pdfFirmaRef}

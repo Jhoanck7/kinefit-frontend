@@ -92,7 +92,7 @@ export default async function PoliticaDePrivacidadPage() {
 
         <Seccion titulo="Tus derechos">
           <p>
-            Podés solicitar el acceso, la rectificación o la eliminación de tus
+            Puedes solicitar el acceso, la rectificación o la eliminación de tus
             datos personales escribiendo a{" "}
             <a
               href={`mailto:${clinicEmail}`}

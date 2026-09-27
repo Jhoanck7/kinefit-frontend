@@ -242,14 +242,14 @@ export default function BookingCard() {
             if (response && response.credential) {
               if (!consentimientoRef.current) {
                 setAuthError(
-                  "Aceptá la política de privacidad antes de iniciar sesión."
+                  "Acepta la política de privacidad antes de iniciar sesión."
                 );
                 return;
               }
               const escrito = useBookingStore.getState();
               if (!esRutValido(escrito.patientRut)) {
                 setAuthError(
-                  "Completá tu RUT antes de iniciar sesión, así tus datos quedan en una sola ficha."
+                  "Completa tu RUT antes de iniciar sesión, así tus datos quedan en una sola ficha."
                 );
                 return;
               }
@@ -458,7 +458,7 @@ export default function BookingCard() {
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!datosCompletos) {
-      setAuthError("Completá tus datos antes de continuar.");
+      setAuthError("Completa tus datos antes de continuar.");
       return;
     }
     if (!authToken) {
@@ -898,7 +898,7 @@ export default function BookingCard() {
                 <Alerta tono="info" className="mt-2">
                   Tu cuenta ya tiene el RUT {rutDeLaCuenta} registrado, así que
                   usamos ese y tu reserva queda en la misma ficha de siempre. Si
-                  no es tuyo, escribinos antes de reservar.
+                  no es tuyo, escríbenos antes de reservar.
                 </Alerta>
               )}
             </div>
@@ -935,12 +935,12 @@ export default function BookingCard() {
               />
               {!consentimientoAceptado ? (
                 <p className="text-table-head text-slate-400">
-                  Aceptá la política de privacidad para continuar
+                  Acepta la política de privacidad para continuar
                 </p>
               ) : (
                 !rutEsValido && (
                   <Alerta tono="advertencia" className="text-left">
-                    Escribí tu RUT más arriba para poder iniciar sesión. Lo
+                    Escribe tu RUT más arriba para poder iniciar sesión. Lo
                     necesitamos para reconocerte si ya te atendiste antes.
                   </Alerta>
                 )
@@ -953,7 +953,7 @@ export default function BookingCard() {
                   </div>
                 ) : (
                   <div className="text-xs text-white font-bold bg-amber-600 rounded-overlay p-2">
-                    Sesión iniciada. Completá tu teléfono para poder reservar
+                    Sesión iniciada. Completa tu teléfono para poder reservar
                   </div>
                 ))}
             </div>
