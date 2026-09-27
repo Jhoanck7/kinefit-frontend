@@ -607,8 +607,8 @@ function ConstructorPlantillaContenido() {
                           {campo.tipo !== "TextoInformativo" && (
                             <span className="ml-1 font-normal text-slate-400">
                               {campo.completadoPor === "Paciente"
-                                ? "· paciente"
-                                : "· profesional"}
+                                ? "— paciente"
+                                : "— profesional"}
                             </span>
                           )}
                         </label>

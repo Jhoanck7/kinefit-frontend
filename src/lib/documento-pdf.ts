@@ -139,7 +139,7 @@ export async function generarPdfDesdeConstructor(
   const lienzo = new Lienzo(doc, regular, negrita);
 
   lienzo.escribir(datos.nombre, { tamano: 16, negrita: true });
-  lienzo.escribir(`${datos.servicio} · ${datos.fecha}`, {
+  lienzo.escribir(`${datos.servicio}, ${datos.fecha}`, {
     tamano: 9,
     color: GRIS,
     espacioAntes: 2,

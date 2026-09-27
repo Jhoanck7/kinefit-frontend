@@ -100,8 +100,8 @@ export function DocumentosTab({ cita }: { cita: CitaDetalleResponse }) {
                 </p>
                 <p className="font-sans text-xs text-slate-500">
                   {doc.estado}
-                  {doc.reutilizado ? " · cubierto por una firma anterior" : ""}
-                  {doc.cargadoEnPapelEn ? " · cargado en papel" : ""}
+                  {doc.reutilizado ? ", cubierto por una firma anterior" : ""}
+                  {doc.cargadoEnPapelEn ? ", cargado en papel" : ""}
                 </p>
               </div>
             }

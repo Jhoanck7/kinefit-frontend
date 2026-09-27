@@ -176,7 +176,7 @@ export default function NuevaFichaContenidoView() {
                       obligatorio: campo.obligatorio,
                       ayuda: [campo.ayuda, quienCompleta]
                         .filter(Boolean)
-                        .join(" · "),
+                        .join(", "),
                       value: contenido[campo.id] ?? "",
                       onChange: (
                         e: React.ChangeEvent<

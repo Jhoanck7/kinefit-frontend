@@ -45,6 +45,7 @@ export function DocumentoAcciones({
   const [enlaceCopiado, setEnlaceCopiado] = useState(false);
   const [correoEnviado, setCorreoEnviado] = useState(false);
   const [visorUrl, setVisorUrl] = useState<string | null>(null);
+  const [visorEsImagen, setVisorEsImagen] = useState(false);
   const [firmaUrl, setFirmaUrl] = useState<string | null>(null);
   const [firmaVacia, setFirmaVacia] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -69,9 +70,10 @@ export function DocumentoAcciones({
 
   const obtenerUrl = async () => {
     if (urlDescargada.current) return urlDescargada.current;
-    const url = URL.createObjectURL(
-      await abrirArchivo.mutateAsync(documento.id)
-    );
+    const blob = await abrirArchivo.mutateAsync(documento.id);
+    // Un consentimiento cargado en papel suele ser una foto, no un PDF.
+    setVisorEsImagen(blob.type.startsWith("image/"));
+    const url = URL.createObjectURL(blob);
     urlDescargada.current = url;
     return url;
   };
@@ -261,13 +263,21 @@ export function DocumentoAcciones({
 
       {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
 
-      {visorUrl && (
-        <iframe
-          src={visorUrl}
-          title="Documento"
-          className="h-[70vh] w-full rounded-overlay border border-border"
-        />
-      )}
+      {visorUrl &&
+        (visorEsImagen ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={visorUrl}
+            alt="Documento cargado en papel"
+            className="max-h-[70vh] w-full rounded-overlay border border-border object-contain"
+          />
+        ) : (
+          <iframe
+            src={visorUrl}
+            title="Documento"
+            className="h-[70vh] w-full rounded-overlay border border-border"
+          />
+        ))}
 
       {firmaUrl && (
         <div className="border border-border bg-slate-50 p-4">
