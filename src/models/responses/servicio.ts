@@ -3,7 +3,6 @@ export interface ServicioDocumentoResponse {
   plantillaNombre: string;
   obligatorio: boolean;
   momento: "TrasConfirmarReserva" | "AlFinalizarAtencion";
-  vigenciaDias?: number;
 }
 
 export interface ServicioResponse {

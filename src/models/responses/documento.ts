@@ -30,9 +30,6 @@ export interface ConsentimientoCitaResponse {
   requiereFirmaProfesional: boolean;
   cargadoEnPapelEn?: string;
   tieneArchivo: boolean;
-  reutilizado: boolean;
-  vigenteDesde?: string;
-  vigenteHasta?: string;
   createdAt: string;
 }
 

@@ -21,5 +21,4 @@ export interface ServicioDocumentoInput {
   plantillaId: number;
   obligatorio: boolean;
   momento: "TrasConfirmarReserva" | "AlFinalizarAtencion";
-  vigenciaDias?: number;
 }

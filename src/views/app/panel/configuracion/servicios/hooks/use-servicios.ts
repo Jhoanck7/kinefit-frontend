@@ -80,7 +80,6 @@ export const useServicios = () => {
           plantillaId: d.plantillaId,
           obligatorio: d.obligatorio,
           momento: d.momento,
-          vigenciaDias: d.vigenciaDias,
         }))
     );
     setError(null);

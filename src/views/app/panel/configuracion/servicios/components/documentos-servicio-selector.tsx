@@ -61,17 +61,6 @@ export function DocumentosServicioSelector({
     ]);
   };
 
-  const actualizar = (
-    plantillaId: number,
-    cambios: Partial<ServicioDocumentoInput>
-  ) => {
-    onCambiar(
-      documentos.map(d =>
-        d.plantillaId === plantillaId ? { ...d, ...cambios } : d
-      )
-    );
-  };
-
   if (plantillas.length === 0) {
     return (
       <p className="font-sans text-xs text-slate-500">
@@ -107,31 +96,7 @@ export function DocumentosServicioSelector({
         nombreGrupo="consentimiento-del-servicio"
         nombreDe={nombreDe}
         onElegir={id => elegir("Consentimiento", id)}
-      >
-        {elegido => (
-          <label className="flex items-center gap-1.5">
-            Vigencia (días)
-            <input
-              type="number"
-              min={0}
-              value={elegido.vigenciaDias ?? ""}
-              onChange={e =>
-                actualizar(elegido.plantillaId, {
-                  vigenciaDias: e.target.value
-                    ? Number(e.target.value)
-                    : undefined,
-                })
-              }
-              placeholder="cada cita"
-              className="w-24 border border-slate-200 bg-white px-2 py-1"
-            />
-            <span className="text-slate-500">
-              En blanco se firma en cada cita. Con un número, una firma anterior
-              cubre las citas siguientes dentro de ese plazo.
-            </span>
-          </label>
-        )}
-      </Seccion>
+      />
 
       <Seccion
         titulo="Recomendación estándar"
@@ -158,7 +123,6 @@ function Seccion({
   nombreGrupo,
   nombreDe,
   onElegir,
-  children,
 }: {
   titulo: string;
   descripcion: string;
@@ -169,7 +133,6 @@ function Seccion({
   nombreGrupo: string;
   nombreDe: (plantillaId: number) => string;
   onElegir: (plantillaId: number | null) => void;
-  children?: (elegido: ServicioDocumentoInput) => React.ReactNode;
 }) {
   const elegido = elegidos[0] ?? null;
 
@@ -218,12 +181,6 @@ function Seccion({
                   {plantilla.nombre}
                 </span>
               </label>
-
-              {children && elegido?.plantillaId === plantilla.id && (
-                <div className="flex flex-wrap items-center gap-3 px-3 pb-3 pl-9 font-sans text-xs text-slate-600">
-                  {children(elegido)}
-                </div>
-              )}
             </div>
           ))}
         </div>
