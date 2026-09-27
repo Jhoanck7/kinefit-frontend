@@ -43,6 +43,11 @@ export function PacienteDetalleModal({
   const [errorCuenta, setErrorCuenta] = useState<string | null>(null);
   const desvincularMutation = useDesvincularCuentaPacienteMutation();
 
+  const { data: perfil } = useGetPacientePerfil(
+    Number(pacienteId),
+    Boolean(pacienteId) && Boolean(hoy)
+  );
+
   const handleDesvincular = async () => {
     if (!perfil) return;
     setErrorCuenta(null);
@@ -53,11 +58,6 @@ export function PacienteDetalleModal({
       setErrorCuenta(handleApiError(err).message);
     }
   };
-
-  const { data: perfil } = useGetPacientePerfil(
-    Number(pacienteId),
-    Boolean(pacienteId) && Boolean(hoy)
-  );
   const { data: fichas = [] } = useGetHistorialPorPaciente(
     Number(pacienteId),
     Boolean(pacienteId)

@@ -25,6 +25,12 @@ export function DocumentosServicioSelector({
 
   const porPlantillaId = new Map(documentos.map(d => [d.plantillaId, d]));
 
+  const tipoDe = (plantillaId: number) =>
+    plantillas.find(p => p.id === plantillaId)?.tipo;
+
+  const esConsentimiento = (plantillaId: number) =>
+    tipoDe(plantillaId) === "Consentimiento";
+
   // Los radios comparten name, así que el navegador muestra uno solo marcado
   // aunque haya varios guardados: sin este aviso, los datos rotos se veían
   // sanos en pantalla.
@@ -33,12 +39,6 @@ export function DocumentosServicioSelector({
     .map(
       d => plantillas.find(p => p.id === d.plantillaId)?.nombre ?? "sin nombre"
     );
-
-  const tipoDe = (plantillaId: number) =>
-    plantillas.find(p => p.id === plantillaId)?.tipo;
-
-  const esConsentimiento = (plantillaId: number) =>
-    tipoDe(plantillaId) === "Consentimiento";
 
   const toggle = (plantillaId: number) => {
     if (porPlantillaId.has(plantillaId)) {
