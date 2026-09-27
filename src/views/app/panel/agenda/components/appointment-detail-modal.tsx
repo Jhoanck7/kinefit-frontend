@@ -22,6 +22,7 @@ import { puedeGestionarRecursoDeEspecialista } from "@/lib/auth";
 import { COLOR_ROL } from "@/lib/color-rol";
 import { definicionEstado, IdAccionCita } from "@/lib/estados";
 import {
+  desdeFechaISO,
   formatearFechaExtensa,
   formatearFechaHora,
   formatearRangoHorario,
@@ -246,10 +247,8 @@ function DetalleCita({
                       Fecha y Horario
                     </span>
                     <span className="font-sans font-medium text-value text-foreground block mt-0.5">
-                      {formatearFechaExtensa(
-                        new Date(`${cita.fecha}T00:00:00`)
-                      )}
-                      , {formatearRangoHorario(cita.horaInicio, cita.horaFin)}
+                      {formatearFechaExtensa(desdeFechaISO(cita.fecha))},{" "}
+                      {formatearRangoHorario(cita.horaInicio, cita.horaFin)}
                     </span>
                   </div>
 

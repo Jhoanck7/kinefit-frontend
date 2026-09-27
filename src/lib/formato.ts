@@ -1,5 +1,20 @@
 const ZONA_HORARIA = "America/Santiago";
 
+/**
+ * Convierte un "YYYY-MM-DD" del backend en un instante que SIEMPRE cae en ese
+ * mismo día en Chile, sin importar la zona del navegador.
+ *
+ * Construirlo como medianoche local (`new Date("2026-09-30T00:00:00")`) parecía
+ * equivalente, pero no lo es: todos los formateadores de acá fijan
+ * `timeZone: America/Santiago`, así que en un equipo adelantado respecto de
+ * Chile esa medianoche cae el día anterior en Santiago y la fecha se mostraba
+ * corrida un día. Las 12:00 UTC son las 08:00 o 09:00 en Chile según el horario
+ * de verano, así que nunca cruzan un cambio de día.
+ */
+export function desdeFechaISO(fecha: string): Date {
+  return new Date(`${fecha}T12:00:00Z`);
+}
+
 export function sumarDias(base: Date, dias: number): Date {
   const resultado = new Date(base);
   resultado.setDate(resultado.getDate() + dias);

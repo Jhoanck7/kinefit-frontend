@@ -31,7 +31,11 @@ import {
   documentoCerrado,
   etiquetaTipoDocumento,
 } from "@/lib/estados-documento";
-import { formatearFechaCorta, formatearFechaHora } from "@/lib/formato";
+import {
+  desdeFechaISO,
+  formatearFechaCorta,
+  formatearFechaHora,
+} from "@/lib/formato";
 
 import { DocumentoAcciones } from "./documento-acciones";
 
@@ -179,7 +183,7 @@ export function DocumentoDetalleModal({
     const bytes = await generarPdfDesdeConstructor({
       nombre: doc!.nombre,
       servicio: doc!.servicio,
-      fecha: formatearFechaCorta(new Date(`${doc!.fechaAtencion}T00:00:00`)),
+      fecha: formatearFechaCorta(desdeFechaISO(doc!.fechaAtencion)),
       cuerpo: cuerpoConNombresCongelados(
         plantilla?.cuerpo,
         doc!.contenido ?? {}
@@ -518,10 +522,8 @@ export function DocumentoDetalleModal({
                   Fecha y Horario
                 </span>
                 <p className="font-sans font-medium text-value text-foreground mt-0.5">
-                  {formatearFechaCorta(
-                    new Date(`${doc.fechaAtencion}T00:00:00`)
-                  )}
-                  , {doc.horaAtencion.slice(0, 5)}
+                  {formatearFechaCorta(desdeFechaISO(doc.fechaAtencion))},{" "}
+                  {doc.horaAtencion.slice(0, 5)}
                 </p>
               </div>
 

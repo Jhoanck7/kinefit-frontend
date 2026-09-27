@@ -19,6 +19,8 @@ import {
 import { useHoyPanel } from "@/hooks/common";
 import { handleApiError } from "@/lib/api";
 import {
+  desdeFechaISO,
+  diaSemanaId,
   fechaISO,
   formatearFechaExtensa,
   formatearRangoHorario,
@@ -76,8 +78,10 @@ export function GestionBloqueosModal({
 
   const rejillaForm = useMemo(() => {
     const diaSemana = fechaForm
-      ? new Date(`${fechaForm}T00:00:00`).getDay()
-      : (hoy?.getDay() ?? 1);
+      ? diaSemanaId(desdeFechaISO(fechaForm))
+      : hoy
+        ? diaSemanaId(hoy)
+        : 1;
     return generarRejillaDia(diaSemana);
   }, [fechaForm, hoy]);
 
@@ -328,8 +332,8 @@ export function GestionBloqueosModal({
                         </span>
                       </div>
                       <span className="font-sans text-xs text-slate-500 block mt-0.5">
-                        {formatearFechaExtensa(new Date(`${b.fecha}T00:00:00`))}
-                        , {formatearRangoHorario(b.horaInicio, b.horaFin)}
+                        {formatearFechaExtensa(desdeFechaISO(b.fecha))},{" "}
+                        {formatearRangoHorario(b.horaInicio, b.horaFin)}
                       </span>
                     </div>
 

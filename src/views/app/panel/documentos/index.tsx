@@ -19,7 +19,7 @@ import {
   etiquetaTipoDocumento,
   ORDEN_ESTADOS_DOCUMENTO,
 } from "@/lib/estados-documento";
-import { formatearFechaCorta } from "@/lib/formato";
+import { desdeFechaISO, formatearFechaCorta } from "@/lib/formato";
 import { TIPOS_DOCUMENTO } from "@/views/app/panel/documentos/plantillas/nuevo/hooks";
 
 import { DocumentoDetalleModal } from "./components";
@@ -223,9 +223,7 @@ function DocumentosContenido() {
                   {documento.especialistaNombre}
                 </TableCell>
                 <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
-                  {formatearFechaCorta(
-                    new Date(`${documento.fechaAtencion}T00:00:00`)
-                  )}
+                  {formatearFechaCorta(desdeFechaISO(documento.fechaAtencion))}
                 </TableCell>
               </TableRow>
             ))}

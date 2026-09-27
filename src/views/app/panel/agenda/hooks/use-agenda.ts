@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { useGetAgenda, useGetEspecialistas } from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
-import { fechaISO } from "@/lib/formato";
+import { desdeFechaISO, fechaISO } from "@/lib/formato";
 import { generarRejillaDia } from "@/lib/horario";
 import { BloqueAgendaResponse } from "@/models/responses";
 
@@ -23,8 +23,7 @@ export const useAgenda = () => {
 
   const dia = useMemo(() => {
     if (fechaParam) {
-      const [y, m, d] = fechaParam.split("-").map(Number);
-      return new Date(y, m - 1, d);
+      return desdeFechaISO(fechaParam);
     }
     return hoy ?? new Date();
   }, [fechaParam, hoy]);
@@ -95,8 +94,11 @@ export const useAgenda = () => {
   };
 
   const handleIrADia = (delta: number) => {
-    const nueva = new Date(dia);
-    nueva.setDate(nueva.getDate() + delta);
+    // Se suman 24 h exactas en vez de setDate(): setDate() trabaja en la zona
+    // del navegador y fechaISO() lee en la de Chile, así que en un equipo con
+    // otra zona el día iba y volvía mal. Desde las 12:00 UTC ningún cambio de
+    // horario de verano alcanza a cruzar la medianoche chilena.
+    const nueva = new Date(dia.getTime() + delta * 24 * 60 * 60 * 1000);
     abrirParametros({ fecha: fechaISO(nueva) });
   };
 

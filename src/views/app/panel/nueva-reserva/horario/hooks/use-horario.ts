@@ -9,7 +9,7 @@ import {
   useGetPacientePerfil,
 } from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
-import { fechaISO } from "@/lib/formato";
+import { desdeFechaISO, fechaISO } from "@/lib/formato";
 import {
   bloquesRequeridos,
   sonConsecutivas,
@@ -57,8 +57,7 @@ export const useHorario = () => {
     const horaParam = searchParams.get("hora");
 
     if (fechaParam && !fecha) {
-      const [y, m, d] = fechaParam.split("-").map(Number);
-      setHorario(new Date(y, m - 1, d), horaParam ? [horaParam] : []);
+      setHorario(desdeFechaISO(fechaParam), horaParam ? [horaParam] : []);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hoy]);
@@ -152,9 +151,8 @@ export const useHorario = () => {
 
   const handleCambiarFecha = (valor: string) => {
     if (!valor) return;
-    const [y, m, d] = valor.split("-").map(Number);
     setErrorSeleccion(null);
-    setHorario(new Date(y, m - 1, d), []);
+    setHorario(desdeFechaISO(valor), []);
   };
 
   const handleVolver = () => router.push("/panel/nueva-reserva/servicio");

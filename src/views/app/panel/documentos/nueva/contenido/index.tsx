@@ -15,7 +15,11 @@ import {
 } from "@/components/shared";
 import { Badge, Button, Card } from "@/components/ui";
 import { contadorDeSeccion } from "@/lib/documento-contenido";
-import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/formato";
+import {
+  desdeFechaISO,
+  formatearFechaExtensa,
+  formatearRangoHorario,
+} from "@/lib/formato";
 
 import { useNuevaFichaContenido } from "./hooks";
 
@@ -285,7 +289,7 @@ export default function NuevaFichaContenidoView() {
           {
             etiqueta: "Fecha y Hora",
             valor: cita
-              ? `${formatearFechaExtensa(new Date(`${cita.fecha}T00:00:00`))} | ${formatearRangoHorario(cita.horaInicio, cita.horaFin)}`
+              ? `${formatearFechaExtensa(desdeFechaISO(cita.fecha))} | ${formatearRangoHorario(cita.horaInicio, cita.horaFin)}`
               : undefined,
           },
           {

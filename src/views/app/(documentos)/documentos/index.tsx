@@ -11,7 +11,7 @@ import {
 import { Button, Card } from "@/components/ui";
 import { handleApiError } from "@/lib/api";
 import { generarPdfDesdeConstructor } from "@/lib/documento-pdf";
-import { formatearFechaExtensa } from "@/lib/formato";
+import { desdeFechaISO, formatearFechaExtensa } from "@/lib/formato";
 
 import PdfSignatureCanvas from "./components/pdf-signature-canvas";
 import { useFirmaDocumento } from "./hooks";
@@ -136,7 +136,7 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
       const bytes = await generarPdfDesdeConstructor({
         nombre: data.nombre,
         servicio: data.servicio,
-        fecha: formatearFechaExtensa(new Date(`${data.fecha}T00:00:00`)),
+        fecha: formatearFechaExtensa(desdeFechaISO(data.fecha)),
         cuerpo: data.cuerpo ?? { secciones: [] },
         contenido,
       });
@@ -185,8 +185,7 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
     <div className="mx-auto flex min-h-dvh max-w-3xl flex-col px-4 pb-28 pt-6">
       <header className="mb-4">
         <p className="text-label font-semibold text-slate-400">
-          {data.servicio},{" "}
-          {formatearFechaExtensa(new Date(`${data.fecha}T00:00:00`))}
+          {data.servicio}, {formatearFechaExtensa(desdeFechaISO(data.fecha))}
         </p>
         <h1 className="mt-1 text-section-title font-bold text-slate-900">
           {data.nombre}

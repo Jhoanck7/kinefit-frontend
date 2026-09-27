@@ -17,8 +17,11 @@ export function DocumentosServicioSelector({
 }: DocumentosServicioSelectorProps) {
   const porPlantillaId = new Map(documentos.map(d => [d.plantillaId, d]));
 
+  const tipoDe = (plantillaId: number) =>
+    plantillas.find(p => p.id === plantillaId)?.tipo;
+
   const esConsentimiento = (plantillaId: number) =>
-    plantillas.find(p => p.id === plantillaId)?.tipo === "Consentimiento";
+    tipoDe(plantillaId) === "Consentimiento";
 
   const toggle = (plantillaId: number) => {
     if (porPlantillaId.has(plantillaId)) {
@@ -35,7 +38,13 @@ export function DocumentosServicioSelector({
       {
         plantillaId,
         obligatorio: true,
-        momento: "TrasConfirmarReserva",
+        // Una recomendación solo se encuentra como la estándar del servicio si
+        // quedó en AlFinalizarAtencion: con el otro momento se guardaba, pero
+        // al cerrar la atención el sistema respondía que no había ninguna.
+        momento:
+          tipoDe(plantillaId) === "Recomendacion"
+            ? "AlFinalizarAtencion"
+            : "TrasConfirmarReserva",
       },
     ]);
   };
@@ -117,41 +126,57 @@ export function DocumentosServicioSelector({
                     Obligatorio
                   </label>
 
-                  <select
-                    value={asignado.momento}
-                    onChange={e =>
-                      actualizar(plantilla.id, {
-                        momento: e.target
-                          .value as ServicioDocumentoInput["momento"],
-                      })
-                    }
-                    className="border border-slate-200 bg-white px-2 py-1"
-                  >
-                    <option value="TrasConfirmarReserva">
-                      Antes de la cita
-                    </option>
-                    <option value="AlFinalizarAtencion">
-                      Al finalizar la atención
-                    </option>
-                  </select>
+                  {plantilla.tipo === "Consentimiento" && (
+                    <>
+                      <select
+                        value={asignado.momento}
+                        onChange={e =>
+                          actualizar(plantilla.id, {
+                            momento: e.target
+                              .value as ServicioDocumentoInput["momento"],
+                          })
+                        }
+                        className="border border-slate-200 bg-white px-2 py-1"
+                      >
+                        <option value="TrasConfirmarReserva">
+                          Antes de la cita
+                        </option>
+                        <option value="AlFinalizarAtencion">
+                          Al finalizar la atención
+                        </option>
+                      </select>
 
-                  <label className="flex items-center gap-1.5">
-                    Vigencia (días)
-                    <input
-                      type="number"
-                      min={0}
-                      value={asignado.vigenciaDias ?? ""}
-                      onChange={e =>
-                        actualizar(plantilla.id, {
-                          vigenciaDias: e.target.value
-                            ? Number(e.target.value)
-                            : undefined,
-                        })
-                      }
-                      placeholder="cada cita"
-                      className="w-24 border border-slate-200 bg-white px-2 py-1"
-                    />
-                  </label>
+                      <label className="flex items-center gap-1.5">
+                        Vigencia (días)
+                        <input
+                          type="number"
+                          min={0}
+                          value={asignado.vigenciaDias ?? ""}
+                          onChange={e =>
+                            actualizar(plantilla.id, {
+                              vigenciaDias: e.target.value
+                                ? Number(e.target.value)
+                                : undefined,
+                            })
+                          }
+                          placeholder="cada cita"
+                          className="w-24 border border-slate-200 bg-white px-2 py-1"
+                        />
+                      </label>
+                    </>
+                  )}
+
+                  {plantilla.tipo === "Recomendacion" && (
+                    <span className="text-slate-500">
+                      Se envía al cerrar la atención
+                    </span>
+                  )}
+
+                  {plantilla.tipo === "FichaClinica" && (
+                    <span className="text-slate-500">
+                      La completa la profesional durante la atención
+                    </span>
+                  )}
                 </div>
               )}
             </div>

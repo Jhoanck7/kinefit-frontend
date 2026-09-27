@@ -8,7 +8,11 @@ import {
   SummaryPanel,
 } from "@/components/shared";
 import { Button, Card } from "@/components/ui";
-import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/formato";
+import {
+  desdeFechaISO,
+  formatearFechaExtensa,
+  formatearRangoHorario,
+} from "@/lib/formato";
 
 import { useNuevaFichaReserva } from "./hooks";
 
@@ -131,10 +135,7 @@ export default function NuevaFichaReservaView() {
                       >
                         <div>
                           <p className="font-sans font-medium text-sm text-slate-900">
-                            {formatearFechaExtensa(
-                              new Date(`${cita.fecha}T00:00:00`)
-                            )}
-                            ,{" "}
+                            {formatearFechaExtensa(desdeFechaISO(cita.fecha))},{" "}
                             {formatearRangoHorario(
                               cita.horaInicio,
                               cita.horaFin
@@ -209,7 +210,7 @@ export default function NuevaFichaReservaView() {
           {
             etiqueta: "Reserva",
             valor: citaSeleccionada
-              ? `${formatearFechaExtensa(new Date(`${citaSeleccionada.fecha}T00:00:00`))}, ${formatearRangoHorario(citaSeleccionada.horaInicio, citaSeleccionada.horaFin)}`
+              ? `${formatearFechaExtensa(desdeFechaISO(citaSeleccionada.fecha))}, ${formatearRangoHorario(citaSeleccionada.horaInicio, citaSeleccionada.horaFin)}`
               : undefined,
           },
           { etiqueta: "Tipo de Ficha", valor: undefined },
