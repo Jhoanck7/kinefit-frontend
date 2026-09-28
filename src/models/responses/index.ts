@@ -22,7 +22,6 @@ export type {
   CitaTransaccionResumenResponse,
   CodigoEstadoCita,
   EspecialistaCitaResponse,
-  HitosCitaResponse,
   ImpactoCancelacionResponse,
   PacienteCitaResponse,
   ServicioCitaResponse,

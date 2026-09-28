@@ -33,7 +33,8 @@ import { NuevaVentaModal } from "@/views/app/panel/ventas/components";
 import { AuditTrail } from "./audit-trail";
 import { DocumentosTab } from "./documentos-tab";
 import { EnviarRecomendacionModal } from "./enviar-recomendacion-modal";
-import { HitosBoard } from "./hitos-board";
+
+const ESTADOS_FACTURABLES = ["Confirmada", "Atendida"];
 
 const MAPA_ESTADO_NUEVO: Record<string, string> = {
   confirmar: "Confirmada",
@@ -182,12 +183,6 @@ function DetalleCita({
           {errorMsg}
         </Alerta>
       )}
-
-      <HitosBoard
-        hitos={cita.hitos}
-        onIrADocumentos={() => setTab("documentos")}
-        onCobrar={() => setMostrarCobro(true)}
-      />
 
       <NuevaVentaModal
         abierto={mostrarCobro}
@@ -369,39 +364,55 @@ function DetalleCita({
       </Tabs>
 
       {/* Pie de Acciones */}
-      <div className="border-t border-slate-200 bg-slate-50/60 p-4">
-        {!puedeGestionarEstado ? (
-          <p className="font-sans text-xs text-slate-500 text-center">
-            Solo {cita.especialista.nombre} puede cambiar el estado de esta
-            reserva.
-          </p>
-        ) : definicion.acciones.length === 0 ? (
-          <p className="font-sans text-xs text-slate-500 text-center">
-            {definicion.explicacionSinAcciones}
-          </p>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 bg-slate-50/60 p-4">
+        {/* Era la única entrada al cobro: vivía en el tablero de hitos que se
+            retiró, así que se conserva acá para no perder el atajo. */}
+        {ESTADOS_FACTURABLES.includes(cita.estado) ? (
+          <button
+            type="button"
+            onClick={() => setMostrarCobro(true)}
+            className="font-sans text-xs font-bold text-primary hover:underline"
+          >
+            Registrar Venta
+          </button>
         ) : (
-          <div className="flex flex-wrap gap-2 justify-end">
-            {definicion.acciones.map(accion => {
-              const esDestacado =
-                accion.estilo === "primario" || accion.estilo === "peligro";
-
-              const estiloBtn = esDestacado
-                ? "bg-primary text-white hover:bg-primary-hover border-0 font-bold shadow-none"
-                : "border border-slate-200 bg-white hover:bg-slate-50 text-foreground shadow-none";
-
-              return (
-                <button
-                  key={accion.id}
-                  disabled={guardando}
-                  onClick={() => onAccion(accion.id)}
-                  className={`font-sans text-xs font-bold px-4 py-2 rounded-none transition-all focus:outline-none ${estiloBtn} disabled:opacity-50`}
-                >
-                  {guardando ? "Procesando..." : accion.etiqueta}
-                </button>
-              );
-            })}
-          </div>
+          <span />
         )}
+
+        <div className="flex-1">
+          {!puedeGestionarEstado ? (
+            <p className="font-sans text-xs text-slate-500 text-center">
+              Solo {cita.especialista.nombre} puede cambiar el estado de esta
+              reserva.
+            </p>
+          ) : definicion.acciones.length === 0 ? (
+            <p className="font-sans text-xs text-slate-500 text-center">
+              {definicion.explicacionSinAcciones}
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2 justify-end">
+              {definicion.acciones.map(accion => {
+                const esDestacado =
+                  accion.estilo === "primario" || accion.estilo === "peligro";
+
+                const estiloBtn = esDestacado
+                  ? "bg-primary text-white hover:bg-primary-hover border-0 font-bold shadow-none"
+                  : "border border-slate-200 bg-white hover:bg-slate-50 text-foreground shadow-none";
+
+                return (
+                  <button
+                    key={accion.id}
+                    disabled={guardando}
+                    onClick={() => onAccion(accion.id)}
+                    className={`font-sans text-xs font-bold px-4 py-2 rounded-none transition-all focus:outline-none ${estiloBtn} disabled:opacity-50`}
+                  >
+                    {guardando ? "Procesando..." : accion.etiqueta}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
