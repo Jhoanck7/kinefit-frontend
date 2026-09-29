@@ -20,14 +20,27 @@ Los **YA APLICA** son los urgentes: hoy el manual dice algo que el sistema no ha
 
 ## Resumen
 
+*Contado con expresión regular sobre las cabeceras de este archivo, no a ojo, el 2026-09-28.*
+
 | Manual | YA APLICA | PENDIENTE | A DECIDIR | Total |
 |---|---|---|---|---|
-| Manual de Usuario | 19 | 3 | 1 | 23 |
-| Manual del Sistema | 2 | 1 | 0 | 3 |
+| Manual de Usuario | 19 | 10 | 1 | 30 |
+| Manual del Sistema | 2 | 2 | 0 | 4 |
 
-**Solo 4 quedan PENDIENTE:** M-10 y M-16 (correcciones de texto que no dependen de código: el formato PDF del documento externo y quitar SVG), M-17 (los dos ítems que faltan en el menú lateral) y S-02 (Resend, que depende de S-13).
+**34 secciones a actualizar en total.** Ninguna espera código: todas se pueden escribir hoy.
 
-**Todo lo demás ya aplica: el sistema cambió y el manual quedó atrás.** Son 21 secciones a actualizar, con el texto propuesto listo para pegar en cada entrada.
+Las 12 PENDIENTE, agrupadas por qué las produjo:
+
+| Grupo | Entradas |
+|---|---|
+| Correcciones de texto que nunca dependieron de código | M-10, M-16, M-17 |
+| Correo, depende de que Resend quede operativo (S-13) | S-02 |
+| Ronda de pruebas del 26 y 27 de septiembre | M-24, M-25, M-26, M-27 |
+| Ronda del 27 y 28: servicios, tablero de hitos y archivos | M-28, M-29, M-30, S-04 |
+
+**Y una corrección importante:** S-01 describía que el sistema transfiere la ficha a una cuenta de Google nueva cuando coincide el RUT. **Eso se retiró el 27 de septiembre** por ser un agujero de seguridad, así que el texto que estaba propuesto ahí ya no sirve. La entrada trae el reemplazo.
+
+Las 21 YA APLICA son las que el sistema cambió y el manual quedó atrás, con el texto propuesto listo para pegar.
 
 ---
 
@@ -354,9 +367,15 @@ El flujo documentado no menciona que el RUT viaja en el login de Google para evi
 
 **Y documentar** que el sitio público condiciona el botón de Google a que el RUT sea válido, precisamente para que el paso 2 pueda aplicarse siempre.
 
-**Y dejar constancia de la consecuencia**, que es una decisión consciente y no un descuido (informe §16.3):
+**⚠ Este último punto cambió el 2026-09-27 y el texto de arriba quedó obsoleto.** Lo que decía —que el sistema transfiere la vinculación a la cuenta nueva— era el comportamiento anterior y **se retiró por ser un agujero de seguridad**: el RUT no es secreto en Chile, así que quien lo conociera podía quedarse con la ficha ajena y dejar sin acceso a su dueño.
 
-> Cuando el RUT corresponde a un paciente que ya tiene otra cuenta de Google asociada, el sistema **transfiere** la vinculación a la cuenta nueva en lugar de rechazarla. Es el comportamiento que exige RF-NRV-038 para el caso de un paciente que cambió de correo. Como efecto, el RUT opera como identificador de acceso: quien lo conozca puede asociar ese paciente a su propia cuenta de Google. El alcance está acotado a las citas y al perfil del paciente; los documentos clínicos no son accesibles con un token de paciente.
+El texto correcto para el manual es este:
+
+> El RUT solo vincula una cuenta nueva cuando la ficha **todavía no tiene una asociada**, que es el caso de la ficha creada por recepción en una atención presencial. Si la ficha ya tiene cuenta, el login se rechaza con `RUT_CON_OTRA_CUENTA` y se le indica al paciente que se acerque al centro. El reemplazo de cuenta —el paciente que cambió de correo— lo autoriza el personal desde la ficha, con la persona presente (ver M-27).
+
+**Y corregir el paso 2 de la lista de resolución de identidad**, que ahora lleva condición:
+
+> 2. **Por RUT**, cuando el cliente lo envía **y la ficha encontrada no tiene cuenta asociada**.
 
 ### S-02 · §6.7.4 Resend · **PENDIENTE**
 
@@ -436,3 +455,60 @@ Antes, una persona que cambiaba de correo entraba con su cuenta nueva indicando 
 > Si el paciente intenta entrar por su cuenta con un RUT que ya está asociado a otra cuenta, el sistema le responde que se acerque al centro.
 
 También conviene agregarlo a Solución de Problemas, porque es el síntoma que va a llegar por teléfono: *"no puedo entrar, me dice que mi RUT ya está en otra cuenta"*.
+
+### M-28 · §6.3 Servicios — "Documentos Exigidos" rehecho · **PENDIENTE**
+
+**Origen:** pedido de Maxi y decisión de quitar la vigencia, 2026-09-27.
+
+Esta sección hay que **reescribirla entera**, porque la pantalla ya no se parece a lo que describe el manual. Cambió en cuatro cosas:
+
+1. **Dos secciones separadas**, Consentimiento y Recomendación estándar, en vez de una lista mezclada donde había que leer la etiqueta de cada fila.
+2. **De cada tipo se elige uno solo**, y cada sección incluye la opción de no exigir nada. Antes las recomendaciones eran casillas y se podían marcar varias, pero el sistema tomaba una sola en silencio.
+3. **Las fichas clínicas ya no se listan.** Nunca se usaron desde acá: la profesional elige la plantilla al registrar la ficha.
+4. **Desaparecieron la casilla "Obligatorio" y el campo "Vigencia (días)".**
+
+Texto propuesto:
+
+> **Documentos Exigidos.** Cada servicio define qué consentimiento firma el paciente antes de la atención y cuál es su recomendación estándar. De cada uno se elige uno solo, y cualquiera de los dos puede quedar sin asignar.
+>
+> Las fichas clínicas no se configuran acá: la profesional elige la plantilla en el momento de registrar la ficha.
+
+**Hay que eliminar del manual toda mención a la vigencia del consentimiento**, si la tiene. Esa función se retiró: un consentimiento se firma en cada cita, sin excepción. La decisión fue de Maxi, por no corresponder a ningún requerimiento real.
+
+**Consecuencia en el plan de pruebas:** PF-249 y PF-250 probaban la reutilización por vigencia, así que **dejan de aplicar**.
+
+### M-29 · §1.2 Detalle de la Reserva — se retiró el tablero de progreso · **PENDIENTE**
+
+**Origen:** decisión de Maxi, 2026-09-28.
+
+La franja con los cuatro pasos numerados —Anticipo Pagado, Pago Total Registrado, Documentos Firmados, Recomendaciones Enviadas— **ya no existe**. Si el manual la describe o la muestra en una captura, hay que quitar esa parte.
+
+El motivo, por si alguien pregunta: se dibujaba como una secuencia, pero los cuatro eran hechos independientes y tres de ellos no siempre corresponden —el anticipo no existe en una cita manual, y los documentos y la recomendación no existen si el servicio no los exige—. Un paso en gris no distinguía "falta hacerlo" de "esto no aplica". Además, el de documentos se marcaba como cumplido cuando la cita no tenía ningún consentimiento.
+
+El detalle de la reserva ahora abre directo en sus dos pestañas, Detalle y Documentos.
+
+**Y hay que documentar dónde quedó el cobro**, porque se accedía desde ese tablero:
+
+> Para registrar el pago de una reserva Confirmada o Atendida, usa **Registrar Venta**, al pie del detalle. También puedes hacerlo desde Ventas, eligiendo la cita.
+
+### M-30 · §4.3 Detalle del Documento — consentimientos cargados en papel · **PENDIENTE**
+
+**Origen:** hallazgo del 2026-09-27.
+
+Cuando el consentimiento se carga como foto en vez de PDF, antes el visor respondía *"error al cargar el documento PDF"* y la descarga entregaba un archivo `.pdf` que no abría en ningún programa. Las dos cosas están corregidas.
+
+> Nota: un consentimiento firmado en papel se puede cargar como PDF o como foto. Si es una foto, se muestra como imagen y se descarga con su formato original.
+
+### S-04 · §3 Modelo de Datos y §5 API — campos retirados · **PENDIENTE**
+
+**Origen:** acompaña a M-28 y M-29.
+
+Tres cambios que el Manual del Sistema tiene que reflejar, todos por retiro:
+
+| Dónde | Qué se fue |
+|---|---|
+| `servicios_documento` | La columna `vigencia_dias` (migración `QuitarVigenciaConsentimiento`) |
+| Respuesta de consentimiento | `Reutilizado`, `VigenteDesde` y `VigenteHasta`, que solo tenían sentido con la vigencia |
+| Detalle de cita | El objeto `Hitos` completo |
+
+**Nota para quien mantenga el repositorio:** las herramientas de EF estaban en 10.0.8 contra un runtime 10.0.9, y con ese desfase `dotnet ef migrations add` reescribía el snapshot entero. Se subieron a 10.0.9 antes de generar esta migración. Conviene dejarlo anotado en el apartado de entorno de desarrollo.
