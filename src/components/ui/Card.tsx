@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/** Contenedor con bordes redondeados usado como tarjeta para agrupar contenido */
 function Card({
   className,
   size = "default",

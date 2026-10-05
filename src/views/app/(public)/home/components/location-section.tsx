@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import { LandingConfigResponse } from "@/models/responses";
 
+/** Sección con la dirección, horarios y mapa embebido de la clínica */
 export default function LocationSection({
   config,
 }: {
@@ -20,12 +21,10 @@ export default function LocationSection({
       id="location"
       className="scroll-mt-24 py-24 bg-white border-b border-slate-200/60 text-slate-900 relative overflow-hidden"
     >
-      {/* Background decoration */}
       <div className="absolute bottom-0 right-0 w-[400px] h-[200px] bg-blue-500/5 rounded-full filter blur-[100px] pointer-events-none -z-10" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Left Column: Info & Directions */}
           <div className="lg:col-span-5 flex flex-col items-start text-left scroll-reveal">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
               Ubicación
@@ -38,9 +37,7 @@ export default function LocationSection({
                 "Estamos ubicados en un sector accesible de Antofagasta para brindarte la mejor atención kinésica."}
             </p>
 
-            {/* Location Cards */}
             <div className="space-y-6 w-full">
-              {/* Address Card */}
               <div className="flex gap-4 p-5 rounded-global bg-slate-50 border border-slate-200/50">
                 <div className="w-10 h-10 rounded-global bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
                   <svg
@@ -72,7 +69,6 @@ export default function LocationSection({
                 </div>
               </div>
 
-              {/* Business Hours Card */}
               <div className="flex gap-4 p-5 rounded-global bg-slate-50 border border-slate-200/50">
                 <div className="w-10 h-10 rounded-global bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
                   <svg
@@ -104,7 +100,6 @@ export default function LocationSection({
               </div>
             </div>
 
-            {/* Direct Map Navigation Buttons */}
             <div className="mt-8 w-full flex flex-col gap-3">
               <a
                 href={
@@ -131,7 +126,6 @@ export default function LocationSection({
             </div>
           </div>
 
-          {/* Right Column: Google Maps Embed Frame */}
           <div className="lg:col-span-7 scroll-reveal-scale delay-200">
             <div className="w-full h-[400px] lg:h-[480px] rounded-global overflow-hidden border border-slate-200 bg-slate-100 relative">
               <iframe

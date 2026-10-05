@@ -15,6 +15,7 @@ interface VentasFiltrosBarProps {
   onExportar: () => void;
 }
 
+/** Barra con buscador, filtros de fecha y método de pago, y accesos a registrar venta, exportar y configurar tarifas */
 export function VentasFiltrosBar({
   rangoFecha,
   setRangoFecha,
@@ -29,7 +30,6 @@ export function VentasFiltrosBar({
   return (
     <Card className="p-4 rounded-none border border-slate-200 shadow-none font-sans">
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-        {/* Buscador de Paciente */}
         <div className="w-64 min-w-[200px]">
           <SearchInput
             placeholder="Buscar por paciente..."
@@ -38,7 +38,6 @@ export function VentasFiltrosBar({
           />
         </div>
 
-        {/* Rango de Fecha */}
         <div className="flex items-center gap-1.5">
           <span className="font-medium text-muted-foreground text-label">
             Fecha:
@@ -56,7 +55,6 @@ export function VentasFiltrosBar({
           </select>
         </div>
 
-        {/* Método de Pago */}
         <div className="flex items-center gap-1.5">
           <span className="font-medium text-muted-foreground text-label">
             Pago:
@@ -74,7 +72,6 @@ export function VentasFiltrosBar({
           </select>
         </div>
 
-        {/* Botones de Acción */}
         <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"

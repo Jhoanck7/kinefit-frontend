@@ -1,13 +1,12 @@
 import { create } from "zustand";
 
-/** Estado del asistente de nueva reserva: en memoria, sin persistencia. */
 interface NuevaReservaState {
   fecha: Date | null;
-  /** Horas de inicio seleccionadas en la grilla (1 a 3), formato "HH:mm". */
+  /** Horas de inicio seleccionadas en la grilla (1 a 3), formato "HH:mm" */
   horasSeleccionadas: string[];
-  /** Primera hora seleccionada, para mostrar en los paneles de resumen. */
+  /** Primera hora seleccionada, para mostrar en los paneles de resumen */
   hora: string | null;
-  /** Se resuelven recién al elegir especialista (GET /bloques). */
+  /** Se resuelven recién al elegir especialista */
   bloqueHorarioIds: number[];
   pacienteId: number | null;
   pacienteNombre: string | null;
@@ -47,6 +46,7 @@ const ESTADO_INICIAL = {
   notaInterna: "",
 };
 
+/** Estado del asistente de nueva reserva: en memoria, sin persistencia */
 export const useNuevaReservaStore = create<NuevaReservaState>()(set => ({
   ...ESTADO_INICIAL,
   setHorario: (fecha, horasSeleccionadas) =>
@@ -54,7 +54,7 @@ export const useNuevaReservaStore = create<NuevaReservaState>()(set => ({
       fecha,
       horasSeleccionadas,
       hora: [...horasSeleccionadas].sort()[0] ?? null,
-      // Cambiar de horario invalida al especialista y los bloques ya resueltos.
+      // Cambiar de horario invalida al especialista y los bloques ya resueltos
       especialistaId: null,
       especialistaNombre: null,
       bloqueHorarioIds: [],
@@ -68,7 +68,7 @@ export const useNuevaReservaStore = create<NuevaReservaState>()(set => ({
       servicioId,
       servicioNombre,
       servicioDuracionMinutos,
-      // Cambiar de servicio invalida la cadena: el backend no valida que el especialista atienda el nuevo servicio.
+      // Cambiar de servicio invalida la cadena: el backend no valida que el especialista atienda el nuevo servicio
       fecha: null,
       horasSeleccionadas: [],
       hora: null,

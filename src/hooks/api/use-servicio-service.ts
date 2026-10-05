@@ -7,6 +7,7 @@ import {
 } from "@/models/requests";
 import { servicioService } from "@/services";
 
+/** Obtiene el listado de servicios */
 export const useGetServicios = (soloActivos = true) => {
   return useQuery({
     queryKey: ["servicios", soloActivos],
@@ -15,6 +16,7 @@ export const useGetServicios = (soloActivos = true) => {
   });
 };
 
+/** Crea un servicio nuevo */
 export const useCreateServicioMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -26,6 +28,7 @@ export const useCreateServicioMutation = () => {
   });
 };
 
+/** Actualiza los datos de un servicio */
 export const useUpdateServicioMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -37,6 +40,7 @@ export const useUpdateServicioMutation = () => {
   });
 };
 
+/** Activa o desactiva un servicio */
 export const useUpdateServicioEstadoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -48,6 +52,7 @@ export const useUpdateServicioEstadoMutation = () => {
   });
 };
 
+/** Actualiza el consentimiento y la recomendación estándar exigidos por un servicio */
 export const useActualizarDocumentosServicioMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

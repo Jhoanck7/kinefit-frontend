@@ -7,6 +7,7 @@ interface UseAutoScrollOptions {
   enabled?: boolean;
 }
 
+/** Desplaza automáticamente un contenedor horizontal a intervalos, pausable con el mouse */
 export function useAutoScroll(
   scrollRef: RefObject<HTMLDivElement | null>,
   { intervalMs = 5000, enabled = true }: UseAutoScrollOptions = {}

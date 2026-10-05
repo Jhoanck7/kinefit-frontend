@@ -6,6 +6,7 @@ import {
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints de la pasarela de pago para reservas del sitio público */
 export class TransaccionService extends BaseApiService {
   constructor() {
     super("/transacciones", axiosInstanceSinSesion);

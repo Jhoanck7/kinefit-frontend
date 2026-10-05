@@ -8,6 +8,7 @@ import { useDebounce, useHoyPanel } from "@/hooks/common";
 
 export const TAMANO_PAGINA = 10;
 
+/** Gestiona la búsqueda, paginación y el modal de detalle del listado de pacientes */
 export const usePacientes = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -27,7 +28,6 @@ export const usePacientes = () => {
   const inicio = (pagina - 1) * TAMANO_PAGINA;
   const visibles = pacientes?.items ?? [];
 
-  // Actions
   const abrirParametros = (params: Record<string, string | undefined>) => {
     const actuales = new URLSearchParams(searchParams.toString());
     Object.entries(params).forEach(([clave, valor]) => {
@@ -51,7 +51,6 @@ export const usePacientes = () => {
   };
 
   return {
-    // Data
     hoy,
     busqueda,
     buscando,
@@ -61,7 +60,6 @@ export const usePacientes = () => {
     visibles,
     pacienteModalId,
 
-    // Actions
     actions: {
       setBusqueda: handleBuscar,
       handleNuevoPaciente,

@@ -6,6 +6,7 @@ import {
 } from "@/models/requests";
 import { usuarioPersonalService } from "@/services";
 
+/** Obtiene el listado de usuarios del personal */
 export const useGetUsuariosPersonal = (soloActivos?: boolean) => {
   return useQuery({
     queryKey: ["usuarios-personal", soloActivos],
@@ -16,6 +17,7 @@ export const useGetUsuariosPersonal = (soloActivos?: boolean) => {
   });
 };
 
+/** Crea un usuario del personal */
 export const useCreateUsuarioPersonalMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -27,6 +29,7 @@ export const useCreateUsuarioPersonalMutation = () => {
   });
 };
 
+/** Actualiza los datos de un usuario del personal */
 export const useUpdateUsuarioPersonalMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -43,6 +46,7 @@ export const useUpdateUsuarioPersonalMutation = () => {
   });
 };
 
+/** Activa o desactiva un usuario del personal */
 export const useUpdateUsuarioPersonalEstadoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

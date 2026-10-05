@@ -1,3 +1,4 @@
+/** Claims del JWT emitido por el backend de KineFit */
 export interface KineFitJwtClaims {
   sub: string;
   tipo_sujeto: string;

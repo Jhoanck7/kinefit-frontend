@@ -91,6 +91,7 @@ function ConfiguracionContent() {
   );
 }
 
+/** Página de Configuración con pestañas por sección; los roles no administradores solo ven Horarios */
 export default function ConfiguracionView() {
   return (
     <Suspense fallback={<div aria-hidden />}>

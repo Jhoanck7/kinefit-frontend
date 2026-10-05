@@ -14,6 +14,7 @@ import {
 import { pacienteService } from "@/services";
 import { useNuevaReservaStore } from "@/stores";
 
+/** Gestiona el formulario de registro manual de un paciente nuevo, con detección de RUT ya existente */
 export const useRegistrarPaciente = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -43,7 +44,6 @@ export const useRegistrarPaciente = () => {
   const mostrarErrorTelefono =
     limpiarTelefono(telefono).length >= 9 && !telefonoEsValido;
 
-  // Actions
   const handleCambiarRut = async (valor: string) => {
     setRut(valor);
     if (valor.trim().length < 8) {
@@ -119,7 +119,6 @@ export const useRegistrarPaciente = () => {
   };
 
   return {
-    // Data
     nombre,
     apellido,
     rut,
@@ -133,7 +132,6 @@ export const useRegistrarPaciente = () => {
     guardando: createPacienteMutation.isPending,
     errorMsg,
 
-    // Actions
     actions: {
       setNombre,
       setApellido,

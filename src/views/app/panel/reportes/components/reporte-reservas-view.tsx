@@ -10,6 +10,7 @@ interface ReporteReservasViewProps {
   vista?: "dia" | "semana" | "mes";
 }
 
+/** Indicadores, gráficos y rankings de reservas del período, con variación opcional contra el período anterior */
 export function ReporteReservasView({
   fechaDesde,
   fechaHasta,
@@ -54,10 +55,7 @@ export function ReporteReservasView({
     (clientesRecurrentes / totalRetencion) * 100
   );
 
-  /**
-   * Color del badge de variación.
-   * esInverso = true → bajar es bueno (ej. inasistencias)
-   */
+  // esInverso invierte el criterio de color porque en algunas métricas bajar es la mejora (ej. inasistencias)
   function colorVariacion(
     valor: number | null | undefined,
     esInverso = false
@@ -94,9 +92,7 @@ export function ReporteReservasView({
 
   return (
     <div className="space-y-6 text-sm text-panel-sidebar">
-      {/* 1. KPIs principales con Variación */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {/* KPI 1: Reservas Totales */}
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <span className="text-section-title font-bold text-muted-foreground">
@@ -118,7 +114,6 @@ export function ReporteReservasView({
           </p>
         </Card>
 
-        {/* KPI 2: Porcentaje de Ocupación */}
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <span className="text-section-title font-bold text-muted-foreground">
@@ -140,7 +135,7 @@ export function ReporteReservasView({
           </p>
         </Card>
 
-        {/* KPI 3: Tasa de Inasistencias — negativo es BUENO */}
+        {/* en esta métrica una variación negativa es una mejora, no un problema */}
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <span className="text-section-title font-bold text-muted-foreground">
@@ -163,7 +158,6 @@ export function ReporteReservasView({
         </Card>
       </div>
 
-      {/* 2. Gráfico de Evolución Temporal — doble barra */}
       {evolucionTemporal.length > 0 && (
         <Card className="p-6">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
@@ -187,7 +181,7 @@ export function ReporteReservasView({
             </div>
           </div>
 
-          {/* Doble barra agrupada, escalas independientes */}
+          {/* las barras de reservas e ingresos escalan cada una contra su propio máximo, no una escala compartida */}
           <div className="h-52 flex items-end justify-between gap-1 border-b border-border pb-2 pt-2 overflow-x-auto">
             {evolucionTemporal.map(item => {
               const alturaReservas = Math.round(
@@ -201,7 +195,6 @@ export function ReporteReservasView({
                   key={item.periodo}
                   className="flex-1 min-w-[32px] flex flex-col items-center gap-1 group relative"
                 >
-                  {/* Tooltip hover */}
                   <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-panel-sidebar text-white text-[10px] py-1 px-2 rounded pointer-events-none whitespace-nowrap z-10 shadow-lg">
                     <span className="font-bold">{item.reservas}</span> citas
                     <br />
@@ -210,7 +203,6 @@ export function ReporteReservasView({
                     </span>
                   </div>
 
-                  {/* Barras agrupadas */}
                   <div className="w-full flex items-end justify-center gap-0.5 h-44">
                     <div className="flex flex-col items-center justify-end h-full w-[45%]">
                       <span className="text-[9px] font-bold text-panel-sidebar mb-0.5 leading-none">
@@ -244,7 +236,6 @@ export function ReporteReservasView({
         </Card>
       )}
 
-      {/* 3. Distribuciones */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="p-6">
           <h4 className="text-section-title font-bold text-muted-foreground mb-4">
@@ -307,7 +298,6 @@ export function ReporteReservasView({
         </Card>
       </div>
 
-      {/* 4. Estado de Citas, Origen y Retención */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <Card className="p-6 space-y-3">
           <h4 className="text-section-title font-bold text-muted-foreground">
@@ -391,7 +381,6 @@ export function ReporteReservasView({
         </Card>
       </div>
 
-      {/* 5. Rankings */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Card className="p-6">
           <h4 className="text-section-title font-bold text-muted-foreground mb-3">

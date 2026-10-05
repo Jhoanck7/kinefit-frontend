@@ -5,6 +5,7 @@ import React from "react";
 import { InstagramVideoCard } from "@/components/shared";
 import { LandingConfigResponse } from "@/models/responses";
 
+/** Sección "Sobre nosotros" con título, descripción, video de Instagram y enlaces a redes sociales */
 export default function AboutSection({
   config,
 }: {
@@ -49,7 +50,6 @@ export default function AboutSection({
               </h3>
             </div>
 
-            {/* Redes Sociales: Instagram, TikTok, Facebook */}
             <div className="flex items-center justify-center gap-4 sm:gap-5 pt-2 w-full">
               {config.socialInstagram && (
                 <a

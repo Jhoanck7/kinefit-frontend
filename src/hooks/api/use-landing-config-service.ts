@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UpdateLandingConfigRequest } from "@/models/requests";
 import { landingConfigService } from "@/services";
 
+/** Obtiene la configuración de la landing pública */
 export const useGetLandingConfig = (enabled = true) => {
   return useQuery({
     queryKey: ["landing-config"],
@@ -14,6 +15,7 @@ export const useGetLandingConfig = (enabled = true) => {
   });
 };
 
+/** Actualiza la configuración de la landing pública */
 export const useUpdateLandingConfigMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -25,6 +27,7 @@ export const useUpdateLandingConfigMutation = () => {
   });
 };
 
+/** Sincroniza las reseñas de Google mostradas en la landing */
 export const useSincronizarGoogleReviewsMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

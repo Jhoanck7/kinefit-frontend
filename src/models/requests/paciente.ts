@@ -1,3 +1,4 @@
+/** Datos para crear un paciente desde el panel administrativo */
 export interface CreatePacienteManualRequest {
   nombre: string;
   apellido: string;
@@ -7,6 +8,7 @@ export interface CreatePacienteManualRequest {
   empresaId?: number | null;
 }
 
+/** Datos para actualizar un paciente */
 export interface UpdatePacienteRequest {
   nombre: string;
   apellido: string;

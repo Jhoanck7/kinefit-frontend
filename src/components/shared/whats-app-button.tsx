@@ -5,6 +5,7 @@ import React from "react";
 import { useGetLandingConfig } from "@/hooks/api";
 import { CLINIC_INFO } from "@/lib/utils";
 
+/** Botón flotante que enlaza al WhatsApp de la clínica */
 export default function WhatsAppButton() {
   const { data: config } = useGetLandingConfig();
   const whatsappUrl = config?.socialWhatsApp || CLINIC_INFO.socials.whatsapp;
@@ -19,7 +20,6 @@ export default function WhatsAppButton() {
        active:scale-95 group focus:outline-none focus:ring-4 focus:ring-green-300"
       aria-label="Contactar por WhatsApp"
     >
-      {/* Icono de WhatsApp oficial  */}
       <svg
         className="w-5 h-5 fill-current drop-shadow-md transition-transform duration-300 group-hover:rotate-12"
         viewBox="0 0 24 24"

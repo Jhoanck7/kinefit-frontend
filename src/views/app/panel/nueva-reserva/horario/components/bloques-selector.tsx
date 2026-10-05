@@ -4,6 +4,7 @@ interface BloquesSelectorProps {
   onSeleccionar: (hora: string) => void;
 }
 
+/** Grilla de botones para elegir uno o varios bloques horarios de 30 minutos */
 export function BloquesSelector({
   horas,
   horasSeleccionadas,

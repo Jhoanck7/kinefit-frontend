@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui";
 
+/** Página de error 404 con enlace de vuelta al inicio */
 export default function NotFound() {
   return (
     <main className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-white font-satoshi">

@@ -29,6 +29,7 @@ interface EnviarRecomendacionModalProps {
   onCerrar: () => void;
 }
 
+/** Modal por pasos para, al cerrar una atención, decidir si se envía una recomendación y de qué tipo (estándar, por plantilla o un PDF adjunto) */
 export function EnviarRecomendacionModal({
   citaId,
   onCerrar,

@@ -28,6 +28,7 @@ interface PersonalModalProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
+/** Modal para crear o editar una cuenta de personal, su rol y, si es Especialista, el especialista vinculado */
 export function PersonalModal({
   abierto,
   onCerrar,

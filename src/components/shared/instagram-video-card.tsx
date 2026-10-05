@@ -9,11 +9,12 @@ export interface InstagramVideoCardProps {
   className?: string;
 }
 
+/** Muestra un video de Instagram embebido o un enlace directo dentro de una tarjeta con estilo de marca */
 export function InstagramVideoCard({
   videoUrl = "https://www.instagram.com/kinefit.chile",
   className = "",
 }: InstagramVideoCardProps) {
-  // Helper para detectar formato de la URL de Instagram / Reel / MP4
+  // Detecta si la URL es un video directo, un post/reel de Instagram o un enlace genérico
   const getEmbedUrl = (
     rawUrl: string
   ): { isDirectVideo: boolean; embedSrc: string } => {
@@ -50,7 +51,6 @@ export function InstagramVideoCard({
 
   return (
     <div className={`flex justify-center w-full ${className}`}>
-      {/* Script oficial de Instagram */}
       <Script
         src="https://www.instagram.com/embed.js"
         strategy="lazyOnload"
@@ -62,16 +62,13 @@ export function InstagramVideoCard({
       />
 
       <div className="relative w-full max-w-[420px] rounded-2xl lg:rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-xl shadow-slate-200/50 group transition-all duration-300 hover:shadow-2xl hover:shadow-slate-200/80">
-        {/* 1. Cabecera Clara Estilo Kinefit */}
         <div className="bg-slate-50/90 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-slate-200 text-slate-900 z-20 relative">
-          {/* Perfil & Avatar */}
           <a
             href={videoUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2.5 group/author cursor-pointer"
           >
-            {/* Aro con logo de marca Kinefit */}
             <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-brand-primary via-sky-500 to-teal-400 shrink-0 shadow-xs overflow-hidden">
               <div className="relative w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
                 <Image
@@ -89,7 +86,6 @@ export function InstagramVideoCard({
                 <span className="font-bold text-xs text-slate-900 group-hover/author:text-brand-primary transition-colors">
                   kinefit.chile
                 </span>
-                {/* Badge azul verificado */}
                 <svg
                   className="w-3.5 h-3.5 text-brand-primary fill-current shrink-0"
                   viewBox="0 0 24 24"
@@ -103,7 +99,6 @@ export function InstagramVideoCard({
             </div>
           </a>
 
-          {/* Botón píldora interactivo 'Abrir' en azul corporativo */}
           <a
             href={videoUrl}
             target="_blank"
@@ -127,7 +122,6 @@ export function InstagramVideoCard({
           </a>
         </div>
 
-        {/* 2. Contenedor de Video con Reencuadre y Protección Táctil */}
         <div className="relative w-full min-h-[460px] sm:min-h-[520px] bg-slate-100 flex items-center justify-center overflow-hidden">
           {isDirectVideo ? (
             <video
@@ -156,7 +150,6 @@ export function InstagramVideoCard({
               />
             </>
           ) : (
-            /* Fallback Interactivo si es un enlace general a Instagram */
             <div className="relative w-full h-full flex flex-col items-center justify-center p-6 text-center bg-slate-50 text-slate-800">
               <div className="w-16 h-16 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-2xl mb-4 border border-brand-primary/20 shadow-xs group-hover:scale-110 transition-transform duration-300">
                 🎬

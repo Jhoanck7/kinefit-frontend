@@ -33,6 +33,7 @@ export interface ConsentimientoCitaResponse {
   createdAt: string;
 }
 
+/** Un archivo adjunto a un documento clínico */
 export interface AdjuntoResumenResponse {
   id: number;
   nombreOriginal: string;
@@ -42,12 +43,14 @@ export interface AdjuntoResumenResponse {
   createdAt: string;
 }
 
+/** Ficha clínica de un paciente, tal como aparece en su historial */
 export interface FichaDePacienteResponse {
   id: number;
   citaId: number;
   estado: string;
 }
 
+/** Un documento clínico tal como aparece en el listado de documentos */
 export interface DocumentoResumenResponse {
   id: number;
   tipo: TipoDocumentoClinico;
@@ -63,6 +66,7 @@ export interface DocumentoResumenResponse {
   especialistaNombre: string;
 }
 
+/** Página de documentos listados */
 export interface DocumentosPaginadosResponse {
   total: number;
   page: number;
@@ -70,6 +74,7 @@ export interface DocumentosPaginadosResponse {
   items: DocumentoResumenResponse[];
 }
 
+/** Detalle completo de un documento clínico */
 export interface DocumentoDetalleResponse {
   id: number;
   tipo: TipoDocumentoClinico;
@@ -104,6 +109,7 @@ export interface DocumentoDetalleResponse {
   adjuntos: AdjuntoResumenResponse[];
 }
 
+/** Un evento de auditoría sobre un documento */
 export interface AuditoriaEventoResponse {
   id: number;
   entidad: string;
@@ -116,6 +122,7 @@ export interface AuditoriaEventoResponse {
   createdAt: string;
 }
 
+/** Página de eventos de auditoría listados */
 export interface AuditoriaEventosPaginadasResponse {
   total: number;
   page: number;
@@ -123,11 +130,13 @@ export interface AuditoriaEventosPaginadasResponse {
   items: AuditoriaEventoResponse[];
 }
 
+/** Resultado de reenviar el enlace de firma de un documento */
 export interface ReenviarCorreoResponse {
   url: string;
   expiraEn: string;
 }
 
+/** Ficha clínica de una cita */
 export interface FichaResponse {
   id: number;
   nombre: string;
@@ -143,6 +152,7 @@ export interface FichaResponse {
   updatedAt: string;
 }
 
+/** Recomendación enviada al paciente tras una atención */
 export interface RecomendacionResponse {
   id: number;
   citaId: number;

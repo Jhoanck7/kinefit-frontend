@@ -1,3 +1,4 @@
+/** Un paciente */
 export interface PacienteResponse {
   id: number;
   nombre: string;
@@ -14,12 +15,14 @@ export interface PacienteResponse {
   updatedAt: string;
 }
 
+/** Conteo de citas de un paciente por resultado */
 export interface ContadoresPacienteResponse {
   citasAtendidas: number;
   citasCanceladas: number;
   citasNoAsistidas: number;
 }
 
+/** Una cita del historial de un paciente */
 export interface HistorialCitaResponse {
   id: number;
   fecha: string;
@@ -31,6 +34,7 @@ export interface HistorialCitaResponse {
   servicio: string;
 }
 
+/** Perfil completo de un paciente, con sus contadores e historial de citas */
 export interface PacientePerfilResponse extends PacienteResponse {
   contadores: ContadoresPacienteResponse;
   historialTotal: number;
@@ -39,6 +43,7 @@ export interface PacientePerfilResponse extends PacienteResponse {
   historial: HistorialCitaResponse[];
 }
 
+/** Página de pacientes listados */
 export interface PacientesPaginadasResponse {
   total: number;
   page: number;
@@ -46,11 +51,13 @@ export interface PacientesPaginadasResponse {
   items: PacienteResponse[];
 }
 
+/** Resultado de verificar si un RUT ya tiene una ficha de paciente */
 export interface VerificarRutResponse {
   existe: boolean;
   paciente?: PacienteResponse;
 }
 
+/** Resultado de activar o desactivar un paciente */
 export interface PacienteEstadoResponse {
   id: number;
   activo: boolean;

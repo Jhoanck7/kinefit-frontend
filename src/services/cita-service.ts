@@ -13,6 +13,7 @@ import {
 
 import { BaseApiService } from "./base-api-service";
 
+/** Filtros aceptados al listar citas */
 export interface FiltrosCitas {
   especialistaId?: number;
   pacienteId?: number;
@@ -23,6 +24,7 @@ export interface FiltrosCitas {
   pageSize?: number;
 }
 
+/** Consume los endpoints de gestión de citas del panel */
 export class CitaService extends BaseApiService {
   constructor() {
     super("/citas");

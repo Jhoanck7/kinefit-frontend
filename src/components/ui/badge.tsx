@@ -27,6 +27,7 @@ const badgeVariants = cva(
   }
 );
 
+/** Etiqueta corta con variantes de color para marcar estado o categoría */
 function Badge({
   className,
   variant = "default",

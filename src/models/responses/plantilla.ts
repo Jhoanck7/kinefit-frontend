@@ -1,8 +1,11 @@
+/** Tipos de documento clínico que puede generar una plantilla */
 export type TipoDocumentoClinico =
   "FichaClinica" | "Recomendacion" | "Consentimiento";
 
+/** Origen del formato de una plantilla: armado en el constructor o subido como documento */
 export type OrigenFormato = "Constructor" | "Documento";
 
+/** Tipos de campo disponibles al construir una plantilla */
 export type TipoCampoFormato =
   | "TextoCorto"
   | "TextoLargo"
@@ -12,8 +15,10 @@ export type TipoCampoFormato =
   | "TextoInformativo"
   | "Firma";
 
+/** Quién debe completar un campo de una plantilla */
 export type CompletadoPor = "Profesional" | "Paciente";
 
+/** Un campo dentro de una sección de una plantilla */
 export interface CampoFormato {
   id: string;
   nombre: string;
@@ -25,6 +30,7 @@ export interface CampoFormato {
   orden: number;
 }
 
+/** Una sección del cuerpo de una plantilla, con sus campos */
 export interface SeccionFormato {
   id: string;
   nombre: string;
@@ -32,10 +38,12 @@ export interface SeccionFormato {
   campos: CampoFormato[];
 }
 
+/** Cuerpo completo de una plantilla armada en el constructor */
 export interface CuerpoFormato {
   secciones: SeccionFormato[];
 }
 
+/** Una plantilla de documento clínico */
 export interface PlantillaResponse {
   id: number;
   nombre: string;

@@ -2,9 +2,7 @@ export interface PasoIndicador {
   etiqueta: string;
 }
 
-/**
- * Indicador de progreso con estilo Frameless Satoshi
- */
+/** Indicador de progreso por pasos, marcando el paso activo y los ya completados */
 export function StepIndicator({
   pasos,
   pasoActivo,

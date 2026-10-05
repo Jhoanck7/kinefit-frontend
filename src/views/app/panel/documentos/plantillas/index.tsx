@@ -6,6 +6,7 @@ import { formatearFechaExtensa } from "@/lib/formato";
 
 import { usePlantillas } from "./hooks";
 
+/** Catálogo de plantillas de documentos: activa, edita o elimina cada una según si ya tiene documentos generados */
 export default function PlantillasView() {
   const {
     plantillas,

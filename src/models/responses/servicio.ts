@@ -1,3 +1,4 @@
+/** Documento (consentimiento o recomendación) exigido por un servicio */
 export interface ServicioDocumentoResponse {
   plantillaId: number;
   plantillaNombre: string;
@@ -5,6 +6,7 @@ export interface ServicioDocumentoResponse {
   momento: "TrasConfirmarReserva" | "AlFinalizarAtencion";
 }
 
+/** Un servicio ofrecido por el centro */
 export interface ServicioResponse {
   id: number;
   nombre: string;

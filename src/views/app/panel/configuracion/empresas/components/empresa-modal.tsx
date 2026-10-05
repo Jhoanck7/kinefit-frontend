@@ -26,6 +26,7 @@ interface EmpresaModalProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
+/** Modal para crear o editar una empresa/convenio, su vigencia y los descuentos por servicio */
 export function EmpresaModal({
   abierto,
   onCerrar,

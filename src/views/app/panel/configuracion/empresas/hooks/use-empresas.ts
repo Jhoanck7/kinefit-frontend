@@ -11,6 +11,7 @@ import {
 import { handleApiError } from "@/lib/api";
 import { EmpresaResponse } from "@/models/responses";
 
+/** Gestiona el listado, creación, edición y activación de empresas/convenios */
 export const useEmpresas = () => {
   const { data: empresas = [], isLoading: cargando } = useGetEmpresas(false);
 

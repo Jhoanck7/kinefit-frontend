@@ -25,6 +25,7 @@ export interface DocumentoAccionable {
 const ESTILO_ACCION =
   "font-sans text-xs font-bold text-muted-foreground hover:text-foreground disabled:opacity-50";
 
+/** Acciones sobre un documento: ver o abrir el archivo, reenviar el enlace de firma al paciente, cargar el escaneo en papel y firmar como profesional */
 export function DocumentoAcciones({
   documento,
   encabezado,
@@ -71,7 +72,7 @@ export function DocumentoAcciones({
   const obtenerUrl = async () => {
     if (urlDescargada.current) return urlDescargada.current;
     const blob = await abrirArchivo.mutateAsync(documento.id);
-    // Un consentimiento cargado en papel suele ser una foto, no un PDF.
+    // Un consentimiento cargado en papel suele ser una foto, no un PDF
     setVisorEsImagen(blob.type.startsWith("image/"));
     const url = URL.createObjectURL(blob);
     urlDescargada.current = url;

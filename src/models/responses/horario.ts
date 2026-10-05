@@ -1,3 +1,4 @@
+/** Un bloque de la plantilla horaria semanal de un especialista */
 export interface PlantillaHorarioResponse {
   id: number;
   especialistaId: number;
@@ -6,6 +7,7 @@ export interface PlantillaHorarioResponse {
   horaFin: string;
 }
 
+/** Un conflicto detectado al generar bloques de agenda a partir de una plantilla horaria */
 export interface ConflictoGeneracionResponse {
   bloqueId: number;
   especialistaId: number;
@@ -15,11 +17,13 @@ export interface ConflictoGeneracionResponse {
   motivo: string;
 }
 
+/** Resultado de guardar una plantilla horaria, con los conflictos que haya generado */
 export interface PlantillaHorarioResultadoResponse {
   plantilla: PlantillaHorarioResponse | null;
   conflictos: ConflictoGeneracionResponse[];
 }
 
+/** Un bloque del horario general del centro */
 export interface HorarioCentroResponse {
   id: number;
   diaSemana: number;

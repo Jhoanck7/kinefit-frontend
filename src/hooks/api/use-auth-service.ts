@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { authService } from "@/services";
 
+/** Autentica a un usuario con Google, enviando su RUT cuando corresponde vincular la ficha existente */
 export const useAuthenticateWithGoogleMutation = () => {
   return useMutation({
     mutationFn: ({
@@ -19,6 +20,7 @@ export const useAuthenticateWithGoogleMutation = () => {
   });
 };
 
+/** Obtiene el perfil del usuario autenticado */
 export const useGetMiPerfil = () => {
   return useQuery({
     queryKey: ["mi-perfil"],

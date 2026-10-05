@@ -4,6 +4,7 @@ import { HomeView } from "@/views";
 
 export const revalidate = 60;
 
+/** Página de inicio, carga la configuración de landing y los especialistas activos desde el backend */
 export default async function Home() {
   const landingRes = await landingConfigService.getConfig().catch(() => null);
   const especialistasRes = await especialistaService

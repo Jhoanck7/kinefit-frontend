@@ -10,6 +10,7 @@ import { PASOS_NUEVA_RESERVA } from "../../pasos";
 
 export { PASOS_NUEVA_RESERVA };
 
+/** Carga los servicios disponibles y gestiona la selección del paso Servicio de la nueva reserva */
 export const useServicio = () => {
   const router = useRouter();
   const {
@@ -30,7 +31,6 @@ export const useServicio = () => {
   const handleContinuar = () => router.push("/panel/nueva-reserva/horario");
 
   return {
-    // Data
     fecha,
     hora,
     pacienteNombre,
@@ -40,7 +40,6 @@ export const useServicio = () => {
     servicios,
     isLoading,
 
-    // Actions
     actions: {
       handleSeleccionar,
       handleCancelar,

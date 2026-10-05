@@ -1,3 +1,4 @@
+/** Datos para crear un usuario del personal */
 export interface CreateUsuarioPersonalRequest {
   nombre: string;
   email: string;
@@ -6,6 +7,7 @@ export interface CreateUsuarioPersonalRequest {
   password: string;
 }
 
+/** Datos para actualizar un usuario del personal */
 export interface UpdateUsuarioPersonalRequest {
   nombre: string;
   rol: string;

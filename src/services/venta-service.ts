@@ -15,6 +15,7 @@ import {
 
 import { BaseApiService } from "./base-api-service";
 
+/** Filtros aceptados al listar ventas */
 export interface FiltrosVentas {
   fechaDesde?: string;
   fechaHasta?: string;
@@ -24,6 +25,7 @@ export interface FiltrosVentas {
   pageSize?: number;
 }
 
+/** Consume los endpoints de ventas, terminales de pago, repartos y tasa de impuesto */
 export class VentaService extends BaseApiService {
   constructor() {
     super("");

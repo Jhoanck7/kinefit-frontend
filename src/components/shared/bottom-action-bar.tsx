@@ -1,10 +1,6 @@
 import { ReactNode } from "react";
 
-/**
- * Barra de acciones inferior, única en todo el panel (Parte A.5):
- * abandono a la izquierda, volver al centro-derecha, avance/confirmación
- * a la derecha.
- */
+/** Barra de acciones inferior del panel, con abandono a la izquierda y volver/avanzar a la derecha */
 export function BottomActionBar({
   abandono,
   volver,

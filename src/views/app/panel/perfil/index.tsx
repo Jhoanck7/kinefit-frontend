@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui";
 import { useGetMiPerfil } from "@/hooks/api";
 
+/** Página de solo lectura con los datos de la cuenta del usuario autenticado */
 export default function PerfilView() {
   const { data: perfil, isLoading } = useGetMiPerfil();
   if (isLoading || !perfil) {

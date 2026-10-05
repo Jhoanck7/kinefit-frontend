@@ -1,9 +1,5 @@
 import { create } from "zustand";
 
-/**
- * Estado del asistente de nueva ficha (DD-4): vive en memoria, sin
- * persistencia. Una recarga a mitad de camino vuelve al paso 1.
- */
 interface NuevaFichaState {
   pacienteId: string | null;
   pacienteNombre: string | null;
@@ -23,6 +19,7 @@ interface NuevaFichaState {
   reiniciar: () => void;
 }
 
+/** Estado en memoria del asistente de nueva ficha; una recarga a mitad de camino vuelve al paso 1 */
 export const useNuevaFichaStore = create<NuevaFichaState>()(set => ({
   pacienteId: null,
   pacienteNombre: null,

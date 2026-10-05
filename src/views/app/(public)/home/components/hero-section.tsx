@@ -8,6 +8,7 @@ import { useBookingStore } from "@/stores";
 
 import BookingCard from "./booking-card";
 
+/** Sección principal de la landing con fondo animado, texto de presentación y el módulo de reserva */
 export default function HeroSection({
   config,
 }: {
@@ -55,14 +56,12 @@ export default function HeroSection({
     }, 2500);
   };
 
-  // Lista de imágenes de fondo configuradas (se omiten los slots sin cargar)
   const bgImages = [
     config.heroImageUrl1,
     config.heroImageUrl2,
     config.heroImageUrl3,
   ].filter((url): url is string => Boolean(url));
 
-  // Transición automática cada 5 segundos
   useEffect(() => {
     if (bgImages.length <= 1) return;
     const timer = setInterval(() => {
@@ -78,7 +77,6 @@ export default function HeroSection({
       onMouseLeave={handleMouseLeave}
       className="relative min-h-0 lg:min-h-screen flex items-start lg:items-center justify-center text-slate-900 pt-[300px] lg:pt-28 pb-16 bg-white lg:bg-slate-100 overflow-hidden w-full border-b border-slate-200"
     >
-      {/* SVG DEFS: MÁSCARA ORGÁNICA QUIEBRE DE NUBE */}
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
         <defs>
           <clipPath id="quiebreNube" clipPathUnits="objectBoundingBox">
@@ -87,7 +85,6 @@ export default function HeroSection({
         </defs>
       </svg>
 
-      {/* BACKGROUND MÓVIL: Banner superior con gradiente de desvanecimiento hacia el contenido */}
       <div className="absolute inset-x-0 top-0 h-[280px] z-0 overflow-hidden lg:hidden">
         {bgImages.map((imgUrl, idx) => (
           <div
@@ -109,9 +106,8 @@ export default function HeroSection({
         <div className="absolute inset-0 z-20 bg-gradient-to-b from-transparent via-transparent to-white" />
       </div>
 
-      {/* BACKGROUND ESCRITORIO: SPLIT-SCREEN CON QUIEBRE DE NUBE Y PARALLAX 3D */}
       <div className="hidden lg:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        {/* Split-Right: Ocupa el fondo fotográfico con parallax horizontal suave (Y bloqueado) */}
+        {/* Parallax horizontal del fondo fotográfico, sin movimiento vertical */}
         <div
           className="absolute -top-10 -bottom-10 left-[26%] -right-10 w-auto z-[1] overflow-hidden transition-transform duration-300 ease-out will-change-transform"
           style={{
@@ -137,7 +133,7 @@ export default function HeroSection({
           ))}
         </div>
 
-        {/* Split-Left: Capa izquierda con clipPath (#quiebreNube) con movimiento solo en X (Y bloqueado a 0) */}
+        {/* Capa izquierda recortada con clipPath, con parallax solo en el eje X */}
         <div
           className="absolute -top-4 -bottom-4 -left-4 w-[calc(100%+32px)] h-[calc(100%+32px)] z-[2] bg-slate-100 transition-transform duration-300 ease-out will-change-transform"
           style={{
@@ -146,7 +142,6 @@ export default function HeroSection({
           }}
         />
 
-        {/* CUADRÍCULA TÉCNICA / DOT GRID PATTERN (ESCRITORIO) con parallax horizontal (Y bloqueado) */}
         <div
           className="absolute inset-0 w-full h-full z-[3] pointer-events-none opacity-[0.08] transition-transform duration-500 ease-out will-change-transform"
           style={{
@@ -162,7 +157,6 @@ export default function HeroSection({
         />
       </div>
 
-      {/* CUADRÍCULA TÉCNICA EN MÓVIL */}
       <div
         className="lg:hidden absolute inset-0 w-full h-full z-0 pointer-events-none opacity-[0.05]"
         style={{
@@ -176,14 +170,11 @@ export default function HeroSection({
         }}
       />
 
-      {/* CONTENIDO DEL HERO */}
       <div className="relative z-30 mx-auto max-w-[1650px] w-full px-6 sm:px-10 md:px-12 lg:px-14 xl:px-20 2xl:px-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center w-full">
-          {/* Lado Izquierdo: Textos e Información con Tarjeta de Cristal en Móvil */}
           <div
             className={`${reservasHabilitadas ? "lg:col-span-7 xl:col-span-7" : "lg:col-span-12"} flex flex-col items-start text-left w-full`}
           >
-            {/* Tagline / Titular Principal */}
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-3xl xl:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight uppercase max-w-md sm:max-w-lg lg:max-w-md xl:max-w-lg">
               <span className="block max-w-xs sm:max-w-sm md:max-w-md leading-tight">
                 {config.heroTagline}
@@ -201,7 +192,6 @@ export default function HeroSection({
               </span>
             </h1>
 
-            {/* Párrafo descriptivo claro y nítido */}
             <p
               className={`text-slate-700 text-base md:text-lg max-w-2xl mt-4 leading-relaxed font-semibold whitespace-pre-line ${
                 descripcionExpandida ? "" : "line-clamp-3"
@@ -217,7 +207,6 @@ export default function HeroSection({
               {descripcionExpandida ? "Leer menos" : "Leer más"}
             </button>
 
-            {/* Botón CTA */}
             <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
               {reservasHabilitadas ? (
                 <a
@@ -240,7 +229,6 @@ export default function HeroSection({
             </div>
           </div>
 
-          {/* Lado Derecho - Módulo de Agendamiento Flotando Sobre la Imagen Cristalina */}
           {reservasHabilitadas && (
             <div
               id="agendamiento"
@@ -253,7 +241,6 @@ export default function HeroSection({
                     : "border-slate-200/80 ring-0"
                 }`}
               >
-                {/* Stepper lateral plano */}
                 <div className="flex sm:flex-col justify-between sm:justify-center gap-2 sm:gap-6 border-b sm:border-b-0 sm:border-r border-slate-200 pb-4 sm:pb-0 sm:pr-6 shrink-0">
                   {[
                     { step: 1, label: "Servicio" },
@@ -293,7 +280,6 @@ export default function HeroSection({
                   })}
                 </div>
 
-                {/* Módulo de Formulario de Agendamiento */}
                 <BookingCard />
               </div>
             </div>

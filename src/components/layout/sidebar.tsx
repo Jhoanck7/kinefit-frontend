@@ -54,6 +54,7 @@ const ITEMS_NAVEGACION = [
   },
 ];
 
+/** Menú lateral de navegación del panel administrativo, con enlaces según el rol del usuario */
 export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();

@@ -46,13 +46,7 @@ function tituloDeLaRuta(pathname: string): string {
   );
 }
 
-/**
- * Barra Superior Canónica (Header) con estilo Frameless Satoshi:
- * - Tipografía Satoshi (font-sans) para el título y nombre de usuario
- * - Iniciales en font-mono
- * - Enlace directo al sitio web público / landing
- * - Botón de cerrar sesión sobrio y limpio
- */
+/** Barra superior del panel que muestra el título según la ruta actual y los datos del usuario en sesión */
 export function Header() {
   const { data: session } = useSession();
   const nombre = session?.user.nombre || "Personal KineFit";

@@ -1,3 +1,4 @@
+/** Un ítem dentro de una venta */
 export interface VentaItemResponse {
   id: number;
   tipo: string;
@@ -8,6 +9,7 @@ export interface VentaItemResponse {
   descuentoConvenio?: number;
 }
 
+/** Desglose del cobro de una venta: impuestos, comisiones y reparto */
 export interface DesgloseCobroResponse {
   montoTotal: number;
   impuesto?: number;
@@ -23,6 +25,7 @@ export interface DesgloseCobroResponse {
   descuentoConvenio?: number;
 }
 
+/** Una venta registrada */
 export interface VentaResponse {
   id: number;
   citaId?: number;
@@ -39,6 +42,7 @@ export interface VentaResponse {
   desglose: DesgloseCobroResponse;
 }
 
+/** Página de ventas listadas */
 export interface VentasPaginadasResponse {
   total: number;
   page: number;
@@ -47,6 +51,7 @@ export interface VentasPaginadasResponse {
   items: VentaResponse[];
 }
 
+/** Una versión de comisión de un terminal de pago, vigente en un rango de fechas */
 export interface ComisionTerminalResponse {
   metodoPago: string;
   porcentaje: number;
@@ -57,6 +62,7 @@ export interface ComisionTerminalResponse {
   impuestoIncluidoEnTasa: boolean;
 }
 
+/** Un terminal de pago (POS) con sus versiones de comisión */
 export interface TerminalPagoResponse {
   id: number;
   nombre: string;
@@ -66,6 +72,7 @@ export interface TerminalPagoResponse {
   comisiones: ComisionTerminalResponse[];
 }
 
+/** Una versión del reparto de ingresos entre profesional y centro, vigente en un rango de fechas */
 export interface RepartoProfesionalResponse {
   id: number;
   especialistaId: number;
@@ -76,6 +83,7 @@ export interface RepartoProfesionalResponse {
   vigenteHasta?: string;
 }
 
+/** Una versión de la tasa de impuesto, vigente en un rango de fechas */
 export interface TasaImpuestoResponse {
   id: number;
   porcentaje: number;

@@ -11,6 +11,7 @@ import { formatearFechaExtensa } from "@/lib/formato";
 
 import { PASOS_NUEVA_RESERVA, usePacienteReserva } from "./hooks";
 
+/** Paso del asistente de reserva para buscar y elegir el paciente, o ir a registrar uno nuevo */
 export default function PacienteView() {
   const {
     fecha,

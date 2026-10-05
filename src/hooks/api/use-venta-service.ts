@@ -8,6 +8,7 @@ import {
 } from "@/models/requests";
 import { FiltrosVentas, ventaService } from "@/services";
 
+/** Obtiene el listado de ventas según filtros */
 export const useGetVentas = (filtros?: FiltrosVentas) => {
   return useQuery({
     queryKey: ["ventas", filtros],
@@ -15,6 +16,7 @@ export const useGetVentas = (filtros?: FiltrosVentas) => {
   });
 };
 
+/** Obtiene el detalle de una venta */
 export const useGetVentaById = (id: number, enabled = true) => {
   return useQuery({
     queryKey: ["ventas", "detalle", id],
@@ -23,6 +25,7 @@ export const useGetVentaById = (id: number, enabled = true) => {
   });
 };
 
+/** Registra una venta */
 export const useCreateVentaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -35,6 +38,7 @@ export const useCreateVentaMutation = () => {
   });
 };
 
+/** Obtiene el listado de terminales de pago (POS) */
 export const useGetTerminales = () => {
   return useQuery({
     queryKey: ["terminales-pago"],
@@ -42,6 +46,7 @@ export const useGetTerminales = () => {
   });
 };
 
+/** Crea un terminal de pago */
 export const useCreateTerminalMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -53,6 +58,7 @@ export const useCreateTerminalMutation = () => {
   });
 };
 
+/** Actualiza el nombre, notas o plazo de abono de un terminal de pago */
 export const useUpdateTerminalMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -69,6 +75,7 @@ export const useUpdateTerminalMutation = () => {
   });
 };
 
+/** Activa o desactiva un terminal de pago */
 export const useUpdateTerminalEstadoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -80,6 +87,7 @@ export const useUpdateTerminalEstadoMutation = () => {
   });
 };
 
+/** Obtiene los acuerdos de reparto por profesional vigentes */
 export const useGetRepartos = () => {
   return useQuery({
     queryKey: ["repartos-profesionales"],
@@ -87,6 +95,7 @@ export const useGetRepartos = () => {
   });
 };
 
+/** Crea una nueva versión del acuerdo de reparto de un profesional */
 export const useCreateRepartoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -98,6 +107,7 @@ export const useCreateRepartoMutation = () => {
   });
 };
 
+/** Obtiene las tasas de impuesto vigentes */
 export const useGetTasasImpuesto = () => {
   return useQuery({
     queryKey: ["tasas-impuesto"],
@@ -105,6 +115,7 @@ export const useGetTasasImpuesto = () => {
   });
 };
 
+/** Crea una nueva versión de la tasa de impuesto */
 export const useCreateTasaImpuestoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

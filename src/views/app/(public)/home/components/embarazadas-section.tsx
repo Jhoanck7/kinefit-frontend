@@ -15,6 +15,7 @@ import {
 import { useAutoScroll } from "@/hooks/common";
 import { EmbarazadaItem, LandingConfigResponse } from "@/models/responses";
 
+/** Sección con carrusel de imágenes y detalles del servicio de masoterapia para embarazadas */
 export default function EmbarazadasSection({
   config,
 }: {
@@ -49,7 +50,6 @@ export default function EmbarazadasSection({
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           
-          {/* Móvil: título antes del carrusel */}
           <div className="lg:hidden text-left order-1 scroll-reveal">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
               Masoterapia para embarazadas
@@ -59,7 +59,6 @@ export default function EmbarazadasSection({
             </p>
           </div>
 
-          {/* Columna Izquierda en Desktop: Título y Contenido */}
           <div className="lg:col-span-5 text-left order-3 lg:order-1 scroll-reveal delay-200">
             <h2 className="hidden lg:block text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
               Masoterapia para embarazadas
@@ -74,9 +73,7 @@ export default function EmbarazadasSection({
               </p>
             )}
 
-            {/* Botones de acción: Ver más detalles y Nota importante */}
             <div className="mt-6 flex flex-wrap items-center gap-4">
-              {/* Modal "Ver más detalles" */}
               <Dialog>
                 <DialogTrigger asChild>
                   <button
@@ -102,7 +99,6 @@ export default function EmbarazadasSection({
                   </DialogHeader>
 
                   <div className="space-y-5 mt-4 text-left">
-                    {/* Servicio 1: Masaje para Embarazadas */}
                     <div className="rounded-xl bg-slate-50 p-5 border border-slate-200/80 space-y-3">
                       <p className="text-slate-600 text-sm leading-relaxed text-justify">
                         En KineFit Chile somos referentes en masajes para embarazadas, contamos con implementación especializada, nueva, segura y de alta calidad, diseñada para entregar comodidad durante la gestación y permitirte volver a disfrutar, por un momento, de la sensación de descansar boca abajo.
@@ -115,7 +111,6 @@ export default function EmbarazadasSection({
                       </div>
                     </div>
 
-                    {/* Servicio 2: Drenaje Linfático */}
                     <div className="rounded-xl bg-slate-50 p-5 border border-slate-200/80 space-y-3">
                       <p className="text-slate-600 text-sm leading-relaxed text-justify">
                         También contamos con drenaje linfático especializado para piernas cansadas durante el embarazo, un tratamiento suave y seguro pensado para aliviar la sensación de pesadez, hinchazón y fatiga.
@@ -127,16 +122,12 @@ export default function EmbarazadasSection({
                         </p>
                       </div>
                     </div>
-
-                    {/* Nota clínica de resguardo */}
-                    
                   </div>
                 </DialogContent>
               </Dialog>
 
               <span className="text-slate-300">•</span>
 
-              {/* Botón "Nota importante" estilo Voucher con Dialog */}
               <Dialog>
                 <DialogTrigger asChild>
                   <button
@@ -161,7 +152,6 @@ export default function EmbarazadasSection({
             </div>
           </div>
 
-          {/* Columna Derecha en Desktop: Imagen Grande / Carrusel */}
           <div className="lg:col-span-7 relative group order-2 lg:order-2 scroll-reveal-scale">
             <div
               ref={scrollRef}

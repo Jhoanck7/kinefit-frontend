@@ -3,6 +3,7 @@ import { definicionEstado } from "@/lib/estados";
 import { formatearRangoHorario } from "@/lib/formato";
 import { CitaEnAgendaResponse, CodigoEstadoCita } from "@/models/responses";
 
+/** Tarjeta clicable de una cita en la grilla de agenda, con horario, estado, paciente y servicio */
 export function AppointmentCard({
   cita,
   horaInicio,

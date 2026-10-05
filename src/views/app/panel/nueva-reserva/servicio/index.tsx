@@ -11,6 +11,7 @@ import { formatearFechaExtensa } from "@/lib/formato";
 import { ServicioOption } from "./components";
 import { PASOS_NUEVA_RESERVA, useServicio } from "./hooks";
 
+/** Primer paso del asistente de reserva: elegir el servicio del catálogo con el que arranca la reserva manual */
 export default function ServicioView() {
   const {
     fecha,

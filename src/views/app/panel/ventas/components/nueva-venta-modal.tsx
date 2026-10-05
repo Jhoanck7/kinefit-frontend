@@ -35,6 +35,7 @@ interface NuevaVentaModalProps {
   citaAsociada?: CitaAsociadaVenta;
 }
 
+/** Modal para registrar un cobro manual, con búsqueda de paciente y asociación opcional a una cita facturable */
 export function NuevaVentaModal({
   abierto,
   onClose,

@@ -4,6 +4,7 @@ interface ServicioOptionProps {
   onClick: () => void;
 }
 
+/** Opción seleccionable de servicio con indicador visual de marcado */
 export function ServicioOption({
   titulo,
   seleccionado,

@@ -9,6 +9,7 @@ import { especialistaService } from "@/services";
 const especialistasKey = (servicioId?: number, soloActivos = false) =>
   ["especialistas", { servicioId, soloActivos }] as const;
 
+/** Obtiene el listado de especialistas, opcionalmente filtrado por servicio */
 export const useGetEspecialistas = (
   servicioId?: number,
   soloActivos = false
@@ -25,6 +26,7 @@ export const useGetEspecialistas = (
   });
 };
 
+/** Crea un especialista nuevo */
 export const useCreateEspecialistaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -36,6 +38,7 @@ export const useCreateEspecialistaMutation = () => {
   });
 };
 
+/** Actualiza los datos de un especialista */
 export const useUpdateEspecialistaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -55,6 +58,7 @@ export const useUpdateEspecialistaMutation = () => {
   });
 };
 
+/** Activa o desactiva un especialista */
 export const useUpdateEspecialistaEstadoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -66,6 +70,7 @@ export const useUpdateEspecialistaEstadoMutation = () => {
   });
 };
 
+/** Elimina un especialista */
 export const useDeleteEspecialistaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

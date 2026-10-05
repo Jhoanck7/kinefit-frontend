@@ -6,6 +6,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/** Contenedor de pestañas basado en Radix Tabs */
 function Tabs({
   className,
   orientation = "horizontal",

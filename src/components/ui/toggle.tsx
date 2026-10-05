@@ -28,6 +28,7 @@ const toggleVariants = cva(
   }
 );
 
+/** Botón de alternancia con estado presionado/no presionado */
 function Toggle({
   className,
   variant = "default",

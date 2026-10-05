@@ -4,6 +4,7 @@ import { axiosInstanceSinSesion } from "@/providers";
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints públicos de disponibilidad: fechas, horas y especialistas libres */
 export class DisponibilidadService extends BaseApiService {
   constructor() {
     super("/disponibilidad", axiosInstanceSinSesion);

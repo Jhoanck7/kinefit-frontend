@@ -11,6 +11,7 @@ import { BloqueAgendaResponse } from "@/models/responses";
 
 import { FILTRO_VIGENTES } from "../components/time-grid";
 
+/** Carga la agenda del día seleccionado por especialista y expone los filtros y acciones de navegación de la vista de agenda */
 export const useAgenda = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -82,7 +83,6 @@ export const useAgenda = () => {
       ? especialistas
       : especialistas.filter(e => String(e.id) === especialistaSeleccionado);
 
-  // Actions
   const abrirParametros = (params: Record<string, string | undefined>) => {
     const actuales = new URLSearchParams(searchParams.toString());
     Object.entries(params).forEach(([clave, valor]) => {
@@ -94,10 +94,7 @@ export const useAgenda = () => {
   };
 
   const handleIrADia = (delta: number) => {
-    // Se suman 24 h exactas en vez de setDate(): setDate() trabaja en la zona
-    // del navegador y fechaISO() lee en la de Chile, así que en un equipo con
-    // otra zona el día iba y volvía mal. Desde las 12:00 UTC ningún cambio de
-    // horario de verano alcanza a cruzar la medianoche chilena.
+    // Se suman 24 h exactas y no con setDate(), que usa la zona del navegador y no la de Chile
     const nueva = new Date(dia.getTime() + delta * 24 * 60 * 60 * 1000);
     abrirParametros({ fecha: fechaISO(nueva) });
   };
@@ -127,7 +124,6 @@ export const useAgenda = () => {
   };
 
   return {
-    // Data
     hoy,
     dia,
     horaActual,
@@ -142,7 +138,6 @@ export const useAgenda = () => {
     citaId,
     cancelando,
 
-    // Actions
     actions: {
       setEspecialistaSeleccionado,
       setEstadoSeleccionado,

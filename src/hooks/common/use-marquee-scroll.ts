@@ -7,6 +7,7 @@ interface UseMarqueeScrollOptions {
   enabled?: boolean;
 }
 
+/** Desplaza continuamente un contenedor horizontal en bucle tipo marquesina, pausable con el mouse */
 export function useMarqueeScroll(
   scrollRef: RefObject<HTMLDivElement | null>,
   { speed = 0.6, enabled = true }: UseMarqueeScrollOptions = {}

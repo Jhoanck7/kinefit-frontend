@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   },
 };
 
+/** Layout raíz del panel administrativo, define fuentes y envuelve con sesión, React Query, reloj y toaster */
 export default function PanelRootLayout({
   children,
 }: Readonly<{

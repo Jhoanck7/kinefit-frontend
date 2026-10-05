@@ -9,6 +9,7 @@ import { agendaService } from "@/services";
 const agendaKey = (especialistaIds: number[], desde: string, hasta: string) =>
   ["agenda", { especialistaIds, desde, hasta }] as const;
 
+/** Obtiene los bloques de agenda de los especialistas en un rango de fechas */
 export const useGetAgenda = (
   especialistaIds: number[],
   desde: string,
@@ -29,6 +30,7 @@ export const useGetAgenda = (
   });
 };
 
+/** Obtiene los bloqueos de agenda de un especialista */
 export const useGetBloqueos = (especialistaId?: number, enabled = true) => {
   return useQuery({
     queryKey: ["bloqueos-agenda", especialistaId],
@@ -42,6 +44,7 @@ export const useGetBloqueos = (especialistaId?: number, enabled = true) => {
   });
 };
 
+/** Crea un bloqueo de agenda para un especialista */
 export const useCreateBloqueoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -54,6 +57,7 @@ export const useCreateBloqueoMutation = () => {
   });
 };
 
+/** Crea un bloqueo de agenda para todos los especialistas */
 export const useCreateBloqueoParaTodosMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -66,6 +70,7 @@ export const useCreateBloqueoParaTodosMutation = () => {
   });
 };
 
+/** Revierte un bloqueo de agenda */
 export const useRevertirBloqueoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

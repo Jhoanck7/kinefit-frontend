@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { mediaService } from "@/services";
 
+/** Sube una imagen al servicio de medios */
 export const useUploadImageMutation = () => {
   return useMutation({
     mutationFn: ({ file, folder }: { file: File; folder?: string }) =>
@@ -9,6 +10,7 @@ export const useUploadImageMutation = () => {
   });
 };
 
+/** Reemplaza una imagen existente en el servicio de medios */
 export const useReplaceImageMutation = () => {
   return useMutation({
     mutationFn: ({
@@ -26,6 +28,7 @@ export const useReplaceImageMutation = () => {
   });
 };
 
+/** Elimina una imagen del servicio de medios */
 export const useDeleteImageMutation = () => {
   return useMutation({
     mutationFn: (publicId: string) =>

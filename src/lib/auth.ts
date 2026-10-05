@@ -2,6 +2,7 @@ import { jwtDecode } from "jwt-decode";
 
 import { KineFitJwtClaims } from "@/models/generics";
 
+/** Decodifica el JWT del panel y valida que no esté expirado ni le falten claims requeridas */
 export function extractUserFromJwt(token: string) {
   const decoded = jwtDecode<KineFitJwtClaims>(token);
 
@@ -29,6 +30,7 @@ export function extractUserFromJwt(token: string) {
   return user;
 }
 
+/** Indica si la sesión ya superó su fecha de expiración */
 export function isSessionExpired(
   session: { customExp?: number } | null | undefined
 ): boolean {
@@ -36,6 +38,7 @@ export function isSessionExpired(
   return Math.floor(Date.now() / 1000) >= session.customExp;
 }
 
+/** Indica si el token ya superó su fecha de expiración */
 export function isTokenExpired(
   token: { customExp?: number } | null | undefined
 ): boolean {
@@ -43,6 +46,7 @@ export function isTokenExpired(
   return Math.floor(Date.now() / 1000) >= token.customExp;
 }
 
+/** Indica si el usuario en sesión puede gestionar el recurso de un especialista dado, por ser administrador o el propio especialista */
 export function puedeGestionarRecursoDeEspecialista(
   session:
     { user: { rol: string; especialistaId?: string } } | null | undefined,

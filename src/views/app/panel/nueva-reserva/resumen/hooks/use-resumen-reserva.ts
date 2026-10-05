@@ -12,6 +12,7 @@ import { PASOS_NUEVA_RESERVA } from "../../pasos";
 
 export { PASOS_NUEVA_RESERVA };
 
+/** Arma el resumen editable de la reserva y envía la creación de la cita manual con sus notas */
 export const useResumenReserva = () => {
   const router = useRouter();
   const {
@@ -63,7 +64,6 @@ export const useResumenReserva = () => {
     },
   ];
 
-  // Actions
   const handleConfirmarReserva = async () => {
     if (
       !fecha ||
@@ -105,7 +105,6 @@ export const useResumenReserva = () => {
   };
 
   return {
-    // Data
     notaPaciente,
     notaInterna,
     filasResumen,
@@ -113,7 +112,6 @@ export const useResumenReserva = () => {
     guardando: crearCitaMutation.isPending,
     errorMsg,
 
-    // Actions
     actions: {
       setNotaPaciente,
       setNotaInterna,

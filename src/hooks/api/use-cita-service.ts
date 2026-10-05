@@ -6,6 +6,7 @@ import {
 } from "@/models/requests";
 import { citaService, FiltrosCitas } from "@/services";
 
+/** Obtiene el listado de citas según filtros */
 export const useGetCitas = (filtros: FiltrosCitas, habilitado = true) => {
   return useQuery({
     queryKey: ["citas", "listado", filtros],
@@ -14,6 +15,7 @@ export const useGetCitas = (filtros: FiltrosCitas, habilitado = true) => {
   });
 };
 
+/** Obtiene el detalle de una cita */
 export const useGetCita = (id: number, habilitado = true) => {
   return useQuery({
     queryKey: ["citas", id],
@@ -22,6 +24,7 @@ export const useGetCita = (id: number, habilitado = true) => {
   });
 };
 
+/** Obtiene el impacto de cancelar una cita */
 export const useGetImpactoCancelacion = (id: number, habilitado = true) => {
   return useQuery({
     queryKey: ["citas", id, "impacto-cancelacion"],
@@ -31,6 +34,7 @@ export const useGetImpactoCancelacion = (id: number, habilitado = true) => {
   });
 };
 
+/** Crea una cita manual desde el panel */
 export const useCreateCitaManualMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -43,6 +47,7 @@ export const useCreateCitaManualMutation = () => {
   });
 };
 
+/** Actualiza el estado de una cita */
 export const useUpdateCitaEstadoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

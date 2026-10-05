@@ -6,11 +6,11 @@ import { ReactNode } from "react";
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 
+/** Envuelve las páginas del panel con el sidebar y el header, mostrando una espera breve mientras la sesión hidrata */
 export function PanelShell({ children }: { children: ReactNode }) {
   const { status } = useSession();
 
-  // La protección real ya la hace proxy.ts en el servidor; este estado
-  // es solo para no pintar el panel mientras la sesión de cliente hidrata.
+  // La protección real la hace proxy.ts en el servidor; esto solo evita pintar el panel mientras hidrata la sesión del cliente
   if (status === "loading") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-panel-fondo">

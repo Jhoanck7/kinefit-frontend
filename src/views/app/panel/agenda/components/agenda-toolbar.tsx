@@ -19,6 +19,7 @@ interface AgendaToolbarProps {
   onNuevaReserva: () => void;
 }
 
+/** Barra superior de la agenda con navegación de fecha, filtros de estado y especialista, y accesos a bloqueos y nueva reserva */
 export function AgendaToolbar({
   dia,
   especialistas,
@@ -34,7 +35,6 @@ export function AgendaToolbar({
 }: AgendaToolbarProps) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border border-slate-200 bg-white p-3 rounded-none shadow-none">
-      {/* Controles de Navegación por Día */}
       <div className="flex items-center gap-2">
         <div className="flex items-center border border-slate-200 bg-white divide-x divide-slate-200 rounded-none">
           <button
@@ -70,7 +70,6 @@ export function AgendaToolbar({
         />
       </div>
 
-      {/* Filtro por Especialista + Botones */}
       <div className="flex flex-wrap items-center gap-2">
         <select
           value={estadoSeleccionado}

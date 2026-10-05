@@ -15,6 +15,7 @@ import { fechaISO } from "@/lib/formato";
 import { EmpresaModal } from "./components";
 import { useEmpresas } from "./hooks";
 
+/** Página de administración de empresas y convenios, con su vigencia y estado activo/inactivo */
 export default function EmpresasView() {
   const {
     empresas,

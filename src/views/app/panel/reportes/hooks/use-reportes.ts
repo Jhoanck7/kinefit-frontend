@@ -53,6 +53,7 @@ function rangoAFechas(
   return {};
 }
 
+/** Calcula el rango de fechas según el período elegido y gestiona los filtros compartidos entre pestañas de reportes */
 export const useReportes = () => {
   const [tabActivo, setTabActivo] = useState<TabReporte>("reservas");
   const [rangoFecha, setRangoFecha] = useState("30dias");

@@ -11,6 +11,7 @@ import {
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints de agenda y bloqueos de tramos horarios */
 export class AgendaService extends BaseApiService {
   constructor() {
     super("");

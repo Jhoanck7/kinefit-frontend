@@ -24,6 +24,7 @@ import { axiosInstanceSinSesion } from "@/providers";
 
 import { BaseApiService } from "./base-api-service";
 
+/** Filtros aceptados al listar documentos */
 export interface FiltrosDocumentos {
   busqueda?: string;
   tipo?: string;
@@ -36,12 +37,12 @@ export interface FiltrosDocumentos {
   pageSize?: number;
 }
 
+/** Consume los endpoints de fichas, consentimientos y recomendaciones del panel */
 export class DocumentoService extends BaseApiService {
   constructor() {
     super("/documentos");
   }
 
-  // Listado y detalle unificados (carril Consulta)
   getAll(filtros?: FiltrosDocumentos) {
     return this.httpClient.get<ApiResponse<DocumentosPaginadosResponse>>(
       this.baseURL,
@@ -55,7 +56,7 @@ export class DocumentoService extends BaseApiService {
     );
   }
 
-  /** El endpoint exige el Bearer del panel: no sirve como URL directa, hay que traerlo como blob. */
+  // el endpoint exige el Bearer del panel, no sirve como URL directa, hay que traerlo como blob
   abrirArchivo(id: number) {
     return this.httpClient.get<Blob>(`${this.baseURL}/${id}/archivo`, {
       responseType: "blob",
@@ -78,7 +79,6 @@ export class DocumentoService extends BaseApiService {
     );
   }
 
-  // Fichas (EC3)
   crearFicha(data: CreateFichaRequest) {
     return this.httpClient.post<ApiResponse<FichaResponse>>(
       `${this.baseURL}/fichas`,
@@ -123,7 +123,7 @@ export class DocumentoService extends BaseApiService {
     );
   }
 
-  // Adjuntos, comunes a los 3 tipos
+  // adjuntos, comunes a fichas, consentimientos y recomendaciones
   subirAdjunto(documentoId: number, archivo: File) {
     validarTamano(archivo, MAX_ADJUNTO_BYTES);
     const formData = new FormData();
@@ -147,7 +147,6 @@ export class DocumentoService extends BaseApiService {
     });
   }
 
-  // Recomendaciones (EC4)
   enviarRecomendacion(citaId: number, data: EnviarRecomendacionRequest) {
     return this.httpClient.post<ApiResponse<RecomendacionResponse | null>>(
       `${this.baseURL}/recomendaciones/cita/${citaId}`,
@@ -167,7 +166,7 @@ export class DocumentoService extends BaseApiService {
     );
   }
 
-  // Pestaña de documentos del detalle de la cita (AC2 / AC3 / EC2)
+  // pestaña de documentos del detalle de la cita
   getPorCita(citaId: number) {
     return this.httpClient.get<ApiResponse<ConsentimientoCitaResponse[]>>(
       `${this.baseURL}/cita/${citaId}`
@@ -205,7 +204,7 @@ export class DocumentoService extends BaseApiService {
   }
 }
 
-/** Sin sesión: usa axiosInstanceSinSesion para no adjuntar el Bearer del panel */
+/** Consume los endpoints públicos de documentos, sin el Bearer del panel, para que el paciente los lea y firme */
 export class DocumentoPublicoService extends BaseApiService {
   constructor() {
     super("/documentos/publico", axiosInstanceSinSesion);

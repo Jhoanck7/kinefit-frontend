@@ -13,6 +13,7 @@ import {
 import { handleApiError } from "@/lib/api";
 import { EspecialistaResponse } from "@/models/responses";
 
+/** Gestiona el listado y los formularios de creación, edición, eliminación y activación de especialistas */
 export const useEspecialistas = () => {
   const { data: especialistas = [], isLoading: cargando } = useGetEspecialistas(
     undefined,
@@ -50,7 +51,6 @@ export const useEspecialistas = () => {
 
   const [notificacion, setNotificacion] = useState<string | null>(null);
 
-  // Actions
   const handleAbrirFormNuevo = () => {
     setNuevoNombre("");
     setNuevoCargo("");
@@ -192,7 +192,6 @@ export const useEspecialistas = () => {
   };
 
   return {
-    // Data
     especialistas,
     cargando,
     servicios,
@@ -217,7 +216,6 @@ export const useEspecialistas = () => {
       ? estadoMutation.variables?.id
       : null,
 
-    // Actions
     actions: {
       setNuevoNombre,
       setNuevoCargo,

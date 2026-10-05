@@ -10,9 +10,7 @@ import {
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
 
-/**
- * Modal de cancelación con estilo Frameless Satoshi 100%
- */
+/** Modal para cancelar una reserva pidiendo el motivo y advirtiendo si tiene pago o ficha clínica asociados */
 export function CancelAppointmentModal({
   citaId,
   abierto,

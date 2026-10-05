@@ -12,7 +12,7 @@ import { handleApiError } from "@/lib/api";
 
 import { Alerta } from "./alerta";
 
-// El backend ya redimensiona y valida: esto solo acorta la subida de archivos grandes.
+// El backend ya redimensiona y valida; esto solo acorta la subida de archivos grandes
 const UMBRAL_COMPRESION_BYTES = 8 * 1024 * 1024;
 const LADO_MAYOR_MAXIMO = 2000;
 const CALIDAD_JPEG = 0.95;
@@ -64,6 +64,7 @@ interface ImageUploaderProps {
   folder?: string;
 }
 
+/** Selector de imagen con vista previa que sube, reemplaza o elimina el archivo en Cloudinary */
 export function ImageUploader({
   etiqueta = "Imagen de la sección",
   value = "",

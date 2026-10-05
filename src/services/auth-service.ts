@@ -6,6 +6,7 @@ import { AuthGoogleResponse } from "@/types";
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints de autenticación y perfil del personal y del login con Google */
 export class AuthService extends BaseApiService {
   constructor() {
     super("/auth");

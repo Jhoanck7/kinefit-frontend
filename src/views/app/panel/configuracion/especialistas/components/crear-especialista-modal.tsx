@@ -32,6 +32,7 @@ interface CrearEspecialistaModalProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
+/** Modal para registrar un nuevo integrante del equipo con su foto, servicios y datos de contacto */
 export function CrearEspecialistaModal({
   abierto,
   onCerrar,

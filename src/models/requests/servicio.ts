@@ -1,3 +1,4 @@
+/** Datos para crear un servicio */
 export interface CreateServicioRequest {
   nombre: string;
   orden: number;
@@ -8,6 +9,7 @@ export interface CreateServicioRequest {
   descripcion?: string;
 }
 
+/** Datos para actualizar un servicio */
 export interface UpdateServicioRequest {
   nombre: string;
   orden: number;
@@ -17,6 +19,7 @@ export interface UpdateServicioRequest {
   descripcion?: string;
 }
 
+/** Documento (consentimiento o recomendación) exigido por un servicio */
 export interface ServicioDocumentoInput {
   plantillaId: number;
   obligatorio: boolean;

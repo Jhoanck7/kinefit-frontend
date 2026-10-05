@@ -29,6 +29,7 @@ interface EditarEspecialistaModalProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
+/** Modal para editar el perfil de un especialista, sus servicios y la visibilidad de contacto en el sitio público */
 export function EditarEspecialistaModal({
   abierto,
   onCerrar,

@@ -6,6 +6,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/** Contenedor de secciones plegables basado en Radix Accordion */
 function Accordion({
   className,
   ...props

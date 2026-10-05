@@ -6,6 +6,7 @@ import { formatearFechaExtensa, formatearRangoHorario } from "@/lib/formato";
 
 import { useReservaLista } from "./hooks";
 
+/** Pantalla de confirmación tras registrar una cita, con el resumen y accesos para registrar otra o ir a la agenda */
 export default function ListoView() {
   const {
     listo,

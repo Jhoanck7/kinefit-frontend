@@ -7,6 +7,7 @@ const FONDO_POR_TONO = {
 
 export type TonoAlerta = keyof typeof FONDO_POR_TONO;
 
+/** Caja de aviso con color según el tono (error, advertencia, éxito o info) */
 export function Alerta({
   tono = "error",
   className = "",

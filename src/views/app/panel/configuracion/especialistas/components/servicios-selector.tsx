@@ -6,6 +6,7 @@ interface ServiciosSelectorProps {
   onCambiar: (ids: number[]) => void;
 }
 
+/** Lista de checkboxes para elegir los servicios que presta un especialista */
 export function ServiciosSelector({
   servicios,
   seleccionados,

@@ -146,6 +146,7 @@ function PacientesContent() {
   );
 }
 
+/** Página con el listado buscable y paginado de pacientes, y el modal de detalle */
 export default function PacientesView() {
   return (
     <Suspense fallback={<div aria-hidden />}>

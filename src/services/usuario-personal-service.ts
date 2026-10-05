@@ -10,6 +10,7 @@ import {
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints de gestión de usuarios del personal */
 export class UsuarioPersonalService extends BaseApiService {
   constructor() {
     super("/usuarios");

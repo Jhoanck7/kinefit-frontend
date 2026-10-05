@@ -30,6 +30,7 @@ function Seccion({
   );
 }
 
+/** Página de política de privacidad con los datos de contacto de la clínica */
 export default async function PoliticaDePrivacidadPage() {
   const configRes = await landingConfigService.getConfig().catch(() => null);
   const clinicEmail =

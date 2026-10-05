@@ -1,3 +1,4 @@
+/** Un ítem dentro de una venta */
 export interface CreateVentaItemRequest {
   tipo: "Servicio" | "Producto" | "Propina";
   servicioId?: number;
@@ -5,6 +6,7 @@ export interface CreateVentaItemRequest {
   monto: number;
 }
 
+/** Datos para registrar una venta */
 export interface CreateVentaRequest {
   citaId?: number;
   pacienteId?: number;
@@ -13,6 +15,7 @@ export interface CreateVentaRequest {
   items: CreateVentaItemRequest[];
 }
 
+/** Datos para crear una versión de comisión de un terminal de pago */
 export interface CreateComisionTerminalRequest {
   metodoPago: "Debito" | "Credito";
   porcentaje: number;
@@ -21,6 +24,7 @@ export interface CreateComisionTerminalRequest {
   impuestoIncluidoEnTasa?: boolean;
 }
 
+/** Datos para crear un terminal de pago (POS) */
 export interface CreateTerminalPagoRequest {
   nombre: string;
   plazoAbonoDias: number;
@@ -28,12 +32,14 @@ export interface CreateTerminalPagoRequest {
   comisiones: CreateComisionTerminalRequest[];
 }
 
+/** Datos para crear una versión del reparto por profesional */
 export interface CreateRepartoProfesionalRequest {
   especialistaId: number;
   porcentajeProfesional: number;
   vigenteDesde: string;
 }
 
+/** Datos para crear una versión de la tasa de impuesto */
 export interface CreateTasaImpuestoRequest {
   porcentaje: number;
   vigenteDesde: string;

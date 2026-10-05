@@ -27,6 +27,7 @@ export const metadata: Metadata = {
   },
 };
 
+/** Layout raíz de las páginas públicas de documentos, define fuentes, proveedores y el toaster */
 export default function DocumentosRootLayout({
   children,
 }: Readonly<{

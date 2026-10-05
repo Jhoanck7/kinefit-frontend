@@ -1,10 +1,11 @@
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 
+/** Quita puntos, guion y espacios de un RUT y lo deja en mayúsculas */
 export function limpiarRut(rut: string): string {
   return rut.replace(/\./g, "").replace(/-/g, "").trim().toUpperCase();
 }
 
-// Mismo algoritmo mod-11 que RutHelper.cs en el backend: debe dar el mismo resultado.
+// Mismo algoritmo mod-11 que RutHelper.cs en el backend, debe dar el mismo resultado
 function calcularDv(cuerpo: string): string {
   let suma = 0;
   let multiplicador = 2;
@@ -22,6 +23,7 @@ function calcularDv(cuerpo: string): string {
   return String(resto);
 }
 
+/** Valida que un RUT chileno tenga un formato y dígito verificador correctos */
 export function esRutValido(rut: string): boolean {
   const limpio = limpiarRut(rut);
   if (limpio.length < 2) return false;
@@ -34,6 +36,7 @@ export function esRutValido(rut: string): boolean {
   return dv === calcularDv(cuerpo);
 }
 
+/** Formatea un RUT con puntos de miles y guion antes del dígito verificador */
 export function formatearRut(rut: string): string {
   const limpio = limpiarRut(rut);
   if (limpio.length < 2) return limpio;
@@ -44,10 +47,12 @@ export function formatearRut(rut: string): string {
   return `${cuerpoConPuntos}-${dv}`;
 }
 
+/** Deja solo los dígitos de un número de teléfono */
 export function limpiarTelefono(telefono: string): string {
   return telefono.replace(/[^\d]/g, "");
 }
 
+/** Valida que un teléfono sea un número móvil chileno válido */
 export function esTelefonoValido(telefono: string): boolean {
   const limpio = limpiarTelefono(telefono);
   const numero = parsePhoneNumberFromString(`+${limpio}`, "CL");

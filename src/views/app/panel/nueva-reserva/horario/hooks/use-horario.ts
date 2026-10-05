@@ -25,6 +25,7 @@ const DURACION_BLOQUE_MIN = 30;
 const MAX_BLOQUES = 3;
 const LIMITE_MANANA = "13:00";
 
+/** Gestiona la selección de fecha y bloques horarios del asistente de reserva, validando consecutividad y duración del servicio */
 export const useHorario = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -82,7 +83,6 @@ export const useHorario = () => {
 
   const fechaIso = fecha ? fechaISO(fecha) : "";
 
-  // API calls
   const { data: fechasDisponibles = [] } = useGetFechasDisponibles(
     servicioId ?? 0,
     duracionServicioEfectiva,
@@ -95,7 +95,6 @@ export const useHorario = () => {
     Boolean(servicioId) && Boolean(fecha)
   );
 
-  // Computed values
   const esFechaHoy =
     Boolean(fecha) && Boolean(hoy) && fechaIso === fechaISO(hoy!);
   const horaActualHHMM = hoy
@@ -115,7 +114,6 @@ export const useHorario = () => {
   const sinDisponibilidadEnFecha =
     Boolean(fecha) && !isLoading && horasVigentes.length === 0;
 
-  // Actions
   const handleSeleccionarHora = (hora: string) => {
     if (!fecha) return;
 
@@ -175,7 +173,6 @@ export const useHorario = () => {
   const handleCancelar = () => router.push("/panel/agenda");
 
   return {
-    // Data
     hoy,
     fecha,
     horasSeleccionadas,
@@ -194,10 +191,8 @@ export const useHorario = () => {
     errorSeleccion,
     sinDisponibilidadEnFecha,
 
-    // Loading state
     isLoading,
 
-    // Actions
     actions: {
       handleSeleccionarHora,
       handleCambiarFecha,

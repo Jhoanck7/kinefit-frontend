@@ -57,6 +57,7 @@ function extraerDireccion(texto: string): {
   };
 }
 
+/** Layout raíz del sitio público que envuelve las páginas con navbar, footer y datos estructurados JSON-LD */
 export default async function RootLayout({
   children,
 }: Readonly<{

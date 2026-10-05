@@ -15,6 +15,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
+/** Proveedor de contexto de react-hook-form para los campos del formulario */
 const Form = FormProvider;
 
 type FormFieldContextValue<
@@ -47,6 +48,7 @@ const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue
 );
 
+/** Expone el estado y los ids de accesibilidad del campo de formulario activo */
 function useFormField() {
   const fieldContext = React.useContext(FormFieldContext);
   const itemContext = React.useContext(FormItemContext);

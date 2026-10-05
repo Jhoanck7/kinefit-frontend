@@ -11,6 +11,7 @@ import {
 import { handleApiError } from "@/lib/api";
 import { UsuarioPersonalAdminResponse } from "@/models/responses";
 
+/** Gestiona el listado, creación, edición y activación de cuentas de personal con acceso al panel */
 export const usePersonal = () => {
   const { data: usuarios = [], isLoading: cargando } =
     useGetUsuariosPersonal(false);

@@ -13,6 +13,7 @@ import {
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints de gestión de pacientes */
 export class PacienteService extends BaseApiService {
   constructor() {
     super("/pacientes");

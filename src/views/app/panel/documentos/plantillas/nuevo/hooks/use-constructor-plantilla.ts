@@ -93,6 +93,7 @@ function mover<T>(lista: T[], indice: number, direccion: -1 | 1): T[] {
 
 export type ModoConstruccion = "elegir" | "campos" | "archivo";
 
+/** Administra el estado y guardado del constructor de plantillas: secciones y campos, o importación de un PDF externo */
 export const useConstructorPlantilla = () => {
   const router = useRouter();
   const [nombrePlantilla, setNombrePlantilla] = useState("");
@@ -396,7 +397,7 @@ export const useConstructorPlantilla = () => {
       await guardar(false);
     } catch (err: unknown) {
       const error = handleApiError(err);
-      // El servidor avisa que la plantilla ya se usó: se pide confirmación.
+      // El servidor avisa que la plantilla ya se usó: se pide confirmación
       if (error.details === "PLANTILLA_EN_USO") {
         setConfirmacionPendiente(error.message);
         return;

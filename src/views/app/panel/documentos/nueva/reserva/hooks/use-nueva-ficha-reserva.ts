@@ -15,6 +15,7 @@ import { useNuevaFichaStore } from "@/stores";
 const MIN_CARACTERES_BUSQUEDA = 2;
 const TAMANO_LISTA = 20;
 
+/** Busca un paciente y sus reservas para elegir a cuál asociar una nueva ficha clínica */
 export const useNuevaFichaReserva = () => {
   const router = useRouter();
   const { pacienteId, pacienteNombre, citaId, setReserva, reiniciar } =
@@ -54,7 +55,6 @@ export const useNuevaFichaReserva = () => {
 
   const citaSeleccionada = reservas.find(r => String(r.id) === citaId);
 
-  // Actions
   const handleSeleccionarPaciente = (paciente: PacienteResponse) => {
     setReserva(
       String(paciente.id),
@@ -82,7 +82,6 @@ export const useNuevaFichaReserva = () => {
   };
 
   return {
-    // Data
     pacienteId,
     pacienteNombre,
     citaId,
@@ -97,7 +96,6 @@ export const useNuevaFichaReserva = () => {
     reservas,
     citaSeleccionada,
 
-    // Actions
     actions: {
       setBusqueda,
       handleSeleccionarPaciente,

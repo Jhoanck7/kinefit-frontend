@@ -29,6 +29,7 @@ interface BloquesSemanaEditorProps {
   soloLectura?: boolean;
 }
 
+/** Editor semanal de bloques horarios por día, con agregado y eliminación de franjas */
 export function BloquesSemanaEditor({
   bloques,
   onAgregar,

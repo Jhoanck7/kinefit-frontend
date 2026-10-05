@@ -8,6 +8,7 @@ import { useDebounce, useHoyPanel } from "@/hooks/common";
 
 export const TAMANO_PAGINA = 10;
 
+/** Filtra, pagina y controla el modal de detalle del listado de documentos */
 export const useDocumentos = () => {
   const router = useRouter();
   const pathname = usePathname();

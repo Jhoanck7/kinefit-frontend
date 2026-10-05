@@ -7,6 +7,7 @@ import { CitaDetalleResponse } from "@/models/responses";
 import { useNuevaFichaStore } from "@/stores";
 import { DocumentoAcciones } from "@/views/app/panel/documentos/components/documento-acciones";
 
+/** Pestaña Documentos del detalle de reserva: muestra la ficha clínica de la cita y los consentimientos exigidos por el servicio */
 export function DocumentosTab({ cita }: { cita: CitaDetalleResponse }) {
   const citaId = cita.id;
   const router = useRouter();

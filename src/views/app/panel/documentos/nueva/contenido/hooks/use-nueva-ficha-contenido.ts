@@ -16,6 +16,7 @@ import { useNuevaFichaStore } from "@/stores";
 
 export type ModoRegistroFicha = "plantilla" | "archivo";
 
+/** Gestiona el paso de contenido del asistente de nueva ficha: elegir una plantilla del sistema o adjuntar una ficha ya hecha */
 export const useNuevaFichaContenido = () => {
   const router = useRouter();
   const {
@@ -39,8 +40,7 @@ export const useNuevaFichaContenido = () => {
   const adjuntarFichaMutation = useAdjuntarFichaMutation();
   const subirAdjuntoMutation = useSubirAdjuntoMutation();
 
-  // RF3: solo interesan las plantillas de tipo Ficha — el asistente jamás
-  // ofrece plantillas de Consentimiento o Recomendación acá.
+  // El asistente solo ofrece plantillas de tipo Ficha, nunca de Consentimiento o Recomendación
   const { data: plantillasDisponibles = [] } = useGetPlantillas();
   const plantillasFicha = plantillasDisponibles.filter(
     p => p.tipo === "FichaClinica"
@@ -85,7 +85,6 @@ export const useNuevaFichaContenido = () => {
 
   const handleCerrarError = () => setErrorMsg(null);
 
-  // RF3
   const handleCambiarModo = (nuevoModo: ModoRegistroFicha) => {
     setModo(nuevoModo);
     setErrorMsg(null);
@@ -125,7 +124,7 @@ export const useNuevaFichaContenido = () => {
     return true;
   }
 
-  // RF6: la ficha ya viene hecha, se adjunta el archivo directamente.
+  // La ficha ya viene hecha: se adjunta el archivo directamente, sin pasar por el constructor
   async function guardarConArchivo() {
     if (!citaId || !archivoFicha) return false;
     await adjuntarFichaMutation.mutateAsync({

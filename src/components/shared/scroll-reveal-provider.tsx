@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 
+/** Revela con una animación los elementos marcados con clases scroll-reveal al entrar en el viewport */
 export function ScrollRevealProvider({
   children,
 }: {

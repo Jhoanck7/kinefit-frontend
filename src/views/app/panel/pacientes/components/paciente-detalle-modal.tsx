@@ -30,6 +30,7 @@ interface PacienteDetalleModalProps {
 
 type PestanaPaciente = "contacto" | "historial" | "fichas";
 
+/** Modal con los datos, historial de citas y documentos de un paciente, con la opción de desvincular su cuenta */
 export function PacienteDetalleModal({
   pacienteId,
   hoy,
@@ -82,7 +83,6 @@ export function PacienteDetalleModal({
         </div>
       ) : (
         <div className="bg-white text-slate-900 font-sans shadow-none rounded-overlay overflow-hidden">
-          {/* Encabezado Formal */}
           <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
             <div>
               <h2 className="font-sans text-section-title font-bold text-foreground">
@@ -98,7 +98,6 @@ export function PacienteDetalleModal({
             <ModalCloseButton onClick={onCerrar} />
           </div>
 
-          {/* Barra de Pestañas Limpias */}
           <div className="flex border-b border-slate-200 px-6 bg-white gap-6 text-xs font-bold">
             <button
               type="button"
@@ -135,11 +134,8 @@ export function PacienteDetalleModal({
             </button>
           </div>
 
-          {/* Cuerpo en Layout de 2 Columnas */}
           <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-            {/* COLUMNA IZQUIERDA PRINCIPAL (2/3) */}
             <div className="md:col-span-2 p-6 space-y-4">
-              {/* PESTAÑA 1: DATOS PERSONALES */}
               {pestanaActiva === "contacto" && (
                 <div className="space-y-4">
                   <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground">
@@ -253,7 +249,6 @@ export function PacienteDetalleModal({
                 </div>
               )}
 
-              {/* PESTAÑA 2: HISTORIAL DE CITAS */}
               {pestanaActiva === "historial" && (
                 <div className="space-y-3">
                   <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground">
@@ -316,7 +311,6 @@ export function PacienteDetalleModal({
                 </div>
               )}
 
-              {/* PESTAÑA 3: DOCUMENTOS */}
               {pestanaActiva === "fichas" && (
                 <div className="space-y-3">
                   <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground">
@@ -366,7 +360,6 @@ export function PacienteDetalleModal({
               )}
             </div>
 
-            {/* COLUMNA DERECHA SECUNDARIA (1/3) - RESUMEN */}
             <div className="md:col-span-1 bg-slate-50/80 p-6 flex flex-col justify-between space-y-4">
               <div className="space-y-4">
                 <h3 className="border-b border-border pb-1 font-sans text-micro-header font-medium text-muted-foreground">

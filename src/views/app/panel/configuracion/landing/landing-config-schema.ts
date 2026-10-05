@@ -18,7 +18,7 @@ export interface SectionSchema {
   title: string;
   description: string;
   fields?: FieldDefinition[];
-  hasCustomRenderer?: boolean; // For Gallery, Process, Reviews, etc.
+  hasCustomRenderer?: boolean;
 }
 
 export const landingConfigSchema: SectionSchema[] = [

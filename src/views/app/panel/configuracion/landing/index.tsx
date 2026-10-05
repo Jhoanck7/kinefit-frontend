@@ -30,6 +30,7 @@ function esUrlAbsolutaValida(url: string | undefined): boolean {
   }
 }
 
+/** Página para editar en vivo los textos, imágenes y reseñas de las distintas secciones de la landing pública */
 export default function LandingView() {
   const {
     formData,

@@ -23,6 +23,7 @@ interface ConfiguracionFinancieraModalProps {
   onClose: () => void;
 }
 
+/** Modal con pestañas para gestionar terminales POS, acuerdos de reparto de honorarios y la tasa de IVA vigente */
 export function ConfiguracionFinancieraModal({
   abierto,
   onClose,
@@ -56,7 +57,6 @@ export function ConfiguracionFinancieraModal({
   const crearRepartoMutation = useCreateRepartoMutation();
   const crearTasaIvaMutation = useCreateTasaImpuestoMutation();
 
-  // Estado de creación de Terminal POS
   const [mostrarFormTerminal, setMostrarFormTerminal] = useState(false);
   const [nombreTerminal, setNombreTerminal] = useState("");
   const [plazoAbono, setPlazoAbono] = useState(1);
@@ -115,7 +115,6 @@ export function ConfiguracionFinancieraModal({
     }
   }
 
-  // Estado de creación de Acuerdo de Reparto
   const [mostrarFormReparto, setMostrarFormReparto] = useState(false);
   const [especialistaIdReparto, setEspecialistaIdReparto] = useState("");
   const [pctProf, setPctProf] = useState(50);
@@ -158,7 +157,6 @@ export function ConfiguracionFinancieraModal({
     }
   }
 
-  // Estado de creación de Tasa IVA
   const [mostrarFormIva, setMostrarFormIva] = useState(false);
   const [pctIva, setPctIva] = useState(19);
   const [fechaVigenciaIva, setFechaVigenciaIva] = useState(
@@ -186,7 +184,6 @@ export function ConfiguracionFinancieraModal({
   return (
     <Modal abierto={abierto} onCerrar={onClose}>
       <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
-        {/* Encabezado */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
           <div>
             <h2 className="font-sans text-section-title font-bold text-foreground">
@@ -199,7 +196,6 @@ export function ConfiguracionFinancieraModal({
           <ModalCloseButton onClick={onClose} />
         </div>
 
-        {/* Selector de pestañas */}
         <div className="flex border-b border-slate-200 px-6 bg-white gap-4 text-xs font-bold">
           <button
             type="button"
@@ -236,7 +232,6 @@ export function ConfiguracionFinancieraModal({
           </button>
         </div>
 
-        {/* Contenido principal */}
         <div className="p-6 space-y-4 font-sans text-xs">
           {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
 
@@ -246,7 +241,6 @@ export function ConfiguracionFinancieraModal({
             </p>
           ) : (
             <>
-              {/* TAB 1: Terminales POS */}
               {tab === "terminales" && (
                 <div className="space-y-4">
                   {errorTerminal && (
@@ -525,7 +519,6 @@ export function ConfiguracionFinancieraModal({
                 </div>
               )}
 
-              {/* TAB 2: Acuerdos de Reparto */}
               {tab === "repartos" && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -677,7 +670,6 @@ export function ConfiguracionFinancieraModal({
                 </div>
               )}
 
-              {/* TAB 3: Tasa de IVA */}
               {tab === "iva" && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -794,7 +786,6 @@ export function ConfiguracionFinancieraModal({
           )}
         </div>
 
-        {/* Footer */}
         <div className="border-t border-slate-200 bg-slate-50/60 p-4 flex justify-end">
           <button
             type="button"

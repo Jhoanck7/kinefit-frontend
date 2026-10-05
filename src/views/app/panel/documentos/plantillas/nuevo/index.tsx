@@ -710,6 +710,7 @@ function ConstructorPlantillaContenido() {
   );
 }
 
+/** Constructor de plantillas de documentos: arma secciones y campos, o sube un PDF externo, con vista previa en vivo */
 export default function ConstructorPlantillaView() {
   return (
     <Suspense fallback={<div className="h-full" aria-hidden />}>

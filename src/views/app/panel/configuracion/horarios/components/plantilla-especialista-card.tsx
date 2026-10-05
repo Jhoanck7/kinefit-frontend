@@ -19,6 +19,7 @@ interface PlantillaEspecialistaCardProps {
   especialista: EspecialistaResponse;
 }
 
+/** Tarjeta para configurar la plantilla horaria semanal de un especialista y avisar si un cambio deja citas confirmadas fuera de horario */
 export function PlantillaEspecialistaCard({
   especialista,
 }: PlantillaEspecialistaCardProps) {

@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
-// Paleta sólida de components/shared/alerta.tsx; sin next-themes, el panel no tiene modo oscuro.
+// Paleta sólida de components/shared/alerta.tsx; sin next-themes porque el panel no tiene modo oscuro
+/** Contenedor de notificaciones toast con la paleta de colores del panel */
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner

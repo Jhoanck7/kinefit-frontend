@@ -9,6 +9,7 @@ import { PlantillaResponse } from "@/models/responses";
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints de gestión de plantillas de documentos clínicos */
 export class PlantillaService extends BaseApiService {
   constructor() {
     super("/documentos/plantillas");
@@ -79,7 +80,7 @@ export class PlantillaService extends BaseApiService {
     );
   }
 
-  /** Con documentos ya generados desde ella, el servidor rechaza salvo que confirmar sea true. */
+  // con documentos ya generados desde ella, el servidor rechaza salvo que confirmar sea true
   update(id: number, data: UpdatePlantillaRequest, confirmar = false) {
     return this.httpClient.put<ApiResponse<PlantillaResponse>>(
       `${this.baseURL}/${id}`,

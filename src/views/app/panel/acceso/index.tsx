@@ -7,6 +7,7 @@ import { Button } from "@/components/ui";
 
 import { useAcceso } from "./hooks";
 
+/** Pantalla de acceso del personal al panel con formulario de correo y contraseña */
 export default function AccesoView() {
   const { cargando, errorMsg, actions } = useAcceso();
 

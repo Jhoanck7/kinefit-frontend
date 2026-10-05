@@ -1,3 +1,4 @@
+/** Imagen de voucher, con sus variantes de fondo sofá y fondo blanco */
 export interface VoucherItem {
   alt: string;
   imagenSofa: string;
@@ -8,6 +9,7 @@ export interface VoucherItem {
   altoBlanco: number;
 }
 
+/** Imagen de la sección de embarazadas, con una variante secundaria opcional */
 export interface EmbarazadaItem {
   alt: string;
   imagenUrl: string;
@@ -18,6 +20,7 @@ export interface EmbarazadaItem {
   altoSecundaria?: number;
 }
 
+/** Configuración editable de la landing pública */
 export interface LandingConfigResponse {
   heroTagline: string;
   heroBrandName: string;

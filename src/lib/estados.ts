@@ -119,6 +119,7 @@ export const ORDEN_ESTADOS: CodigoEstadoCita[] = [
   "Expirada",
 ];
 
+/** Busca la definición completa (etiqueta, color y acciones disponibles) de un estado de cita */
 export function definicionEstado(
   codigo: CodigoEstadoCita
 ): DefinicionEstadoCita {

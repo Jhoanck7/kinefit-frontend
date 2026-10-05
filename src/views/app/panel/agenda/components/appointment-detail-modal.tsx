@@ -42,6 +42,7 @@ const MAPA_ESTADO_NUEVO: Record<string, string> = {
   marcar_no_asistida: "NoAsistida",
 };
 
+/** Modal de detalle de una reserva, con pestañas de datos de la cita y documentos, y las acciones de cambio de estado */
 export function AppointmentDetailModal({
   citaId,
   onCerrar,
@@ -88,8 +89,7 @@ export function AppointmentDetailModal({
         },
       });
       onEstadoCambiar?.();
-      // ES17 → ES18: recién al cerrar la atención se pregunta por la
-      // recomendación, nunca antes.
+      // La recomendación se pregunta recién al cerrar la atención, nunca antes
       if (estadoNuevo === "Atendida") {
         setCitaAtendidaId(cita.id);
       }
@@ -154,7 +154,6 @@ function DetalleCita({
 
   return (
     <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
-      {/* Encabezado del Modal */}
       <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
         <div>
           <div className="flex items-center gap-2">
@@ -209,11 +208,8 @@ function DetalleCita({
         </TabsList>
 
         <TabsContent value="detalle">
-          {/* Cuerpo en Layout de 2 Columnas (Principal + Lateral Interno Paciente) */}
           <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-            {/* COLUMNA IZQUIERDA PRINCIPAL (2/3) */}
             <div className="md:col-span-2 p-6 space-y-6">
-              {/* DETALLES DE LA ATENCIÓN */}
               <div>
                 <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
                   Detalles de la Atención
@@ -263,7 +259,6 @@ function DetalleCita({
                 </div>
               </div>
 
-              {/* INFORMACIÓN DE PAGO */}
               <div>
                 <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
                   Información de Pago
@@ -293,7 +288,6 @@ function DetalleCita({
               </div>
             </div>
 
-            {/* COLUMNA DERECHA SECUNDARIA (1/3) - FICHA RÁPIDA PACIENTE */}
             <div className="md:col-span-1 bg-slate-50/80 p-6 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground">
@@ -363,10 +357,8 @@ function DetalleCita({
         </TabsContent>
       </Tabs>
 
-      {/* Pie de Acciones */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 bg-slate-50/60 p-4">
-        {/* Era la única entrada al cobro: vivía en el tablero de hitos que se
-            retiró, así que se conserva acá para no perder el atajo. */}
+        {/* Es el único acceso al cobro desde el detalle de la reserva */}
         {ESTADOS_FACTURABLES.includes(cita.estado) ? (
           <button
             type="button"

@@ -8,6 +8,7 @@ import {
 } from "@/models/requests";
 import { plantillaService } from "@/services";
 
+/** Obtiene el listado de plantillas de documentos */
 export const useGetPlantillas = (soloActivos = true) => {
   return useQuery({
     queryKey: ["plantillas", soloActivos],
@@ -16,6 +17,7 @@ export const useGetPlantillas = (soloActivos = true) => {
   });
 };
 
+/** Obtiene el detalle de una plantilla */
 export const useGetPlantillaById = (id: number, enabled = true) => {
   return useQuery({
     queryKey: ["plantillas", "detalle", id],
@@ -24,6 +26,7 @@ export const useGetPlantillaById = (id: number, enabled = true) => {
   });
 };
 
+/** Crea una plantilla de ficha clínica */
 export const useCrearPlantillaFichaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -35,6 +38,7 @@ export const useCrearPlantillaFichaMutation = () => {
   });
 };
 
+/** Crea una plantilla de consentimiento */
 export const useCrearPlantillaConsentimientoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -46,6 +50,7 @@ export const useCrearPlantillaConsentimientoMutation = () => {
   });
 };
 
+/** Importa un PDF externo como plantilla de consentimiento */
 export const useImportarPlantillaConsentimientoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -74,6 +79,7 @@ export const useImportarPlantillaConsentimientoMutation = () => {
   });
 };
 
+/** Crea una plantilla de recomendación */
 export const useCrearPlantillaRecomendacionMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -85,6 +91,7 @@ export const useCrearPlantillaRecomendacionMutation = () => {
   });
 };
 
+/** Importa un PDF externo como plantilla de recomendación */
 export const useImportarPlantillaRecomendacionMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -98,6 +105,7 @@ export const useImportarPlantillaRecomendacionMutation = () => {
   });
 };
 
+/** Actualiza una plantilla existente */
 export const useUpdatePlantillaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -117,6 +125,7 @@ export const useUpdatePlantillaMutation = () => {
   });
 };
 
+/** Elimina una plantilla sin documentos generados */
 export const useEliminarPlantillaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -127,6 +136,7 @@ export const useEliminarPlantillaMutation = () => {
   });
 };
 
+/** Activa o desactiva una plantilla */
 export const useUpdatePlantillaEstadoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -138,6 +148,7 @@ export const useUpdatePlantillaEstadoMutation = () => {
   });
 };
 
+/** Obtiene el archivo de una plantilla para abrirlo */
 export const useAbrirArchivoPlantillaMutation = () => {
   return useMutation({
     mutationFn: (id: number) =>

@@ -137,6 +137,7 @@ function RegistrarPacienteContent() {
   );
 }
 
+/** Página con el formulario para registrar un paciente nuevo desde el panel */
 export default function RegistrarPacienteView() {
   return (
     <Suspense fallback={<div className="h-full" aria-hidden />}>

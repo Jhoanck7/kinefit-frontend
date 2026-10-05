@@ -14,6 +14,7 @@ export { PASOS_NUEVA_RESERVA };
 
 const MIN_CARACTERES_BUSQUEDA = 2;
 
+/** Busca y confirma el paciente del asistente de reserva, o deriva a registrar uno nuevo */
 export const usePacienteReserva = () => {
   const router = useRouter();
   const {
@@ -51,7 +52,6 @@ export const usePacienteReserva = () => {
     if (perfilCargado) setPacienteConfirmado(perfilCargado);
   }, [perfilCargado]);
 
-  // Actions
   const handleBusquedaChange = (val: string) => {
     setBusqueda(val);
   };
@@ -74,7 +74,6 @@ export const usePacienteReserva = () => {
   const handleContinuar = () => router.push("/panel/nueva-reserva/resumen");
 
   return {
-    // Data
     fecha,
     hora,
     pacienteId,
@@ -90,7 +89,6 @@ export const usePacienteReserva = () => {
       busqueda.trim().length < MIN_CARACTERES_BUSQUEDA,
     pacienteConfirmado,
 
-    // Actions
     actions: {
       handleBusquedaChange,
       handleSeleccionar,

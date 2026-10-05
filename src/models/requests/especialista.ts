@@ -1,3 +1,4 @@
+/** Datos para crear un especialista */
 export interface CreateEspecialistaRequest {
   nombre: string;
   cargo: string;
@@ -10,6 +11,7 @@ export interface CreateEspecialistaRequest {
   mostrarContacto?: boolean;
 }
 
+/** Datos para actualizar un especialista */
 export interface UpdateEspecialistaRequest {
   nombre: string;
   cargo: string;

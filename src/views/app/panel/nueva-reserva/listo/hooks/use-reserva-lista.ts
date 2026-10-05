@@ -7,6 +7,7 @@ import { definicionEstado } from "@/lib/estados";
 import { fechaISO } from "@/lib/formato";
 import { useNuevaReservaStore } from "@/stores";
 
+/** Arma el resumen final de la reserva recién creada y redirige al inicio del asistente si falta algún dato */
 export const useReservaLista = () => {
   const router = useRouter();
   const {
@@ -39,7 +40,6 @@ export const useReservaLista = () => {
       .padStart(2, "0")}:${(minutosTermino % 60).toString().padStart(2, "0")}`;
   }
 
-  // Actions
   const handleIrALaAgenda = () => {
     if (!fecha) return;
     saliendoRef.current = true;
@@ -54,7 +54,6 @@ export const useReservaLista = () => {
   };
 
   return {
-    // Data
     listo,
     fecha,
     hora,
@@ -64,7 +63,6 @@ export const useReservaLista = () => {
     etiquetaEstado: definicion.etiqueta,
     colorRolEstado: definicion.colorRol,
 
-    // Actions
     actions: {
       handleIrALaAgenda,
       handleRegistrarOtra,

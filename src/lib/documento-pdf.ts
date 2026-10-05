@@ -130,6 +130,7 @@ function valorLegible(valor: string | undefined): string {
   return limpio === "" ? "—" : limpio;
 }
 
+/** Genera el PDF de un documento clínico a partir de su plantilla y contenido, dejando espacio para la firma */
 export async function generarPdfDesdeConstructor(
   datos: DatosDocumento
 ): Promise<Uint8Array> {
@@ -192,6 +193,7 @@ export async function generarPdfDesdeConstructor(
   return doc.save();
 }
 
+/** Convierte los bytes de un PDF a una data URL para mostrarlo o descargarlo */
 export function bytesADataUrlPdf(bytes: Uint8Array): string {
   let binario = "";
   const bloque = 0x8000;

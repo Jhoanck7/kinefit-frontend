@@ -13,14 +13,13 @@ interface DocumentosServicioSelectorProps {
 const ESTILO_OPCION =
   "flex cursor-pointer items-center gap-2 p-3 font-sans hover:bg-slate-50";
 
+/** Elige el consentimiento y la recomendación estándar exigidos por un servicio, cada uno de selección única */
 export function DocumentosServicioSelector({
   plantillas,
   documentos,
   onCambiar,
 }: DocumentosServicioSelectorProps) {
-  // Las fichas clínicas no se listan: el backend solo genera consentimientos
-  // por servicio y busca la recomendación estándar, y la plantilla de la ficha
-  // la elige la profesional al registrarla.
+  // Las fichas clínicas no se listan acá: la plantilla de la ficha la elige la profesional al registrarla
   const consentimientos = plantillas.filter(p => p.tipo === "Consentimiento");
   const recomendaciones = plantillas.filter(p => p.tipo === "Recomendacion");
 
@@ -51,8 +50,7 @@ export function DocumentosServicioSelector({
       {
         plantillaId,
         obligatorio: true,
-        // Una recomendación solo se encuentra como la estándar del servicio si
-        // queda en AlFinalizarAtencion.
+        // Una recomendación solo cuenta como la estándar del servicio si queda en AlFinalizarAtencion
         momento:
           tipo === "Recomendacion"
             ? "AlFinalizarAtencion"
@@ -143,8 +141,7 @@ function Seccion({
       </p>
       <p className="mb-2 font-sans text-xs text-slate-500">{descripcion}</p>
 
-      {/* Los radios comparten name, así que el navegador marca uno solo aunque
-          haya varios guardados: sin este aviso, el dato roto se ve sano. */}
+      {/* Los radios comparten name y el navegador marca uno solo, así que sin este aviso un dato roto con varios guardados se vería sano */}
       {elegidos.length > 1 && (
         <Alerta tono="advertencia" className="mb-2">
           Hay {elegidos.length} guardados (

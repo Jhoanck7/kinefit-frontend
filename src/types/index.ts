@@ -1,4 +1,4 @@
-// API Error Contract
+// Contrato de error de la API
 export interface ApiErrorResponse {
   status: number;
   error: string;
@@ -6,14 +6,14 @@ export interface ApiErrorResponse {
   timestamp: string;
 }
 
-// Service Controller
+// Controlador de servicios
 export interface BackendService {
   id: number;
   nombre: string;
   activo: boolean;
 }
 
-// Specialist Controller
+// Controlador de especialistas
 export interface BackendSpecialist {
   id: number;
   nombre: string;
@@ -29,7 +29,7 @@ export interface BackendSpecialist {
   fechasDisponibles?: string[];
 }
 
-// TimeSlot / BloqueHorario Controller
+// Controlador de bloques horarios
 export interface BackendTimeSlot {
   id: number;
   horaInicio: string;
@@ -40,7 +40,7 @@ export interface BackendTimeSlot {
   fecha?: string;
 }
 
-// Auth Controller
+// Controlador de autenticación
 export interface AuthPatient {
   id: number;
   nombre: string;
@@ -60,7 +60,7 @@ export interface AuthGoogleResponse {
   message: string;
 }
 
-// Cita Controller
+// Controlador de citas
 export interface CreateCitaDto {
   especialistaId: number;
   servicioId: number;
@@ -81,7 +81,7 @@ export interface CitaResponseData {
   createdAt?: string;
 }
 
-// Transaccion Controller
+// Controlador de transacciones
 export interface IniciarTransaccionResponseData {
   transaccionId?: number;
   token: string;
@@ -103,7 +103,7 @@ export interface ConfirmarTransaccionResponseData {
   documentosParaFirmarTokens: string[];
 }
 
-// Legacy CMS Interfaces
+// Interfaces del CMS de contenido (Sanity)
 export interface Appointment {
   id: string;
   serviceId: string;

@@ -1,8 +1,10 @@
+/** Datos del servicio tal como se muestran en el contexto de un especialista */
 export interface EspecialistaServicioResponse {
   id: number;
   nombre: string;
 }
 
+/** Un especialista tal como se muestra en el sitio público */
 export interface EspecialistaResponse {
   id: number;
   nombre: string;
@@ -20,6 +22,7 @@ export interface EspecialistaResponse {
   tieneHorario: boolean;
 }
 
+/** Un especialista tal como se muestra en el panel administrativo */
 export interface EspecialistaAdminResponse {
   id: number;
   nombre: string;
@@ -32,6 +35,7 @@ export interface EspecialistaAdminResponse {
   mostrarContacto: boolean;
 }
 
+/** Resultado de activar o desactivar un especialista */
 export interface EspecialistaEstadoResponse {
   id: number;
   activo: boolean;

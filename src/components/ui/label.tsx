@@ -5,6 +5,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/** Etiqueta de texto para un campo de formulario */
 function Label({
   className,
   ...props

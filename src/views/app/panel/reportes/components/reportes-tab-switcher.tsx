@@ -9,6 +9,7 @@ interface ReportesTabSwitcherProps {
   onCambiarTab: (tab: TabReporte) => void;
 }
 
+/** Selector de las tres pestañas de reportes, visible solo para el rol Administrador */
 export function ReportesTabSwitcher({
   tabActivo,
   onCambiarTab,

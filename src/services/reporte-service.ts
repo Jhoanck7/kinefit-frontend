@@ -7,6 +7,7 @@ import {
 
 import { BaseApiService } from "./base-api-service";
 
+/** Filtros aceptados al pedir el reporte de ventas */
 export interface FiltrosReporteVentas {
   fechaDesde?: string;
   fechaHasta?: string;
@@ -16,6 +17,7 @@ export interface FiltrosReporteVentas {
   pageSize?: number;
 }
 
+/** Filtros aceptados al pedir el reporte de reservas */
 export interface FiltrosReporteReservas {
   fechaDesde?: string;
   fechaHasta?: string;
@@ -23,12 +25,14 @@ export interface FiltrosReporteReservas {
   vista?: string;
 }
 
+/** Filtros aceptados al pedir el reporte de comisiones */
 export interface FiltrosReporteComisiones {
   fechaDesde?: string;
   fechaHasta?: string;
   especialistaId?: number;
 }
 
+/** Consume los endpoints de reportes de ventas, reservas y comisiones */
 export class ReporteService extends BaseApiService {
   constructor() {
     super("/reportes");

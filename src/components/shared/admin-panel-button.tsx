@@ -9,6 +9,7 @@ export interface AdminPanelButtonProps {
   variant?: "navbar" | "drawer" | "floating";
 }
 
+/** Enlace al panel administrativo visible solo para usuarios con rol Administrador */
 export function AdminPanelButton({
   className = "",
   variant = "navbar",

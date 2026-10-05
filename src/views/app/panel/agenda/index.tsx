@@ -53,7 +53,6 @@ function AgendaContent() {
         </Alerta>
       )}
 
-      {/* Lista de citas del día por especialista */}
       <div className="overflow-x-auto py-2">
         <div className="flex gap-4 min-w-[600px]">
           {especialistasAMostrar.map(esp => {
@@ -75,7 +74,6 @@ function AgendaContent() {
         </div>
       </div>
 
-      {/* Modales de Gestión */}
       {citaId && !cancelando && (
         <AppointmentDetailModal
           citaId={citaId}
@@ -105,6 +103,7 @@ function AgendaContent() {
   );
 }
 
+/** Página de agenda: muestra las citas del día por especialista y las acciones para gestionarlas */
 export default function AgendaView() {
   return (
     <Suspense fallback={<div className="h-full" aria-hidden />}>

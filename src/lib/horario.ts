@@ -1,9 +1,6 @@
 const DURACION_BLOQUE_MIN = 30;
 
-/**
- * Tramos de atención del centro. La franja 14:00–15:00 no existe: el
- * generador simplemente no la produce (RF-GEN-011, G-5, A-1/A-2).
- */
+// La franja 14:00-15:00 no existe: el generador simplemente no la produce
 const TRAMOS_SEMANA: { inicio: string; termino: string }[] = [
   { inicio: "09:00", termino: "14:00" },
   { inicio: "15:00", termino: "21:00" },
@@ -14,10 +11,12 @@ const TRAMOS_FIN_DE_SEMANA: { inicio: string; termino: string }[] = [
   { inicio: "15:00", termino: "21:00" },
 ];
 
+/** Indica si el día de la semana dado (0 = domingo) es sábado o domingo */
 export function esFinDeSemana(diaSemana: number): boolean {
   return diaSemana === 0 || diaSemana === 6;
 }
 
+/** Obtiene los tramos de atención del centro para un día de la semana dado */
 export function tramosDelDia(
   diaSemana: number
 ): { inicio: string; termino: string }[] {
@@ -37,10 +36,7 @@ function horaDesdeMinutos(minutos: number): string {
   return `${h}:${m}`;
 }
 
-/**
- * Genera los bloques de 30 minutos de un tramo, sin incluir el minuto de término
- * como inicio de un bloque nuevo.
- */
+// Genera los bloques de 30 minutos de un tramo sin incluir el minuto de término como inicio de un bloque nuevo
 function bloquesDeTramo(rango: {
   inicio: string;
   termino: string;
@@ -61,25 +57,25 @@ function bloquesDeTramo(rango: {
   return bloques;
 }
 
-/**
- * Rejilla completa del centro para un día de la semana dado (0 = domingo).
- * Nunca produce un bloque entre 14:00 y 15:00.
- */
+/** Genera la rejilla completa de bloques de atención del centro para un día de la semana dado */
 export function generarRejillaDia(
   diaSemana: number
 ): { inicio: string; termino: string }[] {
   return tramosDelDia(diaSemana).flatMap(bloquesDeTramo);
 }
 
+/** Obtiene la primera hora de atención de un día de la semana dado */
 export function primeraHoraDelDia(diaSemana: number): string {
   return tramosDelDia(diaSemana)[0].inicio;
 }
 
+/** Obtiene la última hora de término de atención de un día de la semana dado */
 export function ultimaHoraDelDia(diaSemana: number): string {
   const tramos = tramosDelDia(diaSemana);
   return tramos[tramos.length - 1].termino;
 }
 
+/** Suma minutos a una hora "HH:mm" y devuelve la nueva hora en el mismo formato */
 export function sumarMinutos(hora: string, minutos: number): string {
   const [h, m] = hora.split(":").map(Number);
   const total = h * 60 + m + minutos;
@@ -88,6 +84,7 @@ export function sumarMinutos(hora: string, minutos: number): string {
   return `${hFin.toString().padStart(2, "0")}:${mFin.toString().padStart(2, "0")}`;
 }
 
+/** Indica si una lista de horas ordenadas forma bloques consecutivos sin huecos */
 export function sonConsecutivas(
   horasOrdenadas: string[],
   duracionBloqueMin = DURACION_BLOQUE_MIN
@@ -103,6 +100,7 @@ export function sonConsecutivas(
   return true;
 }
 
+/** Calcula cuántos bloques de horario se necesitan para cubrir una duración en minutos */
 export function bloquesRequeridos(
   duracionMinutos: number | undefined,
   duracionBloqueMin = DURACION_BLOQUE_MIN

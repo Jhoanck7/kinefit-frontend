@@ -11,6 +11,7 @@ import { handleApiError } from "@/lib/api";
 
 import { BloquesSemanaEditor } from "./bloques-semana-editor";
 
+/** Tarjeta para configurar las franjas horarias en que atiende el centro, dentro de las cuales se generan los bloques de agenda */
 export function HorarioCentroCard() {
   const { data: horarioCentro = [], isLoading } = useGetHorarioCentro();
   const crearMutation = useCreateHorarioCentroMutation();
@@ -24,7 +25,7 @@ export function HorarioCentroCard() {
     try {
       await crearMutation.mutateAsync({ diaSemana, horaInicio, horaFin });
     } catch {
-      // El error se refleja abajo vía crearMutation.error
+      // El error se muestra abajo con crearMutation.error, no hace falta manejarlo acá
     }
   };
 

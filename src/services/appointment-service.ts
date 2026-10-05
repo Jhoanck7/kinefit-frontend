@@ -4,6 +4,7 @@ import { axiosInstanceSinSesion } from "@/providers";
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints públicos de reserva: servicios, bloques disponibles y creación de citas */
 export class AppointmentService extends BaseApiService {
   constructor() {
     super("", axiosInstanceSinSesion);

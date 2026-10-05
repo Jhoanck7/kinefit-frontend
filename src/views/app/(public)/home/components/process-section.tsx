@@ -37,6 +37,7 @@ const DEFAULT_PROCESS_STEPS: ProcessStepItem[] = [
   },
 ];
 
+/** Sección que muestra los pasos del proceso de atención con una línea de tiempo animada */
 export default function ProcessSection({
   config,
 }: {

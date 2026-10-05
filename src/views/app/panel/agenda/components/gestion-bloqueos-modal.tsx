@@ -33,6 +33,7 @@ interface GestionBloqueosModalProps {
   onBloqueoCreado?: () => void;
 }
 
+/** Modal para consultar, registrar y activar/desactivar bloqueos de agenda por especialista o para todos */
 export function GestionBloqueosModal({
   abierto,
   onClose,
@@ -49,7 +50,6 @@ export function GestionBloqueosModal({
     abierto && Boolean(especialistaFiltroNum)
   );
 
-  // Formulario de creación
   const [mostrarForm, setMostrarForm] = useState(false);
   const [especialistaForm, setEspecialistaForm] = useState("");
   const [fechaForm, setFechaForm] = useState("");
@@ -133,7 +133,6 @@ export function GestionBloqueosModal({
   return (
     <Modal abierto={abierto} onCerrar={onClose}>
       <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
-        {/* Encabezado */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
           <div>
             <h2 className="font-sans text-section-title font-bold text-foreground">
@@ -146,7 +145,6 @@ export function GestionBloqueosModal({
           <ModalCloseButton onClick={onClose} />
         </div>
 
-        {/* Contenido principal */}
         <div className="p-6 space-y-4 font-sans text-xs">
           {errorGuardar && <Alerta tono="error">{errorGuardar}</Alerta>}
 
@@ -179,7 +177,6 @@ export function GestionBloqueosModal({
             )}
           </div>
 
-          {/* Formulario de registro de bloqueo */}
           {mostrarForm && (
             <form
               onSubmit={handleGuardarBloqueo}
@@ -299,7 +296,6 @@ export function GestionBloqueosModal({
             </form>
           )}
 
-          {/* Lista de bloqueos */}
           <div className="divide-y divide-slate-200 border border-slate-200 bg-white rounded-none">
             {bloqueos.length === 0 ? (
               <EmptyState
@@ -357,7 +353,6 @@ export function GestionBloqueosModal({
           </div>
         </div>
 
-        {/* Footer */}
         <div className="border-t border-slate-200 bg-slate-50/60 p-4 flex justify-end">
           <button
             type="button"

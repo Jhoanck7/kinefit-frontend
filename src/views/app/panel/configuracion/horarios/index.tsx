@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { HorarioCentroCard, PlantillaEspecialistaCard } from "./components";
 import { useHorarios } from "./hooks";
 
+/** Página de configuración del horario del centro y la plantilla semanal de cada especialista */
 export default function HorariosView() {
   const { data: session } = useSession();
   const esAdministrador = session?.user.rol === "Administrador";

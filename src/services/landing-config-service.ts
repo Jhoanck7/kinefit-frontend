@@ -5,6 +5,7 @@ import { axiosInstanceSinSesion } from "@/providers";
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints de configuración de la landing pública */
 export class LandingConfigService extends BaseApiService {
   constructor() {
     super("/configuracion");

@@ -6,11 +6,8 @@ export interface OpcionSelector {
   icono?: ReactNode;
 }
 
-/**
- * Patrón de selección de opciones con estilo Frameless Satoshi. Sin
- * equivalente directo en shadcn (toggle-group/radio-group no reproducen
- * este layout de filas con check), se mantiene como componente propio.
- */
+// Componente propio porque toggle-group/radio-group de shadcn no reproducen este layout de filas con check
+/** Lista de opciones seleccionables en formato de filas con indicador de selección */
 export function OptionSelector({
   opciones,
   seleccionId,

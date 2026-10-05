@@ -8,11 +8,7 @@ export interface FilaResumen {
   icono?: ReactNode;
 }
 
-/**
- * Panel de resumen persistente con estilo Frameless Satoshi:
- * - Etiquetas micro-técnicas unificadas
- * - Valores en Satoshi regular
- */
+/** Panel lateral fijo que muestra una lista de etiquetas y valores a modo de resumen */
 export function SummaryPanel({
   filas,
   titulo = "Resumen",

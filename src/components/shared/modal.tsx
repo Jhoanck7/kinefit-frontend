@@ -13,13 +13,8 @@ interface ModalProps {
   className?: string;
 }
 
-/**
- * Wrapper delgado sobre Dialog de Radix/shadcn: conserva la API simple del
- * modal original (abierto/onCerrar/children/ancho) mientras usa el motor
- * real de Radix (portal, overlay, foco, ESC). El botón de cierre por
- * defecto de shadcn se oculta porque cada modal consumidor arma su propio
- * header y usa ModalCloseButton dentro de `children`.
- */
+// El botón de cierre por defecto de shadcn se oculta porque cada modal consumidor arma su propio header con ModalCloseButton
+/** Modal reutilizable que envuelve el Dialog de Radix/shadcn con una API simple */
 export function Modal({
   abierto,
   onCerrar,
@@ -44,6 +39,7 @@ export function Modal({
   );
 }
 
+/** Botón de texto para cerrar un modal, pensado para ir dentro del header de cada modal consumidor */
 export function ModalCloseButton({ onClick }: { onClick: () => void }) {
   return (
     <button

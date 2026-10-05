@@ -211,6 +211,7 @@ function ConfirmarPagoContent() {
   );
 }
 
+/** Muestra el resultado de la transacción de Webpay tras el pago de una reserva */
 export default function ConfirmarPagoPage() {
   return (
     <Suspense

@@ -35,17 +35,16 @@ function rangoAFechas(rango: string): {
   return {};
 }
 
+/** Gestiona el listado, filtros, paginación y modales de la vista de ventas */
 export const useVentas = () => {
   const [ventaSeleccionadaId, setVentaSeleccionadaId] = useState<number | null>(
     null
   );
   const [pagina, setPagina] = useState(1);
 
-  // Modales
   const [modalNuevaVenta, setModalNuevaVenta] = useState(false);
   const [modalConfig, setModalConfig] = useState(false);
 
-  // Filtros
   const [rangoFecha, setRangoFecha] = useState("30dias");
   const [metodoPago, setMetodoPago] = useState("todos");
   const [busquedaPaciente, setBusquedaPaciente] = useState("");
@@ -81,7 +80,6 @@ export const useVentas = () => {
 
   const inicio = (pagina - 1) * TAMANO_PAGINA;
 
-  // Actions
   async function handleExportar() {
     setErrorExportar(null);
     try {
@@ -123,7 +121,6 @@ export const useVentas = () => {
   }
 
   return {
-    // Data
     ventasFiltradas,
     total,
     terminales,
@@ -138,7 +135,6 @@ export const useVentas = () => {
     busquedaPaciente,
     errorExportar,
 
-    // Actions
     actions: {
       setVentaSeleccionada: (id: number | null) => setVentaSeleccionadaId(id),
       setModalNuevaVenta,

@@ -5,6 +5,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/** Interruptor de encendido/apagado basado en Radix Switch */
 function Switch({
   className,
   size = "default",

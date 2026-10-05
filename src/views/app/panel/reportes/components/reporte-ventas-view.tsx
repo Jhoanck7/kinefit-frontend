@@ -31,6 +31,7 @@ interface ReporteVentasViewProps {
   fechaHasta?: string;
 }
 
+/** Historial paginado de ventas del período, con totales y descarga en CSV */
 export function ReporteVentasView({
   fechaDesde,
   fechaHasta,
@@ -72,7 +73,6 @@ export function ReporteVentasView({
 
   return (
     <div className="space-y-6 text-sm text-panel-sidebar">
-      {/* Tarjetas Resumen del Flujo de Caja */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card className="p-6">
           <span className="text-section-title font-bold text-muted-foreground">
@@ -102,7 +102,6 @@ export function ReporteVentasView({
         </Card>
       </div>
 
-      {/* Exportación */}
       <Card className="p-6 flex flex-wrap items-center justify-center gap-4 text-center text-sm text-panel-sidebar">
         <div>
           <h3 className="text-section-title font-bold text-muted-foreground">
@@ -121,7 +120,6 @@ export function ReporteVentasView({
         </Button>
       </Card>
 
-      {/* Tabla de Movimientos */}
       <div className="overflow-hidden rounded-none border border-slate-200 shadow-none">
         <div className="px-6 py-3.5 border-b border-slate-200 bg-white">
           <p className="font-bold text-panel-sidebar">

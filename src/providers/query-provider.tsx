@@ -21,6 +21,7 @@ export const queryClient = new QueryClient({
   },
 });
 
+/** Provee el cliente de React Query a toda la aplicación */
 export function ReactQueryProvider({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

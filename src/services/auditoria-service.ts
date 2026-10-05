@@ -3,6 +3,7 @@ import { AuditoriaCitaResponse } from "@/models/responses";
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume el endpoint de historial de auditoría de citas */
 export class AuditoriaService extends BaseApiService {
   constructor() {
     super("/auditoria");

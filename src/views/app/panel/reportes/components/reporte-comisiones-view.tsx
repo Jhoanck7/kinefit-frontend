@@ -9,6 +9,7 @@ interface ReporteComisionesViewProps {
   fechaHasta?: string;
 }
 
+/** Liquidación de comisiones por profesional en el período, con el reparto entre profesional y centro */
 export function ReporteComisionesView({
   fechaDesde,
   fechaHasta,
@@ -41,7 +42,6 @@ export function ReporteComisionesView({
 
   return (
     <div className="space-y-6 text-sm text-panel-sidebar">
-      {/* Encabezado e Info de Generación (Centrado) */}
       <Card className="p-6 flex flex-wrap items-center justify-center gap-3 text-center">
         <div>
           <h3 className="text-sm font-bold text-panel-sidebar">
@@ -57,14 +57,12 @@ export function ReporteComisionesView({
         </span>
       </Card>
 
-      {/* Tarjetas de Liquidación por Profesional */}
       <div className="space-y-4">
         {profesionales.map(p => {
           const tieneAcuerdo =
             p.montoProfesional !== undefined && p.montoCentro !== undefined;
           return (
             <Card key={p.especialistaId} className="p-6 space-y-4">
-              {/* Encabezado del profesional */}
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-panel-sidebar text-white font-bold text-sm">
@@ -93,7 +91,6 @@ export function ReporteComisionesView({
                 )}
               </div>
 
-              {/* Grid de desglose de importes */}
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
                 <div className="bg-panel-fondo p-3 rounded-xl border border-border">
                   <span className="text-muted-foreground block font-medium">
@@ -139,7 +136,6 @@ export function ReporteComisionesView({
                 </div>
               </div>
 
-              {/* Resultado de Reparto Final */}
               {tieneAcuerdo ? (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 pt-2">
                   <div className="rounded-none bg-emerald-700 text-white p-4 flex justify-between items-center">

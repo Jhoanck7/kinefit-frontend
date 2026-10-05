@@ -11,6 +11,7 @@ interface EliminarEspecialistaModalProps {
   eliminando: boolean;
 }
 
+/** Modal de confirmación para eliminar un especialista, con la advertencia de preferir desactivarlo si tiene citas */
 export function EliminarEspecialistaModal({
   especialista,
   onCancelar,

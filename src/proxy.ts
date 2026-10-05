@@ -12,6 +12,7 @@ const RUTAS_SOLO_ADMINISTRADOR = [
   "/panel/reportes",
 ];
 
+/** Protege las rutas del panel exigiendo sesión activa y restringe las rutas de solo administrador */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 

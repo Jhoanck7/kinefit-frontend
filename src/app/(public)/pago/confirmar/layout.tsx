@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   },
 };
 
+/** Layout de la página de confirmación de pago, define título y metadatos sin indexación */
 export default function ConfirmarPagoLayout({
   children,
 }: {

@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 
+/** Zona para adjuntar archivos por clic, con listado de los ya agregados y opción de quitarlos */
 export function FileDropzone({
   archivos,
   onAgregar,

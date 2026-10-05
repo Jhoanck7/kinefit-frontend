@@ -19,6 +19,7 @@ interface HomeViewProps {
   specialists: EspecialistaResponse[];
 }
 
+/** Página de inicio del sitio público, compuesta por todas las secciones de la landing */
 export default function HomeView({ config, specialists }: HomeViewProps) {
   return (
     <main>

@@ -6,6 +6,7 @@ import React from "react";
 import { useGetLandingConfig } from "@/hooks/api";
 import { NAV_LINKS } from "@/lib/utils";
 
+/** Pie de página del sitio público con datos de contacto, horarios y redes sociales */
 export default function Footer() {
   const { data: config } = useGetLandingConfig();
 

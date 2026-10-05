@@ -11,6 +11,7 @@ import {
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints de gestión de especialistas */
 export class EspecialistaService extends BaseApiService {
   constructor() {
     super("/especialistas");

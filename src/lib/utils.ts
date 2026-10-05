@@ -10,6 +10,7 @@ const twMerge = extendTailwindMerge({
   },
 });
 
+/** Combina clases de Tailwind resolviendo conflictos entre utilidades repetidas */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -72,7 +73,6 @@ export const defaultMetadata: Metadata = {
   },
 };
 
-// Datos generales de contacto de la clínica
 export const CLINIC_INFO = {
   name: "KineFitChile",
   tagline: "Centro de Kinesiología y Masoterapia",
@@ -95,7 +95,6 @@ export const CLINIC_INFO = {
   },
 };
 
-// Links de navegación del sitio público
 export const NAV_LINKS = [
   { name: "Reserva", href: "#agendamiento" },
   { name: "Enfoque", href: "#about" },
@@ -106,7 +105,6 @@ export const NAV_LINKS = [
   { name: "Ubicación", href: "#location" },
 ];
 
-// Copy de la sección Hero de la landing
 export const HERO_COPY = {
   tagline: "Centro de kinesiología,   rehabilitación y masoterapia",
   description:
@@ -121,7 +119,6 @@ export const HERO_COPY = {
   ],
 };
 
-// Catálogo de servicios y horarios del flujo de reserva
 export const BOOKING_SERVICES = [
   {
     id: "1",

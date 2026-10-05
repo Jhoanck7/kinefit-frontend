@@ -15,6 +15,7 @@ import {
 import { useAutoScroll } from "@/hooks/common";
 import { LandingConfigResponse, VoucherItem } from "@/models/responses";
 
+/** Carrusel de vouchers de regalo con la nota legal opcional en un modal */
 export default function VouchersSection({
   config,
 }: {
@@ -52,7 +53,6 @@ export default function VouchersSection({
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-          {/* Móvil: título antes del carrusel */}
           <div className="lg:hidden text-left scroll-reveal">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
               Vouchers de Regalo

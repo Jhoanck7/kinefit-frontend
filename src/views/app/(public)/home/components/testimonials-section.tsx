@@ -43,6 +43,7 @@ const DEFAULT_REVIEWS: GoogleReviewItem[] = [
   },
 ];
 
+/** Carrusel continuo con reseñas de pacientes tomadas de Google Maps */
 export default function TestimonialsSection({
   config,
 }: {
@@ -56,7 +57,7 @@ export default function TestimonialsSection({
     } catch {}
   }
 
-  // Duplicamos el arreglo para que el scroll continuo empalme sin costura
+  // Se duplica el arreglo para que el scroll continuo empalme sin costura
   const marqueeReviews = [...reviews, ...reviews];
 
   const googleUrl =
@@ -109,7 +110,6 @@ export default function TestimonialsSection({
       className="scroll-mt-24 py-20 sm:py-28 bg-blue-950 border-b border-blue-900 text-white overflow-hidden w-full"
     >
       <div className="w-full  mx-auto px-4 sm:px-6 lg:px-20">
-        {/* El encabezado sí mantiene su ancho centrado y legible */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4 scroll-reveal">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
             {config.testimonialsTitle ||
@@ -152,9 +152,7 @@ export default function TestimonialsSection({
           </div>
         </div>
 
-        {/* CONTENEDOR DESBORDANTE: Carrusel Continuo */}
         <div className="w-full relative scroll-reveal-scale delay-150 mx-auto overflow-hidden">
-          {/* Sombras difuminadas en los extremos */}
           <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-24 sm:w-12 bg-gradient-to-r from-blue-950 to-transparent z-10" />
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-24 sm:w-12 bg-gradient-to-l from-blue-950 to-transparent z-10" />
 

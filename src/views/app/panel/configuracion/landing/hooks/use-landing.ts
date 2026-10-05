@@ -49,6 +49,7 @@ const DEFAULT_LANDING_CONFIG: LandingConfigResponse = {
   vouchersMostrarNota: true,
 };
 
+/** Carga y administra el formulario de configuración de la landing pública, con sus listas de pasos, reseñas, vouchers y fotos */
 export const useLanding = () => {
   const { data: configData, isLoading: cargando } = useGetLandingConfig();
   const updateMutation = useUpdateLandingConfigMutation();

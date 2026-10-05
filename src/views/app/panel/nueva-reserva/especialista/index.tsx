@@ -12,6 +12,7 @@ import { formatearFechaExtensa } from "@/lib/formato";
 
 import { PASOS_NUEVA_RESERVA, useEspecialista } from "./hooks";
 
+/** Paso del asistente de reserva para elegir el especialista disponible en el horario ya seleccionado */
 export default function EspecialistaView() {
   const {
     fecha,

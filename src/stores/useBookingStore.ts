@@ -1,7 +1,6 @@
 import { create } from "zustand";
 
 interface BookingState {
-  // Selección del usuario
   selectedServiceId: number | null;
   selectedServiceName: string | null;
   selectedDate: string | null; // YYYY-MM-DD
@@ -17,7 +16,6 @@ interface BookingState {
   authToken: string | null;
   currentStep: number;
 
-  // Actions
   setSelectedService: (id: number, name: string) => void;
   setSelectedHorario: (date: string | null, horas: string[]) => void;
   setSelectedSpecialist: (
@@ -56,6 +54,7 @@ const ESTADO_INICIAL = {
   currentStep: 1,
 };
 
+/** Estado del asistente de reserva del sitio público: selección de servicio, horario, especialista y datos del paciente */
 export const useBookingStore = create<BookingState>(set => ({
   ...ESTADO_INICIAL,
 

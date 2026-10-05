@@ -1,3 +1,4 @@
+/** Un movimiento de venta dentro del reporte de ventas */
 export interface MovimientoVentaReporteResponse {
   id: number;
   fecha: string;
@@ -7,6 +8,7 @@ export interface MovimientoVentaReporteResponse {
   metodoPago: string;
 }
 
+/** Reporte de ventas de un período */
 export interface ReporteVentasResponse {
   fechaDesde: string;
   fechaHasta: string;
@@ -17,29 +19,34 @@ export interface ReporteVentasResponse {
   movimientos: MovimientoVentaReporteResponse[];
 }
 
+/** Un conteo con su etiqueta, usado en distribuciones de reportes */
 export interface ConteoResponse {
   etiqueta: string;
   cantidad: number;
 }
 
+/** Un elemento dentro de un ranking de reportes */
 export interface RankingItemResponse {
   id: number;
   nombre: string;
   cantidad: number;
 }
 
+/** Un punto de la evolución temporal de reservas e ingresos */
 export interface EvolucionTemporalPuntoResponse {
   periodo: string;
   reservas: number;
   ingresos: number;
 }
 
+/** Indicadores agregados del reporte de reservas */
 export interface ReporteReservasIndicadoresResponse {
   reservasTotales: number;
   porcentajeOcupacion: number;
   tasaInasistencias: number;
 }
 
+/** Comparación de los indicadores del reporte contra el período anterior */
 export interface ReporteReservasComparacionResponse {
   periodoAnteriorDesde: string;
   periodoAnteriorHasta: string;
@@ -48,11 +55,13 @@ export interface ReporteReservasComparacionResponse {
   variacionTasaInasistencias?: number;
 }
 
+/** Distribución de reservas por origen web o manual */
 export interface ReporteOrigenReservasResponse {
   web: number;
   manual: number;
 }
 
+/** Reporte de reservas de un período, con indicadores, distribuciones y rankings */
 export interface ReporteReservasResponse {
   fechaDesde: string;
   fechaHasta: string;
@@ -71,6 +80,7 @@ export interface ReporteReservasResponse {
   clientesRecurrentes: number;
 }
 
+/** Comisión calculada para un profesional dentro del reporte de comisiones */
 export interface ReporteComisionProfesionalResponse {
   especialistaId: number;
   especialistaNombre: string;
@@ -86,6 +96,7 @@ export interface ReporteComisionProfesionalResponse {
   motivoNoCalculable?: string;
 }
 
+/** Reporte de comisiones de todos los profesionales para un período */
 export interface ReporteComisionesResponse {
   fechaDesde: string;
   fechaHasta: string;

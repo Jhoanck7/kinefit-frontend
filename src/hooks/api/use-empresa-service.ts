@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateEmpresaRequest, UpdateEmpresaRequest } from "@/models/requests";
 import { empresaService } from "@/services";
 
+/** Obtiene el listado de empresas con convenio */
 export const useGetEmpresas = (soloActivos = true) => {
   return useQuery({
     queryKey: ["empresas", soloActivos],
@@ -11,6 +12,7 @@ export const useGetEmpresas = (soloActivos = true) => {
   });
 };
 
+/** Obtiene las empresas con convenio visibles en el sitio público */
 export const useGetEmpresasPublico = (token: string | null) => {
   return useQuery({
     queryKey: ["empresas-publico", token],
@@ -20,6 +22,7 @@ export const useGetEmpresasPublico = (token: string | null) => {
   });
 };
 
+/** Crea una empresa con convenio */
 export const useCreateEmpresaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -31,6 +34,7 @@ export const useCreateEmpresaMutation = () => {
   });
 };
 
+/** Actualiza los datos de una empresa */
 export const useUpdateEmpresaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -42,6 +46,7 @@ export const useUpdateEmpresaMutation = () => {
   });
 };
 
+/** Activa o desactiva una empresa */
 export const useUpdateEmpresaEstadoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

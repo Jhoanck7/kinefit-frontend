@@ -22,6 +22,7 @@ const COLUMNAS = [
   "Estado",
 ];
 
+/** Página del catálogo de servicios: lista, crea y edita servicios con su duración, imagen y documentos exigidos */
 export default function ServiciosView() {
   const {
     servicios,

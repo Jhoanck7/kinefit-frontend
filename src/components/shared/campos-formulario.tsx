@@ -38,6 +38,7 @@ interface CampoBaseProps {
   error?: string;
 }
 
+/** Campo de texto con etiqueta, ayuda y mensaje de error */
 export function TextField({
   etiqueta,
   obligatorio,
@@ -59,6 +60,7 @@ export function TextField({
   );
 }
 
+/** Campo numérico con etiqueta, ayuda y mensaje de error */
 export function NumberField({
   etiqueta,
   obligatorio,
@@ -80,6 +82,7 @@ export function NumberField({
   );
 }
 
+/** Área de texto con etiqueta, ayuda y mensaje de error */
 export function TextAreaField({
   etiqueta,
   obligatorio,
@@ -107,6 +110,7 @@ export function TextAreaField({
   );
 }
 
+/** Select con etiqueta, ayuda y mensaje de error */
 export function SelectField({
   etiqueta,
   obligatorio,
@@ -131,6 +135,7 @@ export function SelectField({
   );
 }
 
+/** Interruptor con etiqueta para alternar un valor booleano */
 export function SwitchField({
   etiqueta,
   checked,
@@ -174,6 +179,7 @@ export function SwitchField({
   );
 }
 
+/** Campo de búsqueda con ícono de lupa y texto de ayuda opcional */
 export function SearchInput({
   placeholder,
   value,

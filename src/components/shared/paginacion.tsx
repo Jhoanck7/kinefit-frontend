@@ -1,3 +1,4 @@
+/** Controles de paginación con el rango mostrado y botones de anterior/siguiente */
 export function Paginacion({
   inicio,
   fin,

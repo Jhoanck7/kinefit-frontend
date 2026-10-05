@@ -45,6 +45,7 @@ interface DocumentoDetalleModalProps {
   onCerrar: () => void;
 }
 
+/** Modal de detalle de un documento: contenido, estado de firma, adjuntos, auditoría y acciones de impresión, descarga y cierre */
 export function DocumentoDetalleModal({
   documentoId,
   onCerrar,

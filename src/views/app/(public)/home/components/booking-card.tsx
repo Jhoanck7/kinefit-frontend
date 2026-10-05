@@ -112,6 +112,7 @@ function HorariosGrid({
   );
 }
 
+/** Tarjeta de reserva en 4 pasos: servicio, horario, especialista y datos del paciente con pago en Webpay */
 export default function BookingCard() {
   const router = useRouter();
   const {
@@ -220,10 +221,7 @@ export default function BookingCard() {
 
   const [googleListo, setGoogleListo] = useState(false);
 
-  // Cargar e inicializar el SDK de Google Sign-In una sola vez: initialize()
-  // llamado más de una vez por el mismo cliente es lo que generaba el
-  // warning "initialize() is called multiple times" y podía dejar el botón
-  // atado a una instancia GSI obsoleta.
+  // Se inicializa una sola vez porque llamar initialize() más de una vez generaba el warning "initialize() is called multiple times" y dejaba el botón atado a una instancia GSI obsoleta
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
@@ -298,9 +296,7 @@ export default function BookingCard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Renderiza el botón cada vez que el paso 4 monta su contenedor: initialize()
-  // ya corrió una única vez arriba, esto solo dibuja el widget en el DOM
-  // actual.
+  // Solo dibuja el widget en el DOM actual; initialize() ya corrió una única vez arriba
   useEffect(() => {
     if (!googleListo || currentStep !== 4) return;
     const btnContainer = document.getElementById("google-btn-container");
@@ -319,7 +315,6 @@ export default function BookingCard() {
 
   const webpayData = submitMutation.data?.webpayData;
 
-  // Redirección a Webpay
   useEffect(() => {
     if (webpayData) {
       if (webpayData.urlRedireccion.startsWith("/")) {
@@ -581,7 +576,6 @@ export default function BookingCard() {
         </div>
       )}
 
-      {/* Step 1: Service selection */}
       {currentStep === 1 && (
         <div className="flex flex-col h-full">
           <div className="text-left shrink-0 mb-6">
@@ -643,7 +637,6 @@ export default function BookingCard() {
         </div>
       )}
 
-      {/* Step 2: Horario */}
       {currentStep === 2 && (
         <div className="flex flex-col h-full">
           <div className="text-left shrink-0 mb-6">
@@ -780,7 +773,6 @@ export default function BookingCard() {
         </div>
       )}
 
-      {/* Step 3: Especialista */}
       {currentStep === 3 && (
         <div className="flex flex-col h-full">
           <div className="text-left shrink-0 mb-6">
@@ -857,7 +849,6 @@ export default function BookingCard() {
         </div>
       )}
 
-      {/* Step 4: Patient Info & Google Login */}
       {currentStep === 4 && (
         <form onSubmit={handleFormSubmit} className="flex flex-col h-full">
           <div className="text-left shrink-0 mb-6">
@@ -902,7 +893,6 @@ export default function BookingCard() {
               )}
             </div>
 
-            {/* Google Sign-In Widget Container */}
             <div className="bg-slate-50 border border-slate-200 rounded-global p-4 text-center space-y-3">
               <span className="text-xs text-slate-600 font-semibold block">
                 Inicia Sesión con tu Cuenta de Google

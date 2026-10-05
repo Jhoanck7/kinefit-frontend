@@ -2,11 +2,8 @@
 
 import { ReactNode, useState } from "react";
 
-/**
- * Sección plegable con estilo Frameless Satoshi. El Accordion de shadcn no
- * soporta limpiamente una acción extra en el header (prop `accion`) fuera
- * del trigger, así que se mantiene como componente propio.
- */
+// Componente propio porque el Accordion de shadcn no soporta una acción extra en el header fuera del trigger
+/** Sección plegable con encabezado, contador opcional y una acción extra junto al título */
 export function CollapsibleSection({
   titulo,
   contador,

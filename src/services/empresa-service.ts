@@ -4,6 +4,7 @@ import { EmpresaPublicaResponse, EmpresaResponse } from "@/models/responses";
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints de empresas convenio */
 export class EmpresaService extends BaseApiService {
   constructor() {
     super("/empresas");

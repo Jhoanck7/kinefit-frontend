@@ -29,6 +29,7 @@ interface FirmaDocumentoViewProps {
   token: string;
 }
 
+/** Guía al paciente por completar datos, leer y firmar un documento público mediante su token */
 export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
   const {
     data,

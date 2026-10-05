@@ -13,7 +13,7 @@ import {
   FiltrosDocumentos,
 } from "@/services";
 
-// Listado y detalle unificados
+/** Obtiene el listado de documentos según filtros */
 export const useGetDocumentos = (filtros?: FiltrosDocumentos) => {
   return useQuery({
     queryKey: ["documentos", "listado", filtros],
@@ -21,6 +21,7 @@ export const useGetDocumentos = (filtros?: FiltrosDocumentos) => {
   });
 };
 
+/** Obtiene el detalle de un documento */
 export const useGetDocumentoDetalle = (id: number, enabled = true) => {
   return useQuery({
     queryKey: ["documentos", "detalle", id],
@@ -29,6 +30,7 @@ export const useGetDocumentoDetalle = (id: number, enabled = true) => {
   });
 };
 
+/** Obtiene el archivo de un documento para abrirlo */
 export const useAbrirArchivoDocumentoMutation = () => {
   return useMutation({
     mutationFn: (id: number) =>
@@ -36,6 +38,7 @@ export const useAbrirArchivoDocumentoMutation = () => {
   });
 };
 
+/** Descarga el archivo de un documento */
 export const useDescargarArchivoDocumentoMutation = () => {
   return useMutation({
     mutationFn: (id: number) =>
@@ -43,6 +46,7 @@ export const useDescargarArchivoDocumentoMutation = () => {
   });
 };
 
+/** Obtiene el historial de auditoría de un documento, paginado */
 export const useGetAuditoriaDocumento = (
   id: number,
   page = 1,
@@ -59,7 +63,7 @@ export const useGetAuditoriaDocumento = (
   });
 };
 
-// Fichas (EC3)
+/** Crea una ficha clínica */
 export const useCreateFichaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -71,6 +75,7 @@ export const useCreateFichaMutation = () => {
   });
 };
 
+/** Adjunta un archivo como ficha clínica de una cita */
 export const useAdjuntarFichaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -92,6 +97,7 @@ export const useAdjuntarFichaMutation = () => {
   });
 };
 
+/** Actualiza el contenido de una ficha clínica */
 export const useActualizarFichaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -105,6 +111,7 @@ export const useActualizarFichaMutation = () => {
   });
 };
 
+/** Cierra una ficha clínica */
 export const useCerrarFichaMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -119,6 +126,7 @@ export const useCerrarFichaMutation = () => {
   });
 };
 
+/** Obtiene el historial de documentos de un paciente */
 export const useGetHistorialPorPaciente = (
   pacienteId: number,
   enabled = true
@@ -133,6 +141,7 @@ export const useGetHistorialPorPaciente = (
   });
 };
 
+/** Obtiene las fichas clínicas de un paciente */
 export const useGetFichasPorPaciente = (pacienteId: number, enabled = true) => {
   return useQuery({
     queryKey: ["documentos", "fichas-paciente", pacienteId],
@@ -144,7 +153,7 @@ export const useGetFichasPorPaciente = (pacienteId: number, enabled = true) => {
   });
 };
 
-// Adjuntos
+/** Sube un adjunto a un documento */
 export const useSubirAdjuntoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -166,6 +175,7 @@ export const useSubirAdjuntoMutation = () => {
   });
 };
 
+/** Elimina un adjunto de un documento */
 export const useEliminarAdjuntoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -177,6 +187,7 @@ export const useEliminarAdjuntoMutation = () => {
   });
 };
 
+/** Descarga un adjunto de un documento */
 export const useDescargarAdjuntoMutation = () => {
   return useMutation({
     mutationFn: (adjuntoId: number) =>
@@ -184,7 +195,7 @@ export const useDescargarAdjuntoMutation = () => {
   });
 };
 
-// Recomendaciones (EC4)
+/** Envía la recomendación de una cita al paciente */
 export const useEnviarRecomendacionMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -202,6 +213,7 @@ export const useEnviarRecomendacionMutation = () => {
   });
 };
 
+/** Adjunta un archivo como recomendación de una cita */
 export const useAdjuntarRecomendacionMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -223,7 +235,7 @@ export const useAdjuntarRecomendacionMutation = () => {
   });
 };
 
-// Pestaña de documentos del detalle de la cita (AC2 / AC3 / EC2)
+/** Obtiene los documentos asociados a una cita */
 export const useGetDocumentosPorCita = (citaId: number | null) => {
   return useQuery({
     queryKey: ["documentos", "cita", citaId],
@@ -233,6 +245,7 @@ export const useGetDocumentosPorCita = (citaId: number | null) => {
   });
 };
 
+/** Registra la firma de la profesional en un documento */
 export const useFirmarProfesionalMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -250,6 +263,7 @@ export const useFirmarProfesionalMutation = () => {
   });
 };
 
+/** Sube el escaneo de un documento firmado en papel */
 export const useSubirEscaneoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -261,6 +275,7 @@ export const useSubirEscaneoMutation = () => {
   });
 };
 
+/** Reenvía el enlace de firma de un documento */
 export const useReenviarTokenMutation = () => {
   return useMutation({
     mutationFn: (id: number) =>
@@ -268,6 +283,7 @@ export const useReenviarTokenMutation = () => {
   });
 };
 
+/** Reenvía un documento por correo */
 export const useReenviarPorCorreoMutation = () => {
   return useMutation({
     mutationFn: (id: number) =>
@@ -275,7 +291,7 @@ export const useReenviarPorCorreoMutation = () => {
   });
 };
 
-// Vista pública de firma
+/** Obtiene un documento público mediante su token de firma */
 export const useGetDocumentoPublico = (token: string | null) => {
   return useQuery({
     queryKey: ["documentos", "publico", token],
@@ -286,6 +302,7 @@ export const useGetDocumentoPublico = (token: string | null) => {
   });
 };
 
+/** Registra la firma del paciente en la vista pública de un documento */
 export const useFirmarDocumentoPublicoMutation = () => {
   return useMutation({
     mutationFn: ({

@@ -4,6 +4,7 @@ import { axiosInstanceSinSesion } from "@/providers";
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume el endpoint público de bloques horarios disponibles */
 export class BloqueHorarioService extends BaseApiService {
   constructor() {
     super("/bloques", axiosInstanceSinSesion);

@@ -1,3 +1,4 @@
+/** Datos para crear una cita desde el panel administrativo */
 export interface CreateCitaManualRequest {
   pacienteId: number;
   especialistaId: number;
@@ -8,6 +9,7 @@ export interface CreateCitaManualRequest {
   notaInterna?: string;
 }
 
+/** Datos para crear una cita desde el sitio público de reservas */
 export interface CreateCitaPublicaRequest {
   especialistaId: number;
   servicioId: number;
@@ -17,6 +19,7 @@ export interface CreateCitaPublicaRequest {
   notaPaciente?: string | null;
 }
 
+/** Datos para cambiar el estado de una cita */
 export interface UpdateCitaEstadoRequest {
   estadoNuevo: string;
   motivo?: string;

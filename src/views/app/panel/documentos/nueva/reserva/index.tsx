@@ -16,6 +16,7 @@ import {
 
 import { useNuevaFichaReserva } from "./hooks";
 
+/** Primer paso del asistente de nueva ficha: buscar al paciente y elegir la reserva a la que corresponde */
 export default function NuevaFichaReservaView() {
   const {
     pacienteId,

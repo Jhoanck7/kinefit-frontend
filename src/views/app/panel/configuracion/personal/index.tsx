@@ -17,6 +17,7 @@ import {
 import { PersonalModal } from "./components";
 import { usePersonal } from "./hooks";
 
+/** Página de administración de cuentas de personal con acceso al panel, incluyendo prellenado al crear una cuenta desde un especialista */
 export default function PersonalView() {
   const router = useRouter();
   const searchParams = useSearchParams();

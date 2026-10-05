@@ -7,12 +7,13 @@ import { FormEvent, useState } from "react";
 import { handleApiError } from "@/lib/api";
 import { authService } from "@/services";
 
+/** Maneja el envío del formulario de acceso del personal y la sesión resultante */
 export const useAcceso = () => {
   const router = useRouter();
   const [cargando, setCargando] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // La redirección si ya hay sesión la maneja proxy.ts en el servidor.
+  // La redirección si ya hay sesión la maneja proxy.ts en el servidor
 
   async function alEnviar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();

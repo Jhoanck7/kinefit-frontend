@@ -10,6 +10,7 @@ interface VentaDetalleModalProps {
   onClose: () => void;
 }
 
+/** Modal con el comprobante de una venta: desglose contable, reparto de honorarios y datos de la atención */
 export function VentaDetalleModal({
   venta,
   terminales,
@@ -32,7 +33,6 @@ export function VentaDetalleModal({
   return (
     <Modal abierto={Boolean(venta)} onCerrar={onClose}>
       <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
-        {/* Encabezado Formal */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-slate-50/80 backdrop-blur-sm px-6 py-4">
           <div>
             <h2 className="font-sans text-section-title font-bold text-foreground">
@@ -48,9 +48,7 @@ export function VentaDetalleModal({
           <ModalCloseButton onClick={onClose} />
         </div>
 
-        {/* Cuerpo en 2 Columnas */}
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-          {/* COLUMNA IZQUIERDA (2/3) - DESGLOSE CONTABLE */}
           <div className="md:col-span-2 p-6 space-y-6">
             <div>
               <h3 className="border-b border-border pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
@@ -193,7 +191,6 @@ export function VentaDetalleModal({
             </div>
           </div>
 
-          {/* COLUMNA DERECHA (1/3) - FICHA DE LA ATENCIÓN */}
           <div className="md:col-span-1 bg-slate-50/80 p-6 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <h3 className="border-b border-border pb-1 font-sans text-micro-header font-medium text-muted-foreground">
@@ -249,7 +246,6 @@ export function VentaDetalleModal({
           </div>
         </div>
 
-        {/* Pie de Acciones */}
         <div className="border-t border-border bg-slate-50/60 p-4 flex justify-between items-center">
           <button
             type="button"

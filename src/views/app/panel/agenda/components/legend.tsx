@@ -1,10 +1,7 @@
 import { COLOR_ROL } from "@/lib/color-rol";
 import { CATALOGO_ESTADOS, ORDEN_ESTADOS } from "@/lib/estados";
 
-/**
- * Leyenda de estados estilo Flat High-Contrast (Estilo Notion):
- * - Cero sombras (shadow-none)
- */
+/** Leyenda con el color de cada estado de cita más el de los bloques bloqueados */
 export function Legend() {
   return (
     <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border border-slate-200 bg-white px-5 py-2.5 text-xs text-slate-600 rounded-md shadow-none font-sans">

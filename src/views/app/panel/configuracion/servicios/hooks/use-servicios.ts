@@ -14,6 +14,7 @@ import { handleApiError } from "@/lib/api";
 import { ServicioDocumentoInput } from "@/models/requests";
 import { ServicioResponse } from "@/models/responses";
 
+/** Gestiona el listado, creación, edición y documentos exigidos del catálogo de servicios */
 export const useServicios = () => {
   const { data: servicios = [], isLoading: cargando } = useGetServicios(false);
   const { data: plantillas = [] } = useGetPlantillas(true);
@@ -65,9 +66,7 @@ export const useServicios = () => {
     setImagenUrl(servicio.imagenUrl || "");
     setImagenPublicId(servicio.imagenPublicId || "");
     setImagenAlt(servicio.imagenAlt || "");
-    // Las fichas clínicas asignadas a un servicio nunca se leyeron: la
-    // profesional elige su plantilla al registrar la ficha. Se descartan al
-    // abrir el formulario para que no viajen de vuelta invisibles al guardar.
+    // Las fichas clínicas asignadas a un servicio se descartan al abrir el formulario para que no viajen de vuelta invisibles al guardar
     const asignables = new Set(
       plantillas
         .filter(p => p.tipo === "Consentimiento" || p.tipo === "Recomendacion")

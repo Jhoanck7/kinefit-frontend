@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-/** Estado vacío de cualquier listado o de la agenda (G-13). */
+/** Estado vacío reutilizable para listados o la agenda cuando no hay elementos que mostrar */
 export function EmptyState({
   titulo,
   descripcion,

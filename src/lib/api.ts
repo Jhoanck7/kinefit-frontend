@@ -25,6 +25,7 @@ function getDefaultErrorMessage(status: number): string {
   }
 }
 
+/** Traduce un error de Axios o JavaScript a un mensaje y detalle listos para mostrar al usuario */
 export const handleApiError = (error: unknown): ApiErrorResult => {
   if (error instanceof AxiosError) {
     if (!error.response) {

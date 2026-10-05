@@ -41,6 +41,7 @@ const buttonVariants = cva(
   }
 );
 
+/** Botón con variantes de color y tamaño reutilizado en toda la aplicación */
 function Button({
   className,
   variant = "default",

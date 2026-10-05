@@ -13,6 +13,7 @@ import { Badge, Button, Card } from "@/components/ui";
 
 import { PASOS_NUEVA_RESERVA, useResumenReserva } from "./hooks";
 
+/** Paso final del asistente de reserva: notas opcionales, revisión de todo lo elegido y confirmación o descarte de la reserva */
 export default function ResumenView() {
   const {
     notaPaciente,

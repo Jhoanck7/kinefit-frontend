@@ -1,3 +1,4 @@
+/** Datos del paciente tal como se muestran en el contexto de una cita */
 export interface PacienteCitaResponse {
   id: number;
   nombre: string;
@@ -7,6 +8,7 @@ export interface PacienteCitaResponse {
   rut?: string;
 }
 
+/** Estados posibles del ciclo de vida de una cita */
 export type CodigoEstadoCita =
   | "PendientePago"
   | "PorConfirmar"
@@ -16,6 +18,7 @@ export type CodigoEstadoCita =
   | "Cancelada"
   | "Expirada";
 
+/** Resultado de crear una cita */
 export interface CitaCreadaResponse {
   citaId: number;
   estado: string;
@@ -29,12 +32,14 @@ export interface CitaCreadaResponse {
   createdAt: string;
 }
 
+/** Resumen de la transacción de pago asociada a una cita */
 export interface CitaTransaccionResumenResponse {
   id: number;
   estado: string;
   buyOrder: string;
 }
 
+/** Una cita tal como aparece en un listado */
 export interface CitaResumenResponse {
   id: number;
   estado: string;
@@ -48,6 +53,7 @@ export interface CitaResumenResponse {
   createdAt: string;
 }
 
+/** Página de citas listadas */
 export interface CitasPaginadasResponse {
   total: number;
   page: number;
@@ -55,17 +61,20 @@ export interface CitasPaginadasResponse {
   items: CitaResumenResponse[];
 }
 
+/** Datos del especialista tal como se muestran en el contexto de una cita */
 export interface EspecialistaCitaResponse {
   id: number;
   nombre: string;
   cargo: string;
 }
 
+/** Datos del servicio tal como se muestran en el contexto de una cita */
 export interface ServicioCitaResponse {
   id: number;
   nombre: string;
 }
 
+/** Bloque horario reservado por una cita */
 export interface BloqueHorarioCitaResponse {
   id: number;
   fecha: string;
@@ -73,6 +82,7 @@ export interface BloqueHorarioCitaResponse {
   horaFin: string;
 }
 
+/** Detalle de la transacción de pago asociada a una cita */
 export interface TransaccionDetalleResponse {
   id: number;
   buyOrder: string;
@@ -81,6 +91,7 @@ export interface TransaccionDetalleResponse {
   createdAt: string;
 }
 
+/** Detalle completo de una cita */
 export interface CitaDetalleResponse {
   id: number;
   estado: string;
@@ -99,6 +110,7 @@ export interface CitaDetalleResponse {
   createdAt: string;
 }
 
+/** Resultado de cambiar el estado de una cita */
 export interface CitaEstadoActualizadoResponse {
   id: number;
   estadoAnterior: string;
@@ -107,6 +119,7 @@ export interface CitaEstadoActualizadoResponse {
   advertencia?: string;
 }
 
+/** Qué se pierde o afecta si se cancela una cita, para mostrar antes de confirmar */
 export interface ImpactoCancelacionResponse {
   tienePagoAsociado: boolean;
   montoPagado: number;

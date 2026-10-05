@@ -44,6 +44,7 @@ export const ORDEN_ESTADOS_DOCUMENTO: CodigoEstadoDocumento[] = [
   "Anulado",
 ];
 
+/** Busca la definición (etiqueta y color) de un estado de documento por su código */
 export function definicionEstadoDocumento(
   codigo: string
 ): DefinicionEstadoDocumento | undefined {
@@ -68,6 +69,7 @@ export const CATALOGO_TIPOS_DOCUMENTO: Record<TipoDocumentoClinico, string> = {
   Consentimiento: "Consentimiento",
 };
 
+/** Obtiene la etiqueta legible de un tipo de documento clínico */
 export function etiquetaTipoDocumento(tipo: string): string {
   return CATALOGO_TIPOS_DOCUMENTO[tipo as TipoDocumentoClinico] ?? tipo;
 }

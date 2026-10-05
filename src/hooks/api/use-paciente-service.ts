@@ -11,6 +11,7 @@ import {
 } from "@/models/requests";
 import { pacienteService } from "@/services";
 
+/** Obtiene el listado paginado de pacientes según búsqueda */
 export const useGetPacientes = (
   busqueda?: string,
   soloActivos?: boolean,
@@ -29,6 +30,7 @@ export const useGetPacientes = (
   });
 };
 
+/** Obtiene el perfil de un paciente */
 export const useGetPacientePerfil = (id: number, enabled = true) => {
   return useQuery({
     queryKey: ["pacientes", "perfil", id],
@@ -37,6 +39,7 @@ export const useGetPacientePerfil = (id: number, enabled = true) => {
   });
 };
 
+/** Crea un paciente manualmente desde el panel */
 export const useCreatePacienteMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -48,6 +51,7 @@ export const useCreatePacienteMutation = () => {
   });
 };
 
+/** Actualiza los datos de un paciente */
 export const useUpdatePacienteMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -59,6 +63,7 @@ export const useUpdatePacienteMutation = () => {
   });
 };
 
+/** Desvincula la cuenta de Google de la ficha de un paciente */
 export const useDesvincularCuentaPacienteMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -70,6 +75,7 @@ export const useDesvincularCuentaPacienteMutation = () => {
   });
 };
 
+/** Activa o desactiva un paciente */
 export const useUpdatePacienteEstadoMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

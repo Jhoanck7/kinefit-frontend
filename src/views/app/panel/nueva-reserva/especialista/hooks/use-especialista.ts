@@ -13,6 +13,7 @@ import { PASOS_NUEVA_RESERVA } from "../../pasos";
 
 export { PASOS_NUEVA_RESERVA };
 
+/** Carga los especialistas disponibles para el servicio y horario elegidos, y resuelve los bloques reales al confirmar */
 export const useEspecialista = () => {
   const router = useRouter();
   const {
@@ -31,7 +32,6 @@ export const useEspecialista = () => {
   const horaInicio = [...horasSeleccionadas].sort()[0] ?? "";
   const duracionMinutos = horasSeleccionadas.length * 30;
 
-  // API calls
   const { data: especialistas = [], isLoading } =
     useGetEspecialistasDisponibles(
       servicioId ?? 0,
@@ -41,7 +41,7 @@ export const useEspecialista = () => {
       Boolean(servicioId) && Boolean(fechaIso) && Boolean(horaInicio)
     );
 
-  // GET /bloques resuelve los bloqueHorarioIds reales del especialista elegido.
+  // Resuelve los bloqueHorarioIds reales del especialista elegido
   const { data: bloquesDelEspecialista, isLoading: cargandoBloques } =
     useGetBloquesDisponibles(
       especialistaId ?? 0,
@@ -60,7 +60,7 @@ export const useEspecialista = () => {
         .filter((id): id is number => id !== undefined)
     : [];
   const resolviendoBloques = Boolean(especialistaId) && cargandoBloques;
-  // Caso borde: un bloque cambió de estado entre listarse y confirmar la elección.
+  // Caso borde: un bloque cambió de estado entre listarse y confirmar la elección
   const errorResolucionBloques =
     Boolean(especialistaId) &&
     !cargandoBloques &&
@@ -69,7 +69,6 @@ export const useEspecialista = () => {
 
   const sinEspecialistasDisponibles = !isLoading && especialistas.length === 0;
 
-  // Actions
   const handleSeleccionar = (id: string) => {
     const esp = especialistas.find(e => String(e.id) === id);
     if (esp) setEspecialista(esp.id, esp.nombre, []);
@@ -89,7 +88,6 @@ export const useEspecialista = () => {
   };
 
   return {
-    // Data
     fecha,
     hora,
     pacienteNombre,
@@ -101,10 +99,8 @@ export const useEspecialista = () => {
     resolviendoBloques,
     errorResolucionBloques,
 
-    // Loading state
     isLoading,
 
-    // Actions
     actions: {
       handleSeleccionar,
       handleVolver,

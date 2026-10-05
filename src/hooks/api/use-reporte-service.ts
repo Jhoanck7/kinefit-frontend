@@ -7,6 +7,7 @@ import {
   reporteService,
 } from "@/services";
 
+/** Obtiene el reporte de ventas según filtros */
 export const useGetReporteVentas = (filtros?: FiltrosReporteVentas) => {
   return useQuery({
     queryKey: ["reporte-ventas", filtros],
@@ -15,6 +16,7 @@ export const useGetReporteVentas = (filtros?: FiltrosReporteVentas) => {
   });
 };
 
+/** Obtiene el reporte de reservas según filtros */
 export const useGetReporteReservas = (filtros?: FiltrosReporteReservas) => {
   return useQuery({
     queryKey: ["reporte-reservas", filtros],
@@ -23,6 +25,7 @@ export const useGetReporteReservas = (filtros?: FiltrosReporteReservas) => {
   });
 };
 
+/** Obtiene el reporte de comisiones según filtros */
 export const useGetReporteComisiones = (filtros?: FiltrosReporteComisiones) => {
   return useQuery({
     queryKey: ["reporte-comisiones", filtros],

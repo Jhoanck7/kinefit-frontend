@@ -17,6 +17,7 @@ function tieneVouchers(config?: LandingConfigResponse | null) {
   }
 }
 
+/** Barra de navegación del sitio público con enlaces, logo y menú desplegable en móvil */
 export default function Navbar({
   config,
 }: {
@@ -32,7 +33,6 @@ export default function Navbar({
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 py-2">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
-          {/* Logo container */}
           <div className="flex items-center">
             <a
               href="#"
@@ -49,7 +49,6 @@ export default function Navbar({
             </a>
           </div>
 
-          {/* Links (Desktop) */}
           <div className="hidden md:flex items-center gap-x-8 ml-auto">
             {navLinks.map(link => (
               <a
@@ -63,7 +62,6 @@ export default function Navbar({
             <AdminPanelButton />
           </div>
 
-          {/* Mobile Toggle Button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -107,7 +105,6 @@ export default function Navbar({
         </div>
       </div>
 
-      {/* Mobile Drawer */}
       {isOpen && (
         <div className="md:hidden bg-white border-t border-b border-slate-300 py-4 px-6">
           <div className="flex flex-col gap-3">

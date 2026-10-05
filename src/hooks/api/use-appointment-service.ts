@@ -7,6 +7,7 @@ import {
   transaccionService,
 } from "@/services";
 
+/** Obtiene los servicios disponibles para reservar en el sitio público */
 export const useGetServices = (soloActivos = true) => {
   return useQuery({
     queryKey: ["booking-services", { soloActivos }],
@@ -15,6 +16,7 @@ export const useGetServices = (soloActivos = true) => {
   });
 };
 
+/** Obtiene los bloques horarios disponibles de un especialista en una fecha, para el sitio público */
 export const useGetAvailableSlots = (
   especialistaId?: number,
   fecha?: string
@@ -41,13 +43,12 @@ interface SubmitBookingParams {
   authToken: string;
 }
 
+/** Envía la reserva del sitio público: actualiza el perfil del paciente, crea la cita y arranca la transacción de pago */
 export const useSubmitBookingMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     onError: () => {
-      // El bloque que se intentó reservar puede haber dejado de estar
-      // disponible entremedio (otro paciente lo tomó primero); se invalida
-      // para que el selector deje de ofrecerlo en vez de quedar desfasado.
+      // Otro paciente puede haber tomado el bloque entremedio, se invalida para que el selector deje de ofrecerlo
       queryClient.invalidateQueries({ queryKey: ["disponibilidad"] });
     },
     mutationFn: async ({

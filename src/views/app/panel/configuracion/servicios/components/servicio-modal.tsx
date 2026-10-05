@@ -40,6 +40,7 @@ interface ServicioModalProps {
 
 const DURACIONES_DISPONIBLES = [30, 60, 90];
 
+/** Modal para crear o editar un servicio: nombre, orden, imagen, duración predeterminada y documentos exigidos */
 export function ServicioModal({
   abierto,
   onCerrar,

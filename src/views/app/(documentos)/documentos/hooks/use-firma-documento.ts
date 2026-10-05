@@ -11,6 +11,7 @@ interface UseFirmaDocumentoParams {
   token: string;
 }
 
+/** Carga un documento público por su token y gestiona el envío de su firma */
 export function useFirmaDocumento({ token }: UseFirmaDocumentoParams) {
   const { data, isLoading, error } = useGetDocumentoPublico(token);
   const firmarPublico = useFirmarDocumentoPublicoMutation();

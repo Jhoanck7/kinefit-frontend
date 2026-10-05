@@ -34,6 +34,7 @@ const OPCIONES_VISTA = [
   { value: "mes", etiqueta: "Mensual" },
 ];
 
+/** Página de reportes del centro con pestañas de reservas, ventas y comisiones, y filtro de período compartido */
 export default function ReportesView() {
   const {
     tabActivo,
@@ -49,16 +50,13 @@ export default function ReportesView() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-4 font-sans shadow-none">
-      {/* 1. Selector de Pestañas Principales */}
       <ReportesTabSwitcher
         tabActivo={tabActivo}
         onCambiarTab={actions.setTabActivo}
       />
 
-      {/* 2. Barra Superior de Filtros */}
       <Card className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-none border-slate-200 shadow-none text-xs">
         <div className="flex flex-wrap items-center gap-3">
-          {/* Selector de período */}
           <div className="flex items-center gap-2">
             <span className="font-medium text-muted-foreground text-label">
               Período:
@@ -77,7 +75,6 @@ export default function ReportesView() {
             </Select>
           </div>
 
-          {/* Inputs de rango personalizado */}
           {rangoFecha === "personalizado" && (
             <div className="flex items-center gap-2">
               <input
@@ -97,7 +94,6 @@ export default function ReportesView() {
             </div>
           )}
 
-          {/* Selector de granularidad (solo en tab Reservas) */}
           {tabActivo === "reservas" && (
             <div className="flex items-center gap-2">
               <span className="font-medium text-muted-foreground text-label">
@@ -123,7 +119,6 @@ export default function ReportesView() {
             </div>
           )}
 
-          {/* Toggle comparar con período anterior (solo en tab Reservas) */}
           {tabActivo === "reservas" && (
             <label className="flex items-center gap-2 cursor-pointer font-medium text-xs text-slate-700">
               <Switch
@@ -140,7 +135,6 @@ export default function ReportesView() {
         </div>
       </Card>
 
-      {/* 3. Renderizado según la Pestaña Activa */}
       {tabActivo === "reservas" && (
         <ReporteReservasView
           fechaDesde={fechaDesde}

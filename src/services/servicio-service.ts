@@ -8,6 +8,7 @@ import { ServicioResponse } from "@/models/responses";
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints de gestión de servicios y sus documentos exigidos */
 export class ServicioService extends BaseApiService {
   constructor() {
     super("/servicios");

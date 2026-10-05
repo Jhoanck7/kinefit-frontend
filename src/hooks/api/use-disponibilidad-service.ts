@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { disponibilidadService } from "@/services";
 
+/** Obtiene las fechas con disponibilidad para un servicio */
 export const useGetFechasDisponibles = (
   servicioId: number,
   duracionMinutos: number,
@@ -17,6 +18,7 @@ export const useGetFechasDisponibles = (
   });
 };
 
+/** Obtiene las horas disponibles de un servicio en una fecha */
 export const useGetHorasDisponibles = (
   servicioId: number,
   fecha: string,
@@ -33,6 +35,7 @@ export const useGetHorasDisponibles = (
   });
 };
 
+/** Obtiene los especialistas disponibles para un servicio, fecha y hora */
 export const useGetEspecialistasDisponibles = (
   servicioId: number,
   fecha: string,

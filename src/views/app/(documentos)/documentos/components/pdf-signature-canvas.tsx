@@ -33,6 +33,7 @@ interface PaginaInfo {
   alto: number;
 }
 
+/** Muestra un PDF página por página y permite firmarlo a mano sobre cada hoja */
 const PdfSignatureCanvas = forwardRef<
   PdfSignatureCanvasHandle,
   PdfSignatureCanvasProps
@@ -139,8 +140,7 @@ const PdfSignatureCanvas = forwardRef<
     };
   }, [paginas]);
 
-  // Un documento que entra entero en la pantalla no se puede deslizar, así que
-  // nunca dispararía onScroll y el botón de firmar quedaría inalcanzable.
+  // Un documento que entra entero en la pantalla no dispara onScroll, así que el botón de firmar quedaría inalcanzable
   useEffect(() => {
     const el = scrollRef.current;
     if (!el || paginas.length === 0) return;

@@ -1,3 +1,4 @@
+/** Una franja horaria disponible para reservar */
 export interface FranjaDisponibleResponse {
   id: number;
   horaInicio: string;

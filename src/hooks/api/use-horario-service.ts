@@ -6,6 +6,7 @@ import {
 } from "@/models/requests";
 import { horarioCentroService, plantillaHorarioService } from "@/services";
 
+/** Obtiene la plantilla horaria de un especialista */
 export const useGetPlantillaHorario = (
   especialistaId: number,
   enabled = true
@@ -21,6 +22,7 @@ export const useGetPlantillaHorario = (
   });
 };
 
+/** Crea o reemplaza la plantilla horaria de un especialista */
 export const useCreatePlantillaHorarioMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -34,6 +36,7 @@ export const useCreatePlantillaHorarioMutation = () => {
   });
 };
 
+/** Elimina un bloque de la plantilla horaria */
 export const useDeletePlantillaHorarioMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -45,6 +48,7 @@ export const useDeletePlantillaHorarioMutation = () => {
   });
 };
 
+/** Obtiene el horario de atención del centro */
 export const useGetHorarioCentro = (enabled = true) => {
   return useQuery({
     queryKey: ["horario-centro"],
@@ -56,6 +60,7 @@ export const useGetHorarioCentro = (enabled = true) => {
   });
 };
 
+/** Crea un bloque de horario del centro */
 export const useCreateHorarioCentroMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -67,6 +72,7 @@ export const useCreateHorarioCentroMutation = () => {
   });
 };
 
+/** Elimina un bloque de horario del centro */
 export const useDeleteHorarioCentroMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({

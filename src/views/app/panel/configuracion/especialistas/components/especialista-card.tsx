@@ -13,6 +13,7 @@ interface EspecialistaCardProps {
   onToggleEstado: () => void;
 }
 
+/** Tarjeta de un especialista con su foto, estado y avisos de horario o cuenta de acceso pendientes */
 export function EspecialistaCard({
   especialista: esp,
   tieneCuenta,

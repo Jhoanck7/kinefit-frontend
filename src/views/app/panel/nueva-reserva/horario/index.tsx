@@ -200,6 +200,7 @@ function HorarioContent() {
   );
 }
 
+/** Paso del asistente de reserva para elegir fecha y bloques horarios disponibles, respetando la duración fija del servicio si aplica */
 export default function HorarioView() {
   return (
     <Suspense fallback={<div className="h-full" aria-hidden />}>

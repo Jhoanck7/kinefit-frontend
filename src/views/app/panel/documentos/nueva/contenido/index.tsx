@@ -23,6 +23,7 @@ import {
 
 import { useNuevaFichaContenido } from "./hooks";
 
+/** Paso final para registrar una ficha clínica: completar una plantilla del sistema o adjuntar una ficha ya hecha en PDF */
 export default function NuevaFichaContenidoView() {
   const {
     pacienteNombre,
@@ -186,7 +187,7 @@ export default function NuevaFichaContenidoView() {
                         >
                       ) => actions.handleCambiarCampo(campo.id, e),
                     };
-                    // El texto informativo es el articulado del documento: se lee, no se llena.
+                    // El texto informativo es el articulado del documento: se lee, no se llena
                     if (campo.tipo === "TextoInformativo") {
                       return (
                         <p

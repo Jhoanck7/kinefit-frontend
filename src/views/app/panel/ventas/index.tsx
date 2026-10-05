@@ -35,6 +35,7 @@ const COLUMNAS = [
   "Margen de la Empresa",
 ];
 
+/** Página con el listado paginado de ventas, sus filtros y los modales de detalle, registro y configuración financiera */
 export default function VentasView() {
   const {
     ventasFiltradas,
@@ -54,7 +55,6 @@ export default function VentasView() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-4 font-sans shadow-none">
-      {/* Barra de Filtros */}
       <VentasFiltrosBar
         rangoFecha={rangoFecha}
         setRangoFecha={actions.handleCambiarRango}
@@ -69,7 +69,6 @@ export default function VentasView() {
 
       {errorExportar && <Alerta tono="error">{errorExportar}</Alerta>}
 
-      {/* Tabla Principal de Ventas */}
       <div className="overflow-hidden rounded-none border border-slate-200 shadow-none font-sans">
         <div className="px-6 py-3.5 border-b border-slate-200 bg-white font-sans">
           <p className="font-sans font-bold text-label text-foreground">
@@ -179,7 +178,6 @@ export default function VentasView() {
         )}
       </div>
 
-      {/* Modales */}
       <VentaDetalleModal
         venta={ventaSeleccionada}
         terminales={terminales}

@@ -18,16 +18,19 @@ function esRespuestaConNombre(bruto: unknown): bruto is RespuestaConNombre {
   );
 }
 
+/** Extrae el valor de texto de una respuesta, venga con nombre o como string plano */
 export function valorDeRespuesta(bruto: unknown): string {
   if (esRespuestaConNombre(bruto)) return bruto.valor ?? "";
   return typeof bruto === "string" ? bruto : "";
 }
 
+/** Extrae el nombre de campo guardado junto a una respuesta, si lo tiene */
 export function nombreDeRespuesta(bruto: unknown): string | undefined {
   if (esRespuestaConNombre(bruto) && bruto.nombre) return bruto.nombre;
   return undefined;
 }
 
+/** Obtiene el nombre visible de un campo a partir de la respuesta guardada o de la plantilla */
 export function etiquetaDeCampo(
   campoId: string,
   bruto: unknown,
@@ -42,6 +45,7 @@ export function etiquetaDeCampo(
   return campo?.nombre ?? campoId;
 }
 
+/** Combina cada valor del contenido con el nombre de su campo según la plantilla */
 export function conNombresDePlantilla(
   contenido: Record<string, string>,
   cuerpo?: CuerpoFormato
@@ -55,6 +59,7 @@ export function conNombresDePlantilla(
   );
 }
 
+/** Reduce el contenido del documento a un mapa de solo los valores de texto */
 export function soloValores(
   contenido: ContenidoDocumento
 ): Record<string, string> {
@@ -66,6 +71,7 @@ export function soloValores(
   );
 }
 
+/** Genera el contenido actualizado conservando el nombre original de cada campo */
 export function conValoresActualizados(
   original: ContenidoDocumento,
   valores: Record<string, string>,
@@ -88,6 +94,7 @@ export function conValoresActualizados(
 
 const TIPOS_NO_RELLENABLES = ["TextoInformativo", "Firma"];
 
+/** Cuenta cuántos campos rellenables de una sección ya tienen respuesta */
 export function contadorDeSeccion(
   seccion: { campos: { id: string; tipo: string }[] },
   contenido: Record<string, string>
@@ -99,6 +106,7 @@ export function contadorDeSeccion(
   return `${completos.length}/${rellenables.length} completados`;
 }
 
+/** Reconstruye el cuerpo de la plantilla fijando los nombres de campo que tenía el contenido guardado */
 export function cuerpoConNombresCongelados(
   cuerpo: CuerpoFormato | undefined,
   contenido: ContenidoDocumento

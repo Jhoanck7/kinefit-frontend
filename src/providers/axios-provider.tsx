@@ -6,7 +6,7 @@ import { isSessionExpired } from "@/lib/auth";
 
 let cerrandoSesionExpirada = false;
 
-// El backend autentica con Authorization: Bearer, no con cookies.
+// El backend autentica con Authorization: Bearer, no con cookies
 export const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 10000,
@@ -20,7 +20,7 @@ axiosInstance.interceptors.request.use(async config => {
     (config.headers as Record<string, string> | undefined)?.["Authorization"]
   );
 
-  // El token explícito del paciente (flujo público) siempre gana sobre la sesión del panel.
+  // El token explícito del paciente (flujo público) siempre gana sobre la sesión del panel
   if (typeof window !== "undefined" && !yaTieneAuthorization) {
     let session;
     try {
@@ -59,7 +59,7 @@ axiosInstance.interceptors.request.use(async config => {
   return config;
 });
 
-// Sin interceptor de sesión: para flujos públicos con token propio (firma de documentos).
+// Sin interceptor de sesión: para flujos públicos con token propio (firma de documentos)
 export const axiosInstanceSinSesion = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 10000,

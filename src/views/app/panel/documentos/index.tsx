@@ -259,6 +259,7 @@ function DocumentosContenido() {
   );
 }
 
+/** Página de listado de documentos con filtros de tipo, estado, especialista y fecha, y acceso al detalle de cada uno */
 export default function DocumentosView() {
   return (
     <Suspense fallback={<div aria-hidden />}>

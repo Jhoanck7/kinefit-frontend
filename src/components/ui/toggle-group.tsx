@@ -19,6 +19,7 @@ const ToggleGroupContext = React.createContext<
   orientation: "horizontal",
 });
 
+/** Grupo de botones de alternancia donde se comparten variante y tamaño entre los ítems */
 function ToggleGroup({
   className,
   variant,

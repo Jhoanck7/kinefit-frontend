@@ -11,6 +11,7 @@ import {
 import { handleApiError } from "@/lib/api";
 import { PlantillaResponse } from "@/models/responses";
 
+/** Gestiona el listado de plantillas y sus acciones de activar, editar y eliminar */
 export const usePlantillas = () => {
   const router = useRouter();
   const { data: plantillas } = useGetPlantillas(false);

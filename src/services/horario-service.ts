@@ -11,6 +11,7 @@ import {
 
 import { BaseApiService } from "./base-api-service";
 
+/** Consume los endpoints de plantillas horarias semanales por especialista */
 export class PlantillaHorarioService extends BaseApiService {
   constructor() {
     super("/plantillas-horario");
@@ -36,6 +37,7 @@ export class PlantillaHorarioService extends BaseApiService {
   }
 }
 
+/** Consume los endpoints del horario general del centro */
 export class HorarioCentroService extends BaseApiService {
   constructor() {
     super("/horario-centro");
