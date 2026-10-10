@@ -42,6 +42,7 @@ export default function VouchersSection({
   };
 
   const autoScroll = useAutoScroll(scrollRef, {
+    intervalMs: 15000,
     alAvanzar: () => {
       if (!estaApilado()) return false;
       cambiarActivo(1);
