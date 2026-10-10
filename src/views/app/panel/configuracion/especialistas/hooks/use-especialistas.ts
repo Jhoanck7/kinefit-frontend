@@ -4,7 +4,6 @@ import { useState } from "react";
 
 import {
   useCreateEspecialistaMutation,
-  useDeleteEspecialistaMutation,
   useGetEspecialistas,
   useGetServicios,
   useUpdateEspecialistaEstadoMutation,
@@ -13,7 +12,7 @@ import {
 import { handleApiError } from "@/lib/api";
 import { EspecialistaResponse } from "@/models/responses";
 
-/** Gestiona el listado y los formularios de creación, edición, eliminación y activación de especialistas */
+/** Gestiona el listado y los formularios de creación, edición y activación de especialistas */
 export const useEspecialistas = () => {
   const { data: especialistas = [], isLoading: cargando } = useGetEspecialistas(
     undefined,
@@ -23,7 +22,6 @@ export const useEspecialistas = () => {
 
   const crearMutation = useCreateEspecialistaMutation();
   const actualizarMutation = useUpdateEspecialistaMutation();
-  const eliminarMutation = useDeleteEspecialistaMutation();
   const estadoMutation = useUpdateEspecialistaEstadoMutation();
 
   const [mostrarFormNuevo, setMostrarFormNuevo] = useState(false);
@@ -35,9 +33,6 @@ export const useEspecialistas = () => {
   const [nuevaFotoUrl, setNuevaFotoUrl] = useState("");
   const [nuevaFotoPublicId, setNuevaFotoPublicId] = useState("");
   const [errorCrear, setErrorCrear] = useState<string | null>(null);
-
-  const [especialistaAEliminar, setEspecialistaAEliminar] =
-    useState<EspecialistaResponse | null>(null);
 
   const [especialistaAEditarId, setEspecialistaAEditarId] = useState<
     number | null
@@ -136,28 +131,6 @@ export const useEspecialistas = () => {
     }
   };
 
-  const handleSolicitarEliminacion = () => {
-    if (!editFormData) return;
-    setEspecialistaAEliminar(editFormData);
-    setEspecialistaAEditarId(null);
-    setEditFormData(null);
-  };
-
-  const handleCancelarEliminacion = () => setEspecialistaAEliminar(null);
-
-  const handleConfirmarEliminacion = async () => {
-    if (!especialistaAEliminar) return;
-    try {
-      await eliminarMutation.mutateAsync(especialistaAEliminar.id);
-      setNotificacion(
-        `El especialista "${especialistaAEliminar.nombre}" ha sido eliminado permanentemente del sistema.`
-      );
-      setEspecialistaAEliminar(null);
-    } catch (err: unknown) {
-      setNotificacion(handleApiError(err).message);
-    }
-  };
-
   const handleToggleEstado = async (esp: EspecialistaResponse) => {
     try {
       const resultado = await estadoMutation.mutateAsync({
@@ -203,7 +176,6 @@ export const useEspecialistas = () => {
     nuevosServicioIds,
     nuevaFotoUrl,
     errorCrear,
-    especialistaAEliminar,
     especialistaAEditarId,
     editFormData,
     editServicioIds,
@@ -211,7 +183,6 @@ export const useEspecialistas = () => {
     notificacion,
     creando: crearMutation.isPending,
     guardando: actualizarMutation.isPending,
-    eliminando: eliminarMutation.isPending,
     cambiandoEstadoId: estadoMutation.isPending
       ? estadoMutation.variables?.id
       : null,
@@ -231,9 +202,6 @@ export const useEspecialistas = () => {
       handleCerrarEdicion,
       handleCrearEspecialista,
       handleGuardarEspecialista,
-      handleSolicitarEliminacion,
-      handleCancelarEliminacion,
-      handleConfirmarEliminacion,
       handleToggleEstado,
       handleCerrarNotificacion,
       handleEditarFotoChange,

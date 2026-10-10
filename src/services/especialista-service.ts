@@ -44,12 +44,6 @@ export class EspecialistaService extends BaseApiService {
       { activo }
     );
   }
-
-  deleteEspecialista(id: number) {
-    return this.httpClient.delete<ApiResponse<boolean>>(
-      `${this.baseURL}/${id}`
-    );
-  }
 }
 
 export const especialistaService = new EspecialistaService();

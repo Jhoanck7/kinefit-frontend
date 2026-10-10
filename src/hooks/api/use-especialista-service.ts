@@ -69,14 +69,3 @@ export const useUpdateEspecialistaEstadoMutation = () => {
     },
   });
 };
-
-/** Elimina un especialista */
-export const useDeleteEspecialistaMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => especialistaService.deleteEspecialista(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["especialistas"] });
-    },
-  });
-};
