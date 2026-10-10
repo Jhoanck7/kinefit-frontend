@@ -8,6 +8,7 @@ import {
   EmbarazadasSection,
   HeroSection,
   LocationSection,
+  NutricionSection,
   ProcessSection,
   TeamSection,
   TestimonialsSection,
@@ -29,6 +30,7 @@ export default function HomeView({ config, specialists }: HomeViewProps) {
       <TestimonialsSection config={config} />
       <ProcessSection config={config} />
       <VouchersSection config={config} />
+      <NutricionSection config={config} />
       <EmbarazadasSection config={config} />
       <LocationSection config={config} />
     </main>

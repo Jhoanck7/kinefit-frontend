@@ -10,6 +10,7 @@ import {
 import {
   EmbarazadaItem,
   LandingConfigResponse,
+  NutricionItem,
   VoucherItem,
 } from "@/models/responses";
 
@@ -63,6 +64,7 @@ export const useLanding = () => {
   const [reviewsList, setReviewsList] = useState<GoogleReviewItem[]>([]);
   const [vouchers, setVouchers] = useState<VoucherItem[]>([]);
   const [embarazadas, setEmbarazadas] = useState<EmbarazadaItem[]>([]);
+  const [nutricion, setNutricion] = useState<NutricionItem[]>([]);
   const [limiteResenas, setLimiteResenas] = useState<number>(5);
   const [confirmacionGuardar, setConfirmacionGuardar] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -93,6 +95,12 @@ export const useLanding = () => {
           const parsedEmbarazadas = JSON.parse(configData.embarazadasJson);
           if (Array.isArray(parsedEmbarazadas))
             setEmbarazadas(parsedEmbarazadas);
+        } catch {}
+      }
+      if (configData.nutricionJson) {
+        try {
+          const parsedNutricion = JSON.parse(configData.nutricionJson);
+          if (Array.isArray(parsedNutricion)) setNutricion(parsedNutricion);
         } catch {}
       }
     }
@@ -280,6 +288,61 @@ export const useLanding = () => {
     });
   }
 
+  function handleAgregarNutricion() {
+    setNutricion(prev => [
+      ...prev,
+      {
+        alt: "",
+        imagenUrl: "",
+        ancho: 800,
+        alto: 600,
+      },
+    ]);
+  }
+
+  function handleNutricionAltChange(index: number, alt: string) {
+    setNutricion(prev =>
+      prev.map((item, idx) => (idx === index ? { ...item, alt } : item))
+    );
+  }
+
+  function handleNutricionImagenChange(
+    index: number,
+    imagenUrl: string,
+    ancho?: number,
+    alto?: number
+  ) {
+    setNutricion(prev =>
+      prev.map((item, idx) =>
+        idx === index
+          ? {
+              ...item,
+              imagenUrl,
+              ancho: ancho || item.ancho || 800,
+              alto: alto || item.alto || 600,
+            }
+          : item
+      )
+    );
+  }
+
+  function handleEliminarNutricion(index: number) {
+    setNutricion(prev => prev.filter((_, i) => i !== index));
+  }
+
+  function handleMoverNutricion(
+    index: number,
+    direccion: "arriba" | "abajo"
+  ) {
+    setNutricion(prev => {
+      const destino = direccion === "arriba" ? index - 1 : index + 1;
+      if (destino < 0 || destino >= prev.length) return prev;
+      const copy = [...prev];
+      [copy[index], copy[destino]] = [copy[destino], copy[index]];
+      return copy;
+    });
+  }
+
   async function handleSincronizarGoogle() {
     setErrorMsg(null);
     try {
@@ -313,6 +376,7 @@ export const useLanding = () => {
         reviewsJson: JSON.stringify(reviewsList),
         vouchersJson: JSON.stringify(vouchers),
         embarazadasJson: JSON.stringify(embarazadas),
+        nutricionJson: JSON.stringify(nutricion),
       };
       const res = await updateMutation.mutateAsync(dataToSave);
       setFormData(res);
@@ -332,6 +396,7 @@ export const useLanding = () => {
     reviewsList,
     vouchers,
     embarazadas,
+    nutricion,
     limiteResenas,
     cargando,
     guardando: updateMutation.isPending,
@@ -362,6 +427,11 @@ export const useLanding = () => {
       handleEmbarazadaImagenSecundariaChange,
       handleEliminarEmbarazada,
       handleMoverEmbarazada,
+      handleAgregarNutricion,
+      handleNutricionAltChange,
+      handleNutricionImagenChange,
+      handleEliminarNutricion,
+      handleMoverNutricion,
       handleSincronizarGoogle,
       handleGuardar,
       ejecutarGuardar,

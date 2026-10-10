@@ -39,6 +39,7 @@ export default function LandingView() {
     reviewsList,
     vouchers,
     embarazadas,
+    nutricion,
     limiteResenas,
     cargando,
     guardando,
@@ -515,6 +516,153 @@ export default function LandingView() {
                     </div>
                   )}
 
+                  {seccionActiva === "nutricion" && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <TextField
+                          etiqueta="Título de la Sección"
+                          value={formData.nutricionTitle || ""}
+                          onChange={e =>
+                            actions.handleChange(
+                              "nutricionTitle",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <TextField
+                          etiqueta="URL del Reel de Instagram"
+                          value={formData.nutricionReelUrl || ""}
+                          onChange={e =>
+                            actions.handleChange(
+                              "nutricionReelUrl",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </div>
+
+                      <TextAreaField
+                        etiqueta="Descripción del Servicio de Nutrición"
+                        value={formData.nutricionDescription || ""}
+                        onChange={e =>
+                          actions.handleChange(
+                            "nutricionDescription",
+                            e.target.value
+                          )
+                        }
+                        rows={3}
+                      />
+
+                      <div className="space-y-4 pt-4 border-t border-slate-200">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="font-sans text-label font-bold text-foreground">
+                              Fotos de Nutrición ({nutricion.length})
+                            </h3>
+                            <p className="text-xs text-slate-500 mt-0.5">
+                              Agrega las fotos ilustrativas para la sección de nutrición.
+                            </p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="rounded-overlay"
+                            onClick={actions.handleAgregarNutricion}
+                          >
+                            Agregar Foto
+                          </Button>
+                        </div>
+
+                        {nutricion.map((item, idx) => (
+                          <div
+                            key={idx}
+                            className="rounded-none border border-slate-200 bg-white p-4 space-y-3"
+                          >
+                            <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                              <span className="text-xs font-bold text-slate-800">
+                                Foto #{idx + 1}
+                              </span>
+                              <div className="flex items-center gap-3">
+                                <button
+                                  type="button"
+                                  disabled={idx === 0}
+                                  onClick={() =>
+                                    actions.handleMoverNutricion(idx, "arriba")
+                                  }
+                                  className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                                >
+                                  Subir
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={idx === nutricion.length - 1}
+                                  onClick={() =>
+                                    actions.handleMoverNutricion(idx, "abajo")
+                                  }
+                                  className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                                >
+                                  Bajar
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    actions.handleEliminarNutricion(idx)
+                                  }
+                                  className="text-xs text-primary font-bold hover:underline"
+                                >
+                                  Eliminar
+                                </button>
+                              </div>
+                            </div>
+
+                            <ImageUploader
+                              etiqueta="Foto de Nutrición (requerida)"
+                              value={item.imagenUrl}
+                              onChange={(
+                                secureUrl,
+                                _publicId,
+                                width,
+                                height
+                              ) =>
+                                actions.handleNutricionImagenChange(
+                                  idx,
+                                  secureUrl,
+                                  width || 0,
+                                  height || 0
+                                )
+                              }
+                              folder="kinefit/nutricion"
+                            />
+
+                            <TextField
+                              etiqueta="Texto Alternativo (obligatorio)"
+                              value={item.alt}
+                              onChange={e =>
+                                actions.handleNutricionAltChange(
+                                  idx,
+                                  e.target.value
+                                )
+                              }
+                              obligatorio
+                              required
+                            />
+                            {!item.alt.trim() && (
+                              <Alerta tono="error">
+                                El texto alternativo es obligatorio.
+                              </Alerta>
+                            )}
+                          </div>
+                        ))}
+
+                        {nutricion.length === 0 && (
+                          <p className="text-xs text-slate-400 italic text-center py-4 border border-dashed border-slate-200">
+                            No hay fotos configuradas. Haz clic en &ldquo;Agregar Foto&rdquo;.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {seccionActiva === "embarazadas" && (
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -849,7 +997,9 @@ export default function LandingView() {
                               !v.imagenSofa || !v.imagenBlanco || !v.alt.trim()
                           )) ||
                         (seccionActiva === "embarazadas" &&
-                          embarazadas.some(e => !e.imagenUrl || !e.alt.trim()))
+                          embarazadas.some(e => !e.imagenUrl || !e.alt.trim())) ||
+                        (seccionActiva === "nutricion" &&
+                          nutricion.some(n => !n.imagenUrl || !n.alt.trim()))
                       }
                     >
                       {guardando ? "Guardando…" : "Guardar Cambios"}

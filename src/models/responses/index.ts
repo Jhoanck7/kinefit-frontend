@@ -58,6 +58,7 @@ export type {
 export type {
   EmbarazadaItem,
   LandingConfigResponse,
+  NutricionItem,
   VoucherItem,
 } from "./landing-config";
 export type { ImageUploadResponse } from "./media";

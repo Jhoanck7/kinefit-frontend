@@ -20,6 +20,14 @@ export interface EmbarazadaItem {
   altoSecundaria?: number;
 }
 
+/** Imagen de la sección de nutrición */
+export interface NutricionItem {
+  alt: string;
+  imagenUrl: string;
+  ancho: number;
+  alto: number;
+}
+
 /** Configuración editable de la landing pública */
 export interface LandingConfigResponse {
   heroTagline: string;
@@ -90,4 +98,10 @@ export interface LandingConfigResponse {
   embarazadasJson?: string;
 
   updatedAt?: string;
+
+  nutricionTitle?: string;
+  nutricionDescription?: string;
+  nutricionJson?: string;
+  nutricionReelUrl?: string;
+  nutricionReel?: string;
 }

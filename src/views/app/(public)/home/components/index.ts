@@ -3,6 +3,7 @@ export { default as BookingCard } from "./booking-card";
 export { default as EmbarazadasSection } from "./embarazadas-section";
 export { default as HeroSection } from "./hero-section";
 export { default as LocationSection } from "./location-section";
+export { default as NutricionSection } from "./nutricion-section";
 export { default as ProcessSection } from "./process-section";
 export { default as ServicesSection } from "./services-section";
 export { default as TeamSection } from "./team-section";
