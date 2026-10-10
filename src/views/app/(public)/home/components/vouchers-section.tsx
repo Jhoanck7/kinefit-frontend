@@ -12,7 +12,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useAutoScroll } from "@/hooks/common";
 import { LandingConfigResponse, VoucherItem } from "@/models/responses";
 
 /** Carrusel de vouchers de regalo con la nota legal opcional en un modal */
@@ -40,15 +39,6 @@ export default function VouchersSection({
   const cambiarActivo = (paso: number) => {
     setActivo(i => (i + paso + vouchers.length) % vouchers.length);
   };
-
-  const autoScroll = useAutoScroll(scrollRef, {
-    intervalMs: 15000,
-    alAvanzar: () => {
-      if (!estaApilado()) return false;
-      cambiarActivo(1);
-      return true;
-    },
-  });
 
   if (vouchers.length === 0) return null;
 
@@ -87,8 +77,6 @@ export default function VouchersSection({
           <div className="lg:col-span-7 relative group scroll-reveal-scale">
             <div
               ref={scrollRef}
-              onMouseEnter={autoScroll.onMouseEnter}
-              onMouseLeave={autoScroll.onMouseLeave}
               className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none lg:grid lg:overflow-hidden lg:snap-none"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
