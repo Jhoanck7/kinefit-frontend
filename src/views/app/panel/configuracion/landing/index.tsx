@@ -265,7 +265,6 @@ export default function LandingView() {
                             </p>
                             <p className="text-[11px] text-slate-500 truncate">
                               {especialista.cargo}
-                              {!especialista.activo && " · Inactivo"}
                             </p>
                           </div>
                           <div className="flex items-center gap-3 shrink-0">

@@ -71,7 +71,8 @@ export const useLanding = () => {
   const [ordenEditado, setOrdenEditado] = useState<
     EspecialistaResponse[] | null
   >(null);
-  const especialistas = ordenEditado ?? especialistasData ?? [];
+  const especialistasActivos = (especialistasData ?? []).filter(e => e.activo);
+  const especialistas = ordenEditado ?? especialistasActivos;
   const [limiteResenas, setLimiteResenas] = useState<number>(5);
   const [confirmacionGuardar, setConfirmacionGuardar] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -294,7 +295,7 @@ export const useLanding = () => {
     direccion: "arriba" | "abajo"
   ) {
     setOrdenEditado(prev => {
-      const actual = prev ?? especialistasData ?? [];
+      const actual = prev ?? especialistasActivos;
       const destino = direccion === "arriba" ? index - 1 : index + 1;
       if (destino < 0 || destino >= actual.length) return actual;
       const copy = [...actual];
@@ -339,11 +340,15 @@ export const useLanding = () => {
       };
       const res = await updateMutation.mutateAsync(dataToSave);
       setFormData(res);
-      const ordenIds = especialistas.map(e => e.id);
-      const ordenCambio = ordenIds.some(
-        (id, i) => id !== especialistasData?.[i]?.id
+      const ordenCambio = especialistas.some(
+        (e, i) => e.id !== especialistasActivos[i]?.id
       );
-      if (ordenCambio) await ordenMutation.mutateAsync(ordenIds);
+      if (ordenCambio) {
+        const inactivos = (especialistasData ?? []).filter(e => !e.activo);
+        await ordenMutation.mutateAsync(
+          [...especialistas, ...inactivos].map(e => e.id)
+        );
+      }
       setOrdenEditado(null);
       setConfirmacionGuardar(false);
       setSeccionActiva(null);
