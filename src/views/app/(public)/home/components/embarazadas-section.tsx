@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Clock, Gift, Info } from "lucide-react";
+import { Clock, Gift, Info } from "lucide-react";
 import Image from "next/image";
 import React, { useRef } from "react";
 
@@ -78,10 +78,9 @@ export default function EmbarazadasSection({
                 <DialogTrigger asChild>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-2 text-xs font-semibold text-brand-primary hover:text-brand-primary-hover hover:underline transition-colors cursor-pointer"
+                    className="text-brand-primary hover:text-brand-primary-hover font-bold text-xs uppercase tracking-wider cursor-pointer"
                   >
-                    <span>Ver más detalles</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    Leer más
                   </button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8">
@@ -125,8 +124,6 @@ export default function EmbarazadasSection({
                   </div>
                 </DialogContent>
               </Dialog>
-
-              <span className="text-slate-300">•</span>
 
               <Dialog>
                 <DialogTrigger asChild>
