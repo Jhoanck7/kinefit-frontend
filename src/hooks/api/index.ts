@@ -65,6 +65,7 @@ export {
   useGetEspecialistas,
   useUpdateEspecialistaEstadoMutation,
   useUpdateEspecialistaMutation,
+  useUpdateEspecialistasOrdenMutation,
 } from "./use-especialista-service";
 export {
   useCreateHorarioCentroMutation,

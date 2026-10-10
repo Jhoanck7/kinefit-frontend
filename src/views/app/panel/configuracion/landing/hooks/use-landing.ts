@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 
 import {
+  useGetEspecialistas,
   useGetLandingConfig,
   useSincronizarGoogleReviewsMutation,
+  useUpdateEspecialistasOrdenMutation,
   useUpdateLandingConfigMutation,
 } from "@/hooks/api";
 import {
   EmbarazadaItem,
+  EspecialistaResponse,
   LandingConfigResponse,
   VoucherItem,
 } from "@/models/responses";
@@ -49,11 +52,13 @@ const DEFAULT_LANDING_CONFIG: LandingConfigResponse = {
   vouchersMostrarNota: true,
 };
 
-/** Carga y administra el formulario de configuración de la landing pública, con sus listas de pasos, reseñas, vouchers y fotos */
+/** Carga y administra el formulario de configuración de la landing pública, con sus listas de pasos, reseñas, vouchers, fotos y el orden del equipo */
 export const useLanding = () => {
   const { data: configData, isLoading: cargando } = useGetLandingConfig();
   const updateMutation = useUpdateLandingConfigMutation();
   const sincronizarMutation = useSincronizarGoogleReviewsMutation();
+  const { data: especialistasData } = useGetEspecialistas(undefined, false);
+  const ordenMutation = useUpdateEspecialistasOrdenMutation();
 
   const [formData, setFormData] = useState<LandingConfigResponse>(
     DEFAULT_LANDING_CONFIG
@@ -63,6 +68,10 @@ export const useLanding = () => {
   const [reviewsList, setReviewsList] = useState<GoogleReviewItem[]>([]);
   const [vouchers, setVouchers] = useState<VoucherItem[]>([]);
   const [embarazadas, setEmbarazadas] = useState<EmbarazadaItem[]>([]);
+  const [ordenEditado, setOrdenEditado] = useState<
+    EspecialistaResponse[] | null
+  >(null);
+  const especialistas = ordenEditado ?? especialistasData ?? [];
   const [limiteResenas, setLimiteResenas] = useState<number>(5);
   const [confirmacionGuardar, setConfirmacionGuardar] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -280,6 +289,20 @@ export const useLanding = () => {
     });
   }
 
+  function handleMoverEspecialista(
+    index: number,
+    direccion: "arriba" | "abajo"
+  ) {
+    setOrdenEditado(prev => {
+      const actual = prev ?? especialistasData ?? [];
+      const destino = direccion === "arriba" ? index - 1 : index + 1;
+      if (destino < 0 || destino >= actual.length) return actual;
+      const copy = [...actual];
+      [copy[index], copy[destino]] = [copy[destino], copy[index]];
+      return copy;
+    });
+  }
+
   async function handleSincronizarGoogle() {
     setErrorMsg(null);
     try {
@@ -316,6 +339,12 @@ export const useLanding = () => {
       };
       const res = await updateMutation.mutateAsync(dataToSave);
       setFormData(res);
+      const ordenIds = especialistas.map(e => e.id);
+      const ordenCambio = ordenIds.some(
+        (id, i) => id !== especialistasData?.[i]?.id
+      );
+      if (ordenCambio) await ordenMutation.mutateAsync(ordenIds);
+      setOrdenEditado(null);
       setConfirmacionGuardar(false);
       setSeccionActiva(null);
       fetch("/api/revalidate", { method: "POST" }).catch(() => {});
@@ -332,9 +361,10 @@ export const useLanding = () => {
     reviewsList,
     vouchers,
     embarazadas,
+    especialistas,
     limiteResenas,
     cargando,
-    guardando: updateMutation.isPending,
+    guardando: updateMutation.isPending || ordenMutation.isPending,
     sincronizando: sincronizarMutation.isPending,
     confirmacionGuardar,
     errorMsg,
@@ -362,6 +392,7 @@ export const useLanding = () => {
       handleEmbarazadaImagenSecundariaChange,
       handleEliminarEmbarazada,
       handleMoverEmbarazada,
+      handleMoverEspecialista,
       handleSincronizarGoogle,
       handleGuardar,
       ejecutarGuardar,

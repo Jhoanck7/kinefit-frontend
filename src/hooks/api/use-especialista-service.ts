@@ -69,3 +69,15 @@ export const useUpdateEspecialistaEstadoMutation = () => {
     },
   });
 };
+
+/** Guarda el orden en que se muestran los especialistas */
+export const useUpdateEspecialistasOrdenMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (especialistaIds: number[]) =>
+      especialistaService.updateOrden(especialistaIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["especialistas"] });
+    },
+  });
+};

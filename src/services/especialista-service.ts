@@ -44,6 +44,12 @@ export class EspecialistaService extends BaseApiService {
       { activo }
     );
   }
+
+  updateOrden(especialistaIds: number[]) {
+    return this.httpClient.put<ApiResponse<boolean>>(`${this.baseURL}/orden`, {
+      especialistaIds,
+    });
+  }
 }
 
 export const especialistaService = new EspecialistaService();
