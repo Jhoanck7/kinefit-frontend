@@ -2,7 +2,7 @@
 
 import { Info } from "lucide-react";
 import Image from "next/image";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 
 import {
   Dialog,
@@ -22,7 +22,7 @@ export default function VouchersSection({
   config: LandingConfigResponse;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const autoScroll = useAutoScroll(scrollRef);
+  const [activo, setActivo] = useState(0);
 
   let vouchers: VoucherItem[] = [];
   if (config.vouchersJson) {
@@ -32,6 +32,23 @@ export default function VouchersSection({
     } catch {}
   }
 
+  const estaApilado = () => {
+    const el = scrollRef.current;
+    return Boolean(el && el.scrollWidth <= el.clientWidth);
+  };
+
+  const cambiarActivo = (paso: number) => {
+    setActivo(i => (i + paso + vouchers.length) % vouchers.length);
+  };
+
+  const autoScroll = useAutoScroll(scrollRef, {
+    alAvanzar: () => {
+      if (!estaApilado()) return false;
+      cambiarActivo(1);
+      return true;
+    },
+  });
+
   if (vouchers.length === 0) return null;
 
   const mostrarNota =
@@ -39,6 +56,10 @@ export default function VouchersSection({
     Boolean(config.vouchersNota?.trim());
 
   const scroll = (direction: "left" | "right") => {
+    if (estaApilado()) {
+      cambiarActivo(direction === "left" ? -1 : 1);
+      return;
+    }
     if (scrollRef.current) {
       const width = scrollRef.current.clientWidth;
       const amount = direction === "left" ? -width : width;
@@ -67,13 +88,17 @@ export default function VouchersSection({
               ref={scrollRef}
               onMouseEnter={autoScroll.onMouseEnter}
               onMouseLeave={autoScroll.onMouseLeave}
-              className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none"
+              className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none lg:grid lg:overflow-hidden lg:snap-none"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {vouchers.map((voucher, idx) => (
                 <div
                   key={`${voucher.imagenSofa}-${idx}`}
-                  className="w-full shrink-0 snap-start snap-always relative flex justify-center"
+                  className={`w-full shrink-0 snap-start snap-always relative flex justify-center lg:col-start-1 lg:row-start-1 lg:transition-opacity lg:duration-1000 lg:ease-in-out ${
+                    idx === activo
+                      ? "lg:opacity-100 lg:z-10"
+                      : "lg:opacity-0 lg:z-0 lg:pointer-events-none"
+                  }`}
                 >
                   <div className="rounded-global overflow-hidden">
                     <Image
