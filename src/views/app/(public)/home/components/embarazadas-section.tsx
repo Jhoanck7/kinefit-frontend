@@ -2,7 +2,7 @@
 
 import { Info } from "lucide-react";
 import Image from "next/image";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 
 import { Alerta } from "@/components/shared";
 import {
@@ -13,7 +13,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useAutoScroll } from "@/hooks/common";
 import { EmbarazadaItem, LandingConfigResponse } from "@/models/responses";
 
 /** Sección con carrusel de imágenes y detalles del servicio de masoterapia para embarazadas */
@@ -23,7 +22,7 @@ export default function EmbarazadasSection({
   config: LandingConfigResponse;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const autoScroll = useAutoScroll(scrollRef);
+  const [activo, setActivo] = useState(0);
 
   let items: EmbarazadaItem[] = [];
   if (config.embarazadasJson) {
@@ -33,9 +32,22 @@ export default function EmbarazadasSection({
     } catch {}
   }
 
+  const estaApilado = () => {
+    const el = scrollRef.current;
+    return Boolean(el && el.scrollWidth <= el.clientWidth);
+  };
+
+  const cambiarActivo = (paso: number) => {
+    setActivo(i => (i + paso + items.length) % items.length);
+  };
+
   if (items.length === 0) return null;
 
   const scroll = (direction: "left" | "right") => {
+    if (estaApilado()) {
+      cambiarActivo(direction === "left" ? -1 : 1);
+      return;
+    }
     if (scrollRef.current) {
       const width = scrollRef.current.clientWidth;
       const amount = direction === "left" ? -width : width;
@@ -177,15 +189,17 @@ export default function EmbarazadasSection({
           <div className="lg:col-span-7 relative group order-2 lg:order-2 scroll-reveal-scale">
             <div
               ref={scrollRef}
-              onMouseEnter={autoScroll.onMouseEnter}
-              onMouseLeave={autoScroll.onMouseLeave}
-              className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none"
+              className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none lg:grid lg:overflow-hidden lg:snap-none"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {items.map((item, idx) => (
                 <div
                   key={`${item.imagenUrl}-${idx}`}
-                  className="w-full shrink-0 snap-start snap-always relative flex justify-center"
+                  className={`w-full shrink-0 snap-start snap-always relative flex justify-center lg:col-start-1 lg:row-start-1 lg:transition-opacity lg:duration-1000 lg:ease-in-out ${
+                    idx === activo
+                      ? "lg:opacity-100 lg:z-10"
+                      : "lg:opacity-0 lg:z-0 lg:pointer-events-none"
+                  }`}
                 >
                   <div className="rounded-global overflow-hidden">
                     <Image
