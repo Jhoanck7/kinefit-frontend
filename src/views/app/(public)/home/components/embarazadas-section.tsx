@@ -45,9 +45,70 @@ export default function EmbarazadasSection({
   return (
     <section
       id="embarazadas"
-      className="scroll-mt-24 py-24 bg-gradient-to-b from-slate-50 via-blue-50/40 to-slate-50/80 border-b border-slate-200/80 text-slate-900"
+      className="scroll-mt-24 py-24 bg-gradient-to-b from-slate-50 via-blue-50/40 to-slate-50/80 border-b border-slate-200/80 text-slate-900 relative overflow-hidden"
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      {/* Figura decorativa orgánica en la parte inferior derecha de la sección */}
+      <div className="absolute right-0 bottom-0 pointer-events-none select-none z-0">
+        <svg
+          viewBox="0 0 500 500"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-80 sm:w-[440px] md:w-[560px] lg:w-[680px] xl:w-[780px] h-auto drop-shadow-md"
+        >
+          <defs>
+            <linearGradient
+              id="embarazadas-section-blob-bg"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop
+                offset="0%"
+                stopColor="#0c5dc5"
+                stopOpacity="0.35"
+              />
+              <stop
+                offset="100%"
+                stopColor="#052651"
+                stopOpacity="0.6"
+              />
+            </linearGradient>
+            <linearGradient
+              id="embarazadas-section-blob"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop
+                offset="0%"
+                stopColor="#0c5dc5"
+                stopOpacity="0.85"
+              />
+              <stop
+                offset="100%"
+                stopColor="#003366"
+                stopOpacity="0.98"
+              />
+            </linearGradient>
+          </defs>
+
+          {/* Onda orgánica de fondo para aportar profundidad visual */}
+          <path
+            d="M 40 500 C 80 390 150 330 230 310 C 320 290 360 170 420 80 C 460 20 485 0 500 0 L 500 500 Z"
+            fill="url(#embarazadas-section-blob-bg)"
+          />
+
+          {/* Onda orgánica principal con curva suave y armónica */}
+          <path
+            d="M 0 500 C 60 420 120 370 190 360 C 270 350 310 230 370 140 C 430 65 475 45 500 55 L 500 500 Z"
+            fill="url(#embarazadas-section-blob)"
+          />
+        </svg>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           
           <div className="lg:hidden text-left order-1 scroll-reveal">
@@ -157,37 +218,39 @@ export default function EmbarazadasSection({
               ref={scrollRef}
               onMouseEnter={autoScroll.onMouseEnter}
               onMouseLeave={autoScroll.onMouseLeave}
-              className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none"
+              className="flex translate-y-30 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {items.map((item, idx) => (
                 <div
                   key={`${item.imagenUrl}-${idx}`}
-                  className="w-full shrink-0 snap-start snap-always relative flex justify-center"
+                  className="w-full shrink-0 snap-start snap-always relative flex justify-center items-center py-2"
                 >
-                  <div className="rounded-global overflow-hidden">
-                    <Image
-                      src={item.imagenUrl}
-                      alt={item.alt}
-                      width={item.ancho}
-                      height={item.alto}
-                      sizes="(max-width: 1024px) 100vw, 60vw"
-                      className="w-auto h-auto max-w-full max-h-[85vh] object-contain mx-auto"
-                    />
-                  </div>
-
-                  {item.imagenSecundaria && (
-                    <div className="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 w-24 sm:w-32 md:w-40 rotate-3 rounded-global overflow-hidden border-4 border-white shadow-lg">
+                  <div className="relative">
+                    <div className="rounded-global overflow-hidden relative shadow-sm">
                       <Image
-                        src={item.imagenSecundaria}
+                        src={item.imagenUrl}
                         alt={item.alt}
-                        width={item.anchoSecundaria ?? 200}
-                        height={item.altoSecundaria ?? 200}
-                        sizes="160px"
-                        className="w-full h-auto object-cover"
+                        width={item.ancho}
+                        height={item.alto}
+                        sizes="(max-width: 1024px) 100vw, 60vw"
+                        className="w-auto h-auto max-w-full max-h-[85vh] object-contain mx-auto"
                       />
                     </div>
-                  )}
+
+                    {item.imagenSecundaria && (
+                      <div className="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 w-24 sm:w-32 md:w-40 rotate-3 rounded-global overflow-hidden border-4 border-white shadow-lg z-20">
+                        <Image
+                          src={item.imagenSecundaria}
+                          alt={item.alt}
+                          width={item.anchoSecundaria ?? 200}
+                          height={item.altoSecundaria ?? 200}
+                          sizes="160px"
+                          className="w-full h-auto object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
