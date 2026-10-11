@@ -39,29 +39,53 @@ export default function NutricionSection({ config }: NutricionSectionProps) {
   return (
     <section
       id="nutricion"
-      className="relative scroll-mt-24 py-24 bg-slate-50/70 text-slate-900 border-b border-slate-200/60 overflow-hidden w-full"
+      className={`relative scroll-mt-24 pb-24 text-slate-900 border-b border-slate-200/60 overflow-hidden w-full bg-white lg:bg-slate-50 lg:pt-24 ${
+        imagen ? "pt-[300px]" : "pt-24"
+      }`}
     >
-      <svg width="0" height="0" className="absolute" aria-hidden="true">
-        <defs>
-          <clipPath id="nutricion-silueta" clipPathUnits="objectBoundingBox">
-            <path d="M0.18,0.02 C0.45,-0.01 0.84,0 0.96,0.11 C1.02,0.19 0.98,0.44 0.91,0.61 C0.84,0.79 0.81,0.94 0.63,0.99 C0.43,1.02 0.1,1 0.03,0.92 C-0.01,0.86 0,0.31 0.02,0.15 C0.03,0.06 0.08,0.03 0.18,0.02 Z" />
-          </clipPath>
-        </defs>
-      </svg>
-
       {imagen && (
-        <div
-          className="hidden lg:block absolute inset-y-0 left-0 w-[52%] z-0 pointer-events-none"
-          style={{ clipPath: "url(#nutricion-silueta)" }}
-        >
-          <Image
-            src={imagen.imagenUrl}
-            alt={imagen.alt || "Nutrición KineFit Chile"}
-            fill
-            sizes="52vw"
-            className="object-cover object-center"
-          />
-        </div>
+        <>
+          <svg
+            className="absolute w-0 h-0 pointer-events-none"
+            aria-hidden="true"
+          >
+            <defs>
+              <clipPath
+                id="quiebreNubeNutricion"
+                clipPathUnits="objectBoundingBox"
+              >
+                <path d="M1,0 L0.6,0 C0.589,0.029 0.541,0.112 0.533,0.171 C0.526,0.23 0.561,0.298 0.554,0.355 C0.547,0.412 0.5,0.456 0.493,0.712 C0.493,0.712 0.52,0.88 0.3,1 L1,1 Z" />
+              </clipPath>
+            </defs>
+          </svg>
+
+          <div className="absolute inset-x-0 top-0 h-[280px] z-0 overflow-hidden lg:hidden">
+            <Image
+              src={imagen.imagenUrl}
+              alt={imagen.alt || "Nutrición KineFit Chile"}
+              fill
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white" />
+          </div>
+
+          <div className="hidden lg:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
+            <div className="absolute inset-y-0 left-0 right-[26%]">
+              <Image
+                src={imagen.imagenUrl}
+                alt={imagen.alt || "Nutrición KineFit Chile"}
+                fill
+                sizes="74vw"
+                className="object-cover object-center"
+              />
+            </div>
+            <div
+              className="absolute inset-0 bg-slate-50"
+              style={{ clipPath: "url(#quiebreNubeNutricion)" }}
+            />
+          </div>
+        </>
       )}
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -75,26 +99,13 @@ export default function NutricionSection({ config }: NutricionSectionProps) {
             </p>
           </div>
 
-          <div className="lg:col-span-7 scroll-reveal-scale">
-            <div className="relative flex justify-center py-10 lg:py-0">
-              {imagen && (
-                <div className="lg:hidden absolute inset-0 -mx-4 sm:-mx-6">
-                  <Image
-                    src={imagen.imagenUrl}
-                    alt={imagen.alt || "Nutrición KineFit Chile"}
-                    fill
-                    sizes="100vw"
-                    className="object-cover object-center"
-                  />
-                </div>
-              )}
-              <div className="relative w-[80%] sm:w-[60%] lg:w-[62%]">
-                <InstagramVideoCard videoUrl={videoUrl} />
-              </div>
+          <div className="lg:col-span-6 flex justify-center scroll-reveal-scale">
+            <div className="w-[80%] sm:w-[60%] lg:w-[72%]">
+              <InstagramVideoCard videoUrl={videoUrl} />
             </div>
           </div>
 
-          <div className="lg:col-span-5 text-left scroll-reveal delay-200">
+          <div className="lg:col-span-6 text-left scroll-reveal delay-200">
             <h2 className="hidden lg:block text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
               Nutrición Integral
             </h2>
