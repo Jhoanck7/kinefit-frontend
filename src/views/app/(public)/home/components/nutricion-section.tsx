@@ -95,7 +95,10 @@ export default function NutricionSection({ config }: NutricionSectionProps) {
 
           <div className="lg:col-span-6 flex justify-center scroll-reveal-scale">
             <div className="w-[80%] sm:w-[60%] lg:w-[72%]">
-              <InstagramVideoCard videoUrl={videoUrl} conSombra={false} />
+              <InstagramVideoCard
+                videoUrl={videoUrl}
+                sombra="shadow-lg shadow-black/10"
+              />
             </div>
           </div>
 
