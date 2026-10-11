@@ -102,6 +102,8 @@ export const NAV_LINKS = [
   { name: "Testimonios", href: "#testimonials" },
   { name: "Proceso", href: "#process" },
   { name: "Vouchers", href: "#vouchers" },
+  { name: "Nutrición", href: "#nutricion" },
+  { name: "Embarazadas", href: "#embarazadas" },
   { name: "Ubicación", href: "#location" },
 ];
 
