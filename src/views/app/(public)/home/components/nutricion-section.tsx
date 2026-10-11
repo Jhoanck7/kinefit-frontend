@@ -109,7 +109,7 @@ export default function NutricionSection({ config }: NutricionSectionProps) {
             <p className="hidden lg:block text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
               {titulo}
             </p>
-            <p className="text-slate-500 text-base sm:text-lg leading-relaxed whitespace-pre-line text-left">
+            <p className="text-slate-500 text-base sm:text-lg leading-relaxed whitespace-pre-line text-justify">
               {descripcion}
             </p>
           </div>
