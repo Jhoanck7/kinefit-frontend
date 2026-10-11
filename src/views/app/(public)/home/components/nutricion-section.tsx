@@ -61,7 +61,7 @@ export default function NutricionSection({ config }: NutricionSectionProps) {
               src={imagen.imagenUrl}
               alt={imagen.alt || "Nutrición KineFit Chile"}
               fill
-              sizes="100vw"
+              unoptimized
               className="object-cover object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white" />
@@ -75,7 +75,7 @@ export default function NutricionSection({ config }: NutricionSectionProps) {
               src={imagen.imagenUrl}
               alt={imagen.alt || "Nutrición KineFit Chile"}
               fill
-              sizes="42vw"
+              unoptimized
               className="object-cover object-center"
             />
           </div>
