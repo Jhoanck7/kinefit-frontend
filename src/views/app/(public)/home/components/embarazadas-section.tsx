@@ -263,7 +263,7 @@ export default function EmbarazadasSection({
                   }`}
                 >
                   <div className="relative">
-                    <div className="rounded-global overflow-hidden relative shadow-sm">
+                    <div className="rounded-global overflow-hidden relative">
                       <Image
                         src={item.imagenUrl}
                         alt={item.alt}
