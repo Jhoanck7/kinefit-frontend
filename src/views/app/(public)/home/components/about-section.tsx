@@ -36,7 +36,7 @@ export default function AboutSection({
 
           {/* 3. Descripción: Tercero en móvil, segunda fila izquierda en escritorio */}
           <div className="order-3 lg:col-span-7 scroll-reveal delay-200">
-            <p className="text-slate-600 text-base sm:text-lg leading-relaxed whitespace-pre-line text-left">
+            <p className="text-slate-600 text-base sm:text-lg leading-relaxed whitespace-pre-line text-justify hyphens-auto">
               {config.aboutDescription ||
                 "En Kinefit Chile combinamos kinesiología clínica ortopédica, entrenamiento de readaptación funcional y masoterapia de alta gama. Nuestro equipo trabaja de forma personalizada para diagnosticar, tratar y prevenir lesiones, acompañándote paso a paso en tu proceso de recuperación."}
             </p>

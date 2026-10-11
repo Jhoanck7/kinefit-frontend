@@ -43,7 +43,7 @@ export default function Footer() {
                 sizes="192px"
               />
             </div>
-            <p className="text-sm leading-relaxed text-slate-500 mt-2">
+            <p className="text-sm leading-relaxed text-slate-500 mt-2 text-justify hyphens-auto">
               {heroDescription}
             </p>
           </div>
