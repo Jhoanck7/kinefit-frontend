@@ -50,11 +50,8 @@ export default function NutricionSection({ config }: NutricionSectionProps) {
             aria-hidden="true"
           >
             <defs>
-              <clipPath
-                id="quiebreNubeNutricion"
-                clipPathUnits="objectBoundingBox"
-              >
-                <path d="M1,0 L0.6,0 C0.589,0.029 0.541,0.112 0.533,0.171 C0.526,0.23 0.561,0.298 0.554,0.355 C0.547,0.412 0.5,0.456 0.493,0.712 C0.493,0.712 0.52,0.88 0.3,1 L1,1 Z" />
+              <clipPath id="siluetaNutricion" clipPathUnits="objectBoundingBox">
+                <path d="M0,0 L0.62,0 C0.86,0 1,0.12 0.98,0.3 C0.96,0.48 0.86,0.6 0.88,0.76 C0.9,0.92 0.78,1 0.6,1 L0,1 Z" />
               </clipPath>
             </defs>
           </svg>
@@ -70,19 +67,16 @@ export default function NutricionSection({ config }: NutricionSectionProps) {
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white" />
           </div>
 
-          <div className="hidden lg:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
-            <div className="absolute inset-y-0 left-0 right-[26%]">
-              <Image
-                src={imagen.imagenUrl}
-                alt={imagen.alt || "Nutrición KineFit Chile"}
-                fill
-                sizes="74vw"
-                className="object-cover object-center"
-              />
-            </div>
-            <div
-              className="absolute inset-0 bg-slate-50"
-              style={{ clipPath: "url(#quiebreNubeNutricion)" }}
+          <div
+            className="hidden lg:block absolute top-10 bottom-10 left-0 w-[42%] z-0 pointer-events-none"
+            style={{ clipPath: "url(#siluetaNutricion)" }}
+          >
+            <Image
+              src={imagen.imagenUrl}
+              alt={imagen.alt || "Nutrición KineFit Chile"}
+              fill
+              sizes="42vw"
+              className="object-cover object-center"
             />
           </div>
         </>
