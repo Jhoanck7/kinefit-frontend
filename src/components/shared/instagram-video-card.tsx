@@ -7,12 +7,14 @@ import React, { useEffect } from "react";
 export interface InstagramVideoCardProps {
   videoUrl?: string;
   className?: string;
+  conSombra?: boolean;
 }
 
 /** Muestra un video de Instagram embebido o un enlace directo dentro de una tarjeta con estilo de marca */
 export function InstagramVideoCard({
   videoUrl = "https://www.instagram.com/kinefit.chile",
   className = "",
+  conSombra = true,
 }: InstagramVideoCardProps) {
   // Detecta si la URL es un video directo, un post/reel de Instagram o un enlace genérico
   const getEmbedUrl = (
@@ -61,7 +63,13 @@ export function InstagramVideoCard({
         }}
       />
 
-      <div className="relative w-full max-w-[420px] rounded-2xl lg:rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-xl shadow-slate-200/50 group transition-all duration-300 hover:shadow-2xl hover:shadow-slate-200/80">
+      <div
+        className={`relative w-full max-w-[420px] rounded-2xl lg:rounded-3xl overflow-hidden border border-slate-200 bg-white group transition-all duration-300 ${
+          conSombra
+            ? "shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:shadow-slate-200/80"
+            : ""
+        }`}
+      >
         <div className="bg-slate-50/90 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-slate-200 text-slate-900 z-20 relative">
           <a
             href={videoUrl}
