@@ -7,10 +7,10 @@ import { AdminPanelButton } from "@/components/shared";
 import { NAV_LINKS } from "@/lib/utils";
 import { LandingConfigResponse } from "@/models/responses";
 
-function tieneVouchers(config?: LandingConfigResponse | null) {
-  if (!config?.vouchersJson) return false;
+function tieneItems(json?: string | null) {
+  if (!json) return false;
   try {
-    const parsed = JSON.parse(config.vouchersJson);
+    const parsed = JSON.parse(json);
     return Array.isArray(parsed) && parsed.length > 0;
   } catch {
     return false;
@@ -25,9 +25,16 @@ export default function Navbar({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const navLinks = tieneVouchers(config)
-    ? NAV_LINKS
-    : NAV_LINKS.filter(link => link.href !== "#vouchers");
+  const reservasHabilitadas = config?.reservasHabilitadas !== false;
+  const navLinks = NAV_LINKS.filter(
+    link =>
+      (link.href !== "#vouchers" || tieneItems(config?.vouchersJson)) &&
+      (link.href !== "#embarazadas" || tieneItems(config?.embarazadasJson))
+  ).map(link =>
+    link.href === "#agendamiento" && !reservasHabilitadas
+      ? { ...link, href: "#" }
+      : link
+  );
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 py-2">
@@ -49,7 +56,7 @@ export default function Navbar({
             </a>
           </div>
 
-          <div className="hidden md:flex items-center gap-x-8 ml-auto">
+          <div className="hidden xl:flex items-center gap-x-6 ml-auto">
             {navLinks.map(link => (
               <a
                 key={link.name}
@@ -62,7 +69,7 @@ export default function Navbar({
             <AdminPanelButton />
           </div>
 
-          <div className="md:hidden flex items-center">
+          <div className="xl:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
@@ -106,7 +113,7 @@ export default function Navbar({
       </div>
 
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-b border-slate-300 py-4 px-6">
+        <div className="xl:hidden bg-white border-t border-b border-slate-300 py-4 px-6">
           <div className="flex flex-col gap-3">
             {navLinks.map(link => (
               <a
