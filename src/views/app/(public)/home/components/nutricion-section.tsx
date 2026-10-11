@@ -39,7 +39,7 @@ export default function NutricionSection({ config }: NutricionSectionProps) {
   return (
     <section
       id="nutricion"
-      className="scroll-mt-24 py-24 bg-slate-50/70 text-slate-900 border-b border-slate-200/60 overflow-hidden w-full"
+      className="relative scroll-mt-24 py-24 bg-slate-50/70 text-slate-900 border-b border-slate-200/60 overflow-hidden w-full"
     >
       <svg width="0" height="0" className="absolute" aria-hidden="true">
         <defs>
@@ -49,7 +49,22 @@ export default function NutricionSection({ config }: NutricionSectionProps) {
         </defs>
       </svg>
 
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      {imagen && (
+        <div
+          className="hidden lg:block absolute inset-y-0 left-0 w-[52%] z-0 pointer-events-none"
+          style={{ clipPath: "url(#nutricion-silueta)" }}
+        >
+          <Image
+            src={imagen.imagenUrl}
+            alt={imagen.alt || "Nutrición KineFit Chile"}
+            fill
+            sizes="52vw"
+            className="object-cover object-center"
+          />
+        </div>
+      )}
+
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           <div className="lg:hidden text-left scroll-reveal">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-brand-primary mb-3">
@@ -61,29 +76,22 @@ export default function NutricionSection({ config }: NutricionSectionProps) {
           </div>
 
           <div className="lg:col-span-7 scroll-reveal-scale">
-            {imagen ? (
-              <div className="relative mx-auto w-full max-w-md lg:max-w-none py-10 sm:py-14">
-                <div
-                  className="absolute inset-y-0 left-0 w-[78%]"
-                  style={{ clipPath: "url(#nutricion-silueta)" }}
-                >
+            <div className="relative flex justify-center py-10 lg:py-0">
+              {imagen && (
+                <div className="lg:hidden absolute inset-0 -mx-4 sm:-mx-6">
                   <Image
                     src={imagen.imagenUrl}
                     alt={imagen.alt || "Nutrición KineFit Chile"}
                     fill
-                    sizes="(max-width: 1024px) 80vw, 45vw"
-                    className="object-cover"
+                    sizes="100vw"
+                    className="object-cover object-center"
                   />
                 </div>
-                <div className="relative ml-[22%] w-[70%] sm:ml-[26%] sm:w-[46%]">
-                  <InstagramVideoCard videoUrl={videoUrl} />
-                </div>
-              </div>
-            ) : (
-              <div className="flex justify-center">
+              )}
+              <div className="relative w-[80%] sm:w-[60%] lg:w-[62%]">
                 <InstagramVideoCard videoUrl={videoUrl} />
               </div>
-            )}
+            </div>
           </div>
 
           <div className="lg:col-span-5 text-left scroll-reveal delay-200">
