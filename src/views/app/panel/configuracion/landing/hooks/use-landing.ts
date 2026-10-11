@@ -298,7 +298,6 @@ export const useLanding = () => {
     });
   }
 
-<<<<<<< HEAD
   function handleAgregarNutricion() {
     setNutricion(prev => [
       ...prev,
