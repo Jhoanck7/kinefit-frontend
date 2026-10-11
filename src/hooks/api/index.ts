@@ -62,10 +62,10 @@ export {
 } from "./use-empresa-service";
 export {
   useCreateEspecialistaMutation,
-  useDeleteEspecialistaMutation,
   useGetEspecialistas,
   useUpdateEspecialistaEstadoMutation,
   useUpdateEspecialistaMutation,
+  useUpdateEspecialistasOrdenMutation,
 } from "./use-especialista-service";
 export {
   useCreateHorarioCentroMutation,

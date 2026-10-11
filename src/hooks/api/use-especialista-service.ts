@@ -70,11 +70,12 @@ export const useUpdateEspecialistaEstadoMutation = () => {
   });
 };
 
-/** Elimina un especialista */
-export const useDeleteEspecialistaMutation = () => {
+/** Guarda el orden en que se muestran los especialistas */
+export const useUpdateEspecialistasOrdenMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: number) => especialistaService.deleteEspecialista(id),
+    mutationFn: (especialistaIds: number[]) =>
+      especialistaService.updateOrden(especialistaIds),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["especialistas"] });
     },

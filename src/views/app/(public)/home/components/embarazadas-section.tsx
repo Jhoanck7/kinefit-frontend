@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowRight, Clock, Gift, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import Image from "next/image";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 
+import { Alerta } from "@/components/shared";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +13,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useAutoScroll } from "@/hooks/common";
 import { EmbarazadaItem, LandingConfigResponse } from "@/models/responses";
 
 /** Sección con carrusel de imágenes y detalles del servicio de masoterapia para embarazadas */
@@ -22,7 +22,7 @@ export default function EmbarazadasSection({
   config: LandingConfigResponse;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const autoScroll = useAutoScroll(scrollRef);
+  const [activo, setActivo] = useState(0);
 
   let items: EmbarazadaItem[] = [];
   if (config.embarazadasJson) {
@@ -32,9 +32,22 @@ export default function EmbarazadasSection({
     } catch {}
   }
 
+  const estaApilado = () => {
+    const el = scrollRef.current;
+    return Boolean(el && el.scrollWidth <= el.clientWidth);
+  };
+
+  const cambiarActivo = (paso: number) => {
+    setActivo(i => (i + paso + items.length) % items.length);
+  };
+
   if (items.length === 0) return null;
 
   const scroll = (direction: "left" | "right") => {
+    if (estaApilado()) {
+      cambiarActivo(direction === "left" ? -1 : 1);
+      return;
+    }
     if (scrollRef.current) {
       const width = scrollRef.current.clientWidth;
       const amount = direction === "left" ? -width : width;
@@ -139,55 +152,76 @@ export default function EmbarazadasSection({
                 <DialogTrigger asChild>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-2 text-xs font-semibold text-brand-primary hover:text-brand-primary-hover hover:underline transition-colors cursor-pointer"
+                    className="text-brand-primary hover:text-brand-primary-hover font-bold text-xs uppercase tracking-wider cursor-pointer"
                   >
-                    <span>Ver más detalles</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    Leer más
                   </button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8">
-                  <DialogHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="text-left">
-                        <DialogTitle className="text-xl sm:text-2xl font-extrabold text-slate-900">
-                          Masoterapia para Embarazadas
-                        </DialogTitle>
-                      </div>
-                    </div>
+                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-10">
+                  <DialogHeader className="text-left">
+                    <DialogTitle className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+                      Masoterapia para Embarazadas
+                    </DialogTitle>
                     <DialogDescription className="sr-only">
-                      Detalles completos de los masajes y drenaje linfático para embarazadas en KineFit Chile.
+                      Detalles completos de los masajes y drenaje linfático para
+                      embarazadas en KineFit Chile.
                     </DialogDescription>
                   </DialogHeader>
 
-                  <div className="space-y-5 mt-4 text-left">
-                    <div className="rounded-xl bg-slate-50 p-5 border border-slate-200/80 space-y-3">
-                      <p className="text-slate-600 text-sm leading-relaxed text-justify">
-                        En KineFit Chile somos referentes en masajes para embarazadas, contamos con implementación especializada, nueva, segura y de alta calidad, diseñada para entregar comodidad durante la gestación y permitirte volver a disfrutar, por un momento, de la sensación de descansar boca abajo.
+                  <div className="mt-2 divide-y divide-slate-200 text-left">
+                    <section className="pb-7">
+                      <h3 className="text-base font-bold text-slate-900 mb-3">
+                        Masaje para embarazadas
+                      </h3>
+                      <p className="text-slate-600 text-sm sm:text-base leading-relaxed text-justify hyphens-auto">
+                        En KineFit Chile somos referentes en masajes para
+                        embarazadas, contamos con implementación especializada,
+                        nueva, segura y de alta calidad, diseñada para entregar
+                        comodidad durante la gestación y permitirte volver a
+                        disfrutar, por un momento, de la sensación de descansar
+                        boca abajo.
                       </p>
-                      <div className="pt-2.5 border-t border-slate-200/60 flex items-start gap-2.5 text-slate-600 text-xs sm:text-sm text-justify">
-                        <Gift className="w-4 h-4 text-brand-primary shrink-0 mt-0.5" />
-                        <p>
-                          Nuestras profesionales están capacitadas para acompañarte en esta etapa, además, es una experiencia ideal para regalar a tu pareja, amiga o futura mamá, permitiéndole desconectarse, relajarse y vivir la experiencia KineFit Chile.
-                        </p>
-                      </div>
-                    </div>
+                    </section>
 
-                    <div className="rounded-xl bg-slate-50 p-5 border border-slate-200/80 space-y-3">
-                      <p className="text-slate-600 text-sm leading-relaxed text-justify">
-                        También contamos con drenaje linfático especializado para piernas cansadas durante el embarazo, un tratamiento suave y seguro pensado para aliviar la sensación de pesadez, hinchazón y fatiga.
-                      </p>
-                      <div className="pt-2.5 border-t border-slate-200/60 flex items-start gap-2.5 text-slate-600 text-xs sm:text-sm text-justify">
-                        <Clock className="w-4 h-4 text-brand-primary shrink-0 mt-0.5" />
+                    <section className="py-7">
+                      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 mb-3">
+                        <h3 className="text-base font-bold text-slate-900">
+                          Drenaje linfático para piernas cansadas
+                        </h3>
+                        <span className="text-xs font-semibold text-slate-500">
+                          30 minutos
+                        </span>
+                      </div>
+                      <div className="space-y-3 text-slate-600 text-sm sm:text-base leading-relaxed text-justify hyphens-auto">
                         <p>
-                          Mediante delicadas maniobras de drenaje linfático manual, favorecemos el retorno linfático y ayudamos a disminuir la sensación de retención de líquidos, proporcionando descanso, alivio y bienestar. Una experiencia de 30 minutos dedicada a cuidar de ti y acompañarte en esta hermosa etapa.
+                          También contamos con drenaje linfático especializado
+                          para piernas cansadas durante el embarazo, un
+                          tratamiento suave y seguro pensado para aliviar la
+                          sensación de pesadez, hinchazón y fatiga.
+                        </p>
+                        <p>
+                          Mediante delicadas maniobras de drenaje linfático
+                          manual, favorecemos el retorno linfático y ayudamos a
+                          disminuir la sensación de retención de líquidos,
+                          proporcionando descanso, alivio y bienestar. Una
+                          experiencia de 30 minutos dedicada a cuidar de ti y
+                          acompañarte en esta hermosa etapa.
                         </p>
                       </div>
+                    </section>
+
+                    <div className="pt-7">
+                      <Alerta tono="info" className="text-justify hyphens-auto">
+                        Nuestras profesionales están capacitadas para
+                        acompañarte en esta etapa, además, es una experiencia
+                        ideal para regalar a tu pareja, amiga o futura mamá,
+                        permitiéndole desconectarse, relajarse y vivir la
+                        experiencia KineFit Chile.
+                      </Alerta>
                     </div>
                   </div>
                 </DialogContent>
               </Dialog>
-
-              <span className="text-slate-300">•</span>
 
               <Dialog>
                 <DialogTrigger asChild>
@@ -216,15 +250,17 @@ export default function EmbarazadasSection({
           <div className="lg:col-span-7 relative group order-2 lg:order-2 scroll-reveal-scale">
             <div
               ref={scrollRef}
-              onMouseEnter={autoScroll.onMouseEnter}
-              onMouseLeave={autoScroll.onMouseLeave}
-              className="flex translate-y-30 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none"
+              className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none lg:grid lg:overflow-hidden lg:snap-none"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {items.map((item, idx) => (
                 <div
                   key={`${item.imagenUrl}-${idx}`}
-                  className="w-full shrink-0 snap-start snap-always relative flex justify-center items-center py-2"
+                  className={`w-full shrink-0 snap-start snap-always relative flex justify-center items-center py-2 lg:col-start-1 lg:row-start-1 lg:transition-opacity lg:duration-1000 lg:ease-in-out ${
+                    idx === activo
+                      ? "lg:opacity-100 lg:z-10"
+                      : "lg:opacity-0 lg:z-0 lg:pointer-events-none"
+                  }`}
                 >
                   <div className="relative">
                     <div className="rounded-global overflow-hidden relative shadow-sm">

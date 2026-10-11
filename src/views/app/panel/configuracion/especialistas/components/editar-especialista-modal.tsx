@@ -25,7 +25,6 @@ interface EditarEspecialistaModalProps {
   ) => void;
   onServicioIdsChange: (ids: number[]) => void;
   onFotoChange: (secureUrl: string, publicId?: string) => void;
-  onSolicitarEliminacion: () => void;
   onSubmit: (e: React.FormEvent) => void;
 }
 
@@ -41,7 +40,6 @@ export function EditarEspecialistaModal({
   onCampoChange,
   onServicioIdsChange,
   onFotoChange,
-  onSolicitarEliminacion,
   onSubmit,
 }: EditarEspecialistaModalProps) {
   return (
@@ -52,20 +50,7 @@ export function EditarEspecialistaModal({
             <h2 className="font-sans text-section-title font-bold text-foreground">
               Editar Perfil del Integrante
             </h2>
-            <div className="flex items-center gap-4">
-              <button
-                type="button"
-                onClick={e => {
-                  e.stopPropagation();
-                  onSolicitarEliminacion();
-                }}
-                className="inline-flex items-center gap-1.5 rounded-overlay border border-slate-200 bg-white px-3 py-1.5 font-sans text-xs font-bold text-foreground transition-all hover:bg-slate-50"
-                title="Eliminar especialista"
-              >
-                Eliminar
-              </button>
-              <ModalCloseButton onClick={onCerrar} />
-            </div>
+            <ModalCloseButton onClick={onCerrar} />
           </div>
 
           {error && (

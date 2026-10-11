@@ -3,7 +3,6 @@
 import Image from "next/image";
 import React, { useRef } from "react";
 
-import { useAutoScroll } from "@/hooks/common";
 import {
   EspecialistaResponse,
   LandingConfigResponse,
@@ -49,8 +48,6 @@ export default function TeamSection({
     }
   };
 
-  const autoScroll = useAutoScroll(scrollRef);
-
   return (
     <section
       id="team"
@@ -73,8 +70,6 @@ export default function TeamSection({
         <div className="relative max-w-lg md:max-w-none mx-auto group scroll-reveal-scale delay-150">
           <div
             ref={scrollRef}
-            onMouseEnter={autoScroll.onMouseEnter}
-            onMouseLeave={autoScroll.onMouseLeave}
             className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory py-4 px-4 scrollbar-none scroll-pl-4"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >

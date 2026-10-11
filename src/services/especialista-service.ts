@@ -45,10 +45,10 @@ export class EspecialistaService extends BaseApiService {
     );
   }
 
-  deleteEspecialista(id: number) {
-    return this.httpClient.delete<ApiResponse<boolean>>(
-      `${this.baseURL}/${id}`
-    );
+  updateOrden(especialistaIds: number[]) {
+    return this.httpClient.put<ApiResponse<boolean>>(`${this.baseURL}/orden`, {
+      especialistaIds,
+    });
   }
 }
 

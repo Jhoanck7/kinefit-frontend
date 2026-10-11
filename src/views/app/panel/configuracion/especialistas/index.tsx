@@ -9,12 +9,11 @@ import { useGetUsuariosPersonal } from "@/hooks/api";
 import {
   CrearEspecialistaModal,
   EditarEspecialistaModal,
-  EliminarEspecialistaModal,
   EspecialistaCard,
 } from "./components";
 import { useEspecialistas } from "./hooks";
 
-/** Página de gestión del equipo: lista especialistas y permite crearlos, editarlos y eliminarlos */
+/** Página de gestión del equipo: lista especialistas y permite crearlos y editarlos */
 export default function EspecialistasView() {
   const router = useRouter();
   const { data: usuariosPersonal = [] } = useGetUsuariosPersonal(false);
@@ -36,7 +35,6 @@ export default function EspecialistasView() {
     nuevosServicioIds,
     nuevaFotoUrl,
     errorCrear,
-    especialistaAEliminar,
     especialistaAEditarId,
     editFormData,
     editServicioIds,
@@ -44,7 +42,6 @@ export default function EspecialistasView() {
     notificacion,
     creando,
     guardando,
-    eliminando,
     cambiandoEstadoId,
     actions,
   } = useEspecialistas();
@@ -139,15 +136,7 @@ export default function EspecialistasView() {
         onCampoChange={actions.handleEditarCampo}
         onServicioIdsChange={actions.setEditServicioIds}
         onFotoChange={actions.handleEditarFotoChange}
-        onSolicitarEliminacion={actions.handleSolicitarEliminacion}
         onSubmit={actions.handleGuardarEspecialista}
-      />
-
-      <EliminarEspecialistaModal
-        especialista={especialistaAEliminar}
-        onCancelar={actions.handleCancelarEliminacion}
-        onConfirmar={actions.handleConfirmarEliminacion}
-        eliminando={eliminando}
       />
 
       <Modal

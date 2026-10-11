@@ -40,6 +40,7 @@ export default function LandingView() {
     vouchers,
     embarazadas,
     nutricion,
+    especialistas,
     limiteResenas,
     cargando,
     guardando,
@@ -249,12 +250,56 @@ export default function LandingView() {
                   )}
 
                   {seccionActiva === "team" && (
-                    <Alerta tono="info" className="mt-6">
-                      <strong>Nota:</strong> Las cartas de los especialistas
-                      (foto, nombre, rol, especialidad) se configuran
-                      individualmente en la pestaña{" "}
-                      <strong>Especialistas</strong> de Configuración.
-                    </Alerta>
+                    <div className="space-y-4 pt-4 border-t border-slate-200 mt-4">
+                      <h3 className="font-sans text-label font-bold text-foreground">
+                        Orden en el sitio ({especialistas.length})
+                      </h3>
+
+                      {especialistas.map((especialista, idx) => (
+                        <div
+                          key={especialista.id}
+                          className="flex items-center justify-between gap-4 rounded-none border border-slate-200 bg-white px-4 py-3"
+                        >
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-slate-800 truncate">
+                              {idx + 1}. {especialista.nombre}
+                            </p>
+                            <p className="text-[11px] text-slate-500 truncate">
+                              {especialista.cargo}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0">
+                            <button
+                              type="button"
+                              disabled={idx === 0}
+                              onClick={() =>
+                                actions.handleMoverEspecialista(idx, "arriba")
+                              }
+                              className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                            >
+                              Subir
+                            </button>
+                            <button
+                              type="button"
+                              disabled={idx === especialistas.length - 1}
+                              onClick={() =>
+                                actions.handleMoverEspecialista(idx, "abajo")
+                              }
+                              className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                            >
+                              Bajar
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+
+                      <Alerta tono="info">
+                        <strong>Nota:</strong> Las cartas de los especialistas
+                        (foto, nombre, rol, especialidad) se configuran
+                        individualmente en la pestaña{" "}
+                        <strong>Especialistas</strong> de Configuración.
+                      </Alerta>
+                    </div>
                   )}
 
                   {seccionActiva === "process" && (
