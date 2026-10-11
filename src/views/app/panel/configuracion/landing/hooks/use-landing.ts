@@ -263,24 +263,6 @@ export const useLanding = () => {
     });
   }
 
-  function handleEmbarazadaImagenSecundariaChange(
-    index: number,
-    imagenSecundaria: string,
-    anchoSecundaria: number,
-    altoSecundaria: number
-  ) {
-    setEmbarazadas(prev => {
-      const copy = [...prev];
-      copy[index] = {
-        ...copy[index],
-        imagenSecundaria,
-        anchoSecundaria,
-        altoSecundaria,
-      };
-      return copy;
-    });
-  }
-
   function handleEliminarEmbarazada(index: number) {
     setEmbarazadas(prev => prev.filter((_, i) => i !== index));
   }
@@ -459,7 +441,6 @@ export const useLanding = () => {
       handleAgregarEmbarazada,
       handleEmbarazadaAltChange,
       handleEmbarazadaImagenChange,
-      handleEmbarazadaImagenSecundariaChange,
       handleEliminarEmbarazada,
       handleMoverEmbarazada,
       handleAgregarNutricion,

@@ -9,15 +9,12 @@ export interface VoucherItem {
   altoBlanco: number;
 }
 
-/** Imagen de la sección de embarazadas, con una variante secundaria opcional */
+/** Imagen de la sección de embarazadas */
 export interface EmbarazadaItem {
   alt: string;
   imagenUrl: string;
   ancho: number;
   alto: number;
-  imagenSecundaria?: string;
-  anchoSecundaria?: number;
-  altoSecundaria?: number;
 }
 
 /** Imagen de la sección de nutrición */

@@ -273,19 +273,6 @@ export default function EmbarazadasSection({
                         className="w-auto h-auto max-w-full max-h-[85vh] object-contain mx-auto"
                       />
                     </div>
-
-                    {item.imagenSecundaria && (
-                      <div className="absolute bottom-3 right-3 sm:bottom-6 sm:right-6 w-24 sm:w-32 md:w-40 rotate-3 rounded-global overflow-hidden border-4 border-white shadow-lg z-20">
-                        <Image
-                          src={item.imagenSecundaria}
-                          alt={item.alt}
-                          width={item.anchoSecundaria ?? 200}
-                          height={item.altoSecundaria ?? 200}
-                          sizes="160px"
-                          className="w-full h-auto object-cover"
-                        />
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}

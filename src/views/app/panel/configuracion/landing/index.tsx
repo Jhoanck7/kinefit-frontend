@@ -795,44 +795,19 @@ export default function LandingView() {
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              <ImageUploader
-                                etiqueta="Foto Principal (requerida)"
-                                value={item.imagenUrl}
-                                onChange={(
+                            <ImageUploader
+                              etiqueta="Foto (requerida)"
+                              value={item.imagenUrl}
+                              onChange={(secureUrl, _publicId, width, height) =>
+                                actions.handleEmbarazadaImagenChange(
+                                  idx,
                                   secureUrl,
-                                  _publicId,
-                                  width,
-                                  height
-                                ) =>
-                                  actions.handleEmbarazadaImagenChange(
-                                    idx,
-                                    secureUrl,
-                                    width || 0,
-                                    height || 0
-                                  )
-                                }
-                                folder="kinefit/embarazadas"
-                              />
-                              <ImageUploader
-                                etiqueta="Foto Flotante Secundaria (opcional)"
-                                value={item.imagenSecundaria}
-                                onChange={(
-                                  secureUrl,
-                                  _publicId,
-                                  width,
-                                  height
-                                ) =>
-                                  actions.handleEmbarazadaImagenSecundariaChange(
-                                    idx,
-                                    secureUrl,
-                                    width || 0,
-                                    height || 0
-                                  )
-                                }
-                                folder="kinefit/embarazadas"
-                              />
-                            </div>
+                                  width || 0,
+                                  height || 0
+                                )
+                              }
+                              folder="kinefit/embarazadas"
+                            />
 
                             <TextField
                               etiqueta="Texto Alternativo (obligatorio)"
