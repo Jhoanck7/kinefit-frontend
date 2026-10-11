@@ -247,7 +247,7 @@ export default function EmbarazadasSection({
             </div>
           </div>
 
-          <div className="lg:col-span-7 relative group order-2 lg:order-2 scroll-reveal-scale">
+          <div className="lg:col-span-7 relative translate-y-30 group order-2 lg:order-2 scroll-reveal-scale">
             <div
               ref={scrollRef}
               className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none lg:grid lg:overflow-hidden lg:snap-none"
