@@ -34,9 +34,9 @@ export const defaultMetadata: Metadata = {
   ],
   authors: [{ name: "Kinefit" }],
   icons: {
-    icon: "/Kinefit Negro ver.png",
-    shortcut: "/Kinefit Negro ver.png",
-    apple: "/Kinefit Negro ver.png",
+    icon: "/KINEFIT_LOGO.jpg",
+    shortcut: "/KINEFIT_LOGO.jpg",
+    apple: "/KINEFIT_LOGO.jpg",
   },
   creator: "Kinefit",
   publisher: "Kinefit",
@@ -57,7 +57,7 @@ export const defaultMetadata: Metadata = {
     siteName: "Kinefit",
     images: [
       {
-        url: "/Kinefit color.png",
+        url: "/KINEFIT_LOGO.jpg",
         width: 1200,
         height: 1200,
         alt: "Kinefit Chile",
@@ -69,7 +69,7 @@ export const defaultMetadata: Metadata = {
     title: "Kinefit - Centro de Kinesiología y Masoterapia",
     description:
       "Centro de rehabilitación kinésica, entrenamiento funcional y bienestar integral.",
-    images: ["/Kinefit color.png"],
+    images: ["/KINEFIT_LOGO.jpg"],
   },
 };
 
