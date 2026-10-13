@@ -1,0 +1,48 @@
+import { ApiResponse } from "@/models/generics";
+import { LoginPersonalRequest, UpdatePerfilRequest } from "@/models/requests";
+import { MiPerfilResponse, PersonalLoginResponse } from "@/models/responses";
+import { axiosInstanceSinSesion } from "@/providers";
+import { AuthGoogleResponse } from "@/types";
+
+import { BaseApiService } from "./base-api-service";
+
+/** Consume los endpoints de autenticación y perfil del personal y del login con Google */
+export class AuthService extends BaseApiService {
+  constructor() {
+    super("/auth");
+  }
+
+  loginPersonal(data: LoginPersonalRequest) {
+    return axiosInstanceSinSesion.post<ApiResponse<PersonalLoginResponse>>(
+      `${this.baseURL}/personal`,
+      data
+    );
+  }
+
+  loginWithGoogleToken(
+    idToken: string,
+    consentimientoAceptado: boolean,
+    rut?: string
+  ) {
+    return axiosInstanceSinSesion.post<AuthGoogleResponse>(
+      `${this.baseURL}/google`,
+      { idToken, consentimientoAceptado, rut }
+    );
+  }
+
+  updatePerfil(data: UpdatePerfilRequest, token: string) {
+    return this.httpClient.patch<ApiResponse<{ message: string }>>(
+      `${this.baseURL}/perfil`,
+      data,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  getMiPerfil() {
+    return this.httpClient.get<ApiResponse<MiPerfilResponse>>(
+      `${this.baseURL}/personal/me`
+    );
+  }
+}
+
+export const authService = new AuthService();

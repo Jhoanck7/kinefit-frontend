@@ -1,0 +1,204 @@
+"use client";
+
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import {
+  useGetFechasDisponibles,
+  useGetHorasDisponibles,
+  useGetPacientePerfil,
+} from "@/hooks/api";
+import { useHoyPanel } from "@/hooks/common";
+import { desdeFechaISO, fechaISO } from "@/lib/formato";
+import {
+  bloquesRequeridos,
+  sonConsecutivas,
+  sumarMinutos,
+} from "@/lib/horario";
+import { useNuevaReservaStore } from "@/stores";
+
+import { PASOS_NUEVA_RESERVA } from "../../pasos";
+
+export { PASOS_NUEVA_RESERVA };
+
+const DURACION_BLOQUE_MIN = 30;
+const MAX_BLOQUES = 3;
+const LIMITE_MANANA = "13:00";
+
+/** Gestiona la selección de fecha y bloques horarios del asistente de reserva, validando consecutividad y duración del servicio */
+export const useHorario = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const hoy = useHoyPanel();
+  const {
+    fecha,
+    horasSeleccionadas,
+    pacienteNombre,
+    especialistaNombre,
+    servicioId,
+    servicioNombre,
+    servicioDuracionMinutos,
+    setHorario,
+    setPaciente,
+  } = useNuevaReservaStore();
+
+  const duracionFijaDelServicio = Boolean(servicioDuracionMinutos);
+  const bloquesExigidos = duracionFijaDelServicio
+    ? bloquesRequeridos(servicioDuracionMinutos)
+    : 0;
+  const duracionServicioEfectiva =
+    servicioDuracionMinutos ?? DURACION_BLOQUE_MIN;
+
+  const [errorSeleccion, setErrorSeleccion] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!hoy) return;
+
+    const fechaParam = searchParams.get("fecha");
+    const horaParam = searchParams.get("hora");
+
+    if (fechaParam && !fecha) {
+      setHorario(desdeFechaISO(fechaParam), horaParam ? [horaParam] : []);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hoy]);
+
+  const pacienteIdParam = searchParams.get("pacienteId");
+  const pacienteIdParamNum = pacienteIdParam
+    ? Number(pacienteIdParam)
+    : undefined;
+  const { data: pacientePorParam } = useGetPacientePerfil(
+    pacienteIdParamNum ?? 0,
+    Boolean(pacienteIdParamNum)
+  );
+
+  useEffect(() => {
+    if (pacientePorParam) {
+      setPaciente(
+        pacientePorParam.id,
+        `${pacientePorParam.nombre} ${pacientePorParam.apellido}`
+      );
+    }
+  }, [pacientePorParam, setPaciente]);
+
+  const fechaIso = fecha ? fechaISO(fecha) : "";
+
+  const { data: fechasDisponibles = [] } = useGetFechasDisponibles(
+    servicioId ?? 0,
+    duracionServicioEfectiva,
+    Boolean(servicioId)
+  );
+  const { data: horas = [], isLoading } = useGetHorasDisponibles(
+    servicioId ?? 0,
+    fechaIso,
+    duracionServicioEfectiva,
+    Boolean(servicioId) && Boolean(fecha)
+  );
+
+  const esFechaHoy =
+    Boolean(fecha) && Boolean(hoy) && fechaIso === fechaISO(hoy!);
+  const horaActualHHMM = hoy
+    ? `${hoy.getHours().toString().padStart(2, "0")}:${hoy.getMinutes().toString().padStart(2, "0")}`
+    : null;
+  const horasVigentes =
+    esFechaHoy && horaActualHHMM
+      ? horas.filter(h => h > horaActualHHMM)
+      : horas;
+  const manana = horasVigentes.filter(h => h < LIMITE_MANANA);
+  const tarde = horasVigentes.filter(h => h >= LIMITE_MANANA);
+  const duracionMin = horasSeleccionadas.length * DURACION_BLOQUE_MIN;
+  const horaInicio = [...horasSeleccionadas].sort()[0] ?? null;
+  const horaTerminoCalculada = horaInicio
+    ? sumarMinutos(horaInicio, duracionMin)
+    : null;
+  const sinDisponibilidadEnFecha =
+    Boolean(fecha) && !isLoading && horasVigentes.length === 0;
+
+  const handleSeleccionarHora = (hora: string) => {
+    if (!fecha) return;
+
+    const yaSeleccionada = horasSeleccionadas.includes(hora);
+    let nuevas: string[];
+
+    const maxBloques = duracionFijaDelServicio ? bloquesExigidos : MAX_BLOQUES;
+
+    if (yaSeleccionada) {
+      nuevas = horasSeleccionadas.filter(h => h !== hora);
+    } else {
+      if (horasSeleccionadas.length >= maxBloques) {
+        setErrorSeleccion(
+          duracionFijaDelServicio
+            ? `Este servicio dura ${servicioDuracionMinutos} min (${bloquesExigidos} bloque(s)).`
+            : "Puedes reservar como máximo 3 bloques (90 minutos)."
+        );
+        return;
+      }
+      nuevas = [...horasSeleccionadas, hora].sort();
+    }
+
+    if (nuevas.length > 1 && !sonConsecutivas(nuevas)) {
+      setErrorSeleccion(
+        "Los bloques deben ser consecutivos. Selecciona horarios seguidos."
+      );
+      return;
+    }
+
+    setErrorSeleccion(null);
+    setHorario(fecha, nuevas);
+  };
+
+  const handleCambiarFecha = (valor: string) => {
+    if (!valor) return;
+    setErrorSeleccion(null);
+    setHorario(desdeFechaISO(valor), []);
+  };
+
+  const handleVolver = () => router.push("/panel/nueva-reserva/servicio");
+  const handleContinuar = () => {
+    if (horasSeleccionadas.length === 0) {
+      setErrorSeleccion("Selecciona al menos un bloque de horario.");
+      return;
+    }
+    if (
+      duracionFijaDelServicio &&
+      horasSeleccionadas.length !== bloquesExigidos
+    ) {
+      setErrorSeleccion(
+        `Este servicio dura ${servicioDuracionMinutos} min (${bloquesExigidos} bloque(s)).`
+      );
+      return;
+    }
+    router.push("/panel/nueva-reserva/especialista");
+  };
+  const handleCancelar = () => router.push("/panel/agenda");
+
+  return {
+    hoy,
+    fecha,
+    horasSeleccionadas,
+    duracionMin,
+    horaInicio,
+    horaTerminoCalculada,
+    manana,
+    tarde,
+    fechasDisponibles,
+    duracionFijaDelServicio,
+    bloquesExigidos,
+    servicioDuracionMinutos,
+    nombreServicio: servicioNombre,
+    especialistaNombre,
+    pacienteNombre,
+    errorSeleccion,
+    sinDisponibilidadEnFecha,
+
+    isLoading,
+
+    actions: {
+      handleSeleccionarHora,
+      handleCambiarFecha,
+      handleVolver,
+      handleContinuar,
+      handleCancelar,
+    },
+  };
+};

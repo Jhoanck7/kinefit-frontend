@@ -1,0 +1,88 @@
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+import {
+  CreatePacienteManualRequest,
+  UpdatePacienteRequest,
+} from "@/models/requests";
+import { pacienteService } from "@/services";
+
+/** Obtiene el listado paginado de pacientes según búsqueda */
+export const useGetPacientes = (
+  busqueda?: string,
+  soloActivos?: boolean,
+  page = 1,
+  pageSize = 20,
+  enabled = true
+) => {
+  return useQuery({
+    queryKey: ["pacientes", { busqueda, soloActivos, page, pageSize }],
+    queryFn: () =>
+      pacienteService
+        .getAll(busqueda, soloActivos, page, pageSize)
+        .then(res => res.data.data),
+    enabled,
+    placeholderData: keepPreviousData,
+  });
+};
+
+/** Obtiene el perfil de un paciente */
+export const useGetPacientePerfil = (id: number, enabled = true) => {
+  return useQuery({
+    queryKey: ["pacientes", "perfil", id],
+    queryFn: () => pacienteService.getById(id).then(res => res.data.data),
+    enabled: enabled && !!id,
+  });
+};
+
+/** Crea un paciente manualmente desde el panel */
+export const useCreatePacienteMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreatePacienteManualRequest) =>
+      pacienteService.create(data).then(res => res.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pacientes"] });
+    },
+  });
+};
+
+/** Actualiza los datos de un paciente */
+export const useUpdatePacienteMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: UpdatePacienteRequest }) =>
+      pacienteService.update(id, data).then(res => res.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pacientes"] });
+    },
+  });
+};
+
+/** Desvincula la cuenta de Google de la ficha de un paciente */
+export const useDesvincularCuentaPacienteMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) =>
+      pacienteService.desvincularCuenta(id).then(res => res.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pacientes"] });
+    },
+  });
+};
+
+/** Activa o desactiva un paciente */
+export const useUpdatePacienteEstadoMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, activo }: { id: number; activo: boolean }) =>
+      pacienteService.updateEstado(id, activo).then(res => res.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pacientes"] });
+    },
+  });
+};

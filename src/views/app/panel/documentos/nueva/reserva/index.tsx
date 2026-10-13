@@ -1,0 +1,222 @@
+"use client";
+
+import {
+  BottomActionBar,
+  EmptyState,
+  SearchInput,
+  StepIndicator,
+  SummaryPanel,
+} from "@/components/shared";
+import { Button, Card } from "@/components/ui";
+import {
+  desdeFechaISO,
+  formatearFechaExtensa,
+  formatearRangoHorario,
+} from "@/lib/formato";
+
+import { useNuevaFichaReserva } from "./hooks";
+
+/** Primer paso del asistente de nueva ficha: buscar al paciente y elegir la reserva a la que corresponde */
+export default function NuevaFichaReservaView() {
+  const {
+    pacienteId,
+    pacienteNombre,
+    citaId,
+    busqueda,
+    resultados,
+    buscando,
+    hayMasPacientes,
+    totalPacientes,
+    mostrarHintMinimo,
+    reservas,
+    citaSeleccionada,
+    actions,
+  } = useNuevaFichaReserva();
+
+  return (
+    <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-[1fr_320px] font-sans shadow-none">
+      <div className="sm:col-span-2">
+        <StepIndicator
+          pasos={[{ etiqueta: "Reserva" }, { etiqueta: "Ficha" }]}
+          pasoActivo={1}
+        />
+      </div>
+
+      <Card className="border border-border p-6">
+        <h2 className="font-sans text-section-title font-bold text-foreground mb-1">
+          ¿A qué atención corresponde la ficha?
+        </h2>
+        <p className="font-sans text-xs text-slate-500 mb-4">
+          Busque al paciente y seleccione la reserva asociada.
+        </p>
+
+        <SearchInput
+          placeholder="Buscar por nombre o RUT..."
+          value={busqueda}
+          onChange={actions.setBusqueda}
+          ayuda={
+            mostrarHintMinimo
+              ? "Escribe al menos 2 caracteres."
+              : buscando
+                ? "Buscando…"
+                : undefined
+          }
+        />
+
+        {resultados.length === 0 && !buscando && (
+          <p className="mt-3 font-sans text-xs text-slate-500">
+            {busqueda.trim()
+              ? "Ningún paciente coincide con la búsqueda."
+              : "No hay pacientes registrados."}
+          </p>
+        )}
+
+        {resultados.length > 0 && (
+          <ul className="mt-2 divide-y divide-slate-200 border border-slate-200 rounded-none bg-white">
+            {resultados.map(paciente => (
+              <li key={paciente.id}>
+                <button
+                  type="button"
+                  onClick={() => actions.handleSeleccionarPaciente(paciente)}
+                  className="flex w-full items-center justify-between px-3 py-2 text-left font-sans text-sm hover:bg-slate-50 focus-visible:outline-none"
+                >
+                  <span className="font-medium text-slate-900">
+                    {paciente.nombre} {paciente.apellido}
+                  </span>
+                  <span className="text-xs text-slate-500">{paciente.rut}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {hayMasPacientes && (
+          <p className="mt-2 font-sans text-xs text-slate-500">
+            Mostrando {resultados.length} de {totalPacientes} pacientes, busca
+            por nombre o RUT para acotar la lista.
+          </p>
+        )}
+
+        {pacienteId && (
+          <div className="mt-6">
+            <p className="mb-3 font-sans text-label font-bold text-muted-foreground border-b border-slate-200 pb-1">
+              Reservas de {pacienteNombre}
+            </p>
+            {reservas.length === 0 ? (
+              <EmptyState
+                titulo="Sin Reservas"
+                descripcion="Este paciente no tiene reservas registradas."
+              />
+            ) : (
+              <ul className="space-y-2">
+                {reservas.map(cita => {
+                  const seleccionada = String(cita.id) === citaId;
+                  const habilitaFicha =
+                    cita.estado === "Confirmada" || cita.estado === "Atendida";
+                  const deshabilitada = cita.conFicha || !habilitaFicha;
+
+                  return (
+                    <li key={cita.id} className="space-y-1">
+                      <button
+                        type="button"
+                        disabled={deshabilitada}
+                        onClick={() => actions.handleSeleccionarReserva(cita)}
+                        title={
+                          cita.conFicha
+                            ? "Esta reserva ya tiene una ficha asociada"
+                            : !habilitaFicha
+                              ? "La cita debe estar Confirmada o Atendida para asociarle una ficha clínica"
+                              : undefined
+                        }
+                        className={`flex w-full items-center justify-between gap-3 border p-3 text-left transition-colors rounded-none ${
+                          seleccionada
+                            ? "border-blue-900 bg-white text-slate-900"
+                            : "border-slate-200 bg-white hover:bg-slate-50 text-slate-900"
+                        } disabled:opacity-60 disabled:cursor-not-allowed`}
+                      >
+                        <div>
+                          <p className="font-sans font-medium text-sm text-slate-900">
+                            {formatearFechaExtensa(desdeFechaISO(cita.fecha))},{" "}
+                            {formatearRangoHorario(
+                              cita.horaInicio,
+                              cita.horaFin
+                            )}
+                          </p>
+                          <p className="font-sans text-xs text-slate-500 capitalize mt-0.5">
+                            {cita.servicio}, {cita.especialista}
+                          </p>
+                        </div>
+                        <span
+                          className={`shrink-0 rounded-overlay px-2 py-0.5 font-sans text-table-head font-bold text-white ${
+                            cita.conFicha
+                              ? "bg-emerald-700"
+                              : habilitaFicha
+                                ? "bg-blue-800"
+                                : "bg-amber-600"
+                          }`}
+                        >
+                          {cita.conFicha
+                            ? "Con Ficha"
+                            : habilitaFicha
+                              ? `${cita.estado}, lista para ficha`
+                              : cita.estado}
+                        </span>
+                      </button>
+
+                      {cita.conFicha && cita.fichaId && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            actions.handleAbrirFichaExistente(cita.fichaId!)
+                          }
+                          className="mt-1 font-sans text-xs text-slate-700 hover:text-slate-950 underline underline-offset-2 block"
+                        >
+                          Abrir la ficha existente
+                        </button>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        )}
+
+        <BottomActionBar
+          abandono={
+            <button
+              type="button"
+              onClick={actions.handleCancelar}
+              className="font-sans text-xs font-bold text-muted-foreground hover:text-foreground"
+            >
+              Cancelar
+            </button>
+          }
+          avanzar={
+            <Button
+              disabled={
+                !citaSeleccionada || citaSeleccionada.estado !== "Atendida"
+              }
+              onClick={actions.handleContinuar}
+            >
+              Continuar
+            </Button>
+          }
+        />
+      </Card>
+
+      <SummaryPanel
+        filas={[
+          { etiqueta: "Paciente", valor: pacienteNombre ?? undefined },
+          {
+            etiqueta: "Reserva",
+            valor: citaSeleccionada
+              ? `${formatearFechaExtensa(desdeFechaISO(citaSeleccionada.fecha))}, ${formatearRangoHorario(citaSeleccionada.horaInicio, citaSeleccionada.horaFin)}`
+              : undefined,
+          },
+          { etiqueta: "Tipo de Ficha", valor: undefined },
+        ]}
+      />
+    </div>
+  );
+}

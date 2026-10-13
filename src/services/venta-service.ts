@@ -1,0 +1,118 @@
+import { ApiResponse } from "@/models/generics";
+import {
+  CreateRepartoProfesionalRequest,
+  CreateTasaImpuestoRequest,
+  CreateTerminalPagoRequest,
+  CreateVentaRequest,
+} from "@/models/requests";
+import {
+  RepartoProfesionalResponse,
+  TasaImpuestoResponse,
+  TerminalPagoResponse,
+  VentaResponse,
+  VentasPaginadasResponse,
+} from "@/models/responses";
+
+import { BaseApiService } from "./base-api-service";
+
+/** Filtros aceptados al listar ventas */
+export interface FiltrosVentas {
+  fechaDesde?: string;
+  fechaHasta?: string;
+  pacienteId?: number;
+  metodoPago?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+/** Consume los endpoints de ventas, terminales de pago, repartos y tasa de impuesto */
+export class VentaService extends BaseApiService {
+  constructor() {
+    super("");
+  }
+
+  getAll(filtros?: FiltrosVentas) {
+    return this.httpClient.get<ApiResponse<VentasPaginadasResponse>>(
+      `${this.baseURL}/ventas`,
+      { params: filtros }
+    );
+  }
+
+  exportarCsv(filtros?: Omit<FiltrosVentas, "page" | "pageSize">) {
+    return this.httpClient.get<Blob>(`${this.baseURL}/ventas`, {
+      params: { ...filtros, formato: "csv" },
+      responseType: "blob",
+    });
+  }
+
+  getById(id: number) {
+    return this.httpClient.get<ApiResponse<VentaResponse>>(
+      `${this.baseURL}/ventas/${id}`
+    );
+  }
+
+  create(data: CreateVentaRequest) {
+    return this.httpClient.post<ApiResponse<VentaResponse>>(
+      `${this.baseURL}/ventas`,
+      data
+    );
+  }
+
+  getTerminales() {
+    return this.httpClient.get<ApiResponse<TerminalPagoResponse[]>>(
+      `${this.baseURL}/terminales`
+    );
+  }
+
+  createTerminal(data: CreateTerminalPagoRequest) {
+    return this.httpClient.post<ApiResponse<TerminalPagoResponse>>(
+      `${this.baseURL}/terminales`,
+      data
+    );
+  }
+
+  updateTerminal(
+    id: number,
+    data: { nombre: string; plazoAbonoDias: number; notas?: string }
+  ) {
+    return this.httpClient.put<ApiResponse<TerminalPagoResponse>>(
+      `${this.baseURL}/terminales/${id}`,
+      data
+    );
+  }
+
+  updateTerminalEstado(id: number, activo: boolean) {
+    return this.httpClient.patch<ApiResponse<TerminalPagoResponse>>(
+      `${this.baseURL}/terminales/${id}/estado`,
+      { activo }
+    );
+  }
+
+  getRepartos() {
+    return this.httpClient.get<ApiResponse<RepartoProfesionalResponse[]>>(
+      `${this.baseURL}/reportes/repartos`
+    );
+  }
+
+  createReparto(data: CreateRepartoProfesionalRequest) {
+    return this.httpClient.post<ApiResponse<RepartoProfesionalResponse>>(
+      `${this.baseURL}/reportes/repartos`,
+      data
+    );
+  }
+
+  getTasasImpuesto() {
+    return this.httpClient.get<ApiResponse<TasaImpuestoResponse[]>>(
+      `${this.baseURL}/reportes/tasa-impuesto`
+    );
+  }
+
+  createTasaImpuesto(data: CreateTasaImpuestoRequest) {
+    return this.httpClient.post<ApiResponse<TasaImpuestoResponse>>(
+      `${this.baseURL}/reportes/tasa-impuesto`,
+      data
+    );
+  }
+}
+
+export const ventaService = new VentaService();

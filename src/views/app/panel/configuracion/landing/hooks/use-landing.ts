@@ -1,0 +1,457 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+import {
+  useGetEspecialistas,
+  useGetLandingConfig,
+  useSincronizarGoogleReviewsMutation,
+  useUpdateEspecialistasOrdenMutation,
+  useUpdateLandingConfigMutation,
+} from "@/hooks/api";
+import {
+  EmbarazadaItem,
+  EspecialistaResponse,
+  LandingConfigResponse,
+  NutricionItem,
+  VoucherItem,
+} from "@/models/responses";
+
+export interface ProcessStepItem {
+  num: string;
+  title: string;
+  description: string;
+}
+
+export interface GoogleReviewItem {
+  author: string;
+  role?: string;
+  quote: string;
+  rating: number;
+  date?: string;
+  avatarUrl?: string;
+  isVerifiedGoogle?: boolean;
+}
+
+const DEFAULT_LANDING_CONFIG: LandingConfigResponse = {
+  heroTagline: "",
+  heroBrandName: "KineFit",
+  heroDescription: "Centro de Kinesiología y Fisioterapia Especializada.",
+  heroCtaText: "Reservar Cita",
+  clinicName: "KineFit Clínica",
+  clinicEmail: "contacto@kinefit.cl",
+  clinicPhone: "+56 9 1234 5678",
+  clinicPhoneRaw: "+56912345678",
+  clinicAddress: "Av. Providencia 1234, Oficina 501, Santiago",
+  hoursWeekday: "Lunes a Viernes: 08:00 - 20:00",
+  hoursSaturday: "Sábados: 09:00 - 14:00",
+  socialInstagram: "https://instagram.com/kinefit",
+  socialFacebook: "https://facebook.com/kinefit",
+  socialWhatsApp: "https://wa.me/56912345678",
+  socialTikTok: "https://tiktok.com/@kinefit",
+  reservasHabilitadas: true,
+  vouchersMostrarNota: true,
+};
+
+/** Carga y administra el formulario de configuración de la landing pública, con sus listas de pasos, reseñas, vouchers, fotos y el orden del equipo */
+export const useLanding = () => {
+  const { data: configData, isLoading: cargando } = useGetLandingConfig();
+  const updateMutation = useUpdateLandingConfigMutation();
+  const sincronizarMutation = useSincronizarGoogleReviewsMutation();
+  const { data: especialistasData } = useGetEspecialistas(undefined, false);
+  const ordenMutation = useUpdateEspecialistasOrdenMutation();
+
+  const [formData, setFormData] = useState<LandingConfigResponse>(
+    DEFAULT_LANDING_CONFIG
+  );
+  const [seccionActiva, setSeccionActiva] = useState<string | null>(null);
+  const [processSteps, setProcessSteps] = useState<ProcessStepItem[]>([]);
+  const [reviewsList, setReviewsList] = useState<GoogleReviewItem[]>([]);
+  const [vouchers, setVouchers] = useState<VoucherItem[]>([]);
+  const [embarazadas, setEmbarazadas] = useState<EmbarazadaItem[]>([]);
+  const [nutricion, setNutricion] = useState<NutricionItem[]>([]);
+  const [ordenEditado, setOrdenEditado] = useState<
+    EspecialistaResponse[] | null
+  >(null);
+  const especialistasActivos = (especialistasData ?? []).filter(e => e.activo);
+  const especialistas = ordenEditado ?? especialistasActivos;
+  const [limiteResenas, setLimiteResenas] = useState<number>(5);
+  const [confirmacionGuardar, setConfirmacionGuardar] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (configData) {
+      setFormData(configData);
+      if (configData.processStepsJson) {
+        try {
+          const parsedSteps = JSON.parse(configData.processStepsJson);
+          if (Array.isArray(parsedSteps)) setProcessSteps(parsedSteps);
+        } catch {}
+      }
+      if (configData.reviewsJson) {
+        try {
+          const parsedReviews = JSON.parse(configData.reviewsJson);
+          if (Array.isArray(parsedReviews)) setReviewsList(parsedReviews);
+        } catch {}
+      }
+      if (configData.vouchersJson) {
+        try {
+          const parsedVouchers = JSON.parse(configData.vouchersJson);
+          if (Array.isArray(parsedVouchers)) setVouchers(parsedVouchers);
+        } catch {}
+      }
+      if (configData.embarazadasJson) {
+        try {
+          const parsedEmbarazadas = JSON.parse(configData.embarazadasJson);
+          if (Array.isArray(parsedEmbarazadas))
+            setEmbarazadas(parsedEmbarazadas);
+        } catch {}
+      }
+      if (configData.nutricionJson) {
+        try {
+          const parsedNutricion = JSON.parse(configData.nutricionJson);
+          if (Array.isArray(parsedNutricion)) setNutricion(parsedNutricion);
+        } catch {}
+      }
+    }
+  }, [configData]);
+
+  function handleChange<K extends keyof LandingConfigResponse>(
+    field: K,
+    value: LandingConfigResponse[K]
+  ) {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  }
+
+  function handleProcessStepChange(
+    index: number,
+    field: keyof ProcessStepItem,
+    value: string
+  ) {
+    setProcessSteps(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  }
+
+  function handleAgregarProcessStep() {
+    setProcessSteps(prev => [
+      ...prev,
+      {
+        num: String(prev.length + 1),
+        title: "Nuevo Paso",
+        description: "",
+      },
+    ]);
+  }
+
+  function handleEliminarProcessStep(index: number) {
+    setProcessSteps(prev => prev.filter((_, i) => i !== index));
+  }
+
+  function handleReviewChange(
+    index: number,
+    field: keyof GoogleReviewItem,
+    value: unknown
+  ) {
+    setReviewsList(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  }
+
+  function handleAgregarReview() {
+    setReviewsList(prev => [
+      ...prev,
+      {
+        author: "Paciente Anónimo",
+        quote: "",
+        rating: 5,
+        isVerifiedGoogle: false,
+      },
+    ]);
+  }
+
+  function handleEliminarReview(index: number) {
+    setReviewsList(prev => prev.filter((_, i) => i !== index));
+  }
+
+  function handleAgregarVoucher(item: VoucherItem) {
+    setVouchers(prev => [...prev, item]);
+  }
+
+  function handleVoucherAltChange(index: number, alt: string) {
+    setVouchers(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], alt };
+      return copy;
+    });
+  }
+
+  function handleVoucherImagenSofaChange(
+    index: number,
+    imagenSofa: string,
+    anchoSofa: number,
+    altoSofa: number
+  ) {
+    setVouchers(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], imagenSofa, anchoSofa, altoSofa };
+      return copy;
+    });
+  }
+
+  function handleVoucherImagenBlancoChange(
+    index: number,
+    imagenBlanco: string,
+    anchoBlanco: number,
+    altoBlanco: number
+  ) {
+    setVouchers(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], imagenBlanco, anchoBlanco, altoBlanco };
+      return copy;
+    });
+  }
+
+  function handleEliminarVoucher(index: number) {
+    setVouchers(prev => prev.filter((_, i) => i !== index));
+  }
+
+  function handleMoverVoucher(index: number, direccion: "arriba" | "abajo") {
+    setVouchers(prev => {
+      const destino = direccion === "arriba" ? index - 1 : index + 1;
+      if (destino < 0 || destino >= prev.length) return prev;
+      const copy = [...prev];
+      [copy[index], copy[destino]] = [copy[destino], copy[index]];
+      return copy;
+    });
+  }
+
+  function handleAgregarEmbarazada() {
+    setEmbarazadas(prev => [
+      ...prev,
+      {
+        alt: "",
+        imagenUrl: "",
+        ancho: 0,
+        alto: 0,
+      },
+    ]);
+  }
+
+  function handleEmbarazadaAltChange(index: number, alt: string) {
+    setEmbarazadas(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], alt };
+      return copy;
+    });
+  }
+
+  function handleEmbarazadaImagenChange(
+    index: number,
+    imagenUrl: string,
+    ancho: number,
+    alto: number
+  ) {
+    setEmbarazadas(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], imagenUrl, ancho, alto };
+      return copy;
+    });
+  }
+
+  function handleEliminarEmbarazada(index: number) {
+    setEmbarazadas(prev => prev.filter((_, i) => i !== index));
+  }
+
+  function handleMoverEmbarazada(
+    index: number,
+    direccion: "arriba" | "abajo"
+  ) {
+    setEmbarazadas(prev => {
+      const destino = direccion === "arriba" ? index - 1 : index + 1;
+      if (destino < 0 || destino >= prev.length) return prev;
+      const copy = [...prev];
+      [copy[index], copy[destino]] = [copy[destino], copy[index]];
+      return copy;
+    });
+  }
+
+  function handleAgregarNutricion() {
+    setNutricion(prev => [
+      ...prev,
+      {
+        alt: "",
+        imagenUrl: "",
+        ancho: 800,
+        alto: 600,
+      },
+    ]);
+  }
+
+  function handleNutricionAltChange(index: number, alt: string) {
+    setNutricion(prev =>
+      prev.map((item, idx) => (idx === index ? { ...item, alt } : item))
+    );
+  }
+
+  function handleNutricionImagenChange(
+    index: number,
+    imagenUrl: string,
+    ancho?: number,
+    alto?: number
+  ) {
+    setNutricion(prev =>
+      prev.map((item, idx) =>
+        idx === index
+          ? {
+              ...item,
+              imagenUrl,
+              ancho: ancho || item.ancho || 800,
+              alto: alto || item.alto || 600,
+            }
+          : item
+      )
+    );
+  }
+
+  function handleEliminarNutricion(index: number) {
+    setNutricion(prev => prev.filter((_, i) => i !== index));
+  }
+
+  function handleMoverNutricion(
+    index: number,
+    direccion: "arriba" | "abajo"
+  ) {
+    setNutricion(prev => {
+      const destino = direccion === "arriba" ? index - 1 : index + 1;
+      if (destino < 0 || destino >= prev.length) return prev;
+      const copy = [...prev];
+      [copy[index], copy[destino]] = [copy[destino], copy[index]];
+      return copy;
+    });
+  }
+
+  function handleMoverEspecialista(
+    index: number,
+    direccion: "arriba" | "abajo"
+  ) {
+    setOrdenEditado(prev => {
+      const actual = prev ?? especialistasActivos;
+      const destino = direccion === "arriba" ? index - 1 : index + 1;
+      if (destino < 0 || destino >= actual.length) return actual;
+      const copy = [...actual];
+      [copy[index], copy[destino]] = [copy[destino], copy[index]];
+      return copy;
+    });
+  }
+
+  async function handleSincronizarGoogle() {
+    setErrorMsg(null);
+    try {
+      const data = await sincronizarMutation.mutateAsync(limiteResenas);
+      if (data) {
+        setFormData(data);
+        if (data.reviewsJson) {
+          try {
+            const parsed = JSON.parse(data.reviewsJson);
+            if (Array.isArray(parsed)) setReviewsList(parsed);
+          } catch {}
+        }
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrorMsg(msg || "Ocurrió un error al sincronizar con Google.");
+    }
+  }
+
+  function handleGuardar(e: React.FormEvent) {
+    e.preventDefault();
+    setConfirmacionGuardar(true);
+  }
+
+  async function ejecutarGuardar() {
+    setErrorMsg(null);
+    try {
+      const dataToSave: LandingConfigResponse = {
+        ...formData,
+        processStepsJson: JSON.stringify(processSteps),
+        reviewsJson: JSON.stringify(reviewsList),
+        vouchersJson: JSON.stringify(vouchers),
+        embarazadasJson: JSON.stringify(embarazadas),
+        nutricionJson: JSON.stringify(nutricion),
+      };
+      const res = await updateMutation.mutateAsync(dataToSave);
+      setFormData(res);
+      const ordenCambio = especialistas.some(
+        (e, i) => e.id !== especialistasActivos[i]?.id
+      );
+      if (ordenCambio) {
+        const inactivos = (especialistasData ?? []).filter(e => !e.activo);
+        await ordenMutation.mutateAsync(
+          [...especialistas, ...inactivos].map(e => e.id)
+        );
+      }
+      setOrdenEditado(null);
+      setConfirmacionGuardar(false);
+      setSeccionActiva(null);
+      fetch("/api/revalidate", { method: "POST" }).catch(() => {});
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrorMsg(msg || "Error al guardar la configuración.");
+    }
+  }
+
+  return {
+    formData,
+    seccionActiva,
+    processSteps,
+    reviewsList,
+    vouchers,
+    embarazadas,
+    nutricion,
+    especialistas,
+    limiteResenas,
+    cargando,
+    guardando: updateMutation.isPending || ordenMutation.isPending,
+    sincronizando: sincronizarMutation.isPending,
+    confirmacionGuardar,
+    errorMsg,
+
+    actions: {
+      setSeccionActiva,
+      setConfirmacionGuardar,
+      setLimiteResenas,
+      handleChange,
+      handleProcessStepChange,
+      handleAgregarProcessStep,
+      handleEliminarProcessStep,
+      handleReviewChange,
+      handleAgregarReview,
+      handleEliminarReview,
+      handleAgregarVoucher,
+      handleVoucherAltChange,
+      handleVoucherImagenSofaChange,
+      handleVoucherImagenBlancoChange,
+      handleEliminarVoucher,
+      handleMoverVoucher,
+      handleAgregarEmbarazada,
+      handleEmbarazadaAltChange,
+      handleEmbarazadaImagenChange,
+      handleEliminarEmbarazada,
+      handleMoverEmbarazada,
+      handleAgregarNutricion,
+      handleNutricionAltChange,
+      handleNutricionImagenChange,
+      handleEliminarNutricion,
+      handleMoverNutricion,
+      handleMoverEspecialista,
+      handleSincronizarGoogle,
+      handleGuardar,
+      ejecutarGuardar,
+    },
+  };
+};

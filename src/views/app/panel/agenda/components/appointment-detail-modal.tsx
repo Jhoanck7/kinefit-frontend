@@ -1,0 +1,411 @@
+"use client";
+
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+
+import { Alerta, Modal, ModalCloseButton } from "@/components/shared";
+import {
+  Badge,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui";
+import {
+  useGetAuditoriaCita,
+  useGetCita,
+  useGetTerminales,
+  useUpdateCitaEstadoMutation,
+} from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
+import { puedeGestionarRecursoDeEspecialista } from "@/lib/auth";
+import { COLOR_ROL } from "@/lib/color-rol";
+import { definicionEstado, IdAccionCita } from "@/lib/estados";
+import {
+  desdeFechaISO,
+  formatearFechaExtensa,
+  formatearFechaHora,
+  formatearRangoHorario,
+} from "@/lib/formato";
+import { CitaDetalleResponse, CodigoEstadoCita } from "@/models/responses";
+import { NuevaVentaModal } from "@/views/app/panel/ventas/components";
+
+import { AuditTrail } from "./audit-trail";
+import { DocumentosTab } from "./documentos-tab";
+import { EnviarRecomendacionModal } from "./enviar-recomendacion-modal";
+
+const ESTADOS_FACTURABLES = ["Confirmada", "Atendida"];
+
+const MAPA_ESTADO_NUEVO: Record<string, string> = {
+  confirmar: "Confirmada",
+  marcar_asistida: "Atendida",
+  marcar_no_asistida: "NoAsistida",
+};
+
+/** Modal de detalle de una reserva, con pestañas de datos de la cita y documentos, y las acciones de cambio de estado */
+export function AppointmentDetailModal({
+  citaId,
+  onCerrar,
+  onSolicitarCancelacion,
+  onEstadoCambiar,
+}: {
+  citaId: string | null;
+  hoy: Date;
+  onCerrar: () => void;
+  onSolicitarCancelacion: () => void;
+  onEstadoCambiar?: () => void;
+}) {
+  const { data: cita, error: errorCita } = useGetCita(
+    citaId ? Number(citaId) : 0,
+    Boolean(citaId)
+  );
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [citaAtendidaId, setCitaAtendidaId] = useState<number | null>(null);
+  const actualizarEstadoMutation = useUpdateCitaEstadoMutation();
+
+  function alCerrar() {
+    setErrorMsg(null);
+    onCerrar();
+  }
+
+  async function ejecutarAccion(idAccion: IdAccionCita) {
+    if (idAccion === "cancelar") {
+      onSolicitarCancelacion();
+      return;
+    }
+
+    const estadoNuevo = MAPA_ESTADO_NUEVO[idAccion];
+    if (!estadoNuevo || !cita) return;
+
+    setErrorMsg(null);
+
+    try {
+      await actualizarEstadoMutation.mutateAsync({
+        id: cita.id,
+        data: {
+          estadoNuevo,
+          confirmadoPor:
+            estadoNuevo === "Confirmada" ? "Profesional" : undefined,
+        },
+      });
+      onEstadoCambiar?.();
+      // La recomendación se pregunta recién al cerrar la atención, nunca antes
+      if (estadoNuevo === "Atendida") {
+        setCitaAtendidaId(cita.id);
+      }
+    } catch (err: unknown) {
+      setErrorMsg(handleApiError(err).message);
+    }
+  }
+
+  const guardando = actualizarEstadoMutation.isPending;
+
+  return (
+    <Modal abierto={Boolean(citaId)} onCerrar={alCerrar}>
+      <EnviarRecomendacionModal
+        citaId={citaAtendidaId}
+        onCerrar={() => setCitaAtendidaId(null)}
+      />
+      {errorCita ? (
+        <div className="p-8">
+          <Alerta tono="error">{handleApiError(errorCita).message}</Alerta>
+        </div>
+      ) : !cita ? (
+        <div className="p-8 text-center font-sans text-xs text-slate-500">
+          Cargando reserva…
+        </div>
+      ) : (
+        <DetalleCita
+          cita={cita}
+          guardando={guardando}
+          errorMsg={errorMsg}
+          onCerrar={alCerrar}
+          onAccion={ejecutarAccion}
+        />
+      )}
+    </Modal>
+  );
+}
+
+function DetalleCita({
+  cita,
+  guardando,
+  errorMsg,
+  onCerrar,
+  onAccion,
+}: {
+  cita: CitaDetalleResponse;
+  guardando: boolean;
+  errorMsg: string | null;
+  onCerrar: () => void;
+  onAccion: (idAccion: IdAccionCita) => void;
+}) {
+  const definicion = definicionEstado(cita.estado as CodigoEstadoCita);
+  const colorEstado = COLOR_ROL[definicion.colorRol] ?? COLOR_ROL.gris;
+  const [tab, setTab] = useState("detalle");
+  const [mostrarCobro, setMostrarCobro] = useState(false);
+  const { data: terminales = [] } = useGetTerminales();
+  const { data: historial = [] } = useGetAuditoriaCita(cita.id);
+  const { data: session } = useSession();
+  const puedeGestionarEstado = puedeGestionarRecursoDeEspecialista(
+    session,
+    cita.especialista.id
+  );
+
+  return (
+    <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="font-sans text-section-title font-bold text-foreground">
+              Detalle de Reserva{" "}
+              <span className="font-sans font-bold text-foreground">
+                #{cita.id}
+              </span>
+            </h2>
+            <span className="border border-slate-200 bg-white px-2 py-0.5 font-sans text-micro-header font-medium text-muted-foreground rounded-none">
+              {cita.origen}
+            </span>
+          </div>
+          <p className="font-sans text-xs text-slate-500 mt-0.5">
+            Creada el{" "}
+            <span className="font-sans text-slate-700 font-medium">
+              {formatearFechaHora(new Date(cita.createdAt))}
+            </span>
+          </p>
+        </div>
+        <ModalCloseButton onClick={onCerrar} />
+      </div>
+
+      {errorMsg && (
+        <Alerta tono="error" className="mx-6 mt-4">
+          {errorMsg}
+        </Alerta>
+      )}
+
+      <NuevaVentaModal
+        abierto={mostrarCobro}
+        onClose={() => setMostrarCobro(false)}
+        onCrearVenta={() => setMostrarCobro(false)}
+        terminales={terminales}
+        citaAsociada={{
+          id: cita.id,
+          pacienteId: cita.paciente.id,
+          pacienteNombre: `${cita.paciente.nombre} ${cita.paciente.apellido}`,
+          servicioId: cita.servicio.id,
+          servicioNombre: cita.servicio.nombre,
+          especialistaNombre: cita.especialista.nombre,
+        }}
+      />
+
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList
+          variant="line"
+          className="border-b border-slate-200 px-6 pt-2"
+        >
+          <TabsTrigger value="detalle">Detalle</TabsTrigger>
+          <TabsTrigger value="documentos">Documentos</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="detalle">
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+            <div className="md:col-span-2 p-6 space-y-6">
+              <div>
+                <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
+                  Detalles de la Atención
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <span className="font-sans text-label font-medium text-muted-foreground block">
+                      Servicio
+                    </span>
+                    <span className="font-sans font-medium text-value text-foreground capitalize block mt-0.5">
+                      {cita.servicio.nombre}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="font-sans text-label font-medium text-muted-foreground block">
+                      Especialista
+                    </span>
+                    <span className="font-sans font-medium text-value text-foreground block mt-0.5">
+                      {cita.especialista.nombre} ({cita.especialista.cargo})
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="font-sans text-label font-medium text-muted-foreground block">
+                      Fecha y Horario
+                    </span>
+                    <span className="font-sans font-medium text-value text-foreground block mt-0.5">
+                      {formatearFechaExtensa(desdeFechaISO(cita.fecha))},{" "}
+                      {formatearRangoHorario(cita.horaInicio, cita.horaFin)}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="font-sans text-label font-medium text-muted-foreground block">
+                      Estado Actual
+                    </span>
+                    <div className="mt-1">
+                      <Badge
+                        className="rounded-overlay border-0 text-[11px] font-medium text-white"
+                        style={{ backgroundColor: colorEstado.fondoSolido }}
+                      >
+                        {definicion.etiqueta}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground mb-3">
+                  Información de Pago
+                </h3>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div>
+                    <span className="font-sans text-label font-medium text-muted-foreground block">
+                      Monto Anticipo
+                    </span>
+                    <span className="font-sans font-medium text-value text-foreground mt-0.5 block">
+                      {cita.transaccion
+                        ? `$${cita.transaccion.monto.toLocaleString("es-CL")} CLP`
+                        : "Sin anticipo / Pago presencial"}
+                    </span>
+                  </div>
+                  {cita.transaccion && (
+                    <div>
+                      <span className="font-sans text-label font-medium text-muted-foreground block">
+                        N° Transacción Webpay
+                      </span>
+                      <span className="font-sans font-medium text-value text-foreground mt-0.5 block">
+                        {cita.transaccion.buyOrder}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="md:col-span-1 bg-slate-50/80 p-6 flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <h3 className="border-b border-slate-200 pb-1 font-sans text-micro-header font-medium text-muted-foreground">
+                  Ficha del Paciente
+                </h3>
+
+                <div>
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
+                    Nombre
+                  </span>
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
+                    {cita.paciente.nombre} {cita.paciente.apellido}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
+                    RUT
+                  </span>
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
+                    {cita.paciente.rut || "—"}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
+                    Teléfono
+                  </span>
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
+                    {cita.paciente.telefono || "—"}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
+                    Correo Electrónico
+                  </span>
+                  <p
+                    className="font-sans font-medium text-value text-foreground mt-0.5 truncate"
+                    title={cita.paciente.email}
+                  >
+                    {cita.paciente.email}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
+                    Convenio
+                  </span>
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
+                    Sin Convenio
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {historial.length > 0 && (
+            <div className="border-t border-slate-200 px-6 py-4">
+              <AuditTrail historial={historial} />
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="documentos">
+          <DocumentosTab cita={cita} />
+        </TabsContent>
+      </Tabs>
+
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 bg-slate-50/60 p-4">
+        {/* Es el único acceso al cobro desde el detalle de la reserva */}
+        {ESTADOS_FACTURABLES.includes(cita.estado) ? (
+          <button
+            type="button"
+            onClick={() => setMostrarCobro(true)}
+            className="font-sans text-xs font-bold text-primary hover:underline"
+          >
+            Registrar Venta
+          </button>
+        ) : (
+          <span />
+        )}
+
+        <div className="flex-1">
+          {!puedeGestionarEstado ? (
+            <p className="font-sans text-xs text-slate-500 text-center">
+              Solo {cita.especialista.nombre} puede cambiar el estado de esta
+              reserva.
+            </p>
+          ) : definicion.acciones.length === 0 ? (
+            <p className="font-sans text-xs text-slate-500 text-center">
+              {definicion.explicacionSinAcciones}
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2 justify-end">
+              {definicion.acciones.map(accion => {
+                const esDestacado =
+                  accion.estilo === "primario" || accion.estilo === "peligro";
+
+                const estiloBtn = esDestacado
+                  ? "bg-primary text-white hover:bg-primary-hover border-0 font-bold shadow-none"
+                  : "border border-slate-200 bg-white hover:bg-slate-50 text-foreground shadow-none";
+
+                return (
+                  <button
+                    key={accion.id}
+                    disabled={guardando}
+                    onClick={() => onAccion(accion.id)}
+                    className={`font-sans text-xs font-bold px-4 py-2 rounded-none transition-all focus:outline-none ${estiloBtn} disabled:opacity-50`}
+                  >
+                    {guardando ? "Procesando..." : accion.etiqueta}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

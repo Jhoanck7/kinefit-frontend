@@ -1,0 +1,55 @@
+import { ApiResponse } from "@/models/generics";
+import {
+  CreateEspecialistaRequest,
+  UpdateEspecialistaRequest,
+} from "@/models/requests";
+import {
+  EspecialistaAdminResponse,
+  EspecialistaEstadoResponse,
+  EspecialistaResponse,
+} from "@/models/responses";
+
+import { BaseApiService } from "./base-api-service";
+
+/** Consume los endpoints de gestión de especialistas */
+export class EspecialistaService extends BaseApiService {
+  constructor() {
+    super("/especialistas");
+  }
+
+  getEspecialistas(servicioId?: number, soloActivos = false) {
+    return this.httpClient.get<ApiResponse<EspecialistaResponse[]>>(
+      this.baseURL,
+      { params: { servicioId, soloActivos } }
+    );
+  }
+
+  createEspecialista(data: CreateEspecialistaRequest) {
+    return this.httpClient.post<ApiResponse<EspecialistaAdminResponse>>(
+      this.baseURL,
+      data
+    );
+  }
+
+  updateEspecialista(id: number, data: UpdateEspecialistaRequest) {
+    return this.httpClient.put<ApiResponse<EspecialistaAdminResponse>>(
+      `${this.baseURL}/${id}`,
+      data
+    );
+  }
+
+  updateEstado(id: number, activo: boolean) {
+    return this.httpClient.patch<ApiResponse<EspecialistaEstadoResponse>>(
+      `${this.baseURL}/${id}/estado`,
+      { activo }
+    );
+  }
+
+  updateOrden(especialistaIds: number[]) {
+    return this.httpClient.put<ApiResponse<boolean>>(`${this.baseURL}/orden`, {
+      especialistaIds,
+    });
+  }
+}
+
+export const especialistaService = new EspecialistaService();

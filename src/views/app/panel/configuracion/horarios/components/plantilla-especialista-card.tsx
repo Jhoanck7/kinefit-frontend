@@ -1,0 +1,109 @@
+"use client";
+
+import { useSession } from "next-auth/react";
+
+import { Alerta } from "@/components/shared";
+import { Card } from "@/components/ui";
+import {
+  useCreatePlantillaHorarioMutation,
+  useDeletePlantillaHorarioMutation,
+  useGetPlantillaHorario,
+} from "@/hooks/api";
+import { handleApiError } from "@/lib/api";
+import { puedeGestionarRecursoDeEspecialista } from "@/lib/auth";
+import { EspecialistaResponse } from "@/models/responses";
+
+import { BloquesSemanaEditor } from "./bloques-semana-editor";
+
+interface PlantillaEspecialistaCardProps {
+  especialista: EspecialistaResponse;
+}
+
+/** Tarjeta para configurar la plantilla horaria semanal de un especialista y avisar si un cambio deja citas confirmadas fuera de horario */
+export function PlantillaEspecialistaCard({
+  especialista,
+}: PlantillaEspecialistaCardProps) {
+  const { data: session } = useSession();
+  const soloLectura = !puedeGestionarRecursoDeEspecialista(
+    session,
+    especialista.id
+  );
+  const { data: plantilla = [], isLoading } = useGetPlantillaHorario(
+    especialista.id
+  );
+  const crearMutation = useCreatePlantillaHorarioMutation();
+  const eliminarMutation = useDeletePlantillaHorarioMutation();
+
+  const handleAgregar = async (
+    diaSemana: number,
+    horaInicio: string,
+    horaFin: string
+  ) => {
+    try {
+      await crearMutation.mutateAsync({
+        especialistaId: especialista.id,
+        diaSemana,
+        horaInicio,
+        horaFin,
+      });
+    } catch {}
+  };
+
+  const handleEliminar = (id: number) => {
+    eliminarMutation.mutate(id);
+  };
+
+  const conflictos =
+    crearMutation.data?.conflictos ?? eliminarMutation.data?.conflictos ?? [];
+
+  return (
+    <Card className="rounded-none border border-slate-200 shadow-none p-5">
+      <p className="mb-3 border-b border-slate-200 pb-2 font-sans text-value font-bold text-foreground">
+        {especialista.nombre},{" "}
+        <span className="font-normal text-muted-foreground">
+          {especialista.cargo}
+        </span>
+      </p>
+
+      {crearMutation.isError && (
+        <Alerta tono="error" className="mb-3">
+          {handleApiError(crearMutation.error).message}
+        </Alerta>
+      )}
+      {eliminarMutation.isError && (
+        <Alerta tono="error" className="mb-3">
+          {handleApiError(eliminarMutation.error).message}
+        </Alerta>
+      )}
+
+      {conflictos.length > 0 && (
+        <Alerta tono="advertencia" className="mb-3">
+          {conflictos.length}{" "}
+          {conflictos.length === 1
+            ? "cita confirmada queda"
+            : "citas confirmadas quedan"}{" "}
+          fuera del horario vigente y no se modificaron:{" "}
+          {conflictos
+            .map(c => `${c.fecha} ${c.horaInicio}-${c.horaFin}`)
+            .join(", ")}
+        </Alerta>
+      )}
+
+      {isLoading ? (
+        <p className="font-sans text-xs text-slate-400">
+          Cargando plantilla horaria…
+        </p>
+      ) : (
+        <BloquesSemanaEditor
+          bloques={plantilla}
+          onAgregar={handleAgregar}
+          onEliminar={handleEliminar}
+          eliminandoId={
+            eliminarMutation.isPending ? eliminarMutation.variables : null
+          }
+          soloLectura={soloLectura}
+        />
+      )}
+    </Card>
+  );
+}

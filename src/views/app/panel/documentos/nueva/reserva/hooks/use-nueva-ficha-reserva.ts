@@ -1,0 +1,108 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import {
+  useGetFichasPorPaciente,
+  useGetPacientePerfil,
+  useGetPacientes,
+} from "@/hooks/api";
+import { useDebounce } from "@/hooks/common";
+import { HistorialCitaResponse, PacienteResponse } from "@/models/responses";
+import { useNuevaFichaStore } from "@/stores";
+
+const MIN_CARACTERES_BUSQUEDA = 2;
+const TAMANO_LISTA = 20;
+
+/** Busca un paciente y sus reservas para elegir a cuál asociar una nueva ficha clínica */
+export const useNuevaFichaReserva = () => {
+  const router = useRouter();
+  const { pacienteId, pacienteNombre, citaId, setReserva, reiniciar } =
+    useNuevaFichaStore();
+
+  const [busqueda, setBusqueda] = useState("");
+
+  const busquedaDebounced = useDebounce(busqueda.trim(), 300);
+  const busquedaValida = busquedaDebounced.length >= MIN_CARACTERES_BUSQUEDA;
+  const { data: resultadosPagina, isFetching: buscando } = useGetPacientes(
+    busquedaValida ? busquedaDebounced : undefined,
+    undefined,
+    1,
+    TAMANO_LISTA
+  );
+  const resultados = resultadosPagina?.items ?? [];
+  const totalPacientes = resultadosPagina?.total ?? 0;
+
+  const pacienteIdNum = pacienteId ? Number(pacienteId) : undefined;
+  const { data: perfil } = useGetPacientePerfil(
+    pacienteIdNum ?? 0,
+    Boolean(pacienteIdNum)
+  );
+  const { data: fichasPaciente = [] } = useGetFichasPorPaciente(
+    pacienteIdNum ?? 0,
+    Boolean(pacienteIdNum)
+  );
+
+  const reservas = (perfil?.historial ?? []).map(cita => {
+    const ficha = fichasPaciente.find(f => f.citaId === cita.id);
+    return {
+      ...cita,
+      conFicha: Boolean(ficha),
+      fichaId: ficha?.id,
+    };
+  });
+
+  const citaSeleccionada = reservas.find(r => String(r.id) === citaId);
+
+  const handleSeleccionarPaciente = (paciente: PacienteResponse) => {
+    setReserva(
+      String(paciente.id),
+      `${paciente.nombre} ${paciente.apellido}`,
+      ""
+    );
+    setBusqueda("");
+  };
+
+  const handleSeleccionarReserva = (cita: HistorialCitaResponse) => {
+    setReserva(pacienteId!, pacienteNombre!, String(cita.id));
+  };
+
+  const handleAbrirFichaExistente = (fichaId: number) => {
+    router.push(`/panel/documentos?documento=${fichaId}`);
+  };
+
+  const handleCancelar = () => {
+    reiniciar();
+    router.push("/panel/documentos");
+  };
+
+  const handleContinuar = () => {
+    router.push("/panel/documentos/nueva/contenido");
+  };
+
+  return {
+    pacienteId,
+    pacienteNombre,
+    citaId,
+    busqueda,
+    resultados,
+    buscando,
+    hayMasPacientes: totalPacientes > resultados.length,
+    totalPacientes,
+    mostrarHintMinimo:
+      busqueda.trim().length > 0 &&
+      busqueda.trim().length < MIN_CARACTERES_BUSQUEDA,
+    reservas,
+    citaSeleccionada,
+
+    actions: {
+      setBusqueda,
+      handleSeleccionarPaciente,
+      handleSeleccionarReserva,
+      handleAbrirFichaExistente,
+      handleCancelar,
+      handleContinuar,
+    },
+  };
+};

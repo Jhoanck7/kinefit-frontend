@@ -1,0 +1,376 @@
+"use client";
+
+import { useState } from "react";
+
+import { Alerta, Modal, ModalCloseButton } from "@/components/shared";
+import {
+  useCreateVentaMutation,
+  useGetCitas,
+  useGetEmpresas,
+  useGetPacientes,
+  useGetServicios,
+} from "@/hooks/api";
+import { useDebounce } from "@/hooks/common";
+import { CreateVentaRequest } from "@/models/requests";
+import { PacienteResponse, TerminalPagoResponse } from "@/models/responses";
+
+type MetodoPago = CreateVentaRequest["metodoPago"];
+
+export interface CitaAsociadaVenta {
+  id: number;
+  pacienteId: number;
+  pacienteNombre: string;
+  servicioId: number;
+  servicioNombre: string;
+  especialistaNombre: string;
+}
+
+const ESTADOS_CITA_FACTURABLES = ["Confirmada", "Atendida"];
+
+interface NuevaVentaModalProps {
+  abierto: boolean;
+  onClose: () => void;
+  onCrearVenta: () => void;
+  terminales: TerminalPagoResponse[];
+  citaAsociada?: CitaAsociadaVenta;
+}
+
+/** Modal para registrar un cobro manual, con búsqueda de paciente y asociación opcional a una cita facturable */
+export function NuevaVentaModal({
+  abierto,
+  onClose,
+  onCrearVenta,
+  terminales,
+  citaAsociada,
+}: NuevaVentaModalProps) {
+  const [busquedaPaciente, setBusquedaPaciente] = useState("");
+  const [pacienteSeleccionado, setPacienteSeleccionado] =
+    useState<PacienteResponse | null>(null);
+  const busquedaDebounced = useDebounce(busquedaPaciente.trim(), 300);
+  const busquedaValida = busquedaDebounced.length >= 2;
+  const { data: resultadosPagina, isFetching: buscandoPaciente } =
+    useGetPacientes(
+      busquedaValida ? busquedaDebounced : undefined,
+      undefined,
+      1,
+      20,
+      busquedaValida && !pacienteSeleccionado
+    );
+  const resultados = resultadosPagina?.items ?? [];
+  const { data: servicios = [] } = useGetServicios();
+  const { data: empresas = [] } = useGetEmpresas(false);
+  const [descripcion, setDescripcion] = useState(
+    citaAsociada?.servicioNombre ?? ""
+  );
+  const [servicioId, setServicioId] = useState<string>(
+    citaAsociada ? String(citaAsociada.servicioId) : ""
+  );
+  const [monto, setMonto] = useState(40000);
+  const [metodoPago, setMetodoPago] = useState<MetodoPago>("Debito");
+  const [terminalPagoId, setTerminalPagoId] = useState<string>(
+    String(terminales[0]?.id ?? "")
+  );
+  const [citaSeleccionadaId, setCitaSeleccionadaId] = useState<string>("");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const crearVentaMutation = useCreateVentaMutation();
+
+  const pacienteIdParaCitas = citaAsociada
+    ? undefined
+    : pacienteSeleccionado?.id;
+  const { data: citasPaciente = [] } = useGetCitas(
+    { pacienteId: pacienteIdParaCitas },
+    Boolean(pacienteIdParaCitas)
+  );
+  const citasFacturables = citasPaciente.filter(c =>
+    ESTADOS_CITA_FACTURABLES.includes(c.estado)
+  );
+
+  const requiereTerminal = metodoPago === "Debito" || metodoPago === "Credito";
+  const citaId = citaAsociada?.id ?? (Number(citaSeleccionadaId) || undefined);
+
+  function resetForm() {
+    setBusquedaPaciente("");
+    setPacienteSeleccionado(null);
+    setDescripcion(citaAsociada?.servicioNombre ?? "");
+    setServicioId(citaAsociada ? String(citaAsociada.servicioId) : "");
+    setMonto(40000);
+    setMetodoPago("Debito");
+    setTerminalPagoId(String(terminales[0]?.id ?? ""));
+    setCitaSeleccionadaId("");
+    setErrorMsg(null);
+  }
+
+  function handleBuscarPaciente(termino: string) {
+    setBusquedaPaciente(termino);
+    setPacienteSeleccionado(null);
+    setCitaSeleccionadaId("");
+  }
+
+  function handleSeleccionarCita(id: string) {
+    setCitaSeleccionadaId(id);
+    const cita = citasFacturables.find(c => String(c.id) === id);
+    if (cita) {
+      const servicio = servicios.find(s => s.nombre === cita.servicio);
+      if (servicio) setServicioId(String(servicio.id));
+      setDescripcion(cita.servicio);
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!descripcion.trim() || monto <= 0) return;
+
+    setErrorMsg(null);
+
+    try {
+      await crearVentaMutation.mutateAsync({
+        citaId,
+        pacienteId: citaAsociada?.pacienteId ?? pacienteSeleccionado?.id,
+        metodoPago,
+        terminalPagoId: requiereTerminal ? Number(terminalPagoId) : undefined,
+        items: [
+          {
+            tipo: "Servicio",
+            servicioId: servicioId ? Number(servicioId) : undefined,
+            descripcion: descripcion.trim(),
+            monto,
+          },
+        ],
+      });
+      onCrearVenta();
+      resetForm();
+      onClose();
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "No se pudo registrar el cobro.";
+      setErrorMsg(msg);
+    }
+  }
+
+  return (
+    <Modal
+      abierto={abierto}
+      onCerrar={() => {
+        resetForm();
+        onClose();
+      }}
+    >
+      <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
+          <h3 className="font-sans text-section-title font-bold text-foreground">
+            Registrar Cobro Manual
+          </h3>
+          <ModalCloseButton onClick={onClose} />
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 space-y-4 font-sans text-xs"
+        >
+          {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
+
+          {citaAsociada ? (
+            <div className="border border-slate-200 bg-slate-50 p-3">
+              <p className="font-sans text-label font-medium text-muted-foreground mb-1">
+                Cobro Asociado a la Cita
+              </p>
+              <p className="font-sans text-value font-medium text-foreground">
+                {citaAsociada.pacienteNombre}, {citaAsociada.servicioNombre}
+              </p>
+              <p className="font-sans text-xs text-slate-500">
+                Especialista: {citaAsociada.especialistaNombre}
+              </p>
+            </div>
+          ) : (
+            <div className="relative">
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
+                Paciente (opcional: dejar vacío para cliente sin registrar)
+              </label>
+              <input
+                type="text"
+                value={
+                  pacienteSeleccionado
+                    ? `${pacienteSeleccionado.nombre} ${pacienteSeleccionado.apellido}`
+                    : busquedaPaciente
+                }
+                onChange={e => handleBuscarPaciente(e.target.value)}
+                placeholder="Buscar por nombre o RUT..."
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
+              />
+              {buscandoPaciente && !pacienteSeleccionado && (
+                <p className="mt-1 text-xs text-slate-500">Buscando…</p>
+              )}
+              {resultados.length > 0 && !pacienteSeleccionado && (
+                <ul className="absolute z-10 mt-1 w-full divide-y divide-slate-200 border border-slate-200 bg-white shadow-sm max-h-48 overflow-y-auto">
+                  {resultados.map(p => (
+                    <li key={p.id}>
+                      <button
+                        type="button"
+                        onClick={() => setPacienteSeleccionado(p)}
+                        className="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-slate-50"
+                      >
+                        <span className="font-medium text-slate-900">
+                          {p.nombre} {p.apellido}
+                        </span>
+                        <span className="text-xs text-slate-500">{p.rut}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {!citaAsociada && pacienteSeleccionado && (
+            <div>
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
+                Cita asociada (opcional)
+              </label>
+              <select
+                value={citaSeleccionadaId}
+                onChange={e => handleSeleccionarCita(e.target.value)}
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
+              >
+                <option value="">Sin cita asociada</option>
+                {citasFacturables.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.fecha}, {c.servicio}, {c.especialista}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {!citaId && (
+            <Alerta tono="info">
+              Esta venta no entra en el cálculo de reparto porque no está
+              asociada a una atención.
+            </Alerta>
+          )}
+
+          <div>
+            <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
+              Servicio
+            </label>
+            <select
+              required
+              disabled={Boolean(citaAsociada)}
+              value={servicioId}
+              onChange={e => {
+                setServicioId(e.target.value);
+                const s = servicios.find(
+                  sv => sv.id === Number(e.target.value)
+                );
+                setDescripcion(s?.nombre ?? "");
+              }}
+              className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none disabled:bg-slate-100"
+            >
+              <option value="" disabled>
+                Selecciona un servicio...
+              </option>
+              {servicios.map(s => (
+                <option key={s.id} value={s.id}>
+                  {s.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
+                Monto ($ CLP) *
+              </label>
+              <input
+                type="number"
+                required
+                min={1000}
+                step={500}
+                value={monto}
+                onChange={e => setMonto(parseFloat(e.target.value) || 0)}
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
+              />
+              {(() => {
+                const empresa = empresas.find(
+                  e => e.id === pacienteSeleccionado?.empresaId
+                );
+                const convenio = empresa?.convenios.find(
+                  c => c.servicioId === Number(servicioId) && c.activo
+                );
+                if (!empresa || !convenio) return null;
+                const totalConDescuento = Math.round(
+                  monto * (1 - convenio.porcentaje / 100)
+                );
+                return (
+                  <p className="mt-1 text-xs text-emerald-700 font-medium">
+                    Convenio {empresa.nombre}: -{convenio.porcentaje}% → Total a
+                    cobrar ${totalConDescuento.toLocaleString("es-CL")}
+                  </p>
+                );
+              })()}
+            </div>
+
+            <div>
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
+                Método de Pago *
+              </label>
+              <select
+                value={metodoPago}
+                onChange={e => setMetodoPago(e.target.value as MetodoPago)}
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
+              >
+                <option value="Debito">Débito</option>
+                <option value="Credito">Crédito</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Efectivo">Efectivo</option>
+              </select>
+            </div>
+          </div>
+
+          {requiereTerminal && (
+            <div>
+              <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
+                Terminal POS *
+              </label>
+              <select
+                required
+                value={terminalPagoId}
+                onChange={e => setTerminalPagoId(e.target.value)}
+                className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
+              >
+                {terminales.length === 0 && (
+                  <option value="">Sin terminales configuradas</option>
+                )}
+                {terminales.map(t => (
+                  <option key={t.id} value={t.id}>
+                    {t.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="pt-4 flex justify-end gap-2 border-t border-slate-200">
+            <button
+              type="button"
+              onClick={onClose}
+              className="font-sans text-xs font-bold px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-foreground rounded-overlay shadow-none"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={
+                crearVentaMutation.isPending ||
+                (requiereTerminal && !terminalPagoId)
+              }
+              className="font-sans text-xs font-bold px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-overlay shadow-none disabled:opacity-50"
+            >
+              {crearVentaMutation.isPending ? "Guardando…" : "Guardar Cobro"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </Modal>
+  );
+}

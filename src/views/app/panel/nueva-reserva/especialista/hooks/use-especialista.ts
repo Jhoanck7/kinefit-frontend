@@ -1,0 +1,111 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
+import {
+  useGetBloquesDisponibles,
+  useGetEspecialistasDisponibles,
+} from "@/hooks/api";
+import { fechaISO } from "@/lib/formato";
+import { useNuevaReservaStore } from "@/stores";
+
+import { PASOS_NUEVA_RESERVA } from "../../pasos";
+
+export { PASOS_NUEVA_RESERVA };
+
+/** Carga los especialistas disponibles para el servicio y horario elegidos, y resuelve los bloques reales al confirmar */
+export const useEspecialista = () => {
+  const router = useRouter();
+  const {
+    fecha,
+    hora,
+    horasSeleccionadas,
+    pacienteNombre,
+    servicioId,
+    servicioNombre,
+    especialistaId,
+    especialistaNombre,
+    setEspecialista,
+  } = useNuevaReservaStore();
+
+  const fechaIso = fecha ? fechaISO(fecha) : "";
+  const horaInicio = [...horasSeleccionadas].sort()[0] ?? "";
+  const duracionMinutos = horasSeleccionadas.length * 30;
+
+  const { data: especialistas = [], isLoading } =
+    useGetEspecialistasDisponibles(
+      servicioId ?? 0,
+      fechaIso,
+      horaInicio,
+      duracionMinutos,
+      Boolean(servicioId) && Boolean(fechaIso) && Boolean(horaInicio)
+    );
+
+  // Resuelve los bloqueHorarioIds reales del especialista elegido
+  const { data: bloquesDelEspecialista, isLoading: cargandoBloques } =
+    useGetBloquesDisponibles(
+      especialistaId ?? 0,
+      fechaIso,
+      Boolean(especialistaId) && Boolean(fechaIso)
+    );
+
+  const bloqueHorarioIdsResueltos = bloquesDelEspecialista
+    ? horasSeleccionadas
+        .map(
+          h =>
+            bloquesDelEspecialista.find(
+              b => b.horaInicio === h && b.estado === "Disponible"
+            )?.id
+        )
+        .filter((id): id is number => id !== undefined)
+    : [];
+  const resolviendoBloques = Boolean(especialistaId) && cargandoBloques;
+  // Caso borde: un bloque cambió de estado entre listarse y confirmar la elección
+  const errorResolucionBloques =
+    Boolean(especialistaId) &&
+    !cargandoBloques &&
+    bloquesDelEspecialista !== undefined &&
+    bloqueHorarioIdsResueltos.length !== horasSeleccionadas.length;
+
+  const sinEspecialistasDisponibles = !isLoading && especialistas.length === 0;
+
+  const handleSeleccionar = (id: string) => {
+    const esp = especialistas.find(e => String(e.id) === id);
+    if (esp) setEspecialista(esp.id, esp.nombre, []);
+  };
+  const handleVolver = () => router.push("/panel/nueva-reserva/horario");
+  const handleCancelar = () => router.push("/panel/agenda");
+  const handleContinuar = () => {
+    if (!especialistaId || resolviendoBloques || errorResolucionBloques) {
+      return;
+    }
+    setEspecialista(
+      especialistaId,
+      especialistaNombre ?? "",
+      bloqueHorarioIdsResueltos
+    );
+    router.push("/panel/nueva-reserva/paciente");
+  };
+
+  return {
+    fecha,
+    hora,
+    pacienteNombre,
+    nombreServicio: servicioNombre,
+    especialistaId,
+    especialistaNombre,
+    especialistas,
+    sinEspecialistasDisponibles,
+    resolviendoBloques,
+    errorResolucionBloques,
+
+    isLoading,
+
+    actions: {
+      handleSeleccionar,
+      handleVolver,
+      handleCancelar,
+      handleContinuar,
+    },
+  };
+};

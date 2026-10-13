@@ -1,0 +1,184 @@
+"use client";
+
+import { Alerta } from "@/components/shared";
+import { Card } from "@/components/ui";
+import { useGetReporteComisiones } from "@/hooks/api";
+
+interface ReporteComisionesViewProps {
+  fechaDesde?: string;
+  fechaHasta?: string;
+}
+
+/** Liquidación de comisiones por profesional en el período, con el reparto entre profesional y centro */
+export function ReporteComisionesView({
+  fechaDesde,
+  fechaHasta,
+}: ReporteComisionesViewProps) {
+  const { data, isLoading: cargando } = useGetReporteComisiones({
+    fechaDesde,
+    fechaHasta,
+  });
+  const profesionales = data?.profesionales ?? [];
+
+  if (cargando) {
+    return (
+      <Card className="p-6">
+        <p className="py-8 text-center text-sm text-muted-foreground">
+          Cargando liquidación de comisiones...
+        </p>
+      </Card>
+    );
+  }
+
+  if (profesionales.length === 0) {
+    return (
+      <Card className="p-6">
+        <p className="py-8 text-center text-sm text-muted-foreground">
+          Sin ventas registradas en el período seleccionado.
+        </p>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6 text-sm text-panel-sidebar">
+      <Card className="p-6 flex flex-wrap items-center justify-center gap-3 text-center">
+        <div>
+          <h3 className="text-sm font-bold text-panel-sidebar">
+            Liquidación de Sueldos y Reparto de Comisiones
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Desglose de recaudación bruta, impuestos, cargos POS y honorarios a
+            pagar por profesional
+          </p>
+        </div>
+        <span className="rounded-xl bg-panel-seleccion px-3 py-1.5 text-sm font-semibold text-panel-sidebar">
+          Reporte generado: {data?.generadoEl}
+        </span>
+      </Card>
+
+      <div className="space-y-4">
+        {profesionales.map(p => {
+          const tieneAcuerdo =
+            p.montoProfesional !== undefined && p.montoCentro !== undefined;
+          return (
+            <Card key={p.especialistaId} className="p-6 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-panel-sidebar text-white font-bold text-sm">
+                    {p.especialistaNombre[0]}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-panel-sidebar text-sm">
+                      {p.especialistaNombre}
+                    </h4>
+                    <span className="text-sm text-muted-foreground">
+                      {p.totalVentas} atenciones procesadas
+                    </span>
+                  </div>
+                </div>
+
+                {tieneAcuerdo ? (
+                  <span className="rounded-none bg-emerald-700 px-3 py-1 text-sm font-bold text-white">
+                    Acuerdo Vigente: {p.porcentajeProfesionalVigente}%
+                    Profesional / {100 - (p.porcentajeProfesionalVigente ?? 50)}
+                    % Empresa
+                  </span>
+                ) : (
+                  <span className="rounded-none bg-amber-700 px-3 py-1 text-sm font-bold text-white">
+                    {p.ventasSinRepartoVigente} cobro(s) sin acuerdo de reparto
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
+                <div className="bg-panel-fondo p-3 rounded-xl border border-border">
+                  <span className="text-muted-foreground block font-medium">
+                    Recaudación Bruta
+                  </span>
+                  <span className="text-sm font-bold text-panel-sidebar mt-0.5 block">
+                    ${p.montoTotalCobrado.toLocaleString("es-CL")}
+                  </span>
+                </div>
+
+                <div className="bg-panel-fondo p-3 rounded-xl border border-border">
+                  <span className="text-muted-foreground block font-medium">
+                    Retención IVA
+                  </span>
+                  <span className="text-sm font-semibold text-panel-sidebar mt-0.5 block">
+                    -${(p.impuesto ?? 0).toLocaleString("es-CL")}
+                  </span>
+                </div>
+
+                <div className="bg-panel-fondo p-3 rounded-xl border border-border">
+                  <span className="text-muted-foreground block font-medium">
+                    Comisión POS Descontada
+                  </span>
+                  <span className="text-sm font-semibold text-rose-700 mt-0.5 block">
+                    {p.comisionTerminal > 0
+                      ? `-$${p.comisionTerminal.toLocaleString("es-CL")}`
+                      : "$0"}
+                  </span>
+                  {p.ventasSinTasaVigente > 0 && (
+                    <span className="text-xs text-amber-700 block mt-1">
+                      {p.ventasSinTasaVigente} sin tasa POS vigente
+                    </span>
+                  )}
+                </div>
+
+                <div className="bg-panel-fondo p-3 rounded-xl border border-border">
+                  <span className="text-muted-foreground block font-medium">
+                    Ventas Sin Reparto
+                  </span>
+                  <span className="text-sm font-bold text-panel-sidebar mt-0.5 block">
+                    {p.ventasSinRepartoVigente} atenciones
+                  </span>
+                </div>
+              </div>
+
+              {tieneAcuerdo ? (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 pt-2">
+                  <div className="rounded-none bg-emerald-700 text-white p-4 flex justify-between items-center">
+                    <div>
+                      <span className="text-sm font-semibold block">
+                        Líquido a Pagar Profesional
+                      </span>
+                      <span className="text-xs text-white/80">
+                        {p.porcentajeProfesionalVigente}% de la base líquida
+                      </span>
+                    </div>
+                    <span className="text-xl font-bold">
+                      ${p.montoProfesional?.toLocaleString("es-CL")}
+                    </span>
+                  </div>
+
+                  <div className="rounded-xl bg-panel-seleccion p-4 border border-border flex justify-between items-center">
+                    <div>
+                      <span className="text-sm font-semibold text-panel-sidebar block">
+                        Margen Neto de la Empresa
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {100 - (p.porcentajeProfesionalVigente ?? 50)}% de la
+                        base líquida
+                      </span>
+                    </div>
+                    <span className="text-xl font-bold text-panel-sidebar">
+                      ${p.montoCentro?.toLocaleString("es-CL")}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <Alerta tono="advertencia">
+                  <strong>Atención:</strong>{" "}
+                  {p.motivoNoCalculable ?? "No hay tasa de reparto registrada."}{" "}
+                  Configura un convenio en la sección de Ventas para calcular la
+                  liquidación.
+                </Alerta>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

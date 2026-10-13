@@ -1,0 +1,465 @@
+"use client";
+
+import { Card } from "@/components/ui";
+import { useGetReporteReservas } from "@/hooks/api";
+
+interface ReporteReservasViewProps {
+  fechaDesde?: string;
+  fechaHasta?: string;
+  compararCon?: boolean;
+  vista?: "dia" | "semana" | "mes";
+}
+
+/** Indicadores, gráficos y rankings de reservas del período, con variación opcional contra el período anterior */
+export function ReporteReservasView({
+  fechaDesde,
+  fechaHasta,
+  compararCon,
+  vista = "dia",
+}: ReporteReservasViewProps) {
+  const { data, isLoading: cargando } = useGetReporteReservas({
+    fechaDesde,
+    fechaHasta,
+    compararCon,
+    vista,
+  });
+
+  const indicadores = data?.indicadores;
+  const comparacion = data?.comparacion;
+  const evolucionTemporal = data?.evolucionTemporal ?? [];
+  const distribucionPorHora = data?.distribucionPorHora ?? [];
+  const distribucionPorDiaSemana = data?.distribucionPorDiaSemana ?? [];
+  const distribucionPorEstado = data?.distribucionPorEstado ?? [];
+  const rankingServicios = data?.rankingServicios ?? [];
+  const rankingProfesionales = data?.rankingProfesionales ?? [];
+  const rankingClientes = data?.rankingClientes ?? [];
+  const clientesNuevos = data?.clientesNuevos ?? 0;
+  const clientesRecurrentes = data?.clientesRecurrentes ?? 0;
+  const web = data?.origen.web ?? 0;
+  const manual = data?.origen.manual ?? 0;
+
+  const maxReservasEvolucion = Math.max(
+    ...evolucionTemporal.map(p => p.reservas),
+    1
+  );
+  const maxIngresos = Math.max(...evolucionTemporal.map(p => p.ingresos), 1);
+  const maxHora = Math.max(...distribucionPorHora.map(p => p.cantidad), 1);
+  const maxDia = Math.max(...distribucionPorDiaSemana.map(p => p.cantidad), 1);
+
+  const totalEstado =
+    distribucionPorEstado.reduce((acc, e) => acc + e.cantidad, 0) || 1;
+  const totalOrigen = web + manual || 1;
+  const totalRetencion = clientesNuevos + clientesRecurrentes || 1;
+  const pctNuevos = Math.round((clientesNuevos / totalRetencion) * 100);
+  const pctRecurrentes = Math.round(
+    (clientesRecurrentes / totalRetencion) * 100
+  );
+
+  // esInverso invierte el criterio de color porque en algunas métricas bajar es la mejora (ej. inasistencias)
+  function colorVariacion(
+    valor: number | null | undefined,
+    esInverso = false
+  ): string {
+    if (valor === null || valor === undefined) return "bg-slate-400";
+    const esBueno = esInverso ? valor <= 0 : valor >= 0;
+    return esBueno ? "bg-emerald-700" : "bg-rose-600";
+  }
+
+  function formatVariacion(valor: number | null | undefined): string {
+    if (valor === null || valor === undefined) return "sin datos prev.";
+    return `${valor >= 0 ? "+" : ""}${valor}% vs anterior`;
+  }
+
+  if (cargando) {
+    return (
+      <Card className="p-6">
+        <p className="py-8 text-center text-sm text-muted-foreground">
+          Cargando reporte de reservas...
+        </p>
+      </Card>
+    );
+  }
+
+  if (!indicadores || indicadores.reservasTotales === 0) {
+    return (
+      <Card className="p-6">
+        <p className="py-8 text-center text-sm text-muted-foreground">
+          Sin reservas registradas en el período seleccionado.
+        </p>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6 text-sm text-panel-sidebar">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <span className="text-section-title font-bold text-muted-foreground">
+              Reservas Totales
+            </span>
+            {comparacion?.variacionReservasTotales !== undefined && (
+              <span
+                className={`rounded-none px-2.5 py-1 text-xs font-bold text-white ${colorVariacion(comparacion.variacionReservasTotales)}`}
+              >
+                {formatVariacion(comparacion.variacionReservasTotales)}
+              </span>
+            )}
+          </div>
+          <p className="mt-3 text-2xl font-bold text-panel-sidebar">
+            {indicadores.reservasTotales}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Citas agendadas en el rango seleccionado
+          </p>
+        </Card>
+
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <span className="text-section-title font-bold text-muted-foreground">
+              Tasa de Ocupación
+            </span>
+            {comparacion?.variacionPorcentajeOcupacion !== undefined && (
+              <span
+                className={`rounded-none px-2.5 py-1 text-xs font-bold text-white ${colorVariacion(comparacion.variacionPorcentajeOcupacion)}`}
+              >
+                {formatVariacion(comparacion.variacionPorcentajeOcupacion)}
+              </span>
+            )}
+          </div>
+          <p className="mt-3 text-2xl font-bold text-panel-sidebar">
+            {indicadores.porcentajeOcupacion}%
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Bloques ocupados vs disponibles en agenda
+          </p>
+        </Card>
+
+        {/* en esta métrica una variación negativa es una mejora, no un problema */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <span className="text-section-title font-bold text-muted-foreground">
+              Tasa de Inasistencias
+            </span>
+            {comparacion?.variacionTasaInasistencias !== undefined && (
+              <span
+                className={`rounded-none px-2.5 py-1 text-xs font-bold text-white ${colorVariacion(comparacion.variacionTasaInasistencias, true)}`}
+              >
+                {formatVariacion(comparacion.variacionTasaInasistencias)}
+              </span>
+            )}
+          </div>
+          <p className="mt-3 text-2xl font-bold text-panel-sidebar">
+            {indicadores.tasaInasistencias}%
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Citas no asistidas o canceladas a última hora
+          </p>
+        </Card>
+      </div>
+
+      {evolucionTemporal.length > 0 && (
+        <Card className="p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+            <div>
+              <h3 className="text-sm font-bold text-panel-sidebar">
+                Evolución Temporal de Reservas e Ingresos
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Comportamiento durante el rango seleccionado
+              </p>
+            </div>
+            <div className="flex items-center gap-4 text-xs font-semibold text-panel-sidebar">
+              <span className="flex items-center gap-1.5">
+                <span className="h-3 w-3 rounded-sm bg-panel-sidebar inline-block" />
+                Reservas (N°)
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-3 w-3 rounded-sm bg-emerald-700 inline-block" />
+                Ingresos ($ CLP)
+              </span>
+            </div>
+          </div>
+
+          {/* las barras de reservas e ingresos escalan cada una contra su propio máximo, no una escala compartida */}
+          <div className="h-52 flex items-end justify-between gap-1 border-b border-border pb-2 pt-2 overflow-x-auto">
+            {evolucionTemporal.map(item => {
+              const alturaReservas = Math.round(
+                (item.reservas / maxReservasEvolucion) * 100
+              );
+              const alturaIngresos = Math.round(
+                (item.ingresos / maxIngresos) * 100
+              );
+              return (
+                <div
+                  key={item.periodo}
+                  className="flex-1 min-w-[32px] flex flex-col items-center gap-1 group relative"
+                >
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-panel-sidebar text-white text-[10px] py-1 px-2 rounded pointer-events-none whitespace-nowrap z-10 shadow-lg">
+                    <span className="font-bold">{item.reservas}</span> citas
+                    <br />
+                    <span className="font-bold">
+                      ${item.ingresos.toLocaleString("es-CL")}
+                    </span>
+                  </div>
+
+                  <div className="w-full flex items-end justify-center gap-0.5 h-44">
+                    <div className="flex flex-col items-center justify-end h-full w-[45%]">
+                      <span className="text-[9px] font-bold text-panel-sidebar mb-0.5 leading-none">
+                        {item.reservas > 0 ? item.reservas : ""}
+                      </span>
+                      <div
+                        style={{ height: `${alturaReservas}%` }}
+                        className="w-full bg-panel-sidebar rounded-t transition-all group-hover:opacity-80 min-h-[2px]"
+                      />
+                    </div>
+                    <div className="flex flex-col items-center justify-end h-full w-[45%]">
+                      <span className="text-[9px] font-bold text-emerald-700 mb-0.5 leading-none">
+                        {item.ingresos > 0
+                          ? `$${Math.round(item.ingresos / 1000)}k`
+                          : ""}
+                      </span>
+                      <div
+                        style={{ height: `${alturaIngresos}%` }}
+                        className="w-full bg-emerald-700 rounded-t transition-all group-hover:opacity-80 min-h-[2px]"
+                      />
+                    </div>
+                  </div>
+
+                  <span className="text-[9px] font-semibold text-muted-foreground mt-1 text-center leading-tight">
+                    {item.periodo}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="p-6">
+          <h4 className="text-section-title font-bold text-muted-foreground mb-4">
+            Horarios de Mayor Demanda (Distribución por Hora)
+          </h4>
+          <div className="space-y-3">
+            {distribucionPorHora.map(h => {
+              const pct = Math.round((h.cantidad / maxHora) * 100);
+              return (
+                <div
+                  key={h.etiqueta}
+                  className="flex items-center gap-3 text-sm"
+                >
+                  <span className="w-12 font-semibold text-panel-sidebar">
+                    {h.etiqueta}
+                  </span>
+                  <div className="flex-1 h-3 rounded-full bg-panel-seleccion overflow-hidden">
+                    <div
+                      style={{ width: `${pct}%` }}
+                      className="h-full bg-panel-sidebar rounded-full transition-all"
+                    />
+                  </div>
+                  <span className="w-8 text-right font-bold text-panel-sidebar">
+                    {h.cantidad}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h4 className="text-section-title font-bold text-muted-foreground mb-4">
+            Demanda por Día de la Semana
+          </h4>
+          <div className="space-y-3">
+            {distribucionPorDiaSemana.map(d => {
+              const pct = Math.round((d.cantidad / maxDia) * 100);
+              return (
+                <div
+                  key={d.etiqueta}
+                  className="flex items-center gap-3 text-sm"
+                >
+                  <span className="w-16 font-semibold text-panel-sidebar">
+                    {d.etiqueta}
+                  </span>
+                  <div className="flex-1 h-3 rounded-full bg-panel-seleccion overflow-hidden">
+                    <div
+                      style={{ width: `${pct}%` }}
+                      className="h-full bg-panel-sidebar rounded-full transition-all"
+                    />
+                  </div>
+                  <span className="w-8 text-right font-bold text-panel-sidebar">
+                    {d.cantidad}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <Card className="p-6 space-y-3">
+          <h4 className="text-section-title font-bold text-muted-foreground">
+            Distribución por Estado
+          </h4>
+          <div className="space-y-2 text-sm">
+            {distribucionPorEstado.map(e => (
+              <div
+                key={e.etiqueta}
+                className="flex justify-between items-center p-2 rounded-lg bg-panel-fondo"
+              >
+                <span className="font-semibold text-panel-sidebar">
+                  {e.etiqueta}
+                </span>
+                <span className="font-bold text-panel-sidebar">
+                  {e.cantidad} ({Math.round((e.cantidad / totalEstado) * 100)}%)
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="p-6 space-y-3">
+          <h4 className="text-section-title font-bold text-muted-foreground">
+            Origen de Reservas
+          </h4>
+          <div className="space-y-3 pt-1">
+            {[
+              { etiqueta: "Reserva Web", cantidad: web },
+              { etiqueta: "Agendamiento Manual", cantidad: manual },
+            ].map(o => {
+              const pct = Math.round((o.cantidad / totalOrigen) * 100);
+              return (
+                <div key={o.etiqueta} className="space-y-1">
+                  <div className="flex justify-between text-sm font-bold text-panel-sidebar">
+                    <span>{o.etiqueta}</span>
+                    <span>
+                      {o.cantidad} ({pct}%)
+                    </span>
+                  </div>
+                  <div className="h-3 rounded-full bg-panel-seleccion overflow-hidden">
+                    <div
+                      style={{ width: `${pct}%` }}
+                      className="h-full bg-panel-sidebar"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        <Card className="p-6 space-y-3">
+          <h4 className="text-section-title font-bold text-muted-foreground">
+            Retención de Pacientes
+          </h4>
+          <div className="pt-2 text-center">
+            <span className="text-2xl font-bold text-panel-sidebar">
+              {pctRecurrentes}%
+            </span>
+            <span className="text-sm font-semibold text-muted-foreground block mt-0.5">
+              Pacientes Recurrentes
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-center text-sm pt-2 border-t border-border">
+            <div className="bg-panel-fondo p-2 rounded-lg">
+              <span className="font-bold text-panel-sidebar block">
+                {clientesNuevos}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                Nuevos ({pctNuevos}%)
+              </span>
+            </div>
+            <div className="bg-panel-fondo p-2 rounded-lg">
+              <span className="font-bold text-panel-sidebar block">
+                {clientesRecurrentes}
+              </span>
+              <span className="text-xs text-muted-foreground">Recurrentes</span>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <Card className="p-6">
+          <h4 className="text-section-title font-bold text-muted-foreground mb-3">
+            Top Servicios Solicitados
+          </h4>
+          <div className="divide-y divide-border text-sm">
+            {rankingServicios.map((s, idx) => (
+              <div
+                key={s.id}
+                className="py-2.5 flex justify-between items-center"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-panel-sidebar text-sm">
+                    #{idx + 1}
+                  </span>
+                  <span className="font-medium text-panel-sidebar">
+                    {s.nombre}
+                  </span>
+                </div>
+                <span className="font-bold text-panel-sidebar bg-panel-seleccion px-2 py-0.5 rounded">
+                  {s.cantidad} citas
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h4 className="text-section-title font-bold text-muted-foreground mb-3">
+            Top Especialistas
+          </h4>
+          <div className="divide-y divide-border text-xs text-sm">
+            {rankingProfesionales.map((p, idx) => (
+              <div
+                key={p.id}
+                className="py-2.5 flex justify-between items-center"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-panel-sidebar text-sm">
+                    #{idx + 1}
+                  </span>
+                  <span className="font-medium text-panel-sidebar">
+                    {p.nombre}
+                  </span>
+                </div>
+                <span className="font-bold text-panel-sidebar bg-panel-seleccion px-2 py-0.5 rounded">
+                  {p.cantidad} atenciones
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h4 className="text-section-title font-bold text-muted-foreground mb-3">
+            Pacientes Más Frecuentes
+          </h4>
+          <div className="divide-y divide-border text-sm">
+            {rankingClientes.map((c, idx) => (
+              <div
+                key={c.id}
+                className="py-2.5 flex justify-between items-center"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-panel-sidebar text-sm">
+                    #{idx + 1}
+                  </span>
+                  <span className="font-medium text-panel-sidebar">
+                    {c.nombre}
+                  </span>
+                </div>
+                <span className="font-bold text-panel-sidebar bg-panel-seleccion px-2 py-0.5 rounded">
+                  {c.cantidad} visitas
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}

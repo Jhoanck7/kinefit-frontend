@@ -1,0 +1,67 @@
+import { ApiResponse } from "@/models/generics";
+import {
+  CreateHorarioCentroRequest,
+  CreatePlantillaHorarioRequest,
+} from "@/models/requests";
+import {
+  HorarioCentroResponse,
+  PlantillaHorarioResponse,
+  PlantillaHorarioResultadoResponse,
+} from "@/models/responses";
+
+import { BaseApiService } from "./base-api-service";
+
+/** Consume los endpoints de plantillas horarias semanales por especialista */
+export class PlantillaHorarioService extends BaseApiService {
+  constructor() {
+    super("/plantillas-horario");
+  }
+
+  getByEspecialista(especialistaId: number) {
+    return this.httpClient.get<ApiResponse<PlantillaHorarioResponse[]>>(
+      `${this.baseURL}?especialistaId=${especialistaId}`
+    );
+  }
+
+  create(data: CreatePlantillaHorarioRequest) {
+    return this.httpClient.post<ApiResponse<PlantillaHorarioResultadoResponse>>(
+      this.baseURL,
+      data
+    );
+  }
+
+  delete(id: number) {
+    return this.httpClient.delete<
+      ApiResponse<PlantillaHorarioResultadoResponse>
+    >(`${this.baseURL}/${id}`);
+  }
+}
+
+/** Consume los endpoints del horario general del centro */
+export class HorarioCentroService extends BaseApiService {
+  constructor() {
+    super("/horario-centro");
+  }
+
+  getAll() {
+    return this.httpClient.get<ApiResponse<HorarioCentroResponse[]>>(
+      this.baseURL
+    );
+  }
+
+  create(data: CreateHorarioCentroRequest) {
+    return this.httpClient.post<ApiResponse<HorarioCentroResponse>>(
+      this.baseURL,
+      data
+    );
+  }
+
+  delete(id: number) {
+    return this.httpClient.delete<ApiResponse<boolean>>(
+      `${this.baseURL}/${id}`
+    );
+  }
+}
+
+export const plantillaHorarioService = new PlantillaHorarioService();
+export const horarioCentroService = new HorarioCentroService();

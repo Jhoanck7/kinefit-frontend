@@ -1,0 +1,143 @@
+import { type ClassValue, clsx } from "clsx";
+import { Metadata } from "next";
+import { extendTailwindMerge } from "tailwind-merge";
+
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      rounded: ["rounded-overlay", "rounded-pill", "rounded-global"],
+    },
+  },
+});
+
+/** Combina clases de Tailwind resolviendo conflictos entre utilidades repetidas */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export const defaultMetadata: Metadata = {
+  metadataBase: new URL("https://kinefitchile.com"),
+  title: {
+    default: "Kinefit - Centro de Kinesiología y Masoterapia",
+    template: "%s | Kinefit",
+  },
+  description: "Centro de rehabilitación kinésica y masoterapia.",
+  keywords: [
+    "kinesiología",
+    "masoterapia",
+    "rehabilitación",
+    "kinefit",
+    "kinefitchile",
+    "KineFitChile",
+    "kinesiólogo",
+    "terapia física",
+  ],
+  authors: [{ name: "Kinefit" }],
+  icons: {
+    icon: "/KINEFIT_LOGO.jpg",
+    shortcut: "/KINEFIT_LOGO.jpg",
+    apple: "/KINEFIT_LOGO.jpg",
+  },
+  creator: "Kinefit",
+  publisher: "Kinefit",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Kinefit - Centro de Kinesiología y Masoterapia",
+    description:
+      "Centro de rehabilitación kinésica, entrenamiento funcional y bienestar integral.",
+    type: "website",
+    locale: "es_CL",
+    url: "https://kinefitchile.com",
+    siteName: "Kinefit",
+    images: [
+      {
+        url: "/KINEFIT_LOGO.jpg",
+        width: 1200,
+        height: 1200,
+        alt: "Kinefit Chile",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kinefit - Centro de Kinesiología y Masoterapia",
+    description:
+      "Centro de rehabilitación kinésica, entrenamiento funcional y bienestar integral.",
+    images: ["/KINEFIT_LOGO.jpg"],
+  },
+};
+
+export const CLINIC_INFO = {
+  name: "KineFitChile",
+  tagline: "Centro de Kinesiología y Masoterapia",
+  email: "contacto@kinefitchile.com",
+  phone: "+ 56 9 6207 2672",
+  phoneRaw: "+56962072672",
+  address: "Pje. Maximiliano Poblete 596, Antofagasta",
+  hours: {
+    weekday: "Lunes a Viernes: 09:00 - 21:00 hrs.",
+    saturday: "Sábados: 10:00 - 20:00 hrs.",
+    weekdaySummary: "Lunes a Viernes:\n09:00 a 14:00 / 15:00 a 21:00 hrs.",
+    saturdaySummary: "Sábados y Domingos:\n10:00 a 14:00 / 15:00 a 21:00 hrs.",
+  },
+  socials: {
+    instagram: "https://www.instagram.com/kinefit.chile",
+    facebook:
+      "https://www.facebook.com/profile.php?id=61591559489444&sk=directory_links",
+    whatsapp: "https://wa.me/56962072672",
+    tiktok: "https://www.tiktok.com/@kinefitchile?_r=1&_t=ZS-97lIyj0Yjvs",
+  },
+};
+
+export const NAV_LINKS = [
+  { name: "Reserva", href: "#agendamiento" },
+  { name: "Enfoque", href: "#about" },
+  { name: "Equipo", href: "#team" },
+  { name: "Testimonios", href: "#testimonials" },
+  { name: "Proceso", href: "#process" },
+  { name: "Vouchers", href: "#vouchers" },
+  { name: "Nutrición", href: "#nutricion" },
+  { name: "Embarazadas", href: "#embarazadas" },
+  { name: "Ubicación", href: "#location" },
+];
+
+export const HERO_COPY = {
+  tagline: "Centro de kinesiología,   rehabilitación y masoterapia",
+  description:
+    "En KineFit Chile combinamos rehabilitación kinésica avanzada y entrenamiento funcional de alto nivel. Diseñamos un plan de tratamiento a tu medida para sanar lesiones, recuperar movilidad y potenciar tu rendimiento físico.",
+  ctaText: "VER Y AGENDAR SERVICIOS AHORA",
+  ctaLink: "#agendamiento",
+  bullets: [
+    "Atención Personalizada",
+    "Seguimiento caso a caso",
+    "Pacientes Satisfechos",
+    "Profesionales certificados",
+  ],
+};
+
+export const BOOKING_SERVICES = [
+  {
+    id: "1",
+    name: "Kinesiología Clínica",
+    price: "",
+    duration: "",
+    priceNumeric: 0,
+  },
+  { id: "2", name: "Masoterapia", price: "", duration: "", priceNumeric: 0 },
+];
+
+export const BOOKING_TIME_SLOTS = [
+  "09:00",
+  "10:15",
+  "11:30",
+  "14:00",
+  "15:15",
+  "16:30",
+  "17:45",
+];

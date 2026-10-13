@@ -1,0 +1,50 @@
+import { create } from "zustand";
+
+interface NuevaFichaState {
+  pacienteId: string | null;
+  pacienteNombre: string | null;
+  citaId: string | null;
+  plantillaId: number | null;
+  contenido: Record<string, string>;
+  adjuntos: File[];
+  setReserva: (
+    pacienteId: string,
+    pacienteNombre: string,
+    citaId: string
+  ) => void;
+  setPlantilla: (plantillaId: number) => void;
+  setCampo: (campoId: string, valor: string) => void;
+  agregarAdjunto: (archivo: File) => void;
+  quitarAdjunto: (nombre: string) => void;
+  reiniciar: () => void;
+}
+
+/** Estado en memoria del asistente de nueva ficha; una recarga a mitad de camino vuelve al paso 1 */
+export const useNuevaFichaStore = create<NuevaFichaState>()(set => ({
+  pacienteId: null,
+  pacienteNombre: null,
+  citaId: null,
+  plantillaId: null,
+  contenido: {},
+  adjuntos: [],
+  setReserva: (pacienteId, pacienteNombre, citaId) =>
+    set({ pacienteId, pacienteNombre, citaId }),
+  setPlantilla: plantillaId => set({ plantillaId }),
+  setCampo: (campoId, valor) =>
+    set(estado => ({ contenido: { ...estado.contenido, [campoId]: valor } })),
+  agregarAdjunto: archivo =>
+    set(estado => ({ adjuntos: [...estado.adjuntos, archivo] })),
+  quitarAdjunto: nombre =>
+    set(estado => ({
+      adjuntos: estado.adjuntos.filter(a => a.name !== nombre),
+    })),
+  reiniciar: () =>
+    set({
+      pacienteId: null,
+      pacienteNombre: null,
+      citaId: null,
+      plantillaId: null,
+      contenido: {},
+      adjuntos: [],
+    }),
+}));
