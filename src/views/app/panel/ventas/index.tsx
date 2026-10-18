@@ -186,7 +186,6 @@ export default function VentasView() {
       <NuevaVentaModal
         abierto={modalNuevaVenta}
         onClose={() => actions.setModalNuevaVenta(false)}
-        terminales={terminales}
         onCrearVenta={() => actions.cargarVentas()}
       />
       <ConfiguracionFinancieraModal

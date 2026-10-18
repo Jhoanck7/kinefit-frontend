@@ -39,10 +39,11 @@ export const useCreateVentaMutation = () => {
 };
 
 /** Obtiene el listado de terminales de pago (POS) */
-export const useGetTerminales = () => {
+export const useGetTerminales = (soloActivos = false) => {
   return useQuery({
-    queryKey: ["terminales-pago"],
-    queryFn: () => ventaService.getTerminales().then(res => res.data.data),
+    queryKey: ["terminales-pago", soloActivos],
+    queryFn: () =>
+      ventaService.getTerminales(soloActivos).then(res => res.data.data),
   });
 };
 
