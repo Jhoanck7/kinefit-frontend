@@ -22,7 +22,7 @@ const COLUMNAS = [
   "Estado",
 ];
 
-/** Página del catálogo de servicios: lista, crea y edita servicios con su duración, imagen y documentos exigidos */
+/** Página del catálogo de servicios: lista, crea y edita servicios con su duración y documentos exigidos */
 export default function ServiciosView() {
   const {
     servicios,
@@ -34,7 +34,6 @@ export default function ServiciosView() {
     exigeDuracion,
     duracionMinutos,
     descripcion,
-    imagenUrl,
     plantillas,
     documentos,
     error,
@@ -153,7 +152,6 @@ export default function ServiciosView() {
         exigeDuracion={exigeDuracion}
         duracionMinutos={duracionMinutos}
         descripcion={descripcion}
-        imagenUrl={imagenUrl}
         plantillas={plantillas}
         documentos={documentos}
         error={error}
@@ -163,7 +161,6 @@ export default function ServiciosView() {
         onToggleExigeDuracion={actions.handleToggleExigeDuracion}
         onDuracionMinutosChange={actions.setDuracionMinutos}
         onDescripcionChange={actions.setDescripcion}
-        onFotoChange={actions.handleFotoChange}
         onDocumentosChange={actions.setDocumentos}
         onSubmit={actions.handleGuardar}
       />

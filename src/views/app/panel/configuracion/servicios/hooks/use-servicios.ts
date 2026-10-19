@@ -34,9 +34,6 @@ export const useServicios = () => {
     undefined
   );
   const [descripcion, setDescripcion] = useState("");
-  const [imagenUrl, setImagenUrl] = useState("");
-  const [imagenPublicId, setImagenPublicId] = useState("");
-  const [imagenAlt, setImagenAlt] = useState("");
   const [documentos, setDocumentos] = useState<ServicioDocumentoInput[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [errorEstado, setErrorEstado] = useState<string | null>(null);
@@ -48,9 +45,6 @@ export const useServicios = () => {
     setExigeDuracion(false);
     setDuracionMinutos(undefined);
     setDescripcion("");
-    setImagenUrl("");
-    setImagenPublicId("");
-    setImagenAlt("");
     setDocumentos([]);
     setError(null);
     setMostrarModal(true);
@@ -63,9 +57,6 @@ export const useServicios = () => {
     setExigeDuracion(Boolean(servicio.duracionMinutos));
     setDuracionMinutos(servicio.duracionMinutos);
     setDescripcion(servicio.descripcion || "");
-    setImagenUrl(servicio.imagenUrl || "");
-    setImagenPublicId(servicio.imagenPublicId || "");
-    setImagenAlt(servicio.imagenAlt || "");
     // Las fichas clínicas asignadas a un servicio se descartan al abrir el formulario para que no viajen de vuelta invisibles al guardar
     const asignables = new Set(
       plantillas
@@ -86,11 +77,6 @@ export const useServicios = () => {
   };
 
   const handleCerrarModal = () => setMostrarModal(false);
-
-  const handleFotoChange = (secureUrl: string, publicId?: string) => {
-    setImagenUrl(secureUrl);
-    setImagenPublicId(publicId || "");
-  };
 
   const handleToggleExigeDuracion = (checked: boolean) => {
     setExigeDuracion(checked);
@@ -117,8 +103,6 @@ export const useServicios = () => {
             nombre,
             orden,
             duracionMinutos: duracionAEnviar,
-            imagenPublicId: imagenPublicId || undefined,
-            imagenAlt: imagenAlt || undefined,
             descripcion: descripcion || undefined,
           },
         });
@@ -127,8 +111,6 @@ export const useServicios = () => {
           nombre,
           orden,
           duracionMinutos: duracionAEnviar,
-          imagenPublicId: imagenPublicId || undefined,
-          imagenAlt: imagenAlt || undefined,
           descripcion: descripcion || undefined,
         });
         id = creado!.id;
@@ -162,7 +144,6 @@ export const useServicios = () => {
     exigeDuracion,
     duracionMinutos,
     descripcion,
-    imagenUrl,
     plantillas,
     documentos,
     error,
@@ -185,7 +166,6 @@ export const useServicios = () => {
       handleAbrirCrear,
       handleAbrirEditar,
       handleCerrarModal,
-      handleFotoChange,
       handleGuardar,
       handleToggleEstado,
     },
