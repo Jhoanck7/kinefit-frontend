@@ -285,7 +285,7 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
               <PdfSignatureCanvas
                 ref={pdfFirmaRef}
                 url={urlParaFirmar}
-                exigirLectura
+                conModoLectura
                 onCambiar={vacia => {
                   setFirmaVacia(vacia);
                   if (!vacia) setAvisoFirma(null);
