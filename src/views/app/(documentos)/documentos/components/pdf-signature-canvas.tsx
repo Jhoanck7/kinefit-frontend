@@ -42,7 +42,6 @@ const PdfSignatureCanvas = forwardRef<
   const [paginas, setPaginas] = useState<PaginaInfo[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandido, setExpandido] = useState(false);
   const [modo, setModo] = useState<"leer" | "firmar">(
     conModoLectura ? "leer" : "firmar"
   );
@@ -208,8 +207,7 @@ const PdfSignatureCanvas = forwardRef<
   }
 
   async function generarDocumentoFirmadoBase64(): Promise<string | null> {
-    if (paginasConTrazoRef.current.size === 0 || !bytesOriginalesRef.current)
-      return null;
+    if (!bytesOriginalesRef.current) return null;
 
     const pdfDoc = await PDFDocument.load(bytesOriginalesRef.current.slice(0));
 
@@ -253,58 +251,33 @@ const PdfSignatureCanvas = forwardRef<
   }
 
   return (
-    <div
-      className={
-        expandido
-          ? "fixed inset-0 z-50 flex flex-col bg-slate-900"
-          : "border border-border"
-      }
-    >
-      <div
-        className={`flex shrink-0 items-stretch ${
-          expandido ? "bg-slate-900" : "border-b border-border bg-slate-50"
-        }`}
-      >
-        {!soloLectura && conModoLectura && (
-          <div className="flex flex-1">
-            <button
-              type="button"
-              onClick={() => setModo("leer")}
-              className={`flex-1 py-2.5 font-sans text-table-head font-bold uppercase tracking-widest transition-colors ${
-                modo === "leer"
-                  ? "bg-slate-900 text-white"
-                  : expandido
-                    ? "text-slate-400"
-                    : "text-slate-500 hover:text-foreground"
-              }`}
-            >
-              Leer
-            </button>
-            <button
-              type="button"
-              onClick={() => setModo("firmar")}
-              className={`flex-1 py-2.5 font-sans text-table-head font-bold uppercase tracking-widest transition-colors ${
-                modo === "firmar"
-                  ? "bg-slate-900 text-white"
-                  : expandido
-                    ? "text-slate-400"
-                    : "text-slate-500 hover:text-foreground"
-              }`}
-            >
-              Firmar
-            </button>
-          </div>
-        )}
-        <button
-          type="button"
-          onClick={() => setExpandido(v => !v)}
-          className={`px-4 py-2.5 font-sans text-table-head font-bold uppercase tracking-widest ${
-            expandido ? "text-white" : "text-slate-500 hover:text-foreground"
-          } ${soloLectura || !conModoLectura ? "w-full" : ""}`}
-        >
-          {expandido ? "Cerrar" : "Pantalla completa"}
-        </button>
-      </div>
+    <div className="border border-border">
+      {!soloLectura && conModoLectura && (
+        <div className="flex shrink-0 items-stretch border-b border-border bg-slate-50">
+          <button
+            type="button"
+            onClick={() => setModo("leer")}
+            className={`flex-1 py-2.5 font-sans text-table-head font-bold uppercase tracking-widest transition-colors ${
+              modo === "leer"
+                ? "bg-slate-900 text-white"
+                : "text-slate-500 hover:text-foreground"
+            }`}
+          >
+            Leer
+          </button>
+          <button
+            type="button"
+            onClick={() => setModo("firmar")}
+            className={`flex-1 py-2.5 font-sans text-table-head font-bold uppercase tracking-widest transition-colors ${
+              modo === "firmar"
+                ? "bg-slate-900 text-white"
+                : "text-slate-500 hover:text-foreground"
+            }`}
+          >
+            Firmar
+          </button>
+        </div>
+      )}
 
       {cargando && (
         <div className="flex h-[70vh] items-center justify-center">
@@ -315,7 +288,7 @@ const PdfSignatureCanvas = forwardRef<
         <div
           className="flex-1 space-y-3 overflow-y-auto bg-slate-100 p-2 sm:p-3"
           style={{
-            height: expandido ? undefined : "70vh",
+            height: "70vh",
             touchAction: modo === "firmar" ? "none" : "pan-y",
           }}
         >

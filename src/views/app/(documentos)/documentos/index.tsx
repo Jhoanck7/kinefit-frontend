@@ -46,7 +46,6 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
 
   const pdfFirmaRef =
     useRef<React.ComponentRef<typeof PdfSignatureCanvas>>(null);
-  const [firmaVacia, setFirmaVacia] = useState(true);
   const [avisoFirma, setAvisoFirma] = useState<string | null>(null);
   const [pdfFirmadoBase64, setPdfFirmadoBase64] = useState<string | null>(null);
   const [pdfGeneradoUrl, setPdfGeneradoUrl] = useState<string | null>(null);
@@ -143,7 +142,6 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
       });
       const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
       setPdfGeneradoUrl(URL.createObjectURL(blob));
-      setFirmaVacia(true);
       setPaso("firmar");
     } finally {
       setGenerando(false);
@@ -152,11 +150,7 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
 
   const handleGuardarPdf = async () => {
     const base64 = await pdfFirmaRef.current?.generarDocumentoFirmadoBase64();
-    if (!base64) {
-      setAvisoFirma("Firma en el documento antes de continuar.");
-      return;
-    }
-    setAvisoFirma(null);
+    if (!base64) return;
     setPdfFirmadoBase64(base64);
     setPaso("revisar");
   };
@@ -168,7 +162,6 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
 
   const handleVolverAFirmar = () => {
     setPdfFirmadoBase64(null);
-    setFirmaVacia(true);
     setPaso("firmar");
   };
 
@@ -176,7 +169,6 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
     if (pdfGeneradoUrl) URL.revokeObjectURL(pdfGeneradoUrl);
     setPdfGeneradoUrl(null);
     setPdfFirmadoBase64(null);
-    setFirmaVacia(true);
     setPaso("completar");
   };
 
@@ -283,20 +275,13 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
           <div className="mb-4">
             {urlParaFirmar && (
               <PdfSignatureCanvas
+                key="firmar"
                 ref={pdfFirmaRef}
                 url={urlParaFirmar}
                 conModoLectura
-                onCambiar={vacia => {
-                  setFirmaVacia(vacia);
-                  if (!vacia) setAvisoFirma(null);
-                }}
               />
             )}
           </div>
-
-          {avisoFirma && (
-            <p className="mb-2 text-xs text-rose-600">{avisoFirma}</p>
-          )}
 
           <div className="fixed inset-x-0 bottom-0 border-t border-border bg-white p-4">
             <div className="mx-auto flex max-w-3xl gap-3">
@@ -309,11 +294,7 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
                   Volver a los datos
                 </Button>
               )}
-              <Button
-                className="flex-1"
-                disabled={firmaVacia}
-                onClick={handleGuardarPdf}
-              >
+              <Button className="flex-1" onClick={handleGuardarPdf}>
                 Guardar
               </Button>
             </div>
@@ -328,7 +309,11 @@ export default function FirmaDocumentoView({ token }: FirmaDocumentoViewProps) {
 
           <div className="mb-4">
             {pdfFirmadoBase64 && (
-              <PdfSignatureCanvas soloLectura url={pdfFirmadoBase64} />
+              <PdfSignatureCanvas
+                key="revisar"
+                soloLectura
+                url={pdfFirmadoBase64}
+              />
             )}
           </div>
 
