@@ -12,6 +12,7 @@ import {
   useGetTerminales,
 } from "@/hooks/api";
 import { useDebounce } from "@/hooks/common";
+import { handleApiError } from "@/lib/api";
 import { CreateVentaRequest } from "@/models/requests";
 import { PacienteResponse } from "@/models/responses";
 
@@ -121,7 +122,7 @@ export function NuevaVentaModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!descripcion.trim() || monto <= 0) return;
+    if (!descripcion.trim()) return;
 
     setErrorMsg(null);
 
@@ -144,9 +145,7 @@ export function NuevaVentaModal({
       resetForm();
       onClose();
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : "No se pudo registrar el cobro.";
-      setErrorMsg(msg);
+      setErrorMsg(handleApiError(err).message);
     }
   }
 
@@ -287,8 +286,6 @@ export function NuevaVentaModal({
               <input
                 type="number"
                 required
-                min={1000}
-                step={500}
                 value={monto}
                 onChange={e => setMonto(parseFloat(e.target.value) || 0)}
                 className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
