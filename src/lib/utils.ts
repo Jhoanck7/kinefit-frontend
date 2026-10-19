@@ -96,7 +96,7 @@ export const CLINIC_INFO = {
 };
 
 export const NAV_LINKS = [
-  { name: "Reserva", href: "#agendamiento" },
+  { name: "Reserva", href: "#" },
   { name: "Enfoque", href: "#about" },
   { name: "Equipo", href: "#team" },
   { name: "Testimonios", href: "#testimonials" },
