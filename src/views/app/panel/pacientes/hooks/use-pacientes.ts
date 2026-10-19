@@ -35,7 +35,11 @@ export const usePacientes = () => {
       else actuales.set(clave, valor);
     });
     const query = actuales.toString();
-    router.push(query ? `${pathname}?${query}` : pathname);
+    window.history.pushState(
+      null,
+      "",
+      query ? `${pathname}?${query}` : pathname
+    );
   };
 
   const handleNuevoPaciente = () => router.push("/panel/pacientes/nuevo");

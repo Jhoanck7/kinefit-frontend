@@ -57,7 +57,11 @@ export const useDocumentos = () => {
       else actuales.set(clave, valor);
     });
     const query = actuales.toString();
-    router.push(query ? `${pathname}?${query}` : pathname);
+    window.history.pushState(
+      null,
+      "",
+      query ? `${pathname}?${query}` : pathname
+    );
   };
 
   const handleIrAPlantillas = () => router.push("/panel/documentos/plantillas");

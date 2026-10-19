@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 import { Alerta, EmptyState, SwitchField } from "@/components/shared";
@@ -19,7 +19,6 @@ import { usePersonal } from "./hooks";
 
 /** Página de administración de cuentas de personal con acceso al panel, incluyendo prellenado al crear una cuenta desde un especialista */
 export default function PersonalView() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const yaAplicoPrefill = useRef(false);
 
@@ -50,8 +49,8 @@ export default function PersonalView() {
       especialistaId: Number(especialistaIdParam),
       nombre: searchParams.get("nombre") ?? undefined,
     });
-    router.replace("/panel/configuracion?tab=personal");
-  }, [searchParams, router, actions]);
+    window.history.replaceState(null, "", "/panel/configuracion?tab=personal");
+  }, [searchParams, actions]);
 
   return (
     <div className="space-y-4">
