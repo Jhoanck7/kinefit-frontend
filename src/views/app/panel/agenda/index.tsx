@@ -23,7 +23,6 @@ function AgendaContent() {
     especialistasAMostrar,
     agendaData,
     errorAgenda,
-    rejilla,
     modalBloqueos,
     citaId,
     cancelando,
@@ -63,7 +62,6 @@ function AgendaContent() {
                   {esp.nombre}
                 </h3>
                 <TimeGrid
-                  rejilla={rejilla}
                   bloques={bloques}
                   estadoFiltro={estadoSeleccionado}
                   onSeleccionarCita={actions.handleSeleccionarCita}

@@ -18,24 +18,6 @@ export function fechaISO(fecha: Date): string {
   return fecha.toLocaleDateString("en-CA", { timeZone: ZONA_HORARIA });
 }
 
-/** Obtiene el número de día de la semana (0 = domingo) de una fecha en la zona horaria de Chile */
-export function diaSemanaId(fecha: Date): number {
-  const formateado = fecha.toLocaleDateString("en-US", {
-    timeZone: ZONA_HORARIA,
-    weekday: "short",
-  });
-  const mapa: Record<string, number> = {
-    Sun: 0,
-    Mon: 1,
-    Tue: 2,
-    Wed: 3,
-    Thu: 4,
-    Fri: 5,
-    Sat: 6,
-  };
-  return mapa[formateado];
-}
-
 /** Formatea una fecha en español extenso, por ejemplo "lunes 1 de enero de 2026" */
 export function formatearFechaExtensa(fecha: Date): string {
   const texto = new Intl.DateTimeFormat("es-CL", {
