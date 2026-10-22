@@ -103,6 +103,11 @@ export function DocumentosTab({ cita }: { cita: CitaDetalleResponse }) {
                   {doc.estado}
                   {doc.cargadoEnPapelEn ? ", cargado en papel" : ""}
                 </p>
+                {doc.motivoRechazo && (
+                  <p className="font-sans text-xs text-slate-500">
+                    Motivo de Rechazo: {doc.motivoRechazo}
+                  </p>
+                )}
               </div>
             }
           />

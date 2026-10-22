@@ -12,6 +12,11 @@ export interface FirmarProfesionalRequest {
   documentoFirmadoBase64: string;
 }
 
+/** Datos para rechazar un consentimiento entregado */
+export interface RechazarDocumentoRequest {
+  motivo: string;
+}
+
 /** Datos para crear una ficha clínica a partir de una plantilla */
 export interface CreateFichaRequest {
   citaId: number;

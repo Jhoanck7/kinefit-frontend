@@ -5,6 +5,7 @@ import {
   EnviarRecomendacionRequest,
   FirmarDocumentoRequest,
   FirmarProfesionalRequest,
+  RechazarDocumentoRequest,
   UpdateFichaRequest,
 } from "@/models/requests";
 import {
@@ -276,6 +277,23 @@ export const useSubirEscaneoMutation = () => {
 };
 
 /** Reenvía el enlace de firma de un documento */
+/** Rechaza un consentimiento entregado y lo deja pendiente */
+export const useRechazarDocumentoMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: RechazarDocumentoRequest;
+    }) => documentoService.rechazar(id, data).then(res => res.data.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["documentos"] });
+    },
+  });
+};
+
 export const useReenviarTokenMutation = () => {
   return useMutation({
     mutationFn: (id: number) =>

@@ -30,6 +30,8 @@ export interface ConsentimientoCitaResponse {
   requiereFirmaProfesional: boolean;
   cargadoEnPapelEn?: string;
   tieneArchivo: boolean;
+  motivoRechazo?: string;
+  puedeRechazarse: boolean;
   createdAt: string;
 }
 
@@ -106,6 +108,8 @@ export interface DocumentoDetalleResponse {
   firmaProfesionalLista: boolean;
   firmadoProfesionalEn?: string;
   cargadoEnPapelEn?: string;
+  motivoRechazo?: string;
+  puedeRechazarse: boolean;
   adjuntos: AdjuntoResumenResponse[];
 }
 

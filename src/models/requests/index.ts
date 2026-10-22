@@ -13,6 +13,7 @@ export type {
   EnviarRecomendacionRequest,
   FirmarDocumentoRequest,
   FirmarProfesionalRequest,
+  RechazarDocumentoRequest,
   UpdateFichaRequest,
 } from "./documento";
 export type { CreateEmpresaRequest, UpdateEmpresaRequest } from "./empresa";

@@ -5,6 +5,7 @@ import {
   EnviarRecomendacionRequest,
   FirmarDocumentoRequest,
   FirmarProfesionalRequest,
+  RechazarDocumentoRequest,
   UpdateFichaRequest,
 } from "@/models/requests";
 import {
@@ -188,6 +189,13 @@ export class DocumentoService extends BaseApiService {
       `${this.baseURL}/${id}/escaneo`,
       formData,
       { headers: { "Content-Type": "multipart/form-data" } }
+    );
+  }
+
+  rechazar(id: number, data: RechazarDocumentoRequest) {
+    return this.httpClient.post<ApiResponse<ConsentimientoCitaResponse>>(
+      `${this.baseURL}/${id}/rechazar`,
+      data
     );
   }
 

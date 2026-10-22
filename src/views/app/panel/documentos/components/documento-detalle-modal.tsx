@@ -567,6 +567,17 @@ export function DocumentoDetalleModal({
                   {formatearFechaHora(new Date(doc.createdAt))}
                 </p>
               </div>
+
+              {doc.motivoRechazo && (
+                <div>
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
+                    Motivo de Rechazo
+                  </span>
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
+                    {doc.motivoRechazo}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
