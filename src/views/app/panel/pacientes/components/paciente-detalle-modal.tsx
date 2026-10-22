@@ -19,7 +19,11 @@ import {
   CodigoEstadoDocumento,
   etiquetaTipoDocumento,
 } from "@/lib/estados-documento";
-import { formatearFechaCorta, formatearRangoHorario } from "@/lib/formato";
+import {
+  desdeFechaISO,
+  formatearFechaCorta,
+  formatearRangoHorario,
+} from "@/lib/formato";
 import { CodigoEstadoCita } from "@/models/responses";
 
 interface PacienteDetalleModalProps {
@@ -274,7 +278,8 @@ export function PacienteDetalleModal({
                           >
                             <div>
                               <p className="font-sans font-medium text-sm text-slate-700">
-                                {formatearFechaCorta(new Date(cita.fecha))},{" "}
+                                {formatearFechaCorta(desdeFechaISO(cita.fecha))}
+                                ,{" "}
                                 {formatearRangoHorario(
                                   cita.horaInicio,
                                   cita.horaFin
@@ -302,6 +307,18 @@ export function PacienteDetalleModal({
                               >
                                 {definicion.etiqueta}
                               </Badge>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onCerrar();
+                                  router.push(
+                                    `/panel/agenda?fecha=${cita.fecha}&cita=${cita.id}`
+                                  );
+                                }}
+                                className="font-sans text-xs font-bold text-foreground hover:text-slate-950 border border-slate-200 px-3 py-1 bg-white hover:bg-slate-50 rounded-overlay shadow-none"
+                              >
+                                Ver Reserva
+                              </button>
                             </div>
                           </li>
                         );
@@ -337,7 +354,9 @@ export function PacienteDetalleModal({
                                 doc.estado as CodigoEstadoDocumento
                               ]?.etiqueta ?? doc.estado}
                               ,{" "}
-                              {formatearFechaCorta(new Date(doc.fechaAtencion))}
+                              {formatearFechaCorta(
+                                desdeFechaISO(doc.fechaAtencion)
+                              )}
                             </span>
                           </div>
                           <button
