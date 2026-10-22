@@ -39,6 +39,13 @@ import {
 
 import { DocumentoAcciones } from "./documento-acciones";
 
+const TEXTO_ACCION_AUDITORIA: Record<string, string> = {
+  Creacion: "Creó el documento.",
+  Modificacion: "Modificó el documento.",
+  Lectura: "Abrió el documento.",
+  Eliminacion: "Eliminó el documento.",
+};
+
 interface DocumentoDetalleModalProps {
   documentoId: string | null;
   hoy: Date;
@@ -480,12 +487,14 @@ export function DocumentoDetalleModal({
                   ) : (
                     auditoria!.items.map(evento => (
                       <li key={evento.id} className="text-xs text-slate-600">
+                        {formatearFechaHora(new Date(evento.createdAt))},{" "}
                         <span className="font-semibold text-slate-800">
-                          {evento.accion}
+                          {evento.usuarioNombre ?? evento.tipoActor}
                         </span>
-                        , {evento.usuarioNombre ?? evento.tipoActor},{" "}
-                        {formatearFechaHora(new Date(evento.createdAt))}
-                        {evento.detalle ? ` — ${evento.detalle}` : ""}
+                        :{" "}
+                        {evento.detalle ??
+                          TEXTO_ACCION_AUDITORIA[evento.accion] ??
+                          evento.accion}
                       </li>
                     ))
                   )}

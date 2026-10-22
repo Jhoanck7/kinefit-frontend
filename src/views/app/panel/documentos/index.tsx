@@ -19,7 +19,11 @@ import {
   etiquetaTipoDocumento,
   ORDEN_ESTADOS_DOCUMENTO,
 } from "@/lib/estados-documento";
-import { desdeFechaISO, formatearFechaCorta } from "@/lib/formato";
+import {
+  desdeFechaISO,
+  formatearFechaCorta,
+  formatearFechaHora,
+} from "@/lib/formato";
 import { TIPOS_DOCUMENTO } from "@/views/app/panel/documentos/plantillas/nuevo/hooks";
 
 import { DocumentoDetalleModal } from "./components";
@@ -33,6 +37,7 @@ const COLUMNAS = [
   "RUT",
   "Especialista",
   "Fecha de atención",
+  "Fecha de Creación",
 ];
 
 function DocumentosContenido() {
@@ -224,6 +229,9 @@ function DocumentosContenido() {
                 </TableCell>
                 <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
                   {formatearFechaCorta(desdeFechaISO(documento.fechaAtencion))}
+                </TableCell>
+                <TableCell className="px-4 py-3 font-normal text-table-cell text-foreground">
+                  {formatearFechaHora(new Date(documento.createdAt))}
                 </TableCell>
               </TableRow>
             ))}

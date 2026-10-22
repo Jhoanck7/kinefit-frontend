@@ -66,6 +66,7 @@ export interface DocumentoResumenResponse {
   fechaAtencion: string;
   especialistaId: number;
   especialistaNombre: string;
+  createdAt: string;
 }
 
 /** Página de documentos listados */
