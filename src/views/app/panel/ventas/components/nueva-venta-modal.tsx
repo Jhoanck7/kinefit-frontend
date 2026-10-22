@@ -243,13 +243,6 @@ export function NuevaVentaModal({
             </div>
           )}
 
-          {!citaId && (
-            <Alerta tono="info">
-              Esta venta no entra en el cálculo de reparto porque no está
-              asociada a una atención.
-            </Alerta>
-          )}
-
           <div>
             <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
               Servicio
