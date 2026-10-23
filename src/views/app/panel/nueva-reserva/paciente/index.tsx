@@ -16,6 +16,8 @@ export default function PacienteView() {
   const {
     fecha,
     hora,
+    horaTermino,
+    duracionMinutos,
     pacienteId,
     pacienteNombre,
     especialistaNombre,
@@ -166,7 +168,15 @@ export default function PacienteView() {
               etiqueta: "Fecha",
               valor: fecha ? formatearFechaExtensa(fecha) : undefined,
             },
-            { etiqueta: "Horario", valor: hora || undefined },
+            {
+              etiqueta: "Duración",
+              valor: duracionMinutos ? `${duracionMinutos} min` : undefined,
+            },
+            {
+              etiqueta: "Horario",
+              valor:
+                hora && horaTermino ? `${hora} a ${horaTermino}` : undefined,
+            },
             {
               etiqueta: "Especialista",
               valor: especialistaNombre || undefined,

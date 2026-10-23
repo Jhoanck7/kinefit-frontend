@@ -16,6 +16,8 @@ export const useServicio = () => {
   const {
     fecha,
     hora,
+    horaTermino,
+    duracionMinutos,
     pacienteNombre,
     especialistaNombre,
     servicioId,
@@ -33,6 +35,8 @@ export const useServicio = () => {
   return {
     fecha,
     hora,
+    horaTermino,
+    duracionMinutos,
     pacienteNombre,
     especialistaNombre,
     servicioId,
