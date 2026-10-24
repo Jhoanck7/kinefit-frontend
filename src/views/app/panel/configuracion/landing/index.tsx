@@ -11,6 +11,7 @@ import {
 } from "@/components/shared";
 import { Button, Card, Switch } from "@/components/ui";
 
+import { DocumentosLegalesModal } from "./components";
 import { useLanding } from "./hooks";
 import { FieldDefinition, landingConfigSchema } from "./landing-config-schema";
 
@@ -175,11 +176,16 @@ export default function LandingView() {
             ))}
           </div>
 
+          <DocumentosLegalesModal
+            abierto={seccionActiva === "legales"}
+            onCerrar={() => actions.setSeccionActiva(null)}
+          />
+
           <Modal
-            abierto={!!seccionActiva}
+            abierto={!!seccionActiva && seccionActiva !== "legales"}
             onCerrar={() => actions.setSeccionActiva(null)}
           >
-            {seccionActiva && (
+            {seccionActiva && seccionActiva !== "legales" && (
               <div className="bg-white text-foreground font-sans shadow-none rounded-overlay">
                 <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-slate-50/80 backdrop-blur-sm px-6 py-4">
                   <h2 className="font-sans text-section-title font-bold text-foreground">

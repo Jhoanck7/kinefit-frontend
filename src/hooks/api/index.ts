@@ -24,6 +24,10 @@ export {
   useUpdateCitaEstadoMutation,
 } from "./use-cita-service";
 export {
+  useGetContenido,
+  useUpdateContenidoMutation,
+} from "./use-contenido-service";
+export {
   useGetEspecialistasDisponibles,
   useGetFechasDisponibles,
   useGetHorasDisponibles,

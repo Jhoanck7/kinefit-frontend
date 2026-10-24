@@ -149,7 +149,8 @@ export const landingConfigSchema: SectionSchema[] = [
   {
     id: "nutricion",
     title: "6. Nutrición Integral",
-    description: "Título, descripción, video de Instagram y fotos de la sección de nutrición.",
+    description:
+      "Título, descripción, video de Instagram y foto de la sección de nutrición.",
     hasCustomRenderer: true,
     fields: [],
   },
@@ -309,5 +310,11 @@ export const landingConfigSchema: SectionSchema[] = [
         gridCols: 2,
       },
     ],
+  },
+  {
+    id: "legales",
+    title: "12. Documentos Legales",
+    description: "Términos y Condiciones y Política de Privacidad.",
+    hasCustomRenderer: true,
   },
 ];

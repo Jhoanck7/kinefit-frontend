@@ -8,6 +8,7 @@ export type {
   CreateCitaPublicaRequest,
   UpdateCitaEstadoRequest,
 } from "./cita";
+export type { UpdateContenidoRequest } from "./contenido";
 export type {
   CreateFichaRequest,
   EnviarRecomendacionRequest,
