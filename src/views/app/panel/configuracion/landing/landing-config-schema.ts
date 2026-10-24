@@ -90,7 +90,7 @@ export const landingConfigSchema: SectionSchema[] = [
   {
     id: "about",
     title: "3. Quiénes Somos",
-    description: "Descripción de la clínica, video y botón de acción.",
+    description: "Descripción de la clínica y video.",
     fields: [
       {
         key: "aboutTitle",
@@ -104,12 +104,6 @@ export const landingConfigSchema: SectionSchema[] = [
         type: "textarea",
         rows: 4,
         gridCols: 1,
-      },
-      {
-        key: "aboutCtaText",
-        label: "Texto Botón CTA Quiénes Somos",
-        type: "text",
-        gridCols: 2,
       },
       {
         key: "aboutVideoUrl",
