@@ -88,7 +88,6 @@ export {
 } from "./use-media-service";
 export {
   useCreatePacienteMutation,
-  useDesvincularCuentaPacienteMutation,
   useGetPacientePerfil,
   useGetPacientes,
   useUpdatePacienteEstadoMutation,

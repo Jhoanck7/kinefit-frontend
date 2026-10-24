@@ -3,15 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Alerta, Modal, ModalCloseButton } from "@/components/shared";
+import { Modal, ModalCloseButton } from "@/components/shared";
 import { Badge } from "@/components/ui";
 import {
-  useDesvincularCuentaPacienteMutation,
   useGetFichasPorPaciente,
   useGetHistorialPorPaciente,
   useGetPacientePerfil,
 } from "@/hooks/api";
-import { handleApiError } from "@/lib/api";
 import { COLOR_ROL } from "@/lib/color-rol";
 import { definicionEstado } from "@/lib/estados";
 import {
@@ -34,7 +32,7 @@ interface PacienteDetalleModalProps {
 
 type PestanaPaciente = "contacto" | "historial" | "fichas";
 
-/** Modal con los datos, historial de citas y documentos de un paciente, con la opción de desvincular su cuenta */
+/** Modal con los datos, historial de citas y documentos de un paciente */
 export function PacienteDetalleModal({
   pacienteId,
   hoy,
@@ -44,25 +42,11 @@ export function PacienteDetalleModal({
   const [pestanaActiva, setPestanaActiva] =
     useState<PestanaPaciente>("contacto");
 
-  const [confirmarDesvincular, setConfirmarDesvincular] = useState(false);
-  const [errorCuenta, setErrorCuenta] = useState<string | null>(null);
-  const desvincularMutation = useDesvincularCuentaPacienteMutation();
-
   const { data: perfil } = useGetPacientePerfil(
     Number(pacienteId),
     Boolean(pacienteId) && Boolean(hoy)
   );
 
-  const handleDesvincular = async () => {
-    if (!perfil) return;
-    setErrorCuenta(null);
-    try {
-      await desvincularMutation.mutateAsync(perfil.id);
-      setConfirmarDesvincular(false);
-    } catch (err: unknown) {
-      setErrorCuenta(handleApiError(err).message);
-    }
-  };
   const { data: fichas = [] } = useGetHistorialPorPaciente(
     Number(pacienteId),
     Boolean(pacienteId)
@@ -186,69 +170,6 @@ export function PacienteDetalleModal({
                         {perfil.email || "—"}
                       </p>
                     </div>
-                  </div>
-
-                  <div className="border-t border-slate-200 pt-4">
-                    <span className="font-sans text-label font-medium text-muted-foreground block">
-                      Cuenta de Acceso
-                    </span>
-                    {!perfil.tieneCuentaGoogle ? (
-                      <p className="font-sans font-medium text-value text-foreground mt-0.5">
-                        Sin cuenta vinculada. La próxima cuenta que inicie
-                        sesión con este RUT quedará asociada.
-                      </p>
-                    ) : (
-                      <>
-                        <p className="font-sans font-medium text-value text-foreground mt-0.5">
-                          Tiene una cuenta de Google vinculada.
-                        </p>
-                        {errorCuenta && (
-                          <Alerta tono="error" className="mt-2">
-                            {errorCuenta}
-                          </Alerta>
-                        )}
-                        {confirmarDesvincular ? (
-                          <>
-                            <Alerta tono="advertencia" className="mt-2">
-                              Solo hazlo con la persona presente y su identidad
-                              verificada. La cuenta actual pierde el acceso de
-                              inmediato y la próxima que inicie sesión con este
-                              RUT queda asociada.
-                            </Alerta>
-                            <div className="mt-2 flex gap-3">
-                              <button
-                                type="button"
-                                onClick={() => setConfirmarDesvincular(false)}
-                                className="border border-slate-200 px-3 py-1.5 font-sans text-xs font-bold rounded-overlay"
-                              >
-                                Cancelar
-                              </button>
-                              <button
-                                type="button"
-                                onClick={handleDesvincular}
-                                disabled={desvincularMutation.isPending}
-                                className="bg-primary px-3 py-1.5 font-sans text-xs font-bold text-white rounded-overlay hover:bg-primary-hover disabled:opacity-40"
-                              >
-                                {desvincularMutation.isPending
-                                  ? "Desvinculando…"
-                                  : "Confirmar Desvinculación"}
-                              </button>
-                            </div>
-                          </>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setErrorCuenta(null);
-                              setConfirmarDesvincular(true);
-                            }}
-                            className="mt-2 font-sans text-xs font-bold text-primary hover:underline"
-                          >
-                            Desvincular Cuenta
-                          </button>
-                        )}
-                      </>
-                    )}
                   </div>
                 </div>
               )}

@@ -63,18 +63,6 @@ export const useUpdatePacienteMutation = () => {
   });
 };
 
-/** Desvincula la cuenta de Google de la ficha de un paciente */
-export const useDesvincularCuentaPacienteMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) =>
-      pacienteService.desvincularCuenta(id).then(res => res.data.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pacientes"] });
-    },
-  });
-};
-
 /** Activa o desactiva un paciente */
 export const useUpdatePacienteEstadoMutation = () => {
   const queryClient = useQueryClient();
