@@ -35,6 +35,7 @@ import {
   desdeFechaISO,
   formatearFechaCorta,
   formatearFechaHora,
+  formatearRangoHorario,
 } from "@/lib/formato";
 
 import { DocumentoAcciones } from "./documento-acciones";
@@ -533,7 +534,10 @@ export function DocumentoDetalleModal({
                 </span>
                 <p className="font-sans font-medium text-value text-foreground mt-0.5">
                   {formatearFechaCorta(desdeFechaISO(doc.fechaAtencion))},{" "}
-                  {doc.horaAtencion.slice(0, 5)}
+                  {formatearRangoHorario(
+                    doc.horaAtencion.slice(0, 5),
+                    doc.horaFinAtencion.slice(0, 5)
+                  )}
                 </p>
               </div>
 

@@ -89,6 +89,7 @@ export interface DocumentoDetalleResponse {
   citaId: number;
   fechaAtencion: string;
   horaAtencion: string;
+  horaFinAtencion: string;
   servicio: string;
   pacienteId: number;
   pacienteNombre: string;
