@@ -281,15 +281,18 @@ export const useLanding = () => {
   }
 
   function handleAgregarNutricion() {
-    setNutricion(prev => [
-      ...prev,
-      {
-        alt: "",
-        imagenUrl: "",
-        ancho: 800,
-        alto: 600,
-      },
-    ]);
+    setNutricion(prev =>
+      prev.length > 0
+        ? prev
+        : [
+            {
+              alt: "",
+              imagenUrl: "",
+              ancho: 800,
+              alto: 600,
+            },
+          ]
+    );
   }
 
   function handleNutricionAltChange(index: number, alt: string) {
@@ -320,19 +323,6 @@ export const useLanding = () => {
 
   function handleEliminarNutricion(index: number) {
     setNutricion(prev => prev.filter((_, i) => i !== index));
-  }
-
-  function handleMoverNutricion(
-    index: number,
-    direccion: "arriba" | "abajo"
-  ) {
-    setNutricion(prev => {
-      const destino = direccion === "arriba" ? index - 1 : index + 1;
-      if (destino < 0 || destino >= prev.length) return prev;
-      const copy = [...prev];
-      [copy[index], copy[destino]] = [copy[destino], copy[index]];
-      return copy;
-    });
   }
 
   function handleMoverEspecialista(
@@ -447,7 +437,6 @@ export const useLanding = () => {
       handleNutricionAltChange,
       handleNutricionImagenChange,
       handleEliminarNutricion,
-      handleMoverNutricion,
       handleMoverEspecialista,
       handleSincronizarGoogle,
       handleGuardar,

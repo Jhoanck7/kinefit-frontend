@@ -602,20 +602,22 @@ export default function LandingView() {
                         <div className="flex items-center justify-between">
                           <div>
                             <h3 className="font-sans text-label font-bold text-foreground">
-                              Fotos de Nutrición ({nutricion.length})
+                              Foto de Nutrición
                             </h3>
                             <p className="text-xs text-slate-500 mt-0.5">
-                              Agrega las fotos ilustrativas para la sección de nutrición.
+                              Agrega la foto ilustrativa para la sección de nutrición.
                             </p>
                           </div>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="rounded-overlay"
-                            onClick={actions.handleAgregarNutricion}
-                          >
-                            Agregar Foto
-                          </Button>
+                          {nutricion.length === 0 && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="rounded-overlay"
+                              onClick={actions.handleAgregarNutricion}
+                            >
+                              Agregar Foto
+                            </Button>
+                          )}
                         </div>
 
                         {nutricion.map((item, idx) => (
@@ -625,29 +627,9 @@ export default function LandingView() {
                           >
                             <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                               <span className="text-xs font-bold text-slate-800">
-                                Foto #{idx + 1}
+                                Foto
                               </span>
                               <div className="flex items-center gap-3">
-                                <button
-                                  type="button"
-                                  disabled={idx === 0}
-                                  onClick={() =>
-                                    actions.handleMoverNutricion(idx, "arriba")
-                                  }
-                                  className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
-                                >
-                                  Subir
-                                </button>
-                                <button
-                                  type="button"
-                                  disabled={idx === nutricion.length - 1}
-                                  onClick={() =>
-                                    actions.handleMoverNutricion(idx, "abajo")
-                                  }
-                                  className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
-                                >
-                                  Bajar
-                                </button>
                                 <button
                                   type="button"
                                   onClick={() =>
@@ -701,7 +683,7 @@ export default function LandingView() {
 
                         {nutricion.length === 0 && (
                           <p className="text-xs text-slate-400 italic text-center py-4 border border-dashed border-slate-200">
-                            No hay fotos configuradas. Haz clic en &ldquo;Agregar Foto&rdquo;.
+                            No hay foto configurada. Haz clic en &ldquo;Agregar Foto&rdquo;.
                           </p>
                         )}
                       </div>
