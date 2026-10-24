@@ -221,7 +221,7 @@ function ConstructorPlantillaContenido() {
                 type="file"
                 accept="application/pdf"
                 onChange={e => actions.setArchivo(e.target.files?.[0] ?? null)}
-                className="mt-1 w-full text-xs"
+                className="mt-1 w-full text-xs text-slate-900"
               />
               {archivo && (
                 <p className="mt-2 font-sans text-xs text-slate-500">
@@ -365,7 +365,7 @@ function ConstructorPlantillaContenido() {
                           }
                           placeholder="Nombre del campo"
                           aria-label="Nombre del campo"
-                          className="min-w-[140px] flex-1 rounded-none border border-slate-200 px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 font-medium"
+                          className="min-w-[140px] flex-1 rounded-none border border-slate-200 bg-white px-2 py-1 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 font-medium"
                         />
 
                         <select
@@ -377,7 +377,7 @@ function ConstructorPlantillaContenido() {
                             })
                           }
                           aria-label="Tipo de dato"
-                          className="rounded-none border border-slate-200 px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 font-medium bg-white"
+                          className="rounded-none border border-slate-200 px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 font-medium bg-white text-slate-900"
                         >
                           {TIPOS_CAMPO.map(t => (
                             <option key={t.valor} value={t.valor}>
@@ -507,7 +507,7 @@ function ConstructorPlantillaContenido() {
                                 }}
                                 placeholder={`Opción ${indiceOpcion + 1}`}
                                 aria-label={`Opción ${indiceOpcion + 1}`}
-                                className="flex-1 rounded-none border border-slate-200 px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900"
+                                className="flex-1 rounded-none border border-slate-200 bg-white px-2 py-1 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900"
                               />
                               <button
                                 type="button"
@@ -605,10 +605,10 @@ function ConstructorPlantillaContenido() {
                             <span className="ml-0.5 text-red-700">*</span>
                           )}
                           {campo.tipo !== "TextoInformativo" && (
-                            <span className="ml-1 font-normal text-slate-400">
+                            <span className="font-normal text-slate-400">
                               {campo.completadoPor === "Paciente"
-                                ? "— paciente"
-                                : "— profesional"}
+                                ? ", paciente"
+                                : ", profesional"}
                             </span>
                           )}
                         </label>
