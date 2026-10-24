@@ -12,16 +12,16 @@ La documentación técnica completa está en [docs/Manual del Sistema KinefitChi
 
 ## Stack
 
-| Área | Tecnología |
-|---|---|
-| Framework | Next.js 16 (App Router, Turbopack), React 19, TypeScript |
-| Estilos | Tailwind CSS 4, componentes shadcn/ui sobre Radix |
-| Datos del servidor | TanStack Query sobre Axios |
-| Estado local | Zustand (asistentes de reserva y de ficha) |
-| Formularios | React Hook Form y Zod |
-| Sesión del panel | NextAuth 5 (Credentials, con el JWT emitido por el backend) |
-| PDF | pdf-lib y pdfjs-dist (visualización y firma dentro del PDF) |
-| Calidad | ESLint, Prettier, knip y lint-staged |
+| Área               | Tecnología                                                  |
+| ------------------ | ----------------------------------------------------------- |
+| Framework          | Next.js 16 (App Router, Turbopack), React 19, TypeScript    |
+| Estilos            | Tailwind CSS 4, componentes shadcn/ui sobre Radix           |
+| Datos del servidor | TanStack Query sobre Axios                                  |
+| Estado local       | Zustand (asistentes de reserva y de ficha)                  |
+| Formularios        | React Hook Form y Zod                                       |
+| Sesión del panel   | NextAuth 5 (Credentials, con el JWT emitido por el backend) |
+| PDF                | pdf-lib y pdfjs-dist (visualización y firma dentro del PDF) |
+| Calidad            | ESLint, Prettier, knip y lint-staged                        |
 
 > Next.js 16 trae cambios incompatibles con versiones anteriores. Antes de tocar rutas, middleware o caché, revisa la guía en `node_modules/next/dist/docs/`.
 
@@ -40,24 +40,24 @@ npm run dev                  # http://localhost:3000
 
 ### Variables de entorno
 
-| Variable | Uso |
-|---|---|
-| `NEXT_PUBLIC_API_URL` | URL base del backend, terminada en `/api`. Se incrusta en el build. |
+| Variable                       | Uso                                                                                               |
+| ------------------------------ | ------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`          | URL base del backend, terminada en `/api`. Se incrusta en el build.                               |
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Client ID de Google para el inicio de sesión del paciente en la reserva. Se incrusta en el build. |
-| `AUTH_SECRET` | Firma de la sesión de NextAuth. Se genera con `npx auth secret`. |
+| `AUTH_SECRET`                  | Firma de la sesión de NextAuth. Se genera con `npx auth secret`.                                  |
 
 Las variables `NEXT_PUBLIC_*` se leen **al compilar**: si cambian, hay que volver a construir la imagen. En producción, NextAuth además necesita `AUTH_URL` y `AUTH_TRUST_HOST=true`, que se pasan en el `docker run` de los workflows.
 
 ### Scripts
 
-| Comando | Qué hace |
-|---|---|
-| `npm run dev` | Servidor de desarrollo |
-| `npm run build` / `npm start` | Build de producción (`output: "standalone"`) y servidor |
-| `npm run lint` / `npm run lint:fix` | ESLint |
-| `npm run format` / `npm run format:check` | Prettier |
-| `npm run type-check` | Revisión de tipos con `tsc` |
-| `npm run knip` | Detecta exportaciones y dependencias sin uso |
+| Comando                                   | Qué hace                                                |
+| ----------------------------------------- | ------------------------------------------------------- |
+| `npm run dev`                             | Servidor de desarrollo                                  |
+| `npm run build` / `npm start`             | Build de producción (`output: "standalone"`) y servidor |
+| `npm run lint` / `npm run lint:fix`       | ESLint                                                  |
+| `npm run format` / `npm run format:check` | Prettier                                                |
+| `npm run type-check`                      | Revisión de tipos con `tsc`                             |
+| `npm run knip`                            | Detecta exportaciones y dependencias sin uso            |
 
 ## Estructura
 
@@ -144,10 +144,10 @@ Los `index.ts` ordenan sus exportaciones con `simple-import-sort`.
 
 El despliegue es automático con GitHub Actions, en un VPS. Cada push construye la imagen Docker, la publica en GitHub Container Registry y la levanta en el VPS.
 
-| Rama | Workflow | Entorno | Backend | Puerto del contenedor |
-|---|---|---|---|---|
-| `test-production` | `deploy-test.yml` | `test.kinefitchile.com` | `api-test.kinefitchile.com` | 3001 |
-| `main` | `deploy.yml` | `www.kinefitchile.com` | `api.kinefitchile.com` | 3000 |
+| Rama              | Workflow          | Entorno                 | Backend                     | Puerto del contenedor |
+| ----------------- | ----------------- | ----------------------- | --------------------------- | --------------------- |
+| `test-production` | `deploy-test.yml` | `test.kinefitchile.com` | `api-test.kinefitchile.com` | 3001                  |
+| `main`            | `deploy.yml`      | `www.kinefitchile.com`  | `api.kinefitchile.com`      | 3000                  |
 
 Secretos que necesitan los workflows: `NEXT_PUBLIC_GOOGLE_CLIENT_ID`, `AUTH_SECRET`, `VPS_IP`, `VPS_USERNAME` y `VPS_SSH_KEY`.
 
