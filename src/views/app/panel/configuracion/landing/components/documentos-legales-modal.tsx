@@ -7,28 +7,43 @@ import {
   Modal,
   ModalCloseButton,
   TextAreaField,
+  TextField,
 } from "@/components/shared";
 import { Button } from "@/components/ui";
 import { useGetContenido, useUpdateContenidoMutation } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
+import {
+  leerSeccionesDocumentoLegal,
+  SeccionDocumentoLegal,
+} from "@/lib/documento-legal";
 
-const CLAVE_TERMINOS = "terminos";
-const CLAVE_PRIVACIDAD = "privacidad";
+const DOCUMENTOS = [
+  { clave: "terminos", titulo: "Términos y Condiciones" },
+  { clave: "privacidad", titulo: "Política de Privacidad" },
+];
+
+type SeccionesPorClave = Record<string, SeccionDocumentoLegal[]>;
 
 interface DocumentosLegalesModalProps {
   abierto: boolean;
   onCerrar: () => void;
 }
 
-/** Modal para editar los Términos y Condiciones y la Política de Privacidad del sitio público */
+/** Modal para editar por secciones los Términos y Condiciones y la Política de Privacidad del sitio público */
 export function DocumentosLegalesModal({
   abierto,
   onCerrar,
 }: DocumentosLegalesModalProps) {
   const { data: contenido, isLoading } = useGetContenido(abierto);
 
-  const valorDe = (clave: string) =>
-    contenido?.find(c => c.clave === clave)?.valor ?? "";
+  const iniciales: SeccionesPorClave = Object.fromEntries(
+    DOCUMENTOS.map(d => [
+      d.clave,
+      leerSeccionesDocumentoLegal(
+        contenido?.find(c => c.clave === d.clave)?.valor
+      ),
+    ])
+  );
 
   return (
     <Modal abierto={abierto} onCerrar={onCerrar}>
@@ -46,8 +61,7 @@ export function DocumentosLegalesModal({
           </p>
         ) : (
           <FormularioDocumentosLegales
-            terminosInicial={valorDe(CLAVE_TERMINOS)}
-            privacidadInicial={valorDe(CLAVE_PRIVACIDAD)}
+            iniciales={iniciales}
             onCerrar={onCerrar}
           />
         )}
@@ -57,32 +71,72 @@ export function DocumentosLegalesModal({
 }
 
 function FormularioDocumentosLegales({
-  terminosInicial,
-  privacidadInicial,
+  iniciales,
   onCerrar,
 }: {
-  terminosInicial: string;
-  privacidadInicial: string;
+  iniciales: SeccionesPorClave;
   onCerrar: () => void;
 }) {
-  const [terminos, setTerminos] = useState(terminosInicial);
-  const [privacidad, setPrivacidad] = useState(privacidadInicial);
+  const [secciones, setSecciones] = useState<SeccionesPorClave>(iniciales);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const actualizarMutation = useUpdateContenidoMutation();
 
-  const cambios = [
-    { clave: CLAVE_TERMINOS, valor: terminos, inicial: terminosInicial },
-    { clave: CLAVE_PRIVACIDAD, valor: privacidad, inicial: privacidadInicial },
-  ].filter(c => c.valor !== c.inicial);
+  const cambios = DOCUMENTOS.filter(
+    d =>
+      JSON.stringify(secciones[d.clave]) !== JSON.stringify(iniciales[d.clave])
+  );
+  const incompletas = DOCUMENTOS.some(d =>
+    secciones[d.clave].some(s => !s.titulo.trim() || !s.texto.trim())
+  );
+
+  function actualizar(
+    clave: string,
+    cambio: (lista: SeccionDocumentoLegal[]) => SeccionDocumentoLegal[]
+  ) {
+    setSecciones(prev => ({ ...prev, [clave]: cambio(prev[clave]) }));
+  }
+
+  function handleAgregar(clave: string) {
+    actualizar(clave, lista => [...lista, { titulo: "", texto: "" }]);
+  }
+
+  function handleCambiar(
+    clave: string,
+    index: number,
+    campo: keyof SeccionDocumentoLegal,
+    valor: string
+  ) {
+    actualizar(clave, lista =>
+      lista.map((s, i) => (i === index ? { ...s, [campo]: valor } : s))
+    );
+  }
+
+  function handleMover(clave: string, index: number, destino: number) {
+    actualizar(clave, lista => {
+      if (destino < 0 || destino >= lista.length) return lista;
+      const copia = [...lista];
+      [copia[index], copia[destino]] = [copia[destino], copia[index]];
+      return copia;
+    });
+  }
+
+  function handleEliminar(clave: string, index: number) {
+    actualizar(clave, lista => lista.filter((_, i) => i !== index));
+  }
 
   async function handleGuardar(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg(null);
     try {
-      for (const cambio of cambios) {
+      for (const documento of cambios) {
         await actualizarMutation.mutateAsync({
-          clave: cambio.clave,
-          valor: cambio.valor,
+          clave: documento.clave,
+          valor: JSON.stringify(
+            secciones[documento.clave].map(s => ({
+              titulo: s.titulo.trim(),
+              texto: s.texto.trim(),
+            }))
+          ),
         });
       }
       fetch("/api/revalidate", { method: "POST" }).catch(() => {});
@@ -97,18 +151,88 @@ function FormularioDocumentosLegales({
       onSubmit={handleGuardar}
       className="max-h-[75vh] overflow-y-auto p-6 space-y-6"
     >
-      <TextAreaField
-        etiqueta="Términos y Condiciones"
-        rows={14}
-        value={terminos}
-        onChange={e => setTerminos(e.target.value)}
-      />
-      <TextAreaField
-        etiqueta="Política de Privacidad"
-        rows={14}
-        value={privacidad}
-        onChange={e => setPrivacidad(e.target.value)}
-      />
+      {DOCUMENTOS.map((documento, idxDocumento) => (
+        <div
+          key={documento.clave}
+          className={`space-y-4 ${idxDocumento > 0 ? "pt-6 border-t border-slate-200" : ""}`}
+        >
+          <div className="flex justify-between items-center">
+            <h3 className="font-sans text-label font-bold text-foreground">
+              {documento.titulo}
+            </h3>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-overlay"
+              onClick={() => handleAgregar(documento.clave)}
+            >
+              Agregar Sección
+            </Button>
+          </div>
+
+          {secciones[documento.clave].map((seccion, idx) => (
+            <div
+              key={idx}
+              className="rounded-none border border-slate-200 bg-white p-4 space-y-3"
+            >
+              <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                <span className="text-xs font-bold text-slate-800">
+                  Sección #{idx + 1}
+                </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    disabled={idx === 0}
+                    onClick={() => handleMover(documento.clave, idx, idx - 1)}
+                    className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                  >
+                    Subir
+                  </button>
+                  <button
+                    type="button"
+                    disabled={idx === secciones[documento.clave].length - 1}
+                    onClick={() => handleMover(documento.clave, idx, idx + 1)}
+                    className="text-xs text-primary font-bold hover:underline disabled:opacity-30 disabled:no-underline"
+                  >
+                    Bajar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleEliminar(documento.clave, idx)}
+                    className="text-xs text-primary font-bold hover:underline"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+              <TextField
+                etiqueta="Título de la Sección"
+                value={seccion.titulo}
+                onChange={e =>
+                  handleCambiar(documento.clave, idx, "titulo", e.target.value)
+                }
+                obligatorio
+              />
+              <TextAreaField
+                etiqueta="Texto"
+                value={seccion.texto}
+                onChange={e =>
+                  handleCambiar(documento.clave, idx, "texto", e.target.value)
+                }
+                rows={5}
+                obligatorio
+              />
+            </div>
+          ))}
+
+          {secciones[documento.clave].length === 0 && (
+            <p className="text-xs text-slate-400 italic text-center py-4 border border-dashed border-slate-200">
+              No hay secciones configuradas. Haz clic en &ldquo;Agregar
+              Sección&rdquo;.
+            </p>
+          )}
+        </div>
+      ))}
 
       {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
 
@@ -124,7 +248,9 @@ function FormularioDocumentosLegales({
         <Button
           type="submit"
           className="rounded-overlay"
-          disabled={actualizarMutation.isPending || cambios.length === 0}
+          disabled={
+            actualizarMutation.isPending || cambios.length === 0 || incompletas
+          }
         >
           {actualizarMutation.isPending ? "Guardando…" : "Guardar Cambios"}
         </Button>
