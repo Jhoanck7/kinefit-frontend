@@ -44,6 +44,8 @@ export const useVentas = () => {
 
   const [modalNuevaVenta, setModalNuevaVenta] = useState(false);
   const [modalConfig, setModalConfig] = useState(false);
+  const [modalExportar, setModalExportar] = useState(false);
+  const [exportando, setExportando] = useState(false);
 
   const [rangoFecha, setRangoFecha] = useState("30dias");
   const [metodoPago, setMetodoPago] = useState("todos");
@@ -80,14 +82,19 @@ export const useVentas = () => {
 
   const inicio = (pagina - 1) * TAMANO_PAGINA;
 
-  async function handleExportar() {
+  async function handleExportar(soloFiltradas: boolean) {
     setErrorExportar(null);
+    setExportando(true);
     try {
-      const { data: archivo } = await ventaService.exportarCsv({
-        fechaDesde,
-        fechaHasta,
-        metodoPago: metodoPago !== "todos" ? metodoPago : undefined,
-      });
+      const { data: archivo } = await ventaService.exportarCsv(
+        soloFiltradas
+          ? {
+              fechaDesde,
+              fechaHasta,
+              metodoPago: metodoPago !== "todos" ? metodoPago : undefined,
+            }
+          : undefined
+      );
       const url = URL.createObjectURL(archivo);
       const link = document.createElement("a");
       link.href = url;
@@ -96,6 +103,9 @@ export const useVentas = () => {
       URL.revokeObjectURL(url);
     } catch (err: unknown) {
       setErrorExportar(handleApiError(err).message);
+    } finally {
+      setExportando(false);
+      setModalExportar(false);
     }
   }
 
@@ -130,6 +140,8 @@ export const useVentas = () => {
     inicio,
     modalNuevaVenta,
     modalConfig,
+    modalExportar,
+    exportando,
     rangoFecha,
     metodoPago,
     busquedaPaciente,
@@ -139,6 +151,7 @@ export const useVentas = () => {
       setVentaSeleccionada: (id: number | null) => setVentaSeleccionadaId(id),
       setModalNuevaVenta,
       setModalConfig,
+      setModalExportar,
       setBusquedaPaciente,
       handleExportar,
       handleCambiarRango,

@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useGetAgenda, useGetEspecialistas } from "@/hooks/api";
 import { useHoyPanel } from "@/hooks/common";
 import { desdeFechaISO, fechaISO } from "@/lib/formato";
-import { generarRejillaDia } from "@/lib/horario";
 import { BloqueAgendaResponse } from "@/models/responses";
 
 import { FILTRO_VIGENTES } from "../components/time-grid";
@@ -76,8 +75,6 @@ export const useAgenda = () => {
     }
   }, [dia, hoy]);
 
-  const rejilla = generarRejillaDia(dia.getDay());
-
   const especialistasAMostrar =
     especialistaSeleccionado === "todas"
       ? especialistas
@@ -90,7 +87,11 @@ export const useAgenda = () => {
       else actuales.set(clave, valor);
     });
     const query = actuales.toString();
-    router.push(query ? `${pathname}?${query}` : pathname);
+    window.history.pushState(
+      null,
+      "",
+      query ? `${pathname}?${query}` : pathname
+    );
   };
 
   const handleIrADia = (delta: number) => {
@@ -133,7 +134,6 @@ export const useAgenda = () => {
     especialistasAMostrar,
     agendaData,
     errorAgenda,
-    rejilla,
     modalBloqueos,
     citaId,
     cancelando,

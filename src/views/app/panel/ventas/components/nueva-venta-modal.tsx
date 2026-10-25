@@ -9,10 +9,12 @@ import {
   useGetEmpresas,
   useGetPacientes,
   useGetServicios,
+  useGetTerminales,
 } from "@/hooks/api";
 import { useDebounce } from "@/hooks/common";
+import { handleApiError } from "@/lib/api";
 import { CreateVentaRequest } from "@/models/requests";
-import { PacienteResponse, TerminalPagoResponse } from "@/models/responses";
+import { PacienteResponse } from "@/models/responses";
 
 type MetodoPago = CreateVentaRequest["metodoPago"];
 
@@ -31,7 +33,6 @@ interface NuevaVentaModalProps {
   abierto: boolean;
   onClose: () => void;
   onCrearVenta: () => void;
-  terminales: TerminalPagoResponse[];
   citaAsociada?: CitaAsociadaVenta;
 }
 
@@ -40,9 +41,9 @@ export function NuevaVentaModal({
   abierto,
   onClose,
   onCrearVenta,
-  terminales,
   citaAsociada,
 }: NuevaVentaModalProps) {
+  const { data: terminales = [] } = useGetTerminales(true);
   const [busquedaPaciente, setBusquedaPaciente] = useState("");
   const [pacienteSeleccionado, setPacienteSeleccionado] =
     useState<PacienteResponse | null>(null);
@@ -67,9 +68,12 @@ export function NuevaVentaModal({
   );
   const [monto, setMonto] = useState(40000);
   const [metodoPago, setMetodoPago] = useState<MetodoPago>("Debito");
-  const [terminalPagoId, setTerminalPagoId] = useState<string>(
-    String(terminales[0]?.id ?? "")
-  );
+  const [terminalElegidoId, setTerminalElegidoId] = useState<string>("");
+  const terminalPagoId = terminales.some(
+    t => String(t.id) === terminalElegidoId
+  )
+    ? terminalElegidoId
+    : String(terminales[0]?.id ?? "");
   const [citaSeleccionadaId, setCitaSeleccionadaId] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const crearVentaMutation = useCreateVentaMutation();
@@ -95,7 +99,7 @@ export function NuevaVentaModal({
     setServicioId(citaAsociada ? String(citaAsociada.servicioId) : "");
     setMonto(40000);
     setMetodoPago("Debito");
-    setTerminalPagoId(String(terminales[0]?.id ?? ""));
+    setTerminalElegidoId("");
     setCitaSeleccionadaId("");
     setErrorMsg(null);
   }
@@ -118,7 +122,7 @@ export function NuevaVentaModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!descripcion.trim() || monto <= 0) return;
+    if (!descripcion.trim()) return;
 
     setErrorMsg(null);
 
@@ -141,9 +145,7 @@ export function NuevaVentaModal({
       resetForm();
       onClose();
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : "No se pudo registrar el cobro.";
-      setErrorMsg(msg);
+      setErrorMsg(handleApiError(err).message);
     }
   }
 
@@ -241,13 +243,6 @@ export function NuevaVentaModal({
             </div>
           )}
 
-          {!citaId && (
-            <Alerta tono="info">
-              Esta venta no entra en el cálculo de reparto porque no está
-              asociada a una atención.
-            </Alerta>
-          )}
-
           <div>
             <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
               Servicio
@@ -284,8 +279,6 @@ export function NuevaVentaModal({
               <input
                 type="number"
                 required
-                min={1000}
-                step={500}
                 value={monto}
                 onChange={e => setMonto(parseFloat(e.target.value) || 0)}
                 className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
@@ -335,7 +328,7 @@ export function NuevaVentaModal({
               <select
                 required
                 value={terminalPagoId}
-                onChange={e => setTerminalPagoId(e.target.value)}
+                onChange={e => setTerminalElegidoId(e.target.value)}
                 className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
               >
                 {terminales.length === 0 && (

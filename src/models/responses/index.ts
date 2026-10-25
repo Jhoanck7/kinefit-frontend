@@ -27,6 +27,7 @@ export type {
   ServicioCitaResponse,
   TransaccionDetalleResponse,
 } from "./cita";
+export type { ContenidoSitioResponse } from "./contenido";
 export type { FranjaDisponibleResponse } from "./disponibilidad";
 export type {
   AdjuntoResumenResponse,

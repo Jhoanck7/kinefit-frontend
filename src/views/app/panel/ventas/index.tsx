@@ -13,6 +13,7 @@ import { formatearFechaHora } from "@/lib/formato";
 
 import {
   ConfiguracionFinancieraModal,
+  ExportarVentasModal,
   NuevaVentaModal,
   VentaDetalleModal,
   VentasFiltrosBar,
@@ -46,6 +47,8 @@ export default function VentasView() {
     inicio,
     modalNuevaVenta,
     modalConfig,
+    modalExportar,
+    exportando,
     rangoFecha,
     metodoPago,
     busquedaPaciente,
@@ -64,7 +67,7 @@ export default function VentasView() {
         setBusquedaPaciente={actions.setBusquedaPaciente}
         onAbrirNuevaVenta={() => actions.setModalNuevaVenta(true)}
         onAbrirConfiguracion={() => actions.setModalConfig(true)}
-        onExportar={actions.handleExportar}
+        onExportar={() => actions.setModalExportar(true)}
       />
 
       {errorExportar && <Alerta tono="error">{errorExportar}</Alerta>}
@@ -186,12 +189,17 @@ export default function VentasView() {
       <NuevaVentaModal
         abierto={modalNuevaVenta}
         onClose={() => actions.setModalNuevaVenta(false)}
-        terminales={terminales}
         onCrearVenta={() => actions.cargarVentas()}
       />
       <ConfiguracionFinancieraModal
         abierto={modalConfig}
         onClose={actions.handleCerrarConfig}
+      />
+      <ExportarVentasModal
+        abierto={modalExportar}
+        exportando={exportando}
+        onExportar={actions.handleExportar}
+        onClose={() => actions.setModalExportar(false)}
       />
     </div>
   );

@@ -19,6 +19,8 @@ export const useEspecialista = () => {
   const {
     fecha,
     hora,
+    horaTermino,
+    duracionMinutos,
     horasSeleccionadas,
     pacienteNombre,
     servicioId,
@@ -30,7 +32,6 @@ export const useEspecialista = () => {
 
   const fechaIso = fecha ? fechaISO(fecha) : "";
   const horaInicio = [...horasSeleccionadas].sort()[0] ?? "";
-  const duracionMinutos = horasSeleccionadas.length * 30;
 
   const { data: especialistas = [], isLoading } =
     useGetEspecialistasDisponibles(
@@ -90,6 +91,8 @@ export const useEspecialista = () => {
   return {
     fecha,
     hora,
+    horaTermino,
+    duracionMinutos,
     pacienteNombre,
     nombreServicio: servicioNombre,
     especialistaId,

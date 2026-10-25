@@ -58,9 +58,10 @@ export class VentaService extends BaseApiService {
     );
   }
 
-  getTerminales() {
+  getTerminales(soloActivos = false) {
     return this.httpClient.get<ApiResponse<TerminalPagoResponse[]>>(
-      `${this.baseURL}/terminales`
+      `${this.baseURL}/terminales`,
+      { params: { soloActivos } }
     );
   }
 

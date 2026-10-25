@@ -18,6 +18,8 @@ export const useResumenReserva = () => {
   const {
     fecha,
     hora,
+    horaTermino,
+    duracionMinutos,
     bloqueHorarioIds,
     pacienteId,
     pacienteNombre,
@@ -48,8 +50,13 @@ export const useResumenReserva = () => {
       editar: "/panel/nueva-reserva/horario",
     },
     {
+      etiqueta: "Duración",
+      valor: duracionMinutos ? `${duracionMinutos} min` : undefined,
+      editar: "/panel/nueva-reserva/horario",
+    },
+    {
       etiqueta: "Horario",
-      valor: hora || undefined,
+      valor: hora && horaTermino ? `${hora} a ${horaTermino}` : undefined,
       editar: "/panel/nueva-reserva/horario",
     },
     {

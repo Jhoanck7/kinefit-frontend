@@ -30,6 +30,8 @@ export interface ConsentimientoCitaResponse {
   requiereFirmaProfesional: boolean;
   cargadoEnPapelEn?: string;
   tieneArchivo: boolean;
+  motivoRechazo?: string;
+  puedeRechazarse: boolean;
   createdAt: string;
 }
 
@@ -64,6 +66,7 @@ export interface DocumentoResumenResponse {
   fechaAtencion: string;
   especialistaId: number;
   especialistaNombre: string;
+  createdAt: string;
 }
 
 /** Página de documentos listados */
@@ -86,6 +89,7 @@ export interface DocumentoDetalleResponse {
   citaId: number;
   fechaAtencion: string;
   horaAtencion: string;
+  horaFinAtencion: string;
   servicio: string;
   pacienteId: number;
   pacienteNombre: string;
@@ -106,6 +110,8 @@ export interface DocumentoDetalleResponse {
   firmaProfesionalLista: boolean;
   firmadoProfesionalEn?: string;
   cargadoEnPapelEn?: string;
+  motivoRechazo?: string;
+  puedeRechazarse: boolean;
   adjuntos: AdjuntoResumenResponse[];
 }
 

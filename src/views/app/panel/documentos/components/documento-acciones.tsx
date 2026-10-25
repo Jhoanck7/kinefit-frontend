@@ -3,6 +3,7 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 
 import { Alerta } from "@/components/shared";
+import { Button } from "@/components/ui";
 import {
   useAbrirArchivoDocumentoMutation,
   useFirmarProfesionalMutation,
@@ -13,6 +14,8 @@ import {
 import { handleApiError } from "@/lib/api";
 import PdfSignatureCanvas from "@/views/app/(documentos)/documentos/components/pdf-signature-canvas";
 
+import { RechazarDocumentoModal } from "./rechazar-documento-modal";
+
 export interface DocumentoAccionable {
   id: number;
   estado: string;
@@ -20,12 +23,13 @@ export interface DocumentoAccionable {
   requiereFirmaProfesional: boolean;
   firmaPacienteLista: boolean;
   firmaProfesionalLista: boolean;
+  puedeRechazarse: boolean;
 }
 
 const ESTILO_ACCION =
   "font-sans text-xs font-bold text-muted-foreground hover:text-foreground disabled:opacity-50";
 
-/** Acciones sobre un documento: ver o abrir el archivo, reenviar el enlace de firma al paciente, cargar el escaneo en papel y firmar como profesional */
+/** Acciones sobre un documento: ver o abrir el archivo, reenviar el enlace de firma al paciente, cargar el escaneo en papel, firmar como profesional y rechazar lo entregado */
 export function DocumentoAcciones({
   documento,
   encabezado,
@@ -50,6 +54,7 @@ export function DocumentoAcciones({
   const [firmaUrl, setFirmaUrl] = useState<string | null>(null);
   const [firmaVacia, setFirmaVacia] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [rechazando, setRechazando] = useState(false);
 
   const pdfFirmaRef =
     useRef<React.ComponentRef<typeof PdfSignatureCanvas>>(null);
@@ -259,8 +264,25 @@ export function DocumentoAcciones({
               {abrirArchivo.isPending ? "Abriendo…" : "Firmar como Profesional"}
             </button>
           )}
+          {documento.puedeRechazarse && !firmando && (
+            <Button
+              onClick={() => setRechazando(true)}
+              className="bg-rose-700 text-white hover:bg-rose-800"
+            >
+              Rechazar Documento
+            </Button>
+          )}
         </div>
       </div>
+
+      <RechazarDocumentoModal
+        documentoId={rechazando ? documento.id : null}
+        onCerrar={() => setRechazando(false)}
+        onRechazado={() => {
+          olvidarArchivo();
+          onCambio?.();
+        }}
+      />
 
       {errorMsg && <Alerta tono="error">{errorMsg}</Alerta>}
 

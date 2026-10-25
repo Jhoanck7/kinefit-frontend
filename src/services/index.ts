@@ -3,6 +3,7 @@ export { AppointmentService, appointmentService } from "./appointment-service";
 export { AuditoriaService, auditoriaService } from "./auditoria-service";
 export { AuthService, authService } from "./auth-service";
 export { BaseApiService } from "./base-api-service";
+export { ContenidoService, contenidoService } from "./contenido-service";
 export {
   BloqueHorarioService,
   bloqueHorarioService,

@@ -90,7 +90,7 @@ export const landingConfigSchema: SectionSchema[] = [
   {
     id: "about",
     title: "3. Quiénes Somos",
-    description: "Descripción de la clínica, video y botón de acción.",
+    description: "Descripción de la clínica y video.",
     fields: [
       {
         key: "aboutTitle",
@@ -104,12 +104,6 @@ export const landingConfigSchema: SectionSchema[] = [
         type: "textarea",
         rows: 4,
         gridCols: 1,
-      },
-      {
-        key: "aboutCtaText",
-        label: "Texto Botón CTA Quiénes Somos",
-        type: "text",
-        gridCols: 2,
       },
       {
         key: "aboutVideoUrl",
@@ -149,7 +143,8 @@ export const landingConfigSchema: SectionSchema[] = [
   {
     id: "nutricion",
     title: "6. Nutrición Integral",
-    description: "Título, descripción, video de Instagram y fotos de la sección de nutrición.",
+    description:
+      "Título, descripción, video de Instagram y foto de la sección de nutrición.",
     hasCustomRenderer: true,
     fields: [],
   },
@@ -309,5 +304,11 @@ export const landingConfigSchema: SectionSchema[] = [
         gridCols: 2,
       },
     ],
+  },
+  {
+    id: "legales",
+    title: "12. Documentos Legales",
+    description: "Términos y Condiciones y Política de Privacidad.",
+    hasCustomRenderer: true,
   },
 ];

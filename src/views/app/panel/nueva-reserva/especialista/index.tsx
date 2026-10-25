@@ -17,6 +17,8 @@ export default function EspecialistaView() {
   const {
     fecha,
     hora,
+    horaTermino,
+    duracionMinutos,
     pacienteNombre,
     nombreServicio,
     especialistaId,
@@ -113,7 +115,15 @@ export default function EspecialistaView() {
               etiqueta: "Fecha",
               valor: fecha ? formatearFechaExtensa(fecha) : undefined,
             },
-            { etiqueta: "Horario", valor: hora || undefined },
+            {
+              etiqueta: "Duración",
+              valor: duracionMinutos ? `${duracionMinutos} min` : undefined,
+            },
+            {
+              etiqueta: "Horario",
+              valor:
+                hora && horaTermino ? `${hora} a ${horaTermino}` : undefined,
+            },
             {
               etiqueta: "Especialista",
               valor: especialistaNombre || undefined,

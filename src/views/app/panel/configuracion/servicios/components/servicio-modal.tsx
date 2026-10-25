@@ -1,6 +1,5 @@
 import {
   Alerta,
-  ImageUploader,
   Modal,
   ModalCloseButton,
   NumberField,
@@ -23,7 +22,6 @@ interface ServicioModalProps {
   exigeDuracion: boolean;
   duracionMinutos: number | undefined;
   descripcion: string;
-  imagenUrl: string;
   plantillas: PlantillaResponse[];
   documentos: ServicioDocumentoInput[];
   error: string | null;
@@ -33,14 +31,13 @@ interface ServicioModalProps {
   onToggleExigeDuracion: (v: boolean) => void;
   onDuracionMinutosChange: (v: number | undefined) => void;
   onDescripcionChange: (v: string) => void;
-  onFotoChange: (secureUrl: string, publicId?: string) => void;
   onDocumentosChange: (documentos: ServicioDocumentoInput[]) => void;
   onSubmit: (e: React.FormEvent) => void;
 }
 
 const DURACIONES_DISPONIBLES = [30, 60, 90];
 
-/** Modal para crear o editar un servicio: nombre, orden, imagen, duración predeterminada y documentos exigidos */
+/** Modal para crear o editar un servicio: nombre, orden, duración predeterminada y documentos exigidos */
 export function ServicioModal({
   abierto,
   onCerrar,
@@ -50,7 +47,6 @@ export function ServicioModal({
   exigeDuracion,
   duracionMinutos,
   descripcion,
-  imagenUrl,
   plantillas,
   documentos,
   error,
@@ -60,7 +56,6 @@ export function ServicioModal({
   onToggleExigeDuracion,
   onDuracionMinutosChange,
   onDescripcionChange,
-  onFotoChange,
   onDocumentosChange,
   onSubmit,
 }: ServicioModalProps) {
@@ -80,16 +75,7 @@ export function ServicioModal({
           </Alerta>
         )}
 
-        <div className="mx-6 mt-6 bg-slate-50 p-4 rounded-none border border-slate-200">
-          <ImageUploader
-            etiqueta="Imagen del Servicio"
-            value={imagenUrl}
-            onChange={onFotoChange}
-            folder="kinefit/servicios"
-          />
-        </div>
-
-        <form onSubmit={onSubmit} className="p-6 pt-0 space-y-6">
+        <form onSubmit={onSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextField
               etiqueta="Nombre del Servicio"

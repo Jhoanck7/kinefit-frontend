@@ -8,11 +8,13 @@ export type {
   CreateCitaPublicaRequest,
   UpdateCitaEstadoRequest,
 } from "./cita";
+export type { UpdateContenidoRequest } from "./contenido";
 export type {
   CreateFichaRequest,
   EnviarRecomendacionRequest,
   FirmarDocumentoRequest,
   FirmarProfesionalRequest,
+  RechazarDocumentoRequest,
   UpdateFichaRequest,
 } from "./documento";
 export type { CreateEmpresaRequest, UpdateEmpresaRequest } from "./empresa";

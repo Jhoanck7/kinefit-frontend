@@ -35,9 +35,17 @@ import {
   desdeFechaISO,
   formatearFechaCorta,
   formatearFechaHora,
+  formatearRangoHorario,
 } from "@/lib/formato";
 
 import { DocumentoAcciones } from "./documento-acciones";
+
+const TEXTO_ACCION_AUDITORIA: Record<string, string> = {
+  Creacion: "Creó el documento.",
+  Modificacion: "Modificó el documento.",
+  Lectura: "Abrió el documento.",
+  Eliminacion: "Eliminó el documento.",
+};
 
 interface DocumentoDetalleModalProps {
   documentoId: string | null;
@@ -480,12 +488,14 @@ export function DocumentoDetalleModal({
                   ) : (
                     auditoria!.items.map(evento => (
                       <li key={evento.id} className="text-xs text-slate-600">
+                        {formatearFechaHora(new Date(evento.createdAt))},{" "}
                         <span className="font-semibold text-slate-800">
-                          {evento.accion}
+                          {evento.usuarioNombre ?? evento.tipoActor}
                         </span>
-                        , {evento.usuarioNombre ?? evento.tipoActor},{" "}
-                        {formatearFechaHora(new Date(evento.createdAt))}
-                        {evento.detalle ? ` — ${evento.detalle}` : ""}
+                        :{" "}
+                        {evento.detalle ??
+                          TEXTO_ACCION_AUDITORIA[evento.accion] ??
+                          evento.accion}
                       </li>
                     ))
                   )}
@@ -524,7 +534,10 @@ export function DocumentoDetalleModal({
                 </span>
                 <p className="font-sans font-medium text-value text-foreground mt-0.5">
                   {formatearFechaCorta(desdeFechaISO(doc.fechaAtencion))},{" "}
-                  {doc.horaAtencion.slice(0, 5)}
+                  {formatearRangoHorario(
+                    doc.horaAtencion.slice(0, 5),
+                    doc.horaFinAtencion.slice(0, 5)
+                  )}
                 </p>
               </div>
 
@@ -567,6 +580,17 @@ export function DocumentoDetalleModal({
                   {formatearFechaHora(new Date(doc.createdAt))}
                 </p>
               </div>
+
+              {doc.motivoRechazo && (
+                <div>
+                  <span className="font-sans text-label font-medium text-muted-foreground block">
+                    Motivo de Rechazo
+                  </span>
+                  <p className="font-sans font-medium text-value text-foreground mt-0.5">
+                    {doc.motivoRechazo}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Suspense } from "react";
 
@@ -29,7 +29,6 @@ function esTabValida(valor: string | null): valor is TabValor {
 }
 
 function ConfiguracionContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
   const esAdministrador = session?.user.rol === "Administrador";
@@ -45,7 +44,7 @@ function ConfiguracionContent() {
       : tabsVisibles[0].valor;
 
   function cambiarTab(valor: string) {
-    router.replace(`/panel/configuracion?tab=${valor}`);
+    window.history.replaceState(null, "", `/panel/configuracion?tab=${valor}`);
   }
 
   return (

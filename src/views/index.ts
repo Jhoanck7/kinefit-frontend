@@ -1,3 +1,4 @@
+export { default as DocumentoLegalView } from "./app/(public)/documento-legal";
 export { default as HomeView } from "./app/(public)/home";
 export { default as AccesoView } from "./app/panel/acceso";
 export { default as AgendaView } from "./app/panel/agenda";

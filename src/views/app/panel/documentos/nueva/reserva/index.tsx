@@ -195,7 +195,10 @@ export default function NuevaFichaReservaView() {
           avanzar={
             <Button
               disabled={
-                !citaSeleccionada || citaSeleccionada.estado !== "Atendida"
+                !citaSeleccionada ||
+                citaSeleccionada.conFicha ||
+                (citaSeleccionada.estado !== "Confirmada" &&
+                  citaSeleccionada.estado !== "Atendida")
               }
               onClick={actions.handleContinuar}
             >

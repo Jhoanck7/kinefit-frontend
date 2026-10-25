@@ -29,59 +29,53 @@ function citaSegunFiltro(
 }
 
 function construirFilas(
-  rejilla: { inicio: string; termino: string }[],
   bloques: BloqueAgendaResponse[],
   estadoFiltro: string
 ): ItemFila[] {
-  const porHora = new Map(
-    bloques.map(b => [b.horaInicio.substring(0, 5), b] as const)
-  );
+  const hora = (valor: string) => valor.substring(0, 5);
   const items: ItemFila[] = [];
   let i = 0;
 
-  while (i < rejilla.length) {
-    const slot = rejilla[i];
-    const bloque = porHora.get(slot.inicio);
-
+  while (i < bloques.length) {
+    const bloque = bloques[i];
     const cita = citaSegunFiltro(bloque, estadoFiltro);
+
     if (cita) {
       const grupoId = cita.grupoCitaId ?? cita.id;
-      let k = 0;
-      while (i + k < rejilla.length) {
-        const siguiente = citaSegunFiltro(
-          porHora.get(rejilla[i + k].inicio),
-          estadoFiltro
-        );
-        const siguienteGrupoId = siguiente?.grupoCitaId ?? siguiente?.id;
-        if (!siguiente || siguienteGrupoId !== grupoId) break;
-        k += 1;
+      let fin = i;
+      while (fin + 1 < bloques.length) {
+        const siguiente = citaSegunFiltro(bloques[fin + 1], estadoFiltro);
+        if ((siguiente?.grupoCitaId ?? siguiente?.id) !== grupoId) break;
+        fin += 1;
       }
-      const numBloques = Math.max(1, k);
       items.push({
         tipo: "cita",
-        inicio: slot.inicio,
-        termino: rejilla[i + numBloques - 1].termino,
+        inicio: hora(bloque.horaInicio),
+        termino: hora(bloques[fin].horaFin),
         cita,
       });
-      i += numBloques;
+      i = fin + 1;
       continue;
     }
 
-    if (bloque?.estado === "Bloqueado") {
-      let k = 0;
-      while (i + k < rejilla.length) {
-        const siguiente = porHora.get(rejilla[i + k].inicio);
-        if (siguiente?.estado !== "Bloqueado") break;
-        if (citaSegunFiltro(siguiente, estadoFiltro)) break;
-        k += 1;
+    if (bloque.estado === "Bloqueado") {
+      let fin = i;
+      while (fin + 1 < bloques.length) {
+        const siguiente = bloques[fin + 1];
+        if (
+          siguiente.estado !== "Bloqueado" ||
+          citaSegunFiltro(siguiente, estadoFiltro) ||
+          hora(siguiente.horaInicio) !== hora(bloques[fin].horaFin)
+        )
+          break;
+        fin += 1;
       }
-      const numBloques = Math.max(1, k);
       items.push({
         tipo: "bloqueado",
-        inicio: slot.inicio,
-        termino: rejilla[i + numBloques - 1].termino,
+        inicio: hora(bloque.horaInicio),
+        termino: hora(bloques[fin].horaFin),
       });
-      i += numBloques;
+      i = fin + 1;
       continue;
     }
 
@@ -96,17 +90,15 @@ function construirFilas(
  * bloqueos, sin fila para los huecos vacíos ni grilla horaria de fondo.
  */
 export function TimeGrid({
-  rejilla,
   bloques,
   estadoFiltro = FILTRO_VIGENTES,
   onSeleccionarCita,
 }: {
-  rejilla: { inicio: string; termino: string }[];
   bloques: BloqueAgendaResponse[];
   estadoFiltro?: string;
   onSeleccionarCita: (citaId: string) => void;
 }) {
-  const filas = construirFilas(rejilla, bloques, estadoFiltro);
+  const filas = construirFilas(bloques, estadoFiltro);
 
   return (
     <ul className="flex w-full flex-col gap-2.5 font-sans shadow-none">

@@ -163,7 +163,10 @@ export default function Footer() {
         <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
           <span>{footerText}</span>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-brand-primary transition-colors">
+            <a
+              href="/terminos-y-condiciones"
+              className="hover:text-brand-primary transition-colors"
+            >
               Términos y condiciones
             </a>
             <a

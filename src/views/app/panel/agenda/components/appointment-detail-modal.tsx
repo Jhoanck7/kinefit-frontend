@@ -14,7 +14,6 @@ import {
 import {
   useGetAuditoriaCita,
   useGetCita,
-  useGetTerminales,
   useUpdateCitaEstadoMutation,
 } from "@/hooks/api";
 import { handleApiError } from "@/lib/api";
@@ -144,7 +143,6 @@ function DetalleCita({
   const colorEstado = COLOR_ROL[definicion.colorRol] ?? COLOR_ROL.gris;
   const [tab, setTab] = useState("detalle");
   const [mostrarCobro, setMostrarCobro] = useState(false);
-  const { data: terminales = [] } = useGetTerminales();
   const { data: historial = [] } = useGetAuditoriaCita(cita.id);
   const { data: session } = useSession();
   const puedeGestionarEstado = puedeGestionarRecursoDeEspecialista(
@@ -187,7 +185,6 @@ function DetalleCita({
         abierto={mostrarCobro}
         onClose={() => setMostrarCobro(false)}
         onCrearVenta={() => setMostrarCobro(false)}
-        terminales={terminales}
         citaAsociada={{
           id: cita.id,
           pacienteId: cita.paciente.id,

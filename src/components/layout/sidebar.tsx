@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 const ITEMS_NAVEGACION = [
   {
@@ -32,12 +32,6 @@ const ITEMS_NAVEGACION = [
     prefijos: ["/panel/ventas"],
   },
   {
-    href: "/panel/reportes",
-    etiqueta: "Reportes",
-    prefijos: ["/panel/reportes"],
-    soloAdministrador: true,
-  },
-  {
     href: "/panel/configuracion",
     etiqueta: "Configuración",
     prefijos: [
@@ -47,21 +41,11 @@ const ITEMS_NAVEGACION = [
       "/panel/horarios",
     ],
   },
-  {
-    href: "/panel/perfil",
-    etiqueta: "Mi Perfil",
-    prefijos: ["/panel/perfil"],
-  },
 ];
 
-/** Menú lateral de navegación del panel administrativo, con enlaces según el rol del usuario */
+/** Menú lateral de navegación del panel administrativo */
 export function Sidebar() {
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const esAdministrador = session?.user?.rol === "Administrador";
-  const items = ITEMS_NAVEGACION.filter(
-    item => !item.soloAdministrador || esAdministrador
-  );
 
   function cerrarSesion() {
     signOut({ callbackUrl: "/panel/acceso" });
@@ -84,7 +68,7 @@ export function Sidebar() {
       </div>
 
       <ul className="flex-1 px-3 space-y-1">
-        {items.map(({ href, etiqueta, prefijos }) => {
+        {ITEMS_NAVEGACION.map(({ href, etiqueta, prefijos }) => {
           const activo = prefijos.some(
             p =>
               pathname === p ||

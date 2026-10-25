@@ -1,11 +1,15 @@
 import { create } from "zustand";
 
+import { sumarMinutos } from "@/lib/horario";
+
 interface NuevaReservaState {
   fecha: Date | null;
   /** Horas de inicio seleccionadas en la grilla (1 a 3), formato "HH:mm" */
   horasSeleccionadas: string[];
   /** Primera hora seleccionada, para mostrar en los paneles de resumen */
   hora: string | null;
+  horaTermino: string | null;
+  duracionMinutos: number;
   /** Se resuelven recién al elegir especialista */
   bloqueHorarioIds: number[];
   pacienteId: number | null;
@@ -34,6 +38,8 @@ const ESTADO_INICIAL = {
   fecha: null,
   horasSeleccionadas: [] as string[],
   hora: null,
+  horaTermino: null,
+  duracionMinutos: 0,
   bloqueHorarioIds: [] as number[],
   pacienteId: null,
   pacienteNombre: null,
@@ -49,16 +55,21 @@ const ESTADO_INICIAL = {
 /** Estado del asistente de nueva reserva: en memoria, sin persistencia */
 export const useNuevaReservaStore = create<NuevaReservaState>()(set => ({
   ...ESTADO_INICIAL,
-  setHorario: (fecha, horasSeleccionadas) =>
+  setHorario: (fecha, horasSeleccionadas) => {
+    const hora = [...horasSeleccionadas].sort()[0] ?? null;
+    const duracionMinutos = horasSeleccionadas.length * 30;
     set({
       fecha,
       horasSeleccionadas,
-      hora: [...horasSeleccionadas].sort()[0] ?? null,
+      hora,
+      horaTermino: hora ? sumarMinutos(hora, duracionMinutos) : null,
+      duracionMinutos,
       // Cambiar de horario invalida al especialista y los bloques ya resueltos
       especialistaId: null,
       especialistaNombre: null,
       bloqueHorarioIds: [],
-    }),
+    });
+  },
   setPaciente: (pacienteId, pacienteNombre) =>
     set({ pacienteId, pacienteNombre }),
   setEspecialista: (especialistaId, especialistaNombre, bloqueHorarioIds) =>
@@ -72,6 +83,8 @@ export const useNuevaReservaStore = create<NuevaReservaState>()(set => ({
       fecha: null,
       horasSeleccionadas: [],
       hora: null,
+      horaTermino: null,
+      duracionMinutos: 0,
       especialistaId: null,
       especialistaNombre: null,
       bloqueHorarioIds: [],

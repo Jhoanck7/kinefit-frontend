@@ -24,6 +24,10 @@ export {
   useUpdateCitaEstadoMutation,
 } from "./use-cita-service";
 export {
+  useGetContenido,
+  useUpdateContenidoMutation,
+} from "./use-contenido-service";
+export {
   useGetEspecialistasDisponibles,
   useGetFechasDisponibles,
   useGetHorasDisponibles,
@@ -48,6 +52,7 @@ export {
   useGetDocumentosPorCita,
   useGetFichasPorPaciente,
   useGetHistorialPorPaciente,
+  useRechazarDocumentoMutation,
   useReenviarPorCorreoMutation,
   useReenviarTokenMutation,
   useSubirAdjuntoMutation,
@@ -87,7 +92,6 @@ export {
 } from "./use-media-service";
 export {
   useCreatePacienteMutation,
-  useDesvincularCuentaPacienteMutation,
   useGetPacientePerfil,
   useGetPacientes,
   useUpdatePacienteEstadoMutation,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Alerta,
@@ -20,12 +20,10 @@ import { useHoyPanel } from "@/hooks/common";
 import { handleApiError } from "@/lib/api";
 import {
   desdeFechaISO,
-  diaSemanaId,
   fechaISO,
   formatearFechaExtensa,
   formatearRangoHorario,
 } from "@/lib/formato";
-import { generarRejillaDia } from "@/lib/horario";
 
 interface GestionBloqueosModalProps {
   abierto: boolean;
@@ -75,15 +73,6 @@ export function GestionBloqueosModal({
     if (!hoy || !abierto || fechaForm) return;
     setFechaForm(fechaISO(hoy));
   }, [hoy, abierto, fechaForm]);
-
-  const rejillaForm = useMemo(() => {
-    const diaSemana = fechaForm
-      ? diaSemanaId(desdeFechaISO(fechaForm))
-      : hoy
-        ? diaSemanaId(hoy)
-        : 1;
-    return generarRejillaDia(diaSemana);
-  }, [fechaForm, hoy]);
 
   async function handleGuardarBloqueo(e: React.FormEvent) {
     e.preventDefault();
@@ -226,34 +215,26 @@ export function GestionBloqueosModal({
                   <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                     Hora Inicio
                   </label>
-                  <select
+                  <input
+                    type="time"
+                    required
                     value={horaInicioForm}
                     onChange={e => setHoraInicioForm(e.target.value)}
                     className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
-                  >
-                    {rejillaForm.map(b => (
-                      <option key={b.inicio} value={b.inicio}>
-                        {b.inicio}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 <div>
                   <label className="font-sans text-label font-medium text-muted-foreground block mb-1">
                     Hora Término
                   </label>
-                  <select
+                  <input
+                    type="time"
+                    required
                     value={horaTerminoForm}
                     onChange={e => setHoraTerminoForm(e.target.value)}
                     className="w-full rounded-none border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-900 focus:border-slate-900 focus:outline-none"
-                  >
-                    {rejillaForm.map(b => (
-                      <option key={b.termino} value={b.termino}>
-                        {b.termino}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
               </div>
 

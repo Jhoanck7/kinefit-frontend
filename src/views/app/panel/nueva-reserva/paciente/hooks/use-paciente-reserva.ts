@@ -20,6 +20,8 @@ export const usePacienteReserva = () => {
   const {
     fecha,
     hora,
+    horaTermino,
+    duracionMinutos,
     pacienteId,
     pacienteNombre,
     especialistaNombre,
@@ -76,6 +78,8 @@ export const usePacienteReserva = () => {
   return {
     fecha,
     hora,
+    horaTermino,
+    duracionMinutos,
     pacienteId,
     pacienteNombre,
     especialistaNombre,
